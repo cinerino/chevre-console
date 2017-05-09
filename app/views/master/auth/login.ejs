@@ -1,35 +1,30 @@
 <form method="post" class="form-horizontal form-login" >
-  <% /* ユーザーID */ %>
-  <div class="form-group .form-inline">
-    <label for="username" class="col-sm-3 control-label label-title">ID</label>
-    <div class="col-sm-9">
-      <input type="text" name="username" id="username" class="form-control" value="<%= req.body.username %>">
-      <p class="error message" style="text-align:left;">
-        <% if (errors && errors.username) { %>
-          <%- errors.username.msg %>
-        <% } %>
-      </p>
-    </div>
-  </div>
-  <% /* パスワード */ %>
-  <div class="form-group .form-inline">
-    <label for="password" class="col-sm-3 control-label label-title">パスワード</label>
-    <div class="col-sm-9">
-      <input type="password" name="password" id="password" class="form-control" value="<%= req.body.password %>">
-      <% /* 単体チェックエラー */ %>
-      <p class="error message" style="text-align:left;">
-        <% if (errors && errors.password) { %>
-          <%- errors.password.msg %>
-        <% } %>
-      </p>
-    </div>
-  </div>
-  <% /* ログインボタン */ %>
-  <div class="form-group">
-    <div class="btn-area">
-      <button type="button" class="btn btn-ok">ログイン</button>
-    </div>
-  </div>
+    <div class="container">
+        <div class="center-block well">
+            <h2 class="mb-small text-center">chevre</h2>
+            <div class="mb-middle">
+                <img class="center-block img-responsive img-circle" src="/images/ProjectIcon.png" alt="">
+            </div>
+            <div class="mb-small">
+                <input type="text" name="username" id="username" class="form-control" value="<%= req.body.username %>" placeholder="username">
+                <p class="error message text-danger" style="text-align:left;">
+                <% if (errors && errors.username) { %>
+                <%- errors.username.msg %>
+                <% } %>
+                </p>
+            </div>
+            <div class="mb-small">
+                <input type="password" name="password" id="password" class="form-control" value="<%= req.body.password %>" placeholder="password">
+                <% /* 単体チェックエラー */ %>
+                <p class="error message text-danger" style="text-align:left;">
+                    <% if (errors && errors.password) { %>
+                    <%- errors.password.msg %>
+                    <% } %>
+                </p>
+            </div>
+            <button type="button" class="btn btn-ok btn-primary btn-lg">ログイン</button>
+        </div><!-- /card-container -->
+    </div><!-- /container -->
 </form>
 <script>
 $(function(){

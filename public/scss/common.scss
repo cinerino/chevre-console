@@ -1,0 +1,32 @@
+.mb-x-small {
+    margin-bottom: 5px;
+}
+
+.mb-small {
+    margin-bottom: 10px;
+}
+
+.mb-middle {
+    margin-bottom: 20px;
+}
+
+.mb-large {
+    margin-bottom: 40px;
+}
+
+.mb-x-large {
+    margin-bottom: 60px;
+}
+
+.side-navi {
+    a[disabled=disabled] {
+        opacity: 0.5;
+    }
+}
+
+header {
+    .logo {
+        padding: 10px;
+        width: 60px;
+    }
+}

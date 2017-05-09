@@ -1,0 +1,14 @@
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <img class="img-circle logo" src="/images/ProjectIcon.png" alt="">
+                <span><%= displayId %> <%= title %></span>
+            </div>
+            <div class="navbar-text navbar-right">
+                <%- req.staffUser.get('user_id') %>
+                <a class="btn btn-logout btn-default" href="/master/logout"><span>ログアウト</span></a>
+            </div>
+        </div>
+    </nav>
+</header>

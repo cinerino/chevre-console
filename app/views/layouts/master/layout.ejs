@@ -1,119 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= title %></title>
-    <!-- BootstrapのCSS読み込み -->
-    <link href="/css/bootstrap.css" rel="stylesheet">
-    <link href="/css/bootstrap-datepicker.css" rel="stylesheet">
-    <link href="/css/chevre-master.css" rel="stylesheet">
-    <%- defineContent('styles') %>
-    <!-- jQuery読み込み -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- BootstrapのJS読み込み -->
-    <script src="/js/bootstrap.js"></script>
-    <!-- datepicker本体 -->
-    <script src="/js/bootstrap-datepicker.js" type="text/javascript"></script>
-    <!-- datepicker日本語対応用ファイル -->
-    <script src="/js/locales/bootstrap-datepicker.ja.js" type="text/javascript"></script>
-    <%- defineContent('scripts') %>
-  </head>
+  <%- include('../head') %>
   <body>
   <!--Header-->
-  <div>
-    <div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-sm-1">
-            <p class="disp_id">
-              <%= displayId %>
-            </p>
-          </div>
-          <div class="col-sm-10"  style="padding-top:10px;">
-            <div>マスタ管理</div>
-            <div><%= title %></div>
-          </div>
-          <div class="col-sm-1 hidden-xs">
-            <div class="project_img">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--Contents-->
+  <%- include('../header') %>
+  
   <div class="container">
-    <div class="container-fluid">
-      <div class="row" style="border:solid 1px silver;">
-        <!--左・メニュー-->
-        <div class="col-sm-2" name="__left_menu">
-          <div class="project_img_small hidden-xs">
-          </div>
-          <% /*作品マスタ*/ %>
-          <div class="menu-group">
-            <div>作品マスタ</div>
-            <div id="Aa-2"><a href="/master/films/add">新規登録</a></div>
-            <div id="Aa-3"><a href="/master/films">一覧</a></div>
-          </div>
-          <% /*パフォーマンスマスタ*/ %>
-          <div class="menu-group">
-            <div>パフォーマンスマスタ</div>
-            <div id="Aa-4"><a href='/master/performances'>新規登録/一覧</a></div>
-          </div>
-          <% /*券種マスタ*/ %>
-          <div class="menu-group">
-            <div>券種マスタ</div>
-            <div id="Aa-5"><a href='/master/ticketTypes/add'>新規登録</a></div>
-            <div id="Aa-6"><a href='/master/ticketTypes'>一覧</a></div>
-          </div>
-          <% /*券種グループマスタ*/ %>
-          <div class="menu-group">
-            <div>券種グループマスタ</div>
-            <div id="Aa-7"><a href='/master/ticketTypeGroups/add'>新規登録</a></div>
-            <div id="Aa-8"><a href='/master/ticketTypeGroups'>一覧</a></div>
-          </div>
-          <% /*レポート*/ %>
-          <div class="menu-group">
-            <div>レポート</div>
-            <div id="Aa-9"><a href='/master/report'>売り上げレポート出力</a></div>
-            <div id="Aa-10"><a href=''>アカウント別レポート出力</a></div>
-          </div>
-        </div>
-        <!--右・作品マスタ新規登録-->
-        <div class="col-sm-10" style="padding-left:0px;padding-right:0px;" name="__right_contents">
-          <div class="container-fluid">
-            <div class="row">
-              <!--右・タイトル-->
-              <div class="col-sm-12 form-header">
-                <div class="container-fluid">
-                  <div class="row" style="padding-right:10px;">
-                    <div class="col-sm-6 form-header-label"><%= title %></div>
-                    <div class="col-sm-4 form-header-label" style="text-align:right;">
-                      <%- req.staffUser.get('user_id') %>
-                    </div>
-                    <div class="col-sm-2">
-                      <a class="btn btn-logout" href="/master/logout">
-                        <% /*ログアウト*/ %>
-                        <span>ログアウト</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <%- body %>
+
+    <!-- content -->
+    <div class="row">
+        <!-- left -->
+        <div class="col-md-3">
+            <div class="panel panel-default side-navi">
+                <div class="panel-heading">Menu</div>
+                <ul class="nav nav-pills nav-stacked">
+                    <li><a href="/master/films/add" <%= (displayId === 'Aa-2') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 作品登録</a></li>
+                    <li><a href="/master/films" <%= (displayId === 'Aa-3') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 作品一覧</a></li>
+                    <li><a href="/master/performances" <%= (displayId === 'Aa-4') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-edit"></i> パフォーマンス登録/一覧</a></li>
+                    <li><a href="/master/ticketTypes/add" <%= (displayId === 'Aa-5') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 券種登録</a></li>
+                    <li><a href="/master/ticketTypes" <%= (displayId === 'Aa-6') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 券種一覧</a></li>
+                    <li><a href="/master/ticketTypeGroups/add" <%= (displayId === 'Aa-7') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 券種グループ登録</a></li>
+                    <li><a href="/master/ticketTypeGroups" <%= (displayId === 'Aa-8') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 券種グループ一覧</a></li>
+                    <li><a href="/master/report" <%= (displayId === 'Aa-9') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-file"></i> 売り上げレポート出力</a></li>
+                    <li><a href="" <%= (displayId === 'Aa-10') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-file"></i> アカウント別レポート出力</a></li>
+                </ul> 
             </div>
-          </div>
         </div>
-      </div>
+
+        <div class="col-md-9">
+            <%- body %>
+        </div>
     </div>
-  </div>
-  <script>
-  $(function(){
-      var disp_id = "#<%= displayId %>";
-      $(disp_id).html($(disp_id).text());
-  });
-  </script>
+
+</div>
+
+<script>
+$(function(){
+    var disp_id = "#<%= displayId %>";
+    $(disp_id).html($(disp_id).text());
+});
+</script>
 </body>
 </html>

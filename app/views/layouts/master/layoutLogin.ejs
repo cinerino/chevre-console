@@ -1,83 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= title %></title>
-    <!-- BootstrapのCSS読み込み -->
-    <link href="/css/bootstrap.css" rel="stylesheet">
-    <link href="/css/chevre-master.css" rel="stylesheet">
-    <!-- jQuery読み込み -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- BootstrapのJS読み込み -->
-    <script src="/js/bootstrap.min.js"></script>
-  </head>
-  <body>
+  <%- include('../head') %>
+  <body class="login">
   <!--Header-->
-  <div>
-    <div>
-      <div class="container-fluid">
-        <div class="row">
-          <% /* 左・画面ID */ %>
-          <div class="col-sm-1">
-            <p class="disp_id">
-              <%= displayId %>
-            </p>
-          </div>
-          <% /* 中央・マスタ管理 */ %>
-          <div class="col-sm-10"  style="padding-top:10px;">
-            <div>マスタ管理</div>
-            <div><%= title %></div>
-          </div>
-          <% /* 右・ロゴ */ %>
-          <div class="col-sm-1 hidden-xs">
-            <div class="project_img">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!--Contents-->
-  <div class="container">
-    <div class="container-fluid">
-      <div class="row" style="border:solid 1px silver;">
-        <% /* 左・余白 */ %>
-        <div class="col-sm-1" style="background-color:yellow;">
-        </div>
-        <% /* 中央左・灰色部分 */ %>
-        <div class="col-sm-10" style="padding-left:0px;padding-right:0px;">
-          <div class="container-fluid">
-            <div class="row" style="text-align:center;">
-            <% /* マスタ管理ログイン */ %>
-              <div class="col-sm-12 form-header" style="border:none;">
-                <div class="container-fluid">
-                  <div class="row" style="padding-right:10px;">
-                    <% /* ロゴ */ %>
-                    <div class="col-sm-12 hidden-xs">
-                        <div class="project_img_small" style="width:100%;margin-left:0px;">
-                        </div>
-                    </div>
-                    <% /* タイトル */ %>
-                    <div class="col-sm-12 form-header-label"><%= title %></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-sm-12 form-container" style="padding-top:20px;border:none;">
-                <% /* 各画面 */ %>
-                <%- body %>
-              </div>
-            </div>
-            <div class="row" style="display:block;padding-top:20px;">
-            </div>
-          </div>
-        </div>
-        <% /* 右・余白 */ %>
-        <div class="col-sm-1" style="background-color:yellow;">
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
+  <%- body %>
+  </body>
 </html>
