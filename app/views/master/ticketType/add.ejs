@@ -10,47 +10,42 @@ Aa-5
 <script src="/js/master/ticketTypeAdd.js"></script>
 <%- contentFor('body') %>
 <div class="col-sm-12 form-container">
-<% /* フォーム */ %>
-<form method="post" class="form-horizontal" >
-  <div class="menu-group">
-      <div style="padding:0px 0px 4px 10px;" >
-          <a href="/master/tickettypes">券種マスタ一覧へ</a>
-      </div>
-      <% /* メッセージ */ %>
-      <% if (message !== '') { %>
-          <p class="error message">
-              <%= message %>
-          </p>
-      <% } %>
-  </div>
+    <% /* フォーム */ %>
+    <form method="post" class="form-horizontal" >
+        <div class="menu-group">
+            <% /* メッセージ */ %>
+            <% if (message !== '') { %>
+            <p class="error message text-danger panel-body bg-danger"><%= message %></p>
+            <% } %>
+        </div>
 
-  <% /* 券種コード */ %>
-  <div class="form-group ">
-      <label for="ticketCode" class="col-sm-2 control-label label-title">
-          券種コード<font color="red">＊</font>
-      </label>
-      <div class="col-sm-10">
-          <input type="text" class="form-control" name="ticketCode" id="ticketCode" placeholder="" maxlength=64 value=<%= forms.ticketCode %>>
-          <p class="message">
-              半角64文字以内でご入力ください。
-          </p>
-          <p class="error message">
-          <% if (errors && errors.ticketCode) { %>
-              <%- errors.ticketCode.msg %>
-          <% } %>
-          </p>
-      </div>
-  </div>
-  
-  <%- include('form', { forms: forms }) %>
+        <% /* 券種コード */ %>
+        <div class="form-group ">
+            <label for="ticketCode" class="col-sm-3 control-label label-title">
+                券種コード<font color="red">＊</font>
+            </label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" name="ticketCode" id="ticketCode" placeholder="" maxlength=64 value=<%= forms.ticketCode %>>
+                <p class="message">
+                    半角64文字以内でご入力ください。
+                </p>
+                <p class="error message text-danger">
+                <% if (errors && errors.ticketCode) { %>
+                    <%- errors.ticketCode.msg %>
+                <% } %>
+                </p>
+            </div>
+        </div>
+        
+        <%- include('form', { forms: forms }) %>
 
-  <% /* 登録ボタン */ %>
-  <div class="form-group">
-    <div class="btn-area">
-      <a class="btn btn-ok btn-primary">登録する</a>
-    </div>
-  </div>
-</form>
+        <% /* 登録ボタン */ %>
+        <div class="form-group">
+            <div class="btn-area panel-body">
+                <a class="btn btn-ok btn-primary">登録する</a>
+            </div>
+        </div>
+    </form>
 </div>
 <script>
 $(function(){

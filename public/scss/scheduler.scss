@@ -6,10 +6,9 @@
     margin: 0 auto;
     overflow: auto;
     width: 100%;
-    min-width: 800px;
     height: 500px;
     table {
-        overflow: hidden;
+        min-width: 100%;
         border-collapse: collapse;
         border: 2px solid #ccc;
     }

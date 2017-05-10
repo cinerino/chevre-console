@@ -33,9 +33,6 @@ const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
 export async function add(req: Request, res: Response): Promise<void> {
     let message = '';
     let errors: any = {};
-    res.locals.displayId = 'Aa-2';
-    res.locals.title = '作品マスタ新規登録';
-
     if (req.method === 'POST') {
         // バリデーション
         validate(req, 'add');
@@ -84,8 +81,6 @@ export async function update(req: Request, res: Response): Promise<void> {
     let message = '';
     let errors: any = {};
     const id = req.params.filmId;
-    res.locals.displayId = 'Aa-2';
-    res.locals.title = '作品マスタ編集';
 
     if (req.method === 'POST') {
         // バリデーション
@@ -232,8 +227,6 @@ function toISOStringJapan(dateStr: string, addDay: number = 0): string {
  */
 export async function index(__: Request, res: Response): Promise<void> {
     res.render('master/film/index', {
-        displayId: 'Aa-3',
-        title: '作品マスタ一覧',
         filmModel: {},
         layout: 'layouts/master/layout'
     });

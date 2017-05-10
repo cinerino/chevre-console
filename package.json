@@ -102,7 +102,7 @@
     "preversion": "npm run clean && npm run build && npm test",
     "version": "git add -A",
     "postversion": "git push origin --tags",
-    "scss": "node-sass public/scss/scheduler.scss public/css/scheduler.css && node-sass public/scss/import.scss public/css/style.css",
+    "scss": "node-sass public/scss/import.scss public/css/style.css",
     "public-ts": "webpack --progress --colors --config ./public/webpack.config.js --watch"
   },
   "version": "1.0.3"

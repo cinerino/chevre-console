@@ -18,26 +18,24 @@ Aa-8
     <div class="menu-group">
       <% /* メッセージ */ %>
       <% if (message !== '') { %>
-          <p class="error message">
-            <%= message %>
-          </p>
+      <p class="error message text-danger panel-body bg-danger"><%= message %></p>
       <% } %>
     </div>
     <% /* 券種グループコード */ %>
     <div class="form-group ">
-      <label for="ticketGroupCode" class="col-sm-2 control-label label-title">
+      <label for="ticketGroupCode" class="col-sm-3 control-label label-title">
       券種グループコード
       </label>
-      <div class="col-sm-10">
+      <div class="col-sm-9">
         <input type="text" class="form-control" name="ticketGroupCode" id="ticketGroupCode" placeholder="" maxlength=64 value=<%= req.body.ticketGroupCode %>>
       </div>
     </div>
     <% /* 券種グループ名 */ %>
     <div class="form-group ">
-      <label for="ticketGroupNameJa" class="col-sm-2 control-label label-title">
+      <label for="ticketGroupNameJa" class="col-sm-3 control-label label-title">
       券種グループ名
       </label>
-      <div class="col-sm-10">
+      <div class="col-sm-9">
         <input type="text" class="form-control" name="ticketGroupNameJa" id="managementTypeName" placeholder="" maxlength=64 value=<%= req.body.ticketGroupNameJa %>>
       </div>
     </div>
@@ -60,7 +58,7 @@ Aa-8
   <div id="list" class="table-responsive" style="display:none;">
     <table class="table table-bordered table-striped">
       <thead>
-        <tr style="background-color:#d9d9d9">
+        <tr>
           <th>券種グループコード</th>
           <th>券種グループ名</th>
           <th></th>

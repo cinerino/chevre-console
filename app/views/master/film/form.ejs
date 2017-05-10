@@ -1,158 +1,153 @@
-  <% /* 作品名 */ %>
-  <div class="form-group">
-    <label for="nameJa" class="col-sm-2 control-label label-title">
-      作品名
-      <font color="red">＊</font>
+<% /* 作品名 */ %>
+<div class="form-group">
+    <label for="nameJa" class="col-sm-3 control-label label-title">
+        作品名<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-      <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
-      <p class="message">
-          <% /*全角64文字以内でご入力ください。*/ %>
-          全角64文字以内でご入力ください。
-      </p>
-      <p class="error message">
+    <div class="col-sm-9">
+        <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
+        <p class="message">
+        <% /*全角64文字以内でご入力ください。*/ %>
+        全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
         <% if (errors && errors.nameJa) { %>
-          <%- errors.nameJa.msg %>
+        <%- errors.nameJa.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* 作品名カナ */ %>
-  <div class="form-group">
-    <label for="nameKana" class="col-sm-2 control-label label-title">
-      作品名カナ
-      <font color="red">＊</font>
+</div>
+<% /* 作品名カナ */ %>
+<div class="form-group">
+    <label for="nameKana" class="col-sm-3 control-label label-title">
+        作品名カナ<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-      <input class="form-control" name="nameKana" id="nameKana" placeholder="" maxlength=64 value="<%= req.body.nameKana %>">
-      <p class="message">
-          <% /*全角64文字以内でご入力ください。*/ %>
-          全角64文字以内でご入力ください。
-      </p>
-      <p class="error message">
+    <div class="col-sm-9">
+        <input class="form-control" name="nameKana" id="nameKana" placeholder="" maxlength=64 value="<%= req.body.nameKana %>">
+        <p class="message">
+        <% /*全角64文字以内でご入力ください。*/ %>
+        全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
         <% if (errors && errors.nameKana) { %>
-          <%- errors.nameKana.msg %>
+        <%- errors.nameKana.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* 作品名英 */ %>
-  <div class="form-group">
-    <label for="nameEn" class="col-sm-2 control-label label-title">
-      作品名英
+</div>
+<% /* 作品名英 */ %>
+<div class="form-group">
+    <label for="nameEn" class="col-sm-3 control-label label-title">
+        作品名英
     </label>
-    <div class="col-sm-10">
-      <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128 value="<%- forms.nameEn %>">
-      <p class="message">
-          <% /*半角128文字以内でご入力ください。*/ %>
-          半角128文字以内でご入力ください。
-      </p>
-      <p class="error message">
+    <div class="col-sm-9">
+        <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128 value="<%- forms.nameEn %>">
+        <p class="message">
+        <% /*半角128文字以内でご入力ください。*/ %>
+        半角128文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
         <% if (errors && errors.nameEn) { %>
-          <%- errors.nameEn.msg %>
+        <%- errors.nameEn.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* 上映時間 */ %>
-  <div class="form-group">
-    <label for="minutes" class="col-sm-2 control-label label-title">
-      上映時間
+</div>
+<% /* 上映時間 */ %>
+<div class="form-group">
+    <label for="minutes" class="col-sm-3 control-label label-title">
+        上映時間
     </label>
-    <div class="col-sm-10">
-      <input class="form-control" style="width:30%;display:inline-block;" name="minutes" id="minutes" placeholder="" maxlength=10 value="<%= forms.minutes %>">
-      分
-      <p class="message">
-          <% /*半角10文字以内でご入力ください。*/ %>
-          半角10文字以内でご入力ください。
-      </p>
-      <p class="error message">
+    <div class="col-sm-9">
+        <input class="form-control" style="width:30%;display:inline-block;" name="minutes" id="minutes" placeholder="" maxlength=10 value="<%= forms.minutes %>">
+        分
+        <p class="message">
+        <% /*半角10文字以内でご入力ください。*/ %>
+        半角10文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
         <% if (errors && errors.minutes) { %>
-          <%- errors.minutes.msg %>
+        <%- errors.minutes.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* レイティング */ %>
-  <div class="form-group">
-    <label for="ratings" class="col-sm-2 control-label label-title">
-      レイティング
-      <font color="red">＊</font>
+</div>
+<% /* レイティング */ %>
+<div class="form-group">
+    <label for="ratings" class="col-sm-3 control-label label-title">
+        レイティング<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-      <%
-      let ratings = [
-          {code: 'G', name: {ja: 'なし', en:'General Audience'}},
-          {code: 'PG12', name: {ja: 'PG-12指定', en:'PG-12'}},
-          {code: 'R15+', name: {ja: 'R-15指定', en:'R-15'}},
-          {code: 'R18+', name: {ja: 'R-18指定', en:'R-18'}}
-      ];
-      %>
-      <select name="ratings" id="ratings" class="form-control">
-          <option value="">---</option>
-          <% for (let rating of ratings) { %>
-          <option value="<%= rating.code %>"<% if (req.body.ratings === rating.code) { %> selected="selected"<% } %>><%- rating.name.ja %></option>
-          <% } %>
-      </select>
-      <p class="error message">
+    <div class="col-sm-9">
+        <%
+            let ratings = [
+                {code: 'G', name: {ja: 'なし', en:'General Audience'}},
+                {code: 'PG12', name: {ja: 'PG-12指定', en:'PG-12'}},
+                {code: 'R15+', name: {ja: 'R-15指定', en:'R-15'}},
+                {code: 'R18+', name: {ja: 'R-18指定', en:'R-18'}}
+            ];
+        %>
+        <select name="ratings" id="ratings" class="form-control">
+            <option value="">---</option>
+            <% for (let rating of ratings) { %>
+            <option value="<%= rating.code %>"<% if (req.body.ratings === rating.code) { %> selected="selected"<% } %>><%- rating.name.ja %></option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
         <% if (errors && errors.ratings) { %>
-          <%- errors.ratings.msg %>
+        <%- errors.ratings.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* 字幕/吹き替え */ %>
-  <div class="form-group">
-    <label for="subtitleDub" class="col-sm-2 control-label label-title">
-      字幕/吹き替え
-      <font color="red">＊</font>
+</div>
+<% /* 字幕/吹き替え */ %>
+<div class="form-group">
+    <label for="subtitleDub" class="col-sm-3 control-label label-title">
+        字幕/吹き替え<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-      <%
-      let subtitles = [
-          {code: 'subtitled', name: {ja: '字幕', en:'subtitled'}},
-          {code: 'dubbed', name: {ja: '吹き替え', en:'dubbed'}}
-      ];
-      %>
-      <select name="subtitleDub" id="subtitleDub" class="form-control">
-          <option value="">---</option>
-          <% for (let subtitle of subtitles) { %>
-          <option value="<%= subtitle.code %>"<% if (req.body.subtitleDub === subtitle.code) { %> selected="selected"<% } %>><%- subtitle.name.ja %></option>
-          <% } %>
-      </select>
-      <p class="error message">
+    <div class="col-sm-9">
+        <%
+            let subtitles = [
+                {code: 'subtitled', name: {ja: '字幕', en:'subtitled'}},
+                {code: 'dubbed', name: {ja: '吹き替え', en:'dubbed'}}
+            ];
+        %>
+        <select name="subtitleDub" id="subtitleDub" class="form-control">
+            <option value="">---</option>
+            <% for (let subtitle of subtitles) { %>
+            <option value="<%= subtitle.code %>"<% if (req.body.subtitleDub === subtitle.code) { %> selected="selected"<% } %>><%- subtitle.name.ja %></option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
         <% if (errors && errors.subtitleDub) { %>
-          <%- errors.subtitleDub.msg %>
+        <%- errors.subtitleDub.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
-  <% /* 上映形態 */ %>
-  <div class="form-group">
-    <label for="screeningForm" class="col-sm-2 control-label label-title">
-      上映形態
-      <font color="red">＊</font>
+</div>
+<% /* 上映形態 */ %>
+<div class="form-group">
+    <label for="screeningForm" class="col-sm-3 control-label label-title">
+        上映形態<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-      <%
-      let screens = [
-          {code: 'normal', name: {ja: '通常上映', en:'normal'}},
-          {code: 'ATMOS', name: {ja: 'ATMOS', en:'ATMOS'}},
-          {code: 'IMAX', name: {ja: 'IMAX', en:'IMAX'}},
-          {code: 'MX4D', name: {ja: 'MX4D', en:'MX4D'}},
-          {code: 'TCX', name: {ja: 'TCX', en:'TCX'}}
-      ];
-      %>
-      <select name="screeningForm" id="screeningForm" class="form-control">
-          <option value="">---</option>
-          <% for (let screen of screens) { %>
-          <option value="<%= screen.code %>"<% if (req.body.screeningForm === screen.code) { %> selected="selected"<% } %>><%- screen.name.ja %></option>
-          <% } %>
-      </select>
-      <p class="error message">
+    <div class="col-sm-9">
+        <%
+            let screens = [
+                {code: 'normal', name: {ja: '通常上映', en:'normal'}},
+                {code: 'ATMOS', name: {ja: 'ATMOS', en:'ATMOS'}},
+                {code: 'IMAX', name: {ja: 'IMAX', en:'IMAX'}},
+                {code: 'MX4D', name: {ja: 'MX4D', en:'MX4D'}},
+                {code: 'TCX', name: {ja: 'TCX', en:'TCX'}}
+            ];
+        %>
+        <select name="screeningForm" id="screeningForm" class="form-control">
+            <option value="">---</option>
+            <% for (let screen of screens) { %>
+            <option value="<%= screen.code %>"<% if (req.body.screeningForm === screen.code) { %> selected="selected"<% } %>><%- screen.name.ja %></option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
         <% if (errors && errors.screeningForm) { %>
-          <%- errors.screeningForm.msg %>
+        <%- errors.screeningForm.msg %>
         <% } %>
-      </p>
+        </p>
     </div>
-  </div>
+</div>

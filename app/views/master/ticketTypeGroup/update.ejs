@@ -7,14 +7,9 @@ Aa-7
     <% /* フォーム */ %>
     <form method="post" class="form-horizontal" >
         <div class="menu-group">
-            <div style="padding:0px 0px 4px 10px;" >
-                <a href="/master/tickettypes">券種グループマスタ一覧へ</a>
-            </div>
             <% /* メッセージ */ %>
             <% if (message != '') { %>
-            <p class="error message">
-            <%= message %>
-            </p>
+            <p class="error message text-danger panel-body bg-danger"><%= message %></p>
             <% } %>
         </div>
 
@@ -25,7 +20,7 @@ Aa-7
 
         <% /* 登録ボタン */ %>
         <div class="form-group">
-            <div class="btn-area">
+            <div class="btn-area panel-body">
                 <a class="btn btn-ok btn-primary">更新する</a>
             </div>
         </div>

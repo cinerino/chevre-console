@@ -1,14 +1,14 @@
 <% /* 券種グループ名 */ %>
 <div class="form-group ">
-    <label for="nameJa" class="col-sm-2 control-label label-title">
+    <label for="nameJa" class="col-sm-3 control-label label-title">
         券種グループ名<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
+    <div class="col-sm-9">
         <input type="text" class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
-        <p class="error message">
+        <p class="error message text-danger">
             <% if (errors && errors.nameJa) { %>
             <%- errors.nameJa.msg %>
             <% } %>
@@ -18,23 +18,23 @@
 
 <% /* 対象券種名 */ %>
 <div class="form-group ">
-    <label for="ticketTypes" class="col-sm-2 control-label label-title">
+    <label for="ticketTypes" class="col-sm-3 control-label label-title">
         対象券種名<font color="red">＊</font>
     </label>
-    <div class="col-sm-10">
-        <div class="form-control" style="height:auto;line-height:40px;">
+    <div class="col-sm-9">
+        <div>
             <% ticketTypes.forEach((ticketType) => { %>
-            <span class="form-control" style="display:inline;background-color:#F2F2F2;margin:0px 5px 0px 5px">
-            <span><%= ticketType.get('name').ja %></span>
+            <label class="btn btn-default mb-x-small">
+                <span><%= ticketType.get('name').ja %></span>
                 <% if (forms.ticketTypes.indexOf(ticketType.get('_id')) > -1) { %>
                 <input checked type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
                 <% } else { %>
                 <input type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
                 <% } %>
-            </span>
+            </label>
             <% }) %>
         </div>
-        <p class="error message">
+        <p class="error message text-danger">
             <% if (errors && errors.ticketTypes) { %>
             <%- errors.ticketTypes.msg %>
             <% } %>
@@ -44,15 +44,15 @@
 
 <% /* 補足説明 */ %>
 <div class="form-group ">
-    <label for="descriptionJa" class="col-sm-2 control-label label-title">
+    <label for="descriptionJa" class="col-sm-3 control-label label-title">
         補足説明
     </label>
-    <div class="col-sm-10">
+    <div class="col-sm-9">
         <input type="text" class="form-control" name="descriptionJa" id="descriptionJa" placeholder="" maxlength=64 value="<%= forms.descriptionJa %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
-        <p class="error message">
+        <p class="error message text-danger">
             <% if (errors && errors.descriptionJa) { %>
             <%- errors.descriptionJa.msg %>
             <% } %>

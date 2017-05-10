@@ -8,7 +8,7 @@ var HOUR_HEIGHT = 60;
  * スクリーンの幅
  * @const SCREEN_WIDTH
  */
-var SCREEN_WIDTH = 160;
+var SCREEN_WIDTH = 100;
 
 $(function () {
     // 検索
@@ -365,10 +365,10 @@ function create(screens, performances) {
  */
 function createHeader(screens) {
     var dom = $('<thead class="header"></thead>');
-    dom.append('<td>時間</td>');
+    dom.append('<td style="width: ' + HOUR_HEIGHT + 'px;">時間</td>');
     for (var i = 0; i < screens.length; i++) {
         var screen = screens[i];
-        dom.append('<td style="width: ' + SCREEN_WIDTH + 'px;">' + screen.name.ja + '</td>');
+        dom.append('<td style="min-width: ' + SCREEN_WIDTH + 'px;">' + screen.name.ja + '</td>');
     }
     return dom;
 }

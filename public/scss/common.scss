@@ -19,8 +19,10 @@
 }
 
 .side-navi {
-    a[disabled=disabled] {
-        opacity: 0.5;
+    .active {
+        a {
+            pointer-events: none;
+        }
     }
 }
 
@@ -28,5 +30,28 @@ header {
     .logo {
         padding: 10px;
         width: 60px;
+    }
+    .title {
+        font-size: 30px;
+        margin: 0;
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+
+.table {
+    thead {
+        tr {
+            th {
+                vertical-align: middle;
+            }
+        }
+    }
+    tbody {
+        tr {
+            td {
+                vertical-align: middle;
+            }
+        }
     }
 }

@@ -11,20 +11,7 @@
     <div class="row">
         <!-- left -->
         <div class="col-md-3">
-            <div class="panel panel-default side-navi">
-                <div class="panel-heading">Menu</div>
-                <ul class="nav nav-pills nav-stacked">
-                    <li><a href="/master/films/add" <%= (displayId === 'Aa-2') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 作品登録</a></li>
-                    <li><a href="/master/films" <%= (displayId === 'Aa-3') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 作品一覧</a></li>
-                    <li><a href="/master/performances" <%= (displayId === 'Aa-4') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-edit"></i> パフォーマンス登録/一覧</a></li>
-                    <li><a href="/master/ticketTypes/add" <%= (displayId === 'Aa-5') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 券種登録</a></li>
-                    <li><a href="/master/ticketTypes" <%= (displayId === 'Aa-6') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 券種一覧</a></li>
-                    <li><a href="/master/ticketTypeGroups/add" <%= (displayId === 'Aa-7') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-plus"></i> 券種グループ登録</a></li>
-                    <li><a href="/master/ticketTypeGroups" <%= (displayId === 'Aa-8') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-list"></i> 券種グループ一覧</a></li>
-                    <li><a href="/master/report" <%= (displayId === 'Aa-9') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-file"></i> 売り上げレポート出力</a></li>
-                    <li><a href="" <%= (displayId === 'Aa-10') ? 'disabled=disabled': ''; %>><i class="glyphicon glyphicon-file"></i> アカウント別レポート出力</a></li>
-                </ul> 
-            </div>
+            <%- include('../side') %>
         </div>
 
         <div class="col-md-9">

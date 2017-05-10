@@ -3,10 +3,10 @@
         <div class="container">
             <div class="navbar-header">
                 <img class="img-circle logo" src="/images/ProjectIcon.png" alt="">
-                <span><%= displayId %> <%= title %></span>
+                <h1 class="title">chevre</h1>
             </div>
             <div class="navbar-text navbar-right">
-                <%- req.staffUser.get('user_id') %>
+                <span><%- req.staffUser.get('name').ja %></span>
                 <a class="btn btn-logout btn-default" href="/master/logout"><span>ログアウト</span></a>
             </div>
         </div>

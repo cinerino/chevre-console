@@ -38,8 +38,6 @@ function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let message = '';
         let errors = {};
-        res.locals.displayId = 'Aa-2';
-        res.locals.title = '作品マスタ新規登録';
         if (req.method === 'POST') {
             // バリデーション
             validate(req, 'add');
@@ -89,8 +87,6 @@ function update(req, res) {
         let message = '';
         let errors = {};
         const id = req.params.filmId;
-        res.locals.displayId = 'Aa-2';
-        res.locals.title = '作品マスタ編集';
         if (req.method === 'POST') {
             // バリデーション
             validate(req, 'update');
@@ -236,8 +232,6 @@ function toISOStringJapan(dateStr, addDay = 0) {
 function index(__, res) {
     return __awaiter(this, void 0, void 0, function* () {
         res.render('master/film/index', {
-            displayId: 'Aa-3',
-            title: '作品マスタ一覧',
             filmModel: {},
             layout: 'layouts/master/layout'
         });
