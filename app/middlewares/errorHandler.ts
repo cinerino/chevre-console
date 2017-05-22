@@ -11,6 +11,7 @@ import * as ErrorController from '../controllers/error';
 export default (err: any, req: Request, res: Response, next: NextFunction) => {
     if (res.headersSent) {
         next(err);
+
         return;
     }
 

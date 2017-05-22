@@ -8,9 +8,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const reportController = require("../../controllers/master/report");
-const router = express_1.Router();
+const reportMasterRouter = express_1.Router();
 // 売り上げレポート出力
-router.get('', reportController.index);
-router.get('/getSales', reportController.getSales);
+reportMasterRouter.get('', reportController.index);
+reportMasterRouter.get('/getSales', reportController.getSales);
 // アカウント別レポート出力
-exports.default = router;
+exports.default = reportMasterRouter;

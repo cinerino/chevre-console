@@ -29,10 +29,8 @@ export async function index(_: Request, res: Response, next: NextFunction): Prom
             moment: moment,
             layout: 'layouts/master/layout'
         });
-        return;
     } catch (err) {
         next(err);
-        return;
     }
 }
 
@@ -54,6 +52,7 @@ export async function search(req: Request, res: Response): Promise<void> {
                 validation: validations,
                 error: null
             });
+
             return;
         }
         const theater = req.body.theater;
@@ -73,14 +72,12 @@ export async function search(req: Request, res: Response): Promise<void> {
             screens: screens,
             ticketGroups: ticketGroups
         });
-        return;
     } catch (err) {
         debug('search error', err);
         res.json({
             validation: null,
             error: err.message
         });
-        return;
     }
 }
 
@@ -102,6 +99,7 @@ export async function filmSearch(req: Request, res: Response): Promise<void> {
                 validation: validations,
                 error: null
             });
+
             return;
         }
         const id = req.body.id;
@@ -111,14 +109,12 @@ export async function filmSearch(req: Request, res: Response): Promise<void> {
             error: null,
             film: film
         });
-        return;
     } catch (err) {
         debug('filmSearch error', err);
         res.json({
             validation: null,
             error: err.message
         });
-        return;
     }
 }
 
@@ -140,6 +136,7 @@ export async function regist(req: Request, res: Response): Promise<void> {
                 validation: validations,
                 error: null
             });
+
             return;
         }
         const theater = await Models.Theater.findById(req.body.theater).exec();
@@ -161,14 +158,12 @@ export async function regist(req: Request, res: Response): Promise<void> {
             validation: null,
             error: null
         });
-        return;
     } catch (err) {
         debug('regist error', err);
         res.json({
             validation: null,
             error: err.message
         });
-        return;
     }
 }
 
@@ -190,6 +185,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 validation: validations,
                 error: null
             });
+
             return;
         }
         const id = req.body.performance;
@@ -205,14 +201,12 @@ export async function update(req: Request, res: Response): Promise<void> {
             validation: null,
             error: null
         });
-        return;
     } catch (err) {
         debug('update error', err);
         res.json({
             validation: null,
             error: err.message
         });
-        return;
     }
 }
 

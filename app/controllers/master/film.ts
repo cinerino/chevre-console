@@ -162,7 +162,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
     }
     // 作品名
     if (filmNameJa !== null) {
-        conditions['name.ja'] = { $regex: '^' + filmNameJa };
+        conditions['name.ja'] = { $regex: `^${filmNameJa}` };
     }
     // 作品名カナ
     if (filmNameKana !== null) {
@@ -218,8 +218,9 @@ export async function getList(req: Request, res: Response): Promise<void> {
  */
 function toISOStringJapan(dateStr: string, addDay: number = 0): string {
     const dateWk: string = moment(dateStr, 'YYYY/MM/DD').add(addDay, 'days').format('YYYYMMDD');
+
     // tslint:disable-next-line:no-magic-numbers
-    return dateWk.substr(0, 4) + '-' + dateWk.substr(4, 2) + '-' + dateWk.substr(6, 2) + 'T00:00:00+09:00';
+    return `${dateWk.substr(0, 4)}-${dateWk.substr(4, 2)}-${dateWk.substr(6, 2)}T00:00:00+09:00`;
 }
 
 /**
@@ -241,7 +242,7 @@ export async function index(__: Request, res: Response): Promise<void> {
 function validate(req: Request, checkType: string): void {
     let colName: string = '';
     // 作品コード
-    if ( checkType === 'add') {
+    if (checkType === 'add') {
         colName = '作品コード';
         req.checkBody('_id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
         req.checkBody('_id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });

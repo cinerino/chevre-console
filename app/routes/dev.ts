@@ -5,7 +5,7 @@
  */
 
 import * as express from 'express';
-const router = express.Router();
+const devRouter = express.Router();
 
 import * as createDebug from 'debug';
 import { NO_CONTENT } from 'http-status';
@@ -13,16 +13,16 @@ import * as mongoose from 'mongoose';
 
 import mongooseConnectionOptions from '../../mongooseConnectionOptions';
 
-const debug = createDebug('chevre-backend:routers:dev');
+const debug = createDebug('chevre-backend:devRouters:dev');
 
-router.get(
+devRouter.get(
     '/400',
     () => {
         throw new Error('400 manually');
     }
 );
 
-router.get(
+devRouter.get(
     '/environmentVariables',
     (__, res) => {
         res.json({
@@ -34,13 +34,14 @@ router.get(
     }
 );
 
-router.get(
+devRouter.get(
     '/mongoose/connect',
     (__, res, next) => {
         debug('connecting...');
         mongoose.connect(process.env.MONGOLAB_URI, mongooseConnectionOptions, (err) => {
             if (err instanceof Error) {
                 next(err);
+
                 return;
             }
 
@@ -49,13 +50,14 @@ router.get(
     }
 );
 
-router.get(
+devRouter.get(
     '/mongoose/disconnect',
     (__, res, next) => {
         debug('disconnecting...');
         mongoose.disconnect((err) => {
             if (err instanceof Error) {
                 next(err);
+
                 return;
             }
 
@@ -64,4 +66,4 @@ router.get(
     }
 );
 
-export default router;
+export default devRouter;

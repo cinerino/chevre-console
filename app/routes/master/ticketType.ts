@@ -8,14 +8,14 @@
 import { Router } from 'express';
 import * as ticketTypeController from '../../controllers/master/ticketType';
 
-const router = Router();
+const ticketTypeMasterRouter = Router();
 
 // 券種登録
-router.all('/add', ticketTypeController.add);
+ticketTypeMasterRouter.all('/add', ticketTypeController.add);
 // 券種編集
-router.all('/:id/update', ticketTypeController.update);
+ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 // 券種一覧
-router.get('', ticketTypeController.index);
-router.get('/getlist', ticketTypeController.getList);
+ticketTypeMasterRouter.get('', ticketTypeController.index);
+ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
 
-export default router;
+export default ticketTypeMasterRouter;

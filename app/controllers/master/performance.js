@@ -37,11 +37,9 @@ function index(_, res, next) {
                 moment: moment,
                 layout: 'layouts/master/layout'
             });
-            return;
         }
         catch (err) {
             next(err);
-            return;
         }
     });
 }
@@ -84,7 +82,6 @@ function search(req, res) {
                 screens: screens,
                 ticketGroups: ticketGroups
             });
-            return;
         }
         catch (err) {
             debug('search error', err);
@@ -92,7 +89,6 @@ function search(req, res) {
                 validation: null,
                 error: err.message
             });
-            return;
         }
     });
 }
@@ -125,7 +121,6 @@ function filmSearch(req, res) {
                 error: null,
                 film: film
             });
-            return;
         }
         catch (err) {
             debug('filmSearch error', err);
@@ -133,7 +128,6 @@ function filmSearch(req, res) {
                 validation: null,
                 error: err.message
             });
-            return;
         }
     });
 }
@@ -178,7 +172,6 @@ function regist(req, res) {
                 validation: null,
                 error: null
             });
-            return;
         }
         catch (err) {
             debug('regist error', err);
@@ -186,7 +179,6 @@ function regist(req, res) {
                 validation: null,
                 error: err.message
             });
-            return;
         }
     });
 }
@@ -225,7 +217,6 @@ function update(req, res) {
                 validation: null,
                 error: null
             });
-            return;
         }
         catch (err) {
             debug('update error', err);
@@ -233,7 +224,6 @@ function update(req, res) {
                 validation: null,
                 error: err.message
             });
-            return;
         }
     });
 }

@@ -8,12 +8,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const ticketTypeController = require("../../controllers/master/ticketType");
-const router = express_1.Router();
+const ticketTypeMasterRouter = express_1.Router();
 // 券種登録
-router.all('/add', ticketTypeController.add);
+ticketTypeMasterRouter.all('/add', ticketTypeController.add);
 // 券種編集
-router.all('/:id/update', ticketTypeController.update);
+ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 // 券種一覧
-router.get('', ticketTypeController.index);
-router.get('/getlist', ticketTypeController.getList);
-exports.default = router;
+ticketTypeMasterRouter.get('', ticketTypeController.index);
+ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
+exports.default = ticketTypeMasterRouter;

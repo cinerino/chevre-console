@@ -82,7 +82,7 @@ function getSales(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         // Responseヘッダセット
         const filename = '売り上げレポート';
-        res.setHeader('Content-disposition', 'attachment; filename*=UTF-8\'\'' + encodeURIComponent(filename + '.csv'));
+        res.setHeader('Content-disposition', `attachment; filename*=UTF-8\'\'${encodeURIComponent(`${filename}.csv`)}`);
         res.setHeader('Content-Type', 'text/csv; charset=Shift_JIS');
         // 登録日
         const createDateFrom = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
@@ -166,7 +166,7 @@ exports.getSales = getSales;
  * @returns {string}
  */
 function getCsvData(value, addSeparator = true) {
-    return '"' + ((!_.isEmpty(value)) ? value : '' + '"') + (addSeparator ? csvSeparator : '');
+    return `"${((!_.isEmpty(value)) ? value : '' + '"')}${(addSeparator ? csvSeparator : '')}`;
 }
 /**
  * YYYY/MM/DD日付取得
@@ -185,7 +185,7 @@ function toYMD(dateStr) {
  */
 function toHM(timeStr) {
     // tslint:disable-next-line:no-magic-numbers
-    return timeStr.substr(0, 2) + ':' + timeStr.substr(2, 2);
+    return `${timeStr.substr(0, 2)}:${timeStr.substr(2, 2)}`;
 }
 /**
  * YYYY/MM/DD HH:mm:ss 日時取得
@@ -206,5 +206,5 @@ function toString(date) {
 function toISOStringJapan(dateStr, addDay = 0) {
     const dateWk = moment(dateStr, 'YYYY/MM/DD').add(addDay, 'days').format('YYYYMMDD');
     // tslint:disable-next-line:no-magic-numbers
-    return dateWk.substr(0, 4) + '-' + dateWk.substr(4, 2) + '-' + dateWk.substr(6, 2) + 'T00:00:00+09:00';
+    return `${dateWk.substr(0, 4)}-${dateWk.substr(4, 2)}-${dateWk.substr(6, 2)}T00:00:00+09:00`;
 }

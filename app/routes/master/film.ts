@@ -8,11 +8,11 @@
 import { Router } from 'express';
 import * as filmController from '../../controllers/master/film';
 
-const router = Router();
+const filmMasterRouter = Router();
 
-router.all('/add', filmController.add);
-router.all('', filmController.index);
-router.all('/getlist', filmController.getList);
-router.all('/:filmId/update', filmController.update);
+filmMasterRouter.all('/add', filmController.add);
+filmMasterRouter.all('', filmController.index);
+filmMasterRouter.all('/getlist', filmController.getList);
+filmMasterRouter.all('/:filmId/update', filmController.update);
 
-export default router;
+export default filmMasterRouter;

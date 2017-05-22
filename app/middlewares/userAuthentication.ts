@@ -21,12 +21,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (req.staffUser === undefined) {
         next(new Error(Message.Common.unexpectedError));
+
         return;
     }
 
     // 既ログインの場合
     if (req.staffUser.isAuthenticated()) {
         next();
+
         return;
     }
 
@@ -54,6 +56,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 // ログインしてリダイレクト
                 (<Express.Session>req.session)[MasterAdminUser.AUTH_SESSION_NAME] = owner.toObject();
                 res.redirect(req.originalUrl);
+
                 return;
             }
         } catch (error) {

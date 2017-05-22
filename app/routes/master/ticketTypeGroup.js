@@ -8,9 +8,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express_1 = require("express");
 const ticketTypeGroupsController = require("../../controllers/master/ticketTypeGroup");
-const router = express_1.Router();
-router.all('/add', ticketTypeGroupsController.add);
-router.all('/:id/update', ticketTypeGroupsController.update);
-router.get('', ticketTypeGroupsController.index);
-router.get('/getlist', ticketTypeGroupsController.getList);
-exports.default = router;
+const ticketTypeGroupMasterRouter = express_1.Router();
+ticketTypeGroupMasterRouter.all('/add', ticketTypeGroupsController.add);
+ticketTypeGroupMasterRouter.all('/:id/update', ticketTypeGroupsController.update);
+ticketTypeGroupMasterRouter.get('', ticketTypeGroupsController.index);
+ticketTypeGroupMasterRouter.get('/getlist', ticketTypeGroupsController.getList);
+exports.default = ticketTypeGroupMasterRouter;

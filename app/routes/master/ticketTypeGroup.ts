@@ -7,11 +7,11 @@
 import { Router } from 'express';
 import * as ticketTypeGroupsController from '../../controllers/master/ticketTypeGroup';
 
-const router = Router();
+const ticketTypeGroupMasterRouter = Router();
 
-router.all('/add', ticketTypeGroupsController.add);
-router.all('/:id/update', ticketTypeGroupsController.update);
-router.get('', ticketTypeGroupsController.index);
-router.get('/getlist', ticketTypeGroupsController.getList);
+ticketTypeGroupMasterRouter.all('/add', ticketTypeGroupsController.add);
+ticketTypeGroupMasterRouter.all('/:id/update', ticketTypeGroupsController.update);
+ticketTypeGroupMasterRouter.get('', ticketTypeGroupsController.index);
+ticketTypeGroupMasterRouter.get('/getlist', ticketTypeGroupsController.getList);
 
-export default router;
+export default ticketTypeGroupMasterRouter;

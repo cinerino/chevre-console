@@ -32,12 +32,12 @@ import userAuthentication from './middlewares/userAuthentication';
 
 // ルーター
 import devRouter from './routes/dev';
-import authRouter from './routes/master/auth';
-import filmRouter from './routes/master/film';
-import performanceRouter from './routes/master/performance';
-import reportRouter from './routes/master/report';
-import ticketTypeRouter from './routes/master/ticketType';
-import ticketTypeGroupRouter from './routes/master/ticketTypeGroup';
+import authMasterRouter from './routes/master/auth';
+import filmMasterRouter from './routes/master/film';
+import performanceMasterRouter from './routes/master/performance';
+import reportMasterRouter from './routes/master/report';
+import ticketTypeMasterRouter from './routes/master/ticketType';
+import ticketTypeGroupMasterRouter from './routes/master/ticketTypeGroup';
 import router from './routes/router';
 
 const debug = createDebug('chevre-backend:app');
@@ -72,7 +72,7 @@ app.use(expressLayouts);
 app.set('layout', 'layouts/layout');
 
 // uncomment after placing your favicon in /public
-app.use(favicon(__dirname + '/../public/favicon.ico'));
+app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -81,7 +81,7 @@ const storage = multer.memoryStorage();
 app.use(multer({ storage: storage }).any());
 
 app.use(cookieParser());
-app.use(express.static(__dirname + '/../public'));
+app.use(express.static(`${__dirname}/../public`));
 
 app.use(expressValidator()); // バリデーション
 
@@ -94,16 +94,16 @@ if (process.env.NODE_ENV !== 'production') {
     app.use('/dev', devRouter);
 }
 
-app.use(authRouter); // ログイン・ログアウト
+app.use(authMasterRouter); // ログイン・ログアウト
 
 app.use(userAuthentication); // ユーザー認証
 
 app.use(router);
-app.use('/master/films', filmRouter); //作品
-app.use('/master/performances', performanceRouter); //パフォーマンス
-app.use('/master/ticketTypes', ticketTypeRouter); //券種
-app.use('/master/ticketTypeGroups', ticketTypeGroupRouter); //券種グループ
-app.use('/master/report', reportRouter); //レポート出力
+app.use('/master/films', filmMasterRouter); //作品
+app.use('/master/performances', performanceMasterRouter); //パフォーマンス
+app.use('/master/ticketTypes', ticketTypeMasterRouter); //券種
+app.use('/master/ticketTypeGroups', ticketTypeGroupMasterRouter); //券種グループ
+app.use('/master/report', reportMasterRouter); //レポート出力
 
 // 404
 app.use(notFoundHandler);

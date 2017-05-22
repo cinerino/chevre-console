@@ -7,11 +7,11 @@
 import { Router } from 'express';
 import * as performanceController from '../../controllers/master/performance';
 
-const router = Router();
+const performanceMasterRouter = Router();
 
-router.get('', performanceController.index);
-router.post('/search', performanceController.search);
-router.post('/film/search', performanceController.filmSearch);
-router.post('/regist', performanceController.regist);
-router.post('/update', performanceController.update);
-export default router;
+performanceMasterRouter.get('', performanceController.index);
+performanceMasterRouter.post('/search', performanceController.search);
+performanceMasterRouter.post('/film/search', performanceController.filmSearch);
+performanceMasterRouter.post('/regist', performanceController.regist);
+performanceMasterRouter.post('/update', performanceController.update);
+export default performanceMasterRouter;

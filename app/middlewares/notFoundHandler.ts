@@ -2,6 +2,10 @@
  * 404ハンドラーミドルウェア
  */
 
+import { Request, Response } from 'express';
+
 import * as ErrorController from '../controllers/error';
 
-export default ErrorController.notFound;
+export default (req: Request, res: Response) => {
+    ErrorController.notFound(req, res);
+};

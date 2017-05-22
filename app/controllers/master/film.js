@@ -169,7 +169,7 @@ function getList(req, res) {
         }
         // 作品名
         if (filmNameJa !== null) {
-            conditions['name.ja'] = { $regex: '^' + filmNameJa };
+            conditions['name.ja'] = { $regex: `^${filmNameJa}` };
         }
         // 作品名カナ
         if (filmNameKana !== null) {
@@ -224,7 +224,7 @@ exports.getList = getList;
 function toISOStringJapan(dateStr, addDay = 0) {
     const dateWk = moment(dateStr, 'YYYY/MM/DD').add(addDay, 'days').format('YYYYMMDD');
     // tslint:disable-next-line:no-magic-numbers
-    return dateWk.substr(0, 4) + '-' + dateWk.substr(4, 2) + '-' + dateWk.substr(6, 2) + 'T00:00:00+09:00';
+    return `${dateWk.substr(0, 4)}-${dateWk.substr(4, 2)}-${dateWk.substr(6, 2)}T00:00:00+09:00`;
 }
 /**
  * 一覧

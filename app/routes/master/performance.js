@@ -8,10 +8,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express_1 = require("express");
 const performanceController = require("../../controllers/master/performance");
-const router = express_1.Router();
-router.get('', performanceController.index);
-router.post('/search', performanceController.search);
-router.post('/film/search', performanceController.filmSearch);
-router.post('/regist', performanceController.regist);
-router.post('/update', performanceController.update);
-exports.default = router;
+const performanceMasterRouter = express_1.Router();
+performanceMasterRouter.get('', performanceController.index);
+performanceMasterRouter.post('/search', performanceController.search);
+performanceMasterRouter.post('/film/search', performanceController.filmSearch);
+performanceMasterRouter.post('/regist', performanceController.regist);
+performanceMasterRouter.post('/update', performanceController.update);
+exports.default = performanceMasterRouter;

@@ -62,14 +62,14 @@ app.use(expressLayouts);
 // tslint:disable-next-line:no-backbone-get-set-outside-model
 app.set('layout', 'layouts/layout');
 // uncomment after placing your favicon in /public
-app.use(favicon(__dirname + '/../public/favicon.ico'));
+app.use(favicon(`${__dirname}/../public/favicon.ico`));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // for parsing multipart/form-data
 const storage = multer.memoryStorage();
 app.use(multer({ storage: storage }).any());
 app.use(cookieParser());
-app.use(express.static(__dirname + '/../public'));
+app.use(express.static(`${__dirname}/../public`));
 app.use(expressValidator()); // バリデーション
 // Use native promises
 mongoose.Promise = global.Promise;

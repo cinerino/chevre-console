@@ -18,6 +18,7 @@ export default class MasterAdminUser extends BaseUser {
                 (<any>user)[propertyName] = session[MasterAdminUser.AUTH_SESSION_NAME][propertyName];
             });
         }
+
         return user;
     }
 }

@@ -14,6 +14,7 @@ export function index(req: Request, res: Response, next: NextFunction) {
     debug('query:', req.query);
     if (req.query.next !== undefined) {
         next(new Error(req.param('next')));
+
         return;
     }
 

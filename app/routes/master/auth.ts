@@ -8,11 +8,11 @@
 import { Router } from 'express';
 import * as masterAuthController from '../../controllers/master/auth';
 
-const router = Router();
+const authMasterRouter = Router();
 
 // ログイン・ログアウト
-router.all('/master/login', masterAuthController.login);
+authMasterRouter.all('/master/login', masterAuthController.login);
 //'master.logout
-router.all('/master/logout', masterAuthController.logout);
+authMasterRouter.all('/master/logout', masterAuthController.logout);
 
-export default router;
+export default authMasterRouter;

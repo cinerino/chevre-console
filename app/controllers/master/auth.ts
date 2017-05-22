@@ -21,6 +21,7 @@ const cookieName = 'remember_master_admin';
 export async function login(req: Request, res: Response): Promise<void> {
     if (req.staffUser !== undefined && req.staffUser.isAuthenticated()) {
         res.redirect(masterHome);
+
         return;
     }
 
@@ -72,6 +73,7 @@ export async function login(req: Request, res: Response): Promise<void> {
                     // 作品マスタ登録へ＜とりあえず@@@@@
                     const cb = (!_.isEmpty(req.query.cb)) ? req.query.cb : masterHome;
                     res.redirect(cb);
+
                     return;
                 }
             }
@@ -98,6 +100,7 @@ function validate(req: Request): void {
 export async function logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     if (req.session === undefined) {
         next(new Error(Message.Common.unexpectedError));
+
         return;
     }
 

@@ -8,9 +8,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const filmController = require("../../controllers/master/film");
-const router = express_1.Router();
-router.all('/add', filmController.add);
-router.all('', filmController.index);
-router.all('/getlist', filmController.getList);
-router.all('/:filmId/update', filmController.update);
-exports.default = router;
+const filmMasterRouter = express_1.Router();
+filmMasterRouter.all('/add', filmController.add);
+filmMasterRouter.all('', filmController.index);
+filmMasterRouter.all('/getlist', filmController.getList);
+filmMasterRouter.all('/:filmId/update', filmController.update);
+exports.default = filmMasterRouter;

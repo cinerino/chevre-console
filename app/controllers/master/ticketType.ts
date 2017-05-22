@@ -53,6 +53,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                 await Models.TicketType.create(docs);
                 message = '登録完了';
                 res.redirect(`/master/ticketTypes/${id}/update`);
+
                 return;
             } catch (error) {
                 message = error.message;
@@ -75,7 +76,6 @@ export async function add(req: Request, res: Response): Promise<void> {
         layout: 'layouts/master/layout',
         forms: forms
     });
-    return;
 }
 
 /**
@@ -129,7 +129,6 @@ export async function update(req: Request, res: Response): Promise<void> {
         layout: 'layouts/master/layout',
         forms: forms
     });
-    return;
 }
 
 /**
@@ -193,14 +192,12 @@ export async function getList(req: Request, res: Response): Promise<void> {
             count: count,
             results: results
         });
-        return;
     } catch (err) {
         res.json({
             success: false,
             count: 0,
             results: []
         });
-        return;
     }
 }
 

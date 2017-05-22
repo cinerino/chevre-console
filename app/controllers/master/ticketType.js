@@ -83,7 +83,6 @@ function add(req, res) {
             layout: 'layouts/master/layout',
             forms: forms
         });
-        return;
     });
 }
 exports.add = add;
@@ -140,7 +139,6 @@ function update(req, res) {
             layout: 'layouts/master/layout',
             forms: forms
         });
-        return;
     });
 }
 exports.update = update;
@@ -201,7 +199,6 @@ function getList(req, res) {
                 count: count,
                 results: results
             });
-            return;
         }
         catch (err) {
             res.json({
@@ -209,7 +206,6 @@ function getList(req, res) {
                 count: 0,
                 results: []
             });
-            return;
         }
     });
 }
