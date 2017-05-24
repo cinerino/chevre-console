@@ -1,6 +1,3 @@
-// tslint:disable-next-line:no-reference
-/// <reference path="definitions/chevre.d.ts" />
-
 /**
  * サーバー起動ファイル
  *

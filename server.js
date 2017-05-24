@@ -1,12 +1,10 @@
 "use strict";
-// tslint:disable-next-line:no-reference
-/// <reference path="definitions/chevre.d.ts" />
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * サーバー起動ファイル
  *
  * @ignore
  */
+Object.defineProperty(exports, "__esModule", { value: true });
 const startTime = process.hrtime();
 const createDebug = require("debug");
 const http = require("http");
