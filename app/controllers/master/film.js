@@ -53,7 +53,8 @@ function add(req, res) {
                             ja: req.body.nameJa,
                             en: req.body.nameEn
                         },
-                        minutes: req.body.minutes
+                        minutes: req.body.minutes,
+                        rating: req.body.ratings
                     });
                     message = '登録完了';
                 }

@@ -49,7 +49,8 @@ export async function add(req: Request, res: Response): Promise<void> {
                             ja: req.body.nameJa,
                             en: req.body.nameEn
                         },
-                        minutes: req.body.minutes
+                        minutes: req.body.minutes,
+                        rating: req.body.ratings
                     }
                 );
                 message = '登録完了';
