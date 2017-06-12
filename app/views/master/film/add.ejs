@@ -6,13 +6,15 @@ Aa-2
 
 <%- contentFor('scripts') %>
 
+
+
 <%- contentFor('body') %>
 <div class="col-sm-12 form-container">
     <% /* フォーム */ %>
     <form method="post" class="form-horizontal" >
         <div class="menu-group">
             <% /* メッセージ */ %>
-            <% if (message !== undefined) { %>
+            <% if (message !== '') { %>
             <p class="error message text-danger panel-body bg-danger"><%= message %></p>
             <% } %>
         </div>
@@ -51,5 +53,9 @@ $(function(){
     $('.btn-ok').on('click', function(){
         $('form').submit();
     });
+    // datepickerセット
+    $('.datepicker').datepicker({
+        language: 'ja'
+    })
 });
 </script>

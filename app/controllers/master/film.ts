@@ -50,7 +50,9 @@ export async function add(req: Request, res: Response): Promise<void> {
                             en: req.body.nameEn
                         },
                         minutes: req.body.minutes,
-                        rating: req.body.ratings
+                        rating: req.body.ratings,
+                        sales_release_date: req.body.sales_release_date,
+                        sales_end_date: req.body.sales_end_date,
                     }
                 );
                 message = '登録完了';
@@ -63,7 +65,9 @@ export async function add(req: Request, res: Response): Promise<void> {
         code: (_.isEmpty(req.body.code)) ? '' : req.body.code,
         nameJa: (_.isEmpty(req.body.nameJa)) ? '' : req.body.nameJa,
         nameEn: (_.isEmpty(req.body.nameEn)) ? '' : req.body.nameEn,
-        minutes: (_.isEmpty(req.body.minutes)) ? '' : req.body.minutes
+        minutes: (_.isEmpty(req.body.minutes)) ? '' : req.body.minutes,
+        sales_release_date: (_.isEmpty(req.body.minutes)) ? '' : req.body.sales_release_date,
+        sales_end_date: (_.isEmpty(req.body.minutes)) ? '' : req.body.sales_end_date
     };
 
     // 作品マスタ画面遷移
@@ -266,6 +270,12 @@ function validate(req: Request, checkType: string): void {
     colName = '上映時間';
     req.checkBody('minutes', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_MINUTES))
         .len({ max: NAME_MAX_LENGTH_NAME_EN });
+    // 上映開始日
+    colName = '上映開始日';
+    req.checkBody('sales_release_date', Message.Common.required.replace('$fieldName$', colName)).optional().isDate();
+    // 上映終了日
+    colName = '上映終了日';
+    req.checkBody('sales_end_date', Message.Common.required.replace('$fieldName$', colName)).optional().isDate();
     // レイティング
     colName = 'レイティング';
     req.checkBody('ratings', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
