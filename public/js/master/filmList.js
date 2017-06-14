@@ -6,6 +6,11 @@ $(function () {
         language: 'ja'
     })
 
+    //Enter押下で検索
+    $('form').on('keydown', function(){
+        if(window.event.keyCode==13) $('.btn-ok').click();
+    });
+
     // 共通一覧表示初期セット・ページャセット
     $.CommonMasterList.init('#templateRow', '#searchedCount');
     $.CommonMasterList.pager('#pager', ITEMS_ON_PAGE, function (pageNumber) {

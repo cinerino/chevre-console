@@ -67,8 +67,6 @@ const arrayHeadSales = [
 function index(__, res) {
     return __awaiter(this, void 0, void 0, function* () {
         res.render('master/report/index', {
-            displayId: 'Aa-9',
-            title: '売り上げレポート出力',
             filmModel: {},
             layout: 'layouts/master/layout'
         });

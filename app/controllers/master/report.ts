@@ -61,8 +61,6 @@ const arrayHeadSales = [
  */
 export async function index(__: Request, res: Response): Promise<void> {
     res.render('master/report/index', {
-        displayId: 'Aa-9',
-        title: '売り上げレポート出力',
         filmModel: {},
         layout: 'layouts/master/layout'
     });

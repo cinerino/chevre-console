@@ -11,6 +11,7 @@ export namespace Common {
     export const expired = '期限切れです';
     export const invalidUserOrPassward = 'IDもしくはパスワードの入力に誤りがあります';
     export const required = '$fieldName$が未入力です';
+    export const invalidDateFormat = '$fieldName$は日付を入力してください';
     export const unexpectedError = 'システムエラーが発生しました。ご不便をおかけして申し訳ありませんがしばらく経ってから再度お試しください。';
     export const maxLength = '$fieldName$は$maxLength$文字以内で入力してください';
     // メッセージ編集

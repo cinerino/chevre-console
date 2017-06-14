@@ -28,9 +28,14 @@
 </form>
 <script>
 $(function(){
+    $("#username").focus();
+    $('form').on('keydown', function(){
+        if(window.event.keyCode==13) $('form').submit()
+    });
     $('.btn-ok').on('click', function(){
         $('form').submit();
     });
 });
+
 </script>
 

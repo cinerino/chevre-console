@@ -78,12 +78,12 @@
     </label>
     <div class="col-sm-9">
         <input class="form-control datepicker" style="width:30%;display:inline-block;" name="sales_release_date" id="sales_release_date" placeholder="" maxlength=10 value="<%= forms.sales_release_date %>">
-    </div>
         <p class="error message text-danger">
-        <% if (errors && errors.minutes) { %>
-        <%- errors.minutes.msg %>
+        <% if (errors && errors.sales_release_date) { %>
+        <%- errors.sales_release_date.msg %>
         <% } %>
-        </p>    
+        </p>  
+    </div>
 </div>
 <% /* 上映終了日 */ %>
 <div class="form-group">
@@ -92,8 +92,12 @@
     </label>    
     <div class="col-sm-9">
         <input class="form-control datepicker" style="width:30%;display:inline-block;" name="sales_end_date" id="sales_end_date" placeholder="" maxlength=10 value="<%= forms.sales_end_date %>">
+        <p class="error message text-danger">
+        <% if (errors && errors.sales_end_date) { %>
+        <%- errors.sales_end_date.msg %>
+        <% } %>
+        </p>  
     </div>
-    <p> </p>
 </div>
 <% /* レイティング */ %>
 <div class="form-group">

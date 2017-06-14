@@ -55,8 +55,10 @@ function add(req, res) {
                         },
                         minutes: req.body.minutes,
                         rating: req.body.ratings,
-                        sales_release_date: req.body.sales_release_date,
-                        sales_end_date: req.body.sales_end_date,
+                        sales_release_date: (!_.isEmpty(req.body.sales_release_date)) ?
+                            moment(req.body.sales_release_date, 'YYYY/MM/DD').format('YYYYMMDD') : null,
+                        sales_end_date: (!_.isEmpty(req.body.sales_end_date)) ?
+                            moment(req.body.sales_end_date, 'YYYY/MM/DD').format('YYYYMMDD') : null
                     });
                     message = '登録完了';
                 }
@@ -70,8 +72,8 @@ function add(req, res) {
             nameJa: (_.isEmpty(req.body.nameJa)) ? '' : req.body.nameJa,
             nameEn: (_.isEmpty(req.body.nameEn)) ? '' : req.body.nameEn,
             minutes: (_.isEmpty(req.body.minutes)) ? '' : req.body.minutes,
-            sales_release_date: (_.isEmpty(req.body.minutes)) ? '' : req.body.sales_release_date,
-            sales_end_date: (_.isEmpty(req.body.minutes)) ? '' : req.body.sales_end_date
+            sales_release_date: (_.isEmpty(req.body.sales_release_date)) ? null : req.body.sales_release_date,
+            sales_end_date: (_.isEmpty(req.body.sales_end_date)) ? null : req.body.sales_end_date
         };
         // 作品マスタ画面遷移
         debug('errors:', errors);
@@ -105,7 +107,11 @@ function update(req, res) {
                             ja: req.body.nameJa,
                             en: req.body.nameEn
                         },
-                        minutes: req.body.minutes
+                        minutes: req.body.minutes,
+                        sales_release_date: (!_.isEmpty(req.body.sales_release_date)) ?
+                            moment(req.body.sales_release_date, 'YYYY/MM/DD').format('YYYYMMDD') : null,
+                        sales_end_date: (!_.isEmpty(req.body.sales_end_date)) ?
+                            moment(req.body.sales_end_date, 'YYYY/MM/DD').format('YYYYMMDD') : null
                     };
                     yield chevre_domain_1.Models.Film.findByIdAndUpdate(id, update).exec();
                     message = '編集完了';
@@ -120,7 +126,13 @@ function update(req, res) {
             code: (_.isEmpty(req.body.code)) ? film.get('_id') : req.body.code,
             nameJa: (_.isEmpty(req.body.nameJa)) ? film.get('name').ja : req.body.nameJa,
             nameEn: (_.isEmpty(req.body.nameEn)) ? film.get('name').en : req.body.nameEn,
-            minutes: (_.isEmpty(req.body.minutes)) ? film.get('minutes') : req.body.minutes
+            minutes: (_.isEmpty(req.body.minutes)) ? film.get('minutes') : req.body.minutes,
+            sales_release_date: (_.isEmpty(req.body.sales_release_date)) ?
+                (_.isEmpty(film.get('sales_release_date'))) ? null : moment(film.get('sales_release_date'), 'YYYYMMDD').format('YYYY/MM/DD')
+                : req.body.sales_release_date,
+            sales_end_date: (_.isEmpty(req.body.sales_end_date)) ?
+                (_.isEmpty(film.get('sales_end_date'))) ? null : moment(film.get('sales_end_date'), 'YYYYMMDD').format('YYYY/MM/DD')
+                : req.body.sales_end_date
         };
         // 作品マスタ画面遷移
         debug('errors:', errors);
@@ -277,10 +289,16 @@ function validate(req, checkType) {
         .len({ max: NAME_MAX_LENGTH_NAME_EN });
     // 上映開始日
     colName = '上映開始日';
-    req.checkBody('sales_release_date', Message.Common.required.replace('$fieldName$', colName)).optional().isDate();
+    if (!_.isEmpty(req.body.sales_release_date)) {
+        req.checkBody('sales_release_date', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+    }
     // 上映終了日
     colName = '上映終了日';
-    req.checkBody('sales_end_date', Message.Common.required.replace('$fieldName$', colName)).optional().isDate();
+    if (!_.isEmpty(req.body.sales_end_date)) {
+        req.checkBody('sales_end_date', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+    }
+    //Optionalの使い方が違う？
+    // req.checkBody('sales_end_date', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).optional().isDate();
     // レイティング
     colName = 'レイティング';
     req.checkBody('ratings', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
