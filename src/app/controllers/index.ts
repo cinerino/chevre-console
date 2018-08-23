@@ -1,12 +1,9 @@
 /**
  * インデックスコントローラー
- *
- * @namespace controller/index
  */
-
 import * as createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
-import { MOVED_PERMANENTLY } from 'http-status';
+import { TEMPORARY_REDIRECT } from 'http-status';
 
 const debug = createDebug('chevre-backend:*');
 
@@ -18,5 +15,5 @@ export function index(req: Request, res: Response, next: NextFunction) {
         return;
     }
 
-    res.redirect(MOVED_PERMANENTLY, 'master/event/screeningEvents');
+    res.redirect(TEMPORARY_REDIRECT, '/master/creativeWorks/movie');
 }
