@@ -18,25 +18,6 @@ Aa-2
             <p class="error message text-danger panel-body bg-danger"><%= message %></p>
             <% } %>
         </div>
-        <% /* 作品コード */ %>
-        <div class="form-group ">
-            <label for="identifier" class="col-sm-3 control-label label-title">
-                作品コード<font color="red">＊</font>
-            </label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier %>">
-                <p class="message">
-                <% /*半角64文字以内でご入力ください。*/ %>
-                半角64文字以内でご入力ください。
-                </p>
-                <p class="error message text-danger">
-                <% if (errors && errors.identifier) { %>
-                <%- errors.identifier.msg %>
-                <% } %>
-                </p>
-            </div>
-        </div>
-
         <% /* 登録・更新共通部 */ %>
         <%- include('form', { forms: forms }) %>
 

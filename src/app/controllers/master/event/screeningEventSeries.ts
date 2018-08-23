@@ -21,15 +21,15 @@ const NAME_MAX_LENGTH_CODE: number = 64;
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 // 作品名・英語 半角128
 const NAME_MAX_LENGTH_NAME_EN: number = 128;
-// 上映時間・数字10
-const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
 
 /**
  * 新規登録
  */
 export async function add(req: Request, res: Response): Promise<void> {
+    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
     const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
     const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+    const movies = await creativeWorkRepo.searchMovies({});
     const movieTheaters = await placeRepo.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
@@ -41,11 +41,15 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
+                const movie = movies.find((m) => m.identifier === req.body.movieIdentifier);
+                if (movie === undefined) {
+                    throw new Error('作品が存在しません');
+                }
                 const movieTheater = movieTheaters.find((m) => m.branchCode === req.body.locationBranchCode);
                 if (movieTheater === undefined) {
                     throw new Error('劇場が存在しません');
                 }
-                const attributes = await createEventFromBody(req.body, movieTheater);
+                const attributes = await createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 const event = await eventRepo.saveScreeningEventSeries({
                     attributes: attributes
@@ -68,6 +72,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         errors: errors,
         layout: 'layouts/master/layout',
         forms: forms,
+        movies: movies,
         movieTheaters: movieTheaters
     });
 }
@@ -75,8 +80,10 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 export async function update(req: Request, res: Response): Promise<void> {
+    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
     const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
     const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
+    const movies = await creativeWorkRepo.searchMovies({});
     const movieTheaters = await placeRepo.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
@@ -94,11 +101,15 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
+                const movie = movies.find((m) => m.identifier === req.body.movieIdentifier);
+                if (movie === undefined) {
+                    throw new Error('作品が存在しません');
+                }
                 const movieTheater = movieTheaters.find((m) => m.branchCode === req.body.locationBranchCode);
                 if (movieTheater === undefined) {
                     throw new Error('劇場が存在しません');
                 }
-                const attributes = await createEventFromBody(req.body, movieTheater);
+                const attributes = await createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 await eventRepo.saveScreeningEventSeries({
                     id: eventId,
@@ -113,7 +124,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         }
     }
     const forms = {
-        identifier: (_.isEmpty(req.body.identifier)) ? event.identifier : req.body.identifier,
+        movieIdentifier: (_.isEmpty(req.body.movieIdentifier)) ? event.workPerformed.identifier : req.body.movieIdentifier,
         nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
         nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
         kanaName: (_.isEmpty(req.body.kanaName)) ? event.kanaName : req.body.kanaName,
@@ -136,6 +147,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         errors: errors,
         layout: 'layouts/master/layout',
         forms: forms,
+        movies: movies,
         movieTheaters: movieTheaters
     });
 }
@@ -143,10 +155,11 @@ export async function update(req: Request, res: Response): Promise<void> {
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-function createEventFromBody(body: any, movieTheater: any): chevre.factory.event.screeningEventSeries.IAttributes {
+function createEventFromBody(
+    body: any, movie: chevre.factory.creativeWork.movie.ICreativeWork, movieTheater: any
+): chevre.factory.event.screeningEventSeries.IAttributes {
     return {
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
-        identifier: body.identifier,
         name: {
             ja: body.nameJa,
             en: body.nameEn
@@ -161,14 +174,8 @@ function createEventFromBody(body: any, movieTheater: any): chevre.factory.event
         // },
         videoFormat: body.videoFormat,
         subtitleLanguage: body.subtitleLanguage,
-        workPerformed: {
-            typeOf: chevre.factory.creativeWorkType.Movie,
-            identifier: body.identifier,
-            name: body.nameJa,
-            duration: moment.duration(Number(body.duration), 'm').toISOString(),
-            contentRating: body.contentRating
-        },
-        duration: moment.duration(Number(body.duration), 'm').toISOString(),
+        workPerformed: movie,
+        duration: movie.duration,
         startDate: (!_.isEmpty(body.startDate)) ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
         endDate: (!_.isEmpty(body.endDate)) ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
         eventStatus: chevre.factory.eventStatusType.EventScheduled
@@ -186,7 +193,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
     const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
     const locationBranchCode: string = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
     // 作品コード
-    const identifier: string = (!_.isEmpty(req.query.identifier)) ? req.query.identifier : null;
+    const movieIdentifier: string = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
     // 登録日
     const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
     const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
@@ -204,8 +211,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
         conditions['location.branchCode'] = req.query.locationBranchCode;
     }
     // 作品コード
-    if (identifier !== null) {
-        conditions.identifier = identifier;
+    if (movieIdentifier !== null) {
+        conditions['workPerformed.identifier'] = movieIdentifier;
     }
     if (createDateFrom !== null || createDateTo !== null) {
         const conditionsDate: any = {};
@@ -245,7 +252,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
 
                 return {
                     id: event.id,
-                    identifier: event.identifier,
+                    movieIdentifier: event.workPerformed.identifier,
                     filmNameJa: event.name.ja,
                     filmNameEn: event.name.en,
                     kanaName: event.kanaName,
@@ -288,11 +295,9 @@ export async function index(__: Request, res: Response): Promise<void> {
 function validate(req: Request, checkType: string): void {
     let colName: string = '';
     // 作品コード
-    if (checkType === 'add') {
-        colName = '作品コード';
-        req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
-    }
+    colName = '作品コード';
+    req.checkBody('movieIdentifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('movieIdentifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
     // 作品名
     colName = '作品名';
@@ -307,10 +312,6 @@ function validate(req: Request, checkType: string): void {
     colName = '作品名英';
     req.checkBody('nameEn', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('nameEn', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
-    // 上映時間
-    colName = '上映時間';
-    req.checkBody('duration', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_MINUTES))
-        .len({ max: NAME_MAX_LENGTH_NAME_EN });
     // 上映開始日
     colName = '上映開始日';
     if (!_.isEmpty(req.body.startDate)) {

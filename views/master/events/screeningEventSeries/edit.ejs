@@ -16,17 +16,6 @@ Aa-2
             <p class="error message text-danger panel-body bg-danger"><%= message %></p>
             <% } %>
         </div>
-
-        <% /* 作品コード */ %>
-        <div class="form-group ">
-            <label class="col-sm-3 control-label label-title">
-            作品コード
-            </label>
-            <div class="col-sm-9">
-                <input readonly style="width:auto;" type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier %>">
-            </div>
-        </div>
-
         <% /* 登録・更新共通部 */ %>
         <%- include('form', { forms: forms }) %>
 
