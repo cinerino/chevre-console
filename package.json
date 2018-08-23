@@ -17,7 +17,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/domain": "file:../chevre-domain",
+    "@chevre/domain": "^10.0.0-alpha.4",
     "basic-auth": "^1.0.4",
     "body-parser": "^1.17.2",
     "connect-redis": "^3.3.0",
@@ -45,7 +45,7 @@
     "underscore": "^1.8.3",
     "validator": "^7.0.0"
   },
-  "description": "Chevre Backend Web Application",
+  "description": "Chevre Backend Application",
   "devDependencies": {
     "@types/basic-auth": "0.0.31",
     "@types/body-parser": "0.0.34",
