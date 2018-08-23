@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     $.CommonMasterList = $.CommonMasterList || {};
     $.CommonMasterList = {
         _templateRowSelector: "#templateRow",
@@ -10,15 +10,15 @@ $(function(){
         _itemsOnPage: 10,
         _listNames: [],
         _listCols: {},
-        onPageChanging: function(pageNumber){},
-        getTemplateRow: function(){
-            return($(this._templateRowSelector))
+        onPageChanging: function (pageNumber) { },
+        getTemplateRow: function () {
+            return ($(this._templateRowSelector))
         },
-        getSearchedCountArea: function(){
-            return($(this._searchedCountAreaSelector))
+        getSearchedCountArea: function () {
+            return ($(this._searchedCountAreaSelector))
         },
-        getPager: function(){
-            return($(this._pagerSelector))
+        getPager: function () {
+            return ($(this._pagerSelector))
         },
         //----------------------
         // init: 初期化
@@ -32,12 +32,12 @@ $(function(){
             this._endTag = templateRow.endTag();
             // templateRowより各セルのnameをセット
             templateRow.find("td").each(
-                function(index, td) {
+                function (index, td) {
                     $.CommonMasterList._listNames[index] = $(td).attr("name");
                 }
             );
             // [name:各セルのhtml文字列]のリストをセット
-            $.each(this._listNames, function(index, name) {
+            $.each(this._listNames, function (index, name) {
                 $.CommonMasterList._listCols[name] = templateRow.find('[name="' + name + '"]').prop('outerHTML');
             });
         },
@@ -53,7 +53,7 @@ $(function(){
                 itemsOnPage: itemsOnPage,
                 cssStyle: 'light-theme',
                 displayedPages: 10,
-                onPageClick: function(pageNumber){
+                onPageClick: function (pageNumber) {
                     onPageChanging(pageNumber);
                 }
             })
@@ -62,12 +62,12 @@ $(function(){
         //----------------------
         // bind: データ分の表示行作成
         //----------------------
-        bind: function(datas, countData, pageNumber){
+        bind: function (datas, countData, pageNumber) {
             // pager取得
             var pager = this.getPager().hide();
             // 件数表示
             var searchedCountArea = this.getSearchedCountArea();
-            searchedCountArea.text(this._searchedCountText.replace("\$searched_count\$",countData));
+            searchedCountArea.text(this._searchedCountText.replace("\$searched_count\$", countData));
             searchedCountArea.show();
             if (!countData) { return; }
             if (countData <= 0) { return; }
@@ -78,23 +78,23 @@ $(function(){
             var cntRow = 0;
             var htmlRow = [];
             // データ数分row作成
-            $.each(datas, function(indexData, data) {
-                if(cntRow > this._itemsOnPage) {
+            $.each(datas, function (indexData, data) {
+                if (cntRow > this._itemsOnPage) {
                     return false;
                 }
-                var startTagTemp = startTag.replace("\$_id\$", $.fn.getStringValue(data, "_id", ""));
+                var startTagTemp = startTag.replace("\$id\$", $.fn.getStringValue(data, "id", ""));
                 //alert(JSON.stringify(data));
                 var tempRow = [];
                 var cntCol = 0;
                 // 1行分のcell作成
-                $.each(listCols, function(key, outerHtml) {
+                $.each(listCols, function (key, outerHtml) {
                     var fieldIds = key.split("__");
                     var temp = outerHtml;
-                    $.each(fieldIds, function(index, fieldId) {
+                    $.each(fieldIds, function (index, fieldId) {
                         var value = $.fn.getStringValue(data, fieldId, "?" + fieldId + "?");
                         temp = temp.replace("\$" + fieldId + "\$", value);
                         if (fieldId === 'edit') {
-                            var id = $.fn.getStringValue(data, "_id", "");
+                            var id = $.fn.getStringValue(data, "id", "");
                             temp = temp.replace("\$id\$", id);
                         }
                     });
@@ -110,7 +110,7 @@ $(function(){
             pager.show();
             return true;
         },
-        dummy: function(){
+        dummy: function () {
             alert("dummy");
         }
     }

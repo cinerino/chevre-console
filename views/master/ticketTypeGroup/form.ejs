@@ -1,0 +1,61 @@
+<% /* 券種グループ名 */ %>
+<div class="form-group ">
+    <label for="nameJa" class="col-sm-3 control-label label-title">
+        券種グループ名<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
+        <p class="message">
+            全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors.nameJa) { %>
+            <%- errors.nameJa.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<% /* 対象券種名 */ %>
+<div class="form-group ">
+    <label for="ticketTypes" class="col-sm-3 control-label label-title">
+        対象券種名<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <div>
+            <% ticketTypes.forEach((ticketType) => { %>
+            <label class="btn btn-default mb-x-small">
+                <span><%= ticketType.get('name').ja %> (<%= ticketType.charge %>)</span>
+                <% if (forms.ticketTypes.indexOf(ticketType.get('_id')) > -1) { %>
+                <input checked type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
+                <% } else { %>
+                <input type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
+                <% } %>
+            </label>
+            <% }) %>
+        </div>
+        <p class="error message text-danger">
+            <% if (errors && errors.ticketTypes) { %>
+            <%- errors.ticketTypes.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<% /* 補足説明 */ %>
+<div class="form-group ">
+    <label for="descriptionJa" class="col-sm-3 control-label label-title">
+        補足説明
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="descriptionJa" id="descriptionJa" placeholder="" maxlength=64 value="<%= forms.descriptionJa %>">
+        <p class="message">
+            全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors.descriptionJa) { %>
+            <%- errors.descriptionJa.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
