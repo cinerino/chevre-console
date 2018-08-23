@@ -73,7 +73,7 @@ export async function search(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * 劇場作品検索
+ * 作品検索
  */
 export async function searchScreeningEvent(req: Request, res: Response): Promise<void> {
     const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
@@ -89,15 +89,15 @@ export async function searchScreeningEvent(req: Request, res: Response): Promise
 
             return;
         }
-        const identifier = req.body.identifier;
-        const screeningEvent = await eventRepo.eventModel.findOne({
+        const screeningEventSeries = await eventRepo.eventModel.find({
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
-            identifier: identifier
-        });
+            'workPerformed.identifier': req.body.identifier,
+            'location.branchCode': req.body.movieTheaterBranchCode
+        }).then((docs) => docs.map((doc) => doc.toObject()));
         res.json({
             validation: null,
             error: null,
-            screeningEvent: screeningEvent
+            screeningEventSeries: screeningEventSeries
         });
     } catch (err) {
         debug('searchScreeningEvent error', err);
@@ -233,14 +233,14 @@ function searchValidation(req: Request): void {
  * 作品検索バリデーション
  */
 function validateSearchScreeningEvent(req: Request): void {
-    req.checkBody('identifier', '劇場作品コードが未選択です').notEmpty();
+    req.checkBody('identifier', '作品コードが未選択です').notEmpty();
 }
 
 /**
  * 新規登録バリデーション
  */
 function addValidation(req: Request): void {
-    req.checkBody('screeningEventId', '劇場作品が未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
     req.checkBody('day', '上映日が未選択です').notEmpty();
     req.checkBody('doorTime', '開場時間が未選択です').notEmpty();
     req.checkBody('startTime', '開始時間が未選択です').notEmpty();
@@ -253,7 +253,7 @@ function addValidation(req: Request): void {
  * 編集バリデーション
  */
 function updateValidation(req: Request): void {
-    req.checkBody('screeningEventId', '劇場作品が未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
     req.checkBody('day', '上映日が未選択です').notEmpty();
     req.checkBody('doorTime', '開場時間が未選択です').notEmpty();
     req.checkBody('startTime', '開始時間が未選択です').notEmpty();

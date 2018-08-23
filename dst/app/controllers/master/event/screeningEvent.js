@@ -85,7 +85,7 @@ function search(req, res) {
 }
 exports.search = search;
 /**
- * 劇場作品検索
+ * 作品検索
  */
 function searchScreeningEvent(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -101,15 +101,15 @@ function searchScreeningEvent(req, res) {
                 });
                 return;
             }
-            const identifier = req.body.identifier;
-            const screeningEvent = yield eventRepo.eventModel.findOne({
+            const screeningEventSeries = yield eventRepo.eventModel.find({
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
-                identifier: identifier
-            });
+                'workPerformed.identifier': req.body.identifier,
+                'location.branchCode': req.body.movieTheaterBranchCode
+            }).then((docs) => docs.map((doc) => doc.toObject()));
             res.json({
                 validation: null,
                 error: null,
-                screeningEvent: screeningEvent
+                screeningEventSeries: screeningEventSeries
             });
         }
         catch (err) {
@@ -248,13 +248,13 @@ function searchValidation(req) {
  * 作品検索バリデーション
  */
 function validateSearchScreeningEvent(req) {
-    req.checkBody('identifier', '劇場作品コードが未選択です').notEmpty();
+    req.checkBody('identifier', '作品コードが未選択です').notEmpty();
 }
 /**
  * 新規登録バリデーション
  */
 function addValidation(req) {
-    req.checkBody('screeningEventId', '劇場作品が未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
     req.checkBody('day', '上映日が未選択です').notEmpty();
     req.checkBody('doorTime', '開場時間が未選択です').notEmpty();
     req.checkBody('startTime', '開始時間が未選択です').notEmpty();
@@ -266,7 +266,7 @@ function addValidation(req) {
  * 編集バリデーション
  */
 function updateValidation(req) {
-    req.checkBody('screeningEventId', '劇場作品が未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
     req.checkBody('day', '上映日が未選択です').notEmpty();
     req.checkBody('doorTime', '開場時間が未選択です').notEmpty();
     req.checkBody('startTime', '開始時間が未選択です').notEmpty();

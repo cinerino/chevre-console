@@ -253,18 +253,20 @@ function filmSearch() {
         url: '/master/events/screeningEvent/searchScreeningEvent',
         type: 'POST',
         data: {
-            identifier: identifier
+            identifier: identifier,
+            movieTheaterBranchCode: modal.find('input[name=theater]').val()
         }
     }).done(function (data) {
         if (data) {
-            var screeningEvent = data.screeningEvent;
-            if (screeningEvent === undefined) {
-                alert('作品がありません');
+            var screeningEventSeries = data.screeningEventSeries;
+            if (screeningEventSeries.length === 0) {
+                alert('イベントシリーズが見つかりません');
                 return;
             }
-            modal.find('.film-name').text(screeningEvent.name.ja);
-            modal.find('.film-name').attr('data-screeningEventIdentifier', screeningEvent.identifier);
-            modal.find('.film-name').attr('data-screeningEventId', screeningEvent.id);
+            var options = screeningEventSeries.map(function (e) {
+                return '<option value="' + e.id + '">' + e.name.ja + '</option>';
+            });
+            modal.find('select[name="screeningEventSeriesId"]').html(options);
         }
     }).fail(function (jqxhr, textStatus, error) {
         console.error(jqxhr, textStatus, error);
@@ -279,9 +281,9 @@ function filmSearch() {
  */
 function filmSelect() {
     var modal = $('#newModal');
-    var screeningEventId = modal.find('.film-name').attr('data-screeningEventId');
+    var screeningEventId = modal.find('select[name="screeningEventSeriesId"]').val();
     if (screeningEventId === '') {
-        alert('劇場作品が指定されていません');
+        alert('作品が指定されていません');
         return;
     }
     modal.find('input[name=screeningEventId]').val(screeningEventId);
@@ -300,9 +302,9 @@ function add() {
         return;
     }
     var modal = $('#newModal');
-    modal.find('.film-name').text('未選択');
     modal.find('.film-name').attr('data-screeningEventId', '');
     modal.find('input[name=screeningEventIdentifier]').val('');
+    modal.find('select[name="screeningEventSeriesId"]').html('');
     modal.find('select[name=doorTimeHour]').val('00');
     modal.find('select[name=doorTimeMinutes]').val('00');
     modal.find('select[name=startTimeHour]').val('00');

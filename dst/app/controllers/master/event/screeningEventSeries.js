@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 劇場作品マスタコントローラー
+ * 上映イベントシリーズコントローラー
  */
 const chevre = require("@chevre/domain");
 const createDebug = require("debug");
@@ -41,7 +41,7 @@ function add(req, res) {
         let errors = {};
         if (req.method === 'POST') {
             // バリデーション
-            validate(req, 'add');
+            validate(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
@@ -101,7 +101,7 @@ function update(req, res) {
         });
         if (req.method === 'POST') {
             // バリデーション
-            validate(req, 'update');
+            validate(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
@@ -297,7 +297,7 @@ exports.index = index;
 /**
  * 作品マスタ新規登録画面検証
  */
-function validate(req, checkType) {
+function validate(req) {
     let colName = '';
     // 作品コード
     colName = '作品コード';

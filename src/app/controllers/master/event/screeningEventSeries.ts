@@ -1,5 +1,5 @@
 /**
- * 劇場作品マスタコントローラー
+ * 上映イベントシリーズコントローラー
  */
 import * as chevre from '@chevre/domain';
 import * as createDebug from 'debug';
@@ -35,7 +35,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     let errors: any = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req, 'add');
+        validate(req);
         const validatorResult = await req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
@@ -95,7 +95,7 @@ export async function update(req: Request, res: Response): Promise<void> {
 
     if (req.method === 'POST') {
         // バリデーション
-        validate(req, 'update');
+        validate(req);
         const validatorResult = await req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
@@ -292,7 +292,7 @@ export async function index(__: Request, res: Response): Promise<void> {
 /**
  * 作品マスタ新規登録画面検証
  */
-function validate(req: Request, checkType: string): void {
+function validate(req: Request): void {
     let colName: string = '';
     // 作品コード
     colName = '作品コード';
