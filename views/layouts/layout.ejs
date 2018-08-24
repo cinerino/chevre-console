@@ -1,12 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
-  </head>
+  <%- include('./head') %>
   <body>
-  <%- body %>
-  </body>
+  <!--Header-->
+  <%- include('./header') %>
+  
+  <div class="container">
+
+    <!-- content -->
+    <div class="row">
+        <!-- left -->
+        <div class="col-md-3">
+            <%- include('./side') %>
+        </div>
+
+        <div class="col-md-9">
+            <%- body %>
+        </div>
+    </div>
+
+</div>
+
+<script>
+$(function(){
+    var disp_id = "#<%= displayId %>";
+    $(disp_id).html($(disp_id).text());
+});
+</script>
+</body>
 </html>

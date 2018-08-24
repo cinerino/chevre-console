@@ -1,16 +1,15 @@
 /**
- * プロジェクト固有タイプ
+ * middlewares/authenticationにて、expressのrequestオブジェクトにAPIユーザー情報を追加している。
+ * ユーザーの型をここで定義しています。
  */
-declare namespace Express {
-    // tslint:disable-next-line:interface-name
-    export interface Request {
-        // staffUser?: StaffUser;
-        staffUser?: any;
+import * as express from 'express';
+
+import User from '../user';
+declare global {
+    namespace Express {
+        // tslint:disable-next-line:interface-name
+        export interface Request {
+            user: User;
+        }
     }
-    // export class BaseUser {
-    //     public isAuthenticated(): boolean;
-    //     public get(key: string): any;
-    // }
-    // export class StaffUser extends BaseUser {
-    // }
 }

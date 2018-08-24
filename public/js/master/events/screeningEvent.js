@@ -89,7 +89,7 @@ function regist() {
     }
     $.ajax({
         dataType: 'json',
-        url: '/master/events/screeningEvent/regist',
+        url: '/events/screeningEvent/regist',
         type: 'POST',
         data: {
             theater: theater,
@@ -141,7 +141,7 @@ function update() {
     }
     $.ajax({
         dataType: 'json',
-        url: '/master/events/screeningEvent/' + performance + '/update',
+        url: '/events/screeningEvent/' + performance + '/update',
         type: 'POST',
         data: {
             theater: theater,
@@ -180,7 +180,7 @@ function search(theater, day) {
     }
     $.ajax({
         dataType: 'json',
-        url: '/master/events/screeningEvent/search',
+        url: '/events/screeningEvent/search',
         type: 'POST',
         data: {
             theater: theater,
@@ -250,7 +250,7 @@ function filmSearch() {
 
     $.ajax({
         dataType: 'json',
-        url: '/master/events/screeningEvent/searchScreeningEvent',
+        url: '/events/screeningEvent/searchScreeningEvent',
         type: 'POST',
         data: {
             identifier: identifier,

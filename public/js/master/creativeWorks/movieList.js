@@ -31,7 +31,7 @@ $(function () {
         // イベント識別子取得&url編集
         console.log($('td[name="identifier"]', $(this).closest('tr')));
         var identifier = $('td[name="identifier"]', $(this).closest('tr')).html();
-        var url = '/master/creativeWorks/movie/' + identifier + '/update';
+        var url = '/creativeWorks/movie/' + identifier + '/update';
         window.location.href = url;
     });
 
@@ -44,7 +44,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/master/creativeWorks/movie/getlist';
+        var url = '/creativeWorks/movie/getlist';
         //alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',

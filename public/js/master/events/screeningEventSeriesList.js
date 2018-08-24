@@ -30,7 +30,7 @@ $(function () {
     $(document).on('click', 'a.edit', function () {
         // イベント識別子取得&url編集
         var eventId = $(this).closest('tr').attr('eventid');
-        var url = '/master/events/screeningEventSeries/' + eventId + '/update';
+        var url = '/events/screeningEventSeries/' + eventId + '/update';
         window.location.href = url;
     });
 
@@ -43,7 +43,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/master/events/screeningEventSeries/getlist';
+        var url = '/events/screeningEventSeries/getlist';
         //alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',

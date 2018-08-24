@@ -1,4 +1,4 @@
-$(function(){
+$(function () {
     var ITEMS_ON_PAGE = 10;
 
     // datepickerセット
@@ -7,19 +7,19 @@ $(function(){
     })
 
     //Enter押下で検索
-    $('form').on('keydown', function(){
-        if(window.event.keyCode==13) $('.btn-ok').click();
-    });    
+    $('form').on('keydown', function () {
+        if (window.event.keyCode == 13) $('.btn-ok').click();
+    });
 
     // 共通一覧表示初期セット・ページャセット
     $.CommonMasterList.init('#templateRow', '#searchedCount');
-    $.CommonMasterList.pager('#pager', ITEMS_ON_PAGE, function(pageNumber){
+    $.CommonMasterList.pager('#pager', ITEMS_ON_PAGE, function (pageNumber) {
         search(pageNumber);
     });
 
     // 検索ボタンイベント
     var conditions = {};
-    $(document).on('click', '.btn-ok', function(){
+    $(document).on('click', '.btn-ok', function () {
         // 検索条件取得
         conditions = $.fn.getDataFromForm('form');
         // 検索API呼び出し
@@ -27,7 +27,7 @@ $(function(){
     });
 
     // 検索条件クリア
-    $(document).on('click', '.reset-condition', function(){
+    $(document).on('click', '.reset-condition', function () {
         $.fn.clearFormValue('form');
     });
     //--------------------------------
@@ -35,18 +35,18 @@ $(function(){
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/master/ticketTypes/getlist';
+        var url = '/ticketTypes/getlist';
         // alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',
             url: url,
-            cache : false,
+            cache: false,
             type: 'GET',
             data: conditions,
-            beforeSend: function() {
+            beforeSend: function () {
                 $('.loading').modal();
             }
-        }).done(function(data) {
+        }).done(function (data) {
             if (data.success) {
                 var dataCount = (data.count) ? (data.count) : 0;
                 // 一覧表示
@@ -58,9 +58,9 @@ $(function(){
                 // 検索条件表示
                 $.fn.setDataToForm('form', conditions);
             }
-        }).fail(function(jqxhr, textStatus, error) {
+        }).fail(function (jqxhr, textStatus, error) {
             alert("fail");
-        }).always(function(data) {
+        }).always(function (data) {
             $('.loading').modal('hide');
         });
     }
