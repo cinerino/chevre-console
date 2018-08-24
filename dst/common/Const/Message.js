@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * システム共通メッセージ定義
- *
- * @memberOf Const
  */
 var Common;
 (function (Common) {

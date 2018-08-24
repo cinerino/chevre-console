@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express_1 = require("express");
 const ScreeningEventSeriesController = require("../../../controllers/master/event/screeningEventSeries");
-const filmMasterRouter = express_1.Router();
-filmMasterRouter.all('/add', ScreeningEventSeriesController.add);
-filmMasterRouter.all('', ScreeningEventSeriesController.index);
-filmMasterRouter.all('/getlist', ScreeningEventSeriesController.getList);
-filmMasterRouter.all('/:eventId/update', ScreeningEventSeriesController.update);
-exports.default = filmMasterRouter;
+const screeningEventSeriesRouter = express_1.Router();
+screeningEventSeriesRouter.all('/add', ScreeningEventSeriesController.add);
+screeningEventSeriesRouter.all('', ScreeningEventSeriesController.index);
+screeningEventSeriesRouter.all('/getlist', ScreeningEventSeriesController.getList);
+screeningEventSeriesRouter.all('/:eventId/update', ScreeningEventSeriesController.update);
+exports.default = screeningEventSeriesRouter;

@@ -49,7 +49,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                 if (movieTheater === undefined) {
                     throw new Error('劇場が存在しません');
                 }
-                const attributes = await createEventFromBody(req.body, movie, movieTheater);
+                const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 const event = await eventRepo.saveScreeningEventSeries({
                     attributes: attributes
@@ -109,7 +109,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 if (movieTheater === undefined) {
                     throw new Error('劇場が存在しません');
                 }
-                const attributes = await createEventFromBody(req.body, movie, movieTheater);
+                const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 await eventRepo.saveScreeningEventSeries({
                     id: eventId,

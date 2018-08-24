@@ -76,7 +76,7 @@ app.use(expressValidator()); // バリデーション
 
 // Use native promises
 chevre.mongoose.Promise = global.Promise;
-chevre.mongoose.connect(<string>process.env.MONGOLAB_URI, mongooseConnectionOptions);
+chevre.mongoose.connect(<string>process.env.MONGOLAB_URI, mongooseConnectionOptions).catch(console.error);
 
 app.use(router);
 

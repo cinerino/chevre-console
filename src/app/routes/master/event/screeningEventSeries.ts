@@ -4,11 +4,11 @@
 import { Router } from 'express';
 import * as ScreeningEventSeriesController from '../../../controllers/master/event/screeningEventSeries';
 
-const filmMasterRouter = Router();
+const screeningEventSeriesRouter = Router();
 
-filmMasterRouter.all('/add', ScreeningEventSeriesController.add);
-filmMasterRouter.all('', ScreeningEventSeriesController.index);
-filmMasterRouter.all('/getlist', ScreeningEventSeriesController.getList);
-filmMasterRouter.all('/:eventId/update', ScreeningEventSeriesController.update);
+screeningEventSeriesRouter.all('/add', ScreeningEventSeriesController.add);
+screeningEventSeriesRouter.all('', ScreeningEventSeriesController.index);
+screeningEventSeriesRouter.all('/getlist', ScreeningEventSeriesController.getList);
+screeningEventSeriesRouter.all('/:eventId/update', ScreeningEventSeriesController.update);
 
-export default filmMasterRouter;
+export default screeningEventSeriesRouter;

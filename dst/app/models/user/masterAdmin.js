@@ -3,10 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const base_1 = require("./base");
 /**
  * マスタ管理者ユーザー
- *
- * @export
- * @class MasterAdminUser
- * @extends {BaseUser}
  */
 class MasterAdminUser extends base_1.default {
     static PARSE(session) {

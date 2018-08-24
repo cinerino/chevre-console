@@ -5,10 +5,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express_1 = require("express");
 const ScreeningEventController = require("../../../controllers/master/event/screeningEvent");
-const performanceMasterRouter = express_1.Router();
-performanceMasterRouter.get('', ScreeningEventController.index);
-performanceMasterRouter.post('/search', ScreeningEventController.search);
-performanceMasterRouter.post('/searchScreeningEvent', ScreeningEventController.searchScreeningEvent);
-performanceMasterRouter.post('/regist', ScreeningEventController.regist);
-performanceMasterRouter.post('/:eventId/update', ScreeningEventController.update);
-exports.default = performanceMasterRouter;
+const screeningEventRouter = express_1.Router();
+screeningEventRouter.get('', ScreeningEventController.index);
+screeningEventRouter.post('/search', ScreeningEventController.search);
+screeningEventRouter.post('/searchScreeningEvent', ScreeningEventController.searchScreeningEvent);
+screeningEventRouter.post('/regist', ScreeningEventController.regist);
+screeningEventRouter.post('/:eventId/update', ScreeningEventController.update);
+exports.default = screeningEventRouter;

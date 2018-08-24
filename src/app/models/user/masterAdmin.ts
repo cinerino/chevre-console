@@ -2,10 +2,6 @@ import BaseUser from './base';
 
 /**
  * マスタ管理者ユーザー
- *
- * @export
- * @class MasterAdminUser
- * @extends {BaseUser}
  */
 export default class MasterAdminUser extends BaseUser {
     public static AUTH_SESSION_NAME: string = 'CHEVREFrontendMasterAuth';

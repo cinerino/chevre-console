@@ -55,7 +55,7 @@ function add(req, res) {
                     if (movieTheater === undefined) {
                         throw new Error('劇場が存在しません');
                     }
-                    const attributes = yield createEventFromBody(req.body, movie, movieTheater);
+                    const attributes = createEventFromBody(req.body, movie, movieTheater);
                     debug('saving an event...', attributes);
                     const event = yield eventRepo.saveScreeningEventSeries({
                         attributes: attributes
@@ -115,7 +115,7 @@ function update(req, res) {
                     if (movieTheater === undefined) {
                         throw new Error('劇場が存在しません');
                     }
-                    const attributes = yield createEventFromBody(req.body, movie, movieTheater);
+                    const attributes = createEventFromBody(req.body, movie, movieTheater);
                     debug('saving an event...', attributes);
                     yield eventRepo.saveScreeningEventSeries({
                         id: eventId,

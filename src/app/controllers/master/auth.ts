@@ -2,7 +2,6 @@
 /**
  * マスタ管理者認証コントローラー
  */
-
 // import * as chevre from '@chevre/domain';
 // import { NextFunction, Request, Response } from 'express';
 // import * as _ from 'underscore';
@@ -12,7 +11,7 @@
 
 // const masterHome: string = '/master/event/screeningEvents';
 // todo 別の場所で定義
-// const cookieName = 'remember_master_admin';
+const cookieName = 'remember_master_admin';
 
 /**
  * マスタ管理ログイン

@@ -63,7 +63,7 @@ app.use(express.static(`${__dirname}/../../public`));
 app.use(expressValidator()); // バリデーション
 // Use native promises
 chevre.mongoose.Promise = global.Promise;
-chevre.mongoose.connect(process.env.MONGOLAB_URI, mongooseConnectionOptions_1.default);
+chevre.mongoose.connect(process.env.MONGOLAB_URI, mongooseConnectionOptions_1.default).catch(console.error);
 app.use(router_1.default);
 // 404
 app.use(notFoundHandler_1.default);

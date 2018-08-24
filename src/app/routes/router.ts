@@ -9,8 +9,8 @@ import userAuthentication from '../middlewares/userAuthentication';
 
 import authMasterRouter from './master/auth';
 import movieRouter from './master/creativeWork/movie';
-import screeningEventMasterRouter from './master/event/screeningEvent';
-import screeningEventSeriesMasterRouter from './master/event/screeningEventSeries';
+import screeningEventRouter from './master/event/screeningEvent';
+import screeningEventSeriesRouter from './master/event/screeningEventSeries';
 import ticketTypeMasterRouter from './master/ticketType';
 import ticketTypeGroupMasterRouter from './master/ticketTypeGroup';
 
@@ -18,8 +18,8 @@ import ticketTypeGroupMasterRouter from './master/ticketTypeGroup';
 router.use(authMasterRouter); // ログイン・ログアウト
 router.use(userAuthentication); // ユーザー認証
 router.use('/master/creativeWorks/movie', movieRouter);
-router.use('/master/events/screeningEvent', screeningEventMasterRouter);
-router.use('/master/events/screeningEventSeries', screeningEventSeriesMasterRouter);
+router.use('/master/events/screeningEvent', screeningEventRouter);
+router.use('/master/events/screeningEventSeries', screeningEventSeriesRouter);
 router.use('/master/ticketTypes', ticketTypeMasterRouter); //券種
 router.use('/master/ticketTypeGroups', ticketTypeGroupMasterRouter); //券種グループ
 router.get('/', IndexController.index);

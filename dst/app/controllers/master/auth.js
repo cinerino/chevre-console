@@ -9,7 +9,7 @@
 // import MasterAdminUser from '../../models/user/masterAdmin';
 // const masterHome: string = '/master/event/screeningEvents';
 // todo 別の場所で定義
-// const cookieName = 'remember_master_admin';
+const cookieName = 'remember_master_admin';
 /**
  * マスタ管理ログイン
  */

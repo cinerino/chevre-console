@@ -2,9 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * ベースユーザークラス
- *
- * @export
- * @class BaseUser
  */
 class BaseUser {
     /**
