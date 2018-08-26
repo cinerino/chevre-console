@@ -1,7 +1,8 @@
 /**
  * 映画作品コントローラー
  */
-import * as chevre from '@chevre/domain';
+// import * as chevre from '@chevre/domain';
+import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Response } from 'express';
 import * as moment from 'moment-timezone';
@@ -11,10 +12,8 @@ import * as Message from '../../common/Const/Message';
 
 const debug = createDebug('chevre-backend:*');
 
-// 基数
-const DEFAULT_RADIX: number = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES: number = 10;
+// const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
@@ -39,8 +38,11 @@ export async function add(req: Request, res: Response): Promise<void> {
             try {
                 const movie = createMovieFromBody(req.body);
                 debug('saving an movie...', movie);
-                const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-                await creativeWorkRepo.saveMovie(movie);
+                const creativeWorkService = new chevre.service.CreativeWork({
+                    endpoint: <string>process.env.API_ENDPOINT,
+                    auth: req.user.authClient
+                });
+                await creativeWorkService.createMovie(movie);
                 res.redirect(`/creativeWorks/movie/${movie.identifier}/update`);
 
                 return;
@@ -64,10 +66,13 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 export async function update(req: Request, res: Response): Promise<void> {
-    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
+    const creativeWorkService = new chevre.service.CreativeWork({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     let message = '';
     let errors: any = {};
-    let movie = await creativeWorkRepo.findMovieByIdentifier({
+    let movie = await creativeWorkService.findMovieByIdentifier({
         identifier: req.params.identifier
     });
     if (req.method === 'POST') {
@@ -80,7 +85,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             try {
                 movie = createMovieFromBody(req.body);
                 debug('saving an movie...', movie);
-                await creativeWorkRepo.saveMovie(movie);
+                await creativeWorkService.createMovie(movie);
                 res.redirect(req.originalUrl);
 
                 return;
@@ -115,60 +120,37 @@ function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICrea
 /**
  * 一覧データ取得API
  */
-// tslint:disable-next-line:cyclomatic-complexity
 export async function getList(req: Request, res: Response): Promise<void> {
-    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-    // 表示件数・表示ページ
-    const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-    const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-    // 作品コード
-    const identifier: string = (!_.isEmpty(req.query.identifier)) ? req.query.identifier : null;
-    // 登録日
-    const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
-    const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
-    // 作品名・カナ・英
-    const name: string = (!_.isEmpty(req.query.name)) ? req.query.name : null;
-
-    // 検索条件を作成
-    const conditions: any = {
-        typeOf: chevre.factory.creativeWorkType.Movie
-    };
-    // 作品コード
-    if (identifier !== null) {
-        conditions.identifier = identifier;
-    }
-    if (createDateFrom !== null || createDateTo !== null) {
-        const conditionsDate: any = {};
-        // 登録日From
-        if (createDateFrom !== null) {
-            conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
-        }
-        // 登録日To
-        if (createDateTo !== null) {
-            conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
-        }
-        conditions.createdAt = conditionsDate;
-    }
-    // 作品名
-    if (name !== null) {
-        conditions.name = { $regex: `^${name}` };
-    }
-
+    // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+    // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+    // const identifier: string = (!_.isEmpty(req.query.identifier)) ? req.query.identifier : null;
+    // const name: string = (!_.isEmpty(req.query.name)) ? req.query.name : null;
+    // const conditions: any = {
+    //     typeOf: chevre.factory.creativeWorkType.Movie
+    // };
+    // if (identifier !== null) {
+    //     conditions.identifier = identifier;
+    // }
+    // if (name !== null) {
+    //     conditions.name = { $regex: `^${name}` };
+    // }
     try {
-        const numDocs = await creativeWorkRepo.creativeWorkModel.count(conditions).exec();
-        let results: any[] = [];
-
-        if (numDocs > 0) {
-            const docs = await creativeWorkRepo.creativeWorkModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
-
-            //検索結果編集
-            results = docs.map((doc) => doc.toObject());
-        }
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movies = await creativeWorkService.searchMovies({});
+        // const numDocs = await creativeWorkRepo.creativeWorkModel.count(conditions).exec();
+        // let results: any[] = [];
+        // if (numDocs > 0) {
+        //     const docs = await creativeWorkRepo.creativeWorkModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
+        //     results = docs.map((doc) => doc.toObject());
+        // }
 
         res.json({
             success: true,
-            count: numDocs,
-            results: results
+            count: movies.length,
+            results: movies
         });
     } catch (error) {
         res.json({

@@ -14,10 +14,10 @@ export interface IConfigurations {
 export interface IProfile {
     sub: string;
     iss: string;
-    'cognito:username': string;
-    given_name: string;
-    family_name: string;
-    email: string;
+    'cognito:username'?: string;
+    given_name?: string;
+    family_name?: string;
+    email?: string;
 }
 /**
  * リクエストユーザー
@@ -80,15 +80,10 @@ export default class User {
     }
     public async retrieveProfile() {
         await this.authClient.refreshAccessToken();
-        // this.profile = <IProfile>jwt.decode((<any>this.authClient.credentials).id_token);
-        this.profile = {
-            sub: '',
-            iss: '',
-            'cognito:username': '',
-            given_name: '',
-            family_name: '',
-            email: ''
-        };
+        const payload = this.authClient.verifyIdToken({}).payload;
+        if (payload !== undefined) {
+            this.profile = payload;
+        }
 
         return this;
     }

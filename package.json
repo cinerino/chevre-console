@@ -17,7 +17,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/api-nodejs-client": "^1.0.0-alpha.6",
+    "@chevre/api-nodejs-client": "^1.0.0-alpha.7",
     "@chevre/domain": "^10.0.0-alpha.4",
     "basic-auth": "^1.0.4",
     "body-parser": "^1.17.2",

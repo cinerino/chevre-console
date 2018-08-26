@@ -6,8 +6,8 @@
                 <h1 class="title">chevre</h1>
             </div>
             <div class="navbar-text navbar-right">
-                <span><%= user.profile.family_name %>
-                        <%= user.profile.given_name %></span>
+                <span><%= user.profile.family_name %></span>&nbsp;
+                <span><%= user.profile.given_name %></span>&nbsp;
                 <a class="btn btn-logout btn-default" href="<%= user.generateLogoutUrl() %>"><span>ログアウト</span></a>
             </div>
         </div>
