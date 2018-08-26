@@ -11,16 +11,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 上映イベントシリーズコントローラー
  */
-const chevre = require("@chevre/domain");
+const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const debug = createDebug('chevre-backend:*');
-// 基数
-const DEFAULT_RADIX = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES = 10;
+// const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 作品名・日本語 全角64
@@ -32,11 +30,20 @@ const NAME_MAX_LENGTH_NAME_EN = 128;
  */
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const movies = yield creativeWorkRepo.searchMovies({});
-        const movieTheaters = yield placeRepo.searchMovieTheaters({});
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movies = yield creativeWorkService.searchMovies({});
+        const movieTheaters = yield placeService.searchMovieTheaters({});
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -57,9 +64,7 @@ function add(req, res) {
                     }
                     const attributes = createEventFromBody(req.body, movie, movieTheater);
                     debug('saving an event...', attributes);
-                    const event = yield eventRepo.saveScreeningEventSeries({
-                        attributes: attributes
-                    });
+                    const event = yield eventService.createScreeningEventSeries(attributes);
                     res.redirect(`/events/screeningEventSeries/${event.id}/update`);
                     return;
                 }
@@ -86,16 +91,24 @@ exports.add = add;
  */
 function update(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const movies = yield creativeWorkRepo.searchMovies({});
-        const movieTheaters = yield placeRepo.searchMovieTheaters({});
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movies = yield creativeWorkService.searchMovies({});
+        const movieTheaters = yield placeService.searchMovieTheaters({});
         let message = '';
         let errors = {};
         const eventId = req.params.eventId;
-        const event = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+        const event = yield eventService.findScreeningEventSeriesById({
             id: eventId
         });
         if (req.method === 'POST') {
@@ -116,7 +129,7 @@ function update(req, res) {
                     }
                     const attributes = createEventFromBody(req.body, movie, movieTheater);
                     debug('saving an event...', attributes);
-                    yield eventRepo.saveScreeningEventSeries({
+                    yield eventService.updateScreeningEventSeries({
                         id: eventId,
                         attributes: attributes
                     });
@@ -187,83 +200,87 @@ function createEventFromBody(body, movie, movieTheater) {
 /**
  * 一覧データ取得API
  */
-// tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:max-func-body-length
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        // 表示件数・表示ページ
-        const limit = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        const page = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        const locationBranchCode = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
-        // 作品コード
-        const movieIdentifier = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
-        // 登録日
-        const createDateFrom = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
-        const createDateTo = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
-        // 作品名・カナ・英
-        const filmNameJa = (!_.isEmpty(req.query.filmNameJa)) ? req.query.filmNameJa : null;
-        const kanaName = (!_.isEmpty(req.query.kanaName)) ? req.query.kanaName : null;
-        const filmNameEn = (!_.isEmpty(req.query.filmNameEn)) ? req.query.filmNameEn : null;
-        // 検索条件を作成
-        const conditions = {
-            typeOf: chevre.factory.eventType.ScreeningEventSeries
-        };
-        // 劇場
-        if (locationBranchCode !== null) {
-            conditions['location.branchCode'] = req.query.locationBranchCode;
-        }
-        // 作品コード
-        if (movieIdentifier !== null) {
-            conditions['workPerformed.identifier'] = movieIdentifier;
-        }
-        if (createDateFrom !== null || createDateTo !== null) {
-            const conditionsDate = {};
-            // 登録日From
-            if (createDateFrom !== null) {
-                conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
-            }
-            // 登録日To
-            if (createDateTo !== null) {
-                conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
-            }
-            conditions.createdAt = conditionsDate;
-        }
-        // 作品名
-        if (filmNameJa !== null) {
-            conditions['name.ja'] = { $regex: `^${filmNameJa}` };
-        }
-        // 作品名カナ
-        if (kanaName !== null) {
-            conditions.kanaName = { $regex: kanaName };
-        }
-        // 作品名英
-        if (filmNameEn !== null) {
-            conditions['name.en'] = { $regex: filmNameEn };
-        }
+        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+        // const locationBranchCode: string = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
+        // const movieIdentifier: string = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
+        // const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
+        // const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
+        // const filmNameJa: string = (!_.isEmpty(req.query.filmNameJa)) ? req.query.filmNameJa : null;
+        // const kanaName: string = (!_.isEmpty(req.query.kanaName)) ? req.query.kanaName : null;
+        // const filmNameEn: string = (!_.isEmpty(req.query.filmNameEn)) ? req.query.filmNameEn : null;
+        // const conditions: any = {
+        //     typeOf: chevre.factory.eventType.ScreeningEventSeries
+        // };
+        // if (locationBranchCode !== null) {
+        //     conditions['location.branchCode'] = req.query.locationBranchCode;
+        // }
+        // if (movieIdentifier !== null) {
+        //     conditions['workPerformed.identifier'] = movieIdentifier;
+        // }
+        // if (createDateFrom !== null || createDateTo !== null) {
+        //     const conditionsDate: any = {};
+        //     if (createDateFrom !== null) {
+        //         conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
+        //     }
+        //     if (createDateTo !== null) {
+        //         conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
+        //     }
+        //     conditions.createdAt = conditionsDate;
+        // }
+        // if (filmNameJa !== null) {
+        //     conditions['name.ja'] = { $regex: `^${filmNameJa}` };
+        // }
+        // if (kanaName !== null) {
+        //     conditions.kanaName = { $regex: kanaName };
+        // }
+        // if (filmNameEn !== null) {
+        //     conditions['name.en'] = { $regex: filmNameEn };
+        // }
         try {
-            const numDocs = yield eventRepo.eventModel.count(conditions).exec();
-            let results = [];
-            if (numDocs > 0) {
-                const docs = yield eventRepo.eventModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
-                //検索結果編集
-                results = docs.map((doc) => {
-                    const event = doc.toObject();
-                    return {
-                        id: event.id,
-                        movieIdentifier: event.workPerformed.identifier,
-                        filmNameJa: event.name.ja,
-                        filmNameEn: event.name.en,
-                        kanaName: event.kanaName,
-                        duration: moment.duration(event.duration).asMinutes(),
-                        contentRating: event.contentRating,
-                        subtitleLanguage: event.subtitleLanguage,
-                        videoFormat: event.videoFormat
-                    };
-                });
-            }
+            const eventService = new chevre.service.Event({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const events = yield eventService.searchScreeningEventSeries({});
+            const results = events.map((event) => {
+                return {
+                    id: event.id,
+                    movieIdentifier: event.workPerformed.identifier,
+                    filmNameJa: event.name.ja,
+                    filmNameEn: event.name.en,
+                    kanaName: event.kanaName,
+                    duration: moment.duration(event.duration).humanize(),
+                    contentRating: event.workPerformed.contentRating,
+                    subtitleLanguage: event.subtitleLanguage,
+                    videoFormat: event.videoFormat
+                };
+            });
+            // const numDocs = await eventRepo.eventModel.count(conditions).exec();
+            // let results: any[] = [];
+            // if (numDocs > 0) {
+            //     const docs = await eventRepo.eventModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
+            //     results = docs.map((doc) => {
+            //         const event = doc.toObject();
+            //         return {
+            //             id: event.id,
+            //             movieIdentifier: event.workPerformed.identifier,
+            //             filmNameJa: event.name.ja,
+            //             filmNameEn: event.name.en,
+            //             kanaName: event.kanaName,
+            //             duration: moment.duration(event.duration).asMinutes(),
+            //             contentRating: event.contentRating,
+            //             subtitleLanguage: event.subtitleLanguage,
+            //             videoFormat: event.videoFormat
+            //         };
+            //     });
+            // }
             res.json({
                 success: true,
-                count: numDocs,
+                count: events.length,
                 results: results
             });
         }
@@ -280,10 +297,13 @@ exports.getList = getList;
 /**
  * 一覧
  */
-function index(__, res) {
+function index(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const movieTheaters = yield placeRepo.searchMovieTheaters({});
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movieTheaters = yield placeService.searchMovieTheaters({});
         res.render('events/screeningEventSeries/index', {
             filmModel: {},
             movieTheaters: movieTheaters

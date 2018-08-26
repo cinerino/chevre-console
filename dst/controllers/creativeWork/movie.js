@@ -11,7 +11,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 映画作品コントローラー
  */
-// import * as chevre from '@chevre/domain';
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const moment = require("moment-timezone");

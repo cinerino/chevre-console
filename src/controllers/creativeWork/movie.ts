@@ -1,7 +1,6 @@
 /**
  * 映画作品コントローラー
  */
-// import * as chevre from '@chevre/domain';
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Response } from 'express';

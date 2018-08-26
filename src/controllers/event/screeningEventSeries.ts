@@ -1,7 +1,7 @@
 /**
  * 上映イベントシリーズコントローラー
  */
-import * as chevre from '@chevre/domain';
+import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Response } from 'express';
 import * as moment from 'moment-timezone';
@@ -11,10 +11,8 @@ import * as Message from '../../common/Const/Message';
 
 const debug = createDebug('chevre-backend:*');
 
-// 基数
-const DEFAULT_RADIX: number = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES: number = 10;
+// const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
@@ -26,11 +24,20 @@ const NAME_MAX_LENGTH_NAME_EN: number = 128;
  * 新規登録
  */
 export async function add(req: Request, res: Response): Promise<void> {
-    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-    const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-    const movies = await creativeWorkRepo.searchMovies({});
-    const movieTheaters = await placeRepo.searchMovieTheaters({});
+    const creativeWorkService = new chevre.service.CreativeWork({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const movies = await creativeWorkService.searchMovies({});
+    const movieTheaters = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -51,9 +58,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                 }
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
-                const event = await eventRepo.saveScreeningEventSeries({
-                    attributes: attributes
-                });
+                const event = await eventService.createScreeningEventSeries(attributes);
                 res.redirect(`/events/screeningEventSeries/${event.id}/update`);
 
                 return;
@@ -79,16 +84,24 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 export async function update(req: Request, res: Response): Promise<void> {
-    const creativeWorkRepo = new chevre.repository.CreativeWork(chevre.mongoose.connection);
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-    const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-    const movies = await creativeWorkRepo.searchMovies({});
-    const movieTheaters = await placeRepo.searchMovieTheaters({});
+    const creativeWorkService = new chevre.service.CreativeWork({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const movies = await creativeWorkService.searchMovies({});
+    const movieTheaters = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
-    const event = await eventRepo.findById({
-        typeOf: chevre.factory.eventType.ScreeningEventSeries,
+    const event = await eventService.findScreeningEventSeriesById({
         id: eventId
     });
 
@@ -110,7 +123,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 }
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
-                await eventRepo.saveScreeningEventSeries({
+                await eventService.updateScreeningEventSeries({
                     id: eventId,
                     attributes: attributes
                 });
@@ -183,88 +196,90 @@ function createEventFromBody(
 /**
  * 一覧データ取得API
  */
-// tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:max-func-body-length
 export async function getList(req: Request, res: Response): Promise<void> {
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-    // 表示件数・表示ページ
-    const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-    const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-    const locationBranchCode: string = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
-    // 作品コード
-    const movieIdentifier: string = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
-    // 登録日
-    const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
-    const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
-    // 作品名・カナ・英
-    const filmNameJa: string = (!_.isEmpty(req.query.filmNameJa)) ? req.query.filmNameJa : null;
-    const kanaName: string = (!_.isEmpty(req.query.kanaName)) ? req.query.kanaName : null;
-    const filmNameEn: string = (!_.isEmpty(req.query.filmNameEn)) ? req.query.filmNameEn : null;
-
-    // 検索条件を作成
-    const conditions: any = {
-        typeOf: chevre.factory.eventType.ScreeningEventSeries
-    };
-    // 劇場
-    if (locationBranchCode !== null) {
-        conditions['location.branchCode'] = req.query.locationBranchCode;
-    }
-    // 作品コード
-    if (movieIdentifier !== null) {
-        conditions['workPerformed.identifier'] = movieIdentifier;
-    }
-    if (createDateFrom !== null || createDateTo !== null) {
-        const conditionsDate: any = {};
-        // 登録日From
-        if (createDateFrom !== null) {
-            conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
-        }
-        // 登録日To
-        if (createDateTo !== null) {
-            conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
-        }
-        conditions.createdAt = conditionsDate;
-    }
-    // 作品名
-    if (filmNameJa !== null) {
-        conditions['name.ja'] = { $regex: `^${filmNameJa}` };
-    }
-    // 作品名カナ
-    if (kanaName !== null) {
-        conditions.kanaName = { $regex: kanaName };
-    }
-    // 作品名英
-    if (filmNameEn !== null) {
-        conditions['name.en'] = { $regex: filmNameEn };
-    }
+    // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+    // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+    // const locationBranchCode: string = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
+    // const movieIdentifier: string = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
+    // const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
+    // const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
+    // const filmNameJa: string = (!_.isEmpty(req.query.filmNameJa)) ? req.query.filmNameJa : null;
+    // const kanaName: string = (!_.isEmpty(req.query.kanaName)) ? req.query.kanaName : null;
+    // const filmNameEn: string = (!_.isEmpty(req.query.filmNameEn)) ? req.query.filmNameEn : null;
+    // const conditions: any = {
+    //     typeOf: chevre.factory.eventType.ScreeningEventSeries
+    // };
+    // if (locationBranchCode !== null) {
+    //     conditions['location.branchCode'] = req.query.locationBranchCode;
+    // }
+    // if (movieIdentifier !== null) {
+    //     conditions['workPerformed.identifier'] = movieIdentifier;
+    // }
+    // if (createDateFrom !== null || createDateTo !== null) {
+    //     const conditionsDate: any = {};
+    //     if (createDateFrom !== null) {
+    //         conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
+    //     }
+    //     if (createDateTo !== null) {
+    //         conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
+    //     }
+    //     conditions.createdAt = conditionsDate;
+    // }
+    // if (filmNameJa !== null) {
+    //     conditions['name.ja'] = { $regex: `^${filmNameJa}` };
+    // }
+    // if (kanaName !== null) {
+    //     conditions.kanaName = { $regex: kanaName };
+    // }
+    // if (filmNameEn !== null) {
+    //     conditions['name.en'] = { $regex: filmNameEn };
+    // }
 
     try {
-        const numDocs = await eventRepo.eventModel.count(conditions).exec();
-        let results: any[] = [];
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const events = await eventService.searchScreeningEventSeries({});
+        const results = events.map((event) => {
+            return {
+                id: event.id,
+                movieIdentifier: event.workPerformed.identifier,
+                filmNameJa: event.name.ja,
+                filmNameEn: event.name.en,
+                kanaName: event.kanaName,
+                duration: moment.duration(event.duration).humanize(),
+                contentRating: event.workPerformed.contentRating,
+                subtitleLanguage: event.subtitleLanguage,
+                videoFormat: event.videoFormat
+            };
+        });
 
-        if (numDocs > 0) {
-            const docs = await eventRepo.eventModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
+        // const numDocs = await eventRepo.eventModel.count(conditions).exec();
+        // let results: any[] = [];
+        // if (numDocs > 0) {
+        //     const docs = await eventRepo.eventModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
+        //     results = docs.map((doc) => {
+        //         const event = doc.toObject();
 
-            //検索結果編集
-            results = docs.map((doc) => {
-                const event = doc.toObject();
-
-                return {
-                    id: event.id,
-                    movieIdentifier: event.workPerformed.identifier,
-                    filmNameJa: event.name.ja,
-                    filmNameEn: event.name.en,
-                    kanaName: event.kanaName,
-                    duration: moment.duration(event.duration).asMinutes(),
-                    contentRating: event.contentRating,
-                    subtitleLanguage: event.subtitleLanguage,
-                    videoFormat: event.videoFormat
-                };
-            });
-        }
+        //         return {
+        //             id: event.id,
+        //             movieIdentifier: event.workPerformed.identifier,
+        //             filmNameJa: event.name.ja,
+        //             filmNameEn: event.name.en,
+        //             kanaName: event.kanaName,
+        //             duration: moment.duration(event.duration).asMinutes(),
+        //             contentRating: event.contentRating,
+        //             subtitleLanguage: event.subtitleLanguage,
+        //             videoFormat: event.videoFormat
+        //         };
+        //     });
+        // }
 
         res.json({
             success: true,
-            count: numDocs,
+            count: events.length,
             results: results
         });
     } catch (error) {
@@ -278,9 +293,12 @@ export async function getList(req: Request, res: Response): Promise<void> {
 /**
  * 一覧
  */
-export async function index(__: Request, res: Response): Promise<void> {
-    const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-    const movieTheaters = await placeRepo.searchMovieTheaters({});
+export async function index(req: Request, res: Response): Promise<void> {
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const movieTheaters = await placeService.searchMovieTheaters({});
     res.render('events/screeningEventSeries/index', {
         filmModel: {},
         movieTheaters: movieTheaters
