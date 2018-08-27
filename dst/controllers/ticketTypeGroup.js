@@ -1,7 +1,4 @@
 "use strict";
-/**
- * 券種グループマスタコントローラー
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -11,13 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chevre = require("@chevre/domain");
+/**
+ * 券種グループマスタコントローラー
+ */
+const chevre = require("@chevre/api-nodejs-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
-// 基数
-const DEFAULT_RADIX = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES = 10;
+// const DEFAULT_LINES: number = 10;
 // 券種グループコード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種グループ名・日本語 全角64
@@ -39,7 +37,10 @@ exports.index = index;
  */
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -48,20 +49,19 @@ function add(req, res) {
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
-                // 券種グループDB登録
                 try {
-                    const id = req.body._id;
-                    const docs = {
-                        _id: id,
+                    const ticketTypeGroup = {
+                        id: req.body._id,
                         name: {
                             ja: req.body.nameJa,
                             en: req.body.nameEn
                         },
                         ticketTypes: req.body.ticketTypes
                     };
-                    yield ticketTypeRepo.ticketTypeGroupModel.create(docs);
+                    yield ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
                     message = '登録完了';
-                    res.redirect(`/ticketTypeGroups/${id}/update`);
+                    res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+                    return;
                 }
                 catch (error) {
                     message = error.message;
@@ -69,7 +69,7 @@ function add(req, res) {
             }
         }
         // 券種マスタから取得
-        const ticketTypes = yield ticketTypeRepo.ticketTypeModel.find().exec();
+        const ticketTypes = yield ticketTypeService.searchTicketTypes({});
         const forms = {
             _id: (_.isEmpty(req.body._id)) ? '' : req.body._id,
             nameJa: (_.isEmpty(req.body.nameJa)) ? '' : req.body.nameJa,
@@ -90,10 +90,12 @@ exports.add = add;
  */
 function update(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         let message = '';
         let errors = {};
-        const id = req.params.id;
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -103,15 +105,18 @@ function update(req, res) {
                 // 券種グループDB登録
                 try {
                     // 券種グループDB登録
-                    const updateparams = {
+                    const ticketTypeGroup = {
+                        id: req.params.id,
                         name: {
                             ja: req.body.nameJa,
                             en: req.body.nameEn
                         },
                         ticketTypes: req.body.ticketTypes
                     };
-                    yield ticketTypeRepo.ticketTypeGroupModel.findByIdAndUpdate(id, updateparams).exec();
+                    yield ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
                     message = '編集完了';
+                    res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+                    return;
                 }
                 catch (error) {
                     message = error.message;
@@ -119,17 +124,13 @@ function update(req, res) {
             }
         }
         // 券種マスタから取得
-        const ticketTypes = yield ticketTypeRepo.ticketTypeModel.find().exec();
+        const ticketTypes = yield ticketTypeService.searchTicketTypes({});
         // 券種グループ取得
-        const ticketGroup = yield ticketTypeRepo.ticketTypeGroupModel.findById(id).exec();
-        if (ticketGroup === null) {
-            throw new Error('Ticket type group not found');
-        }
+        const ticketGroup = yield ticketTypeService.findTicketTypeGroupById({ id: req.params.id });
         const forms = {
-            _id: (_.isEmpty(req.body._id)) ? ticketGroup.get('_id') : req.body._id,
-            nameJa: (_.isEmpty(req.body.nameJa)) ? ticketGroup.get('name').ja : req.body.nameJa,
-            ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.get('ticketTypes') : req.body.ticketTypes,
-            descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? ticketGroup.get('descriptionJa') : req.body.descriptionJa
+            _id: (_.isEmpty(req.body._id)) ? ticketGroup.id : req.body._id,
+            nameJa: (_.isEmpty(req.body.nameJa)) ? ticketGroup.name.ja : req.body.nameJa,
+            ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : req.body.ticketTypes
         };
         res.render('ticketTypeGroup/update', {
             message: message,
@@ -145,46 +146,50 @@ exports.update = update;
  */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        // 表示件数・表示ページ
-        const limit = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        const page = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        // 券種グループコード
-        const ticketGroupCode = (!_.isEmpty(req.query.ticketGroupCode)) ? req.query.ticketGroupCode : null;
-        // 管理用券種グループ名
-        const ticketGroupNameJa = (!_.isEmpty(req.query.ticketGroupNameJa)) ? req.query.ticketGroupNameJa : null;
-        // 検索条件を作成
-        const conditions = {};
-        // 券種グループコード
-        if (ticketGroupCode !== null) {
-            const key = '_id';
-            conditions[key] = ticketGroupCode;
-        }
-        // 管理用券種グループ名
-        if (ticketGroupNameJa !== null) {
-            conditions['name.ja'] = { $regex: ticketGroupNameJa };
-        }
+        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+        // const ticketGroupCode: string = (!_.isEmpty(req.query.ticketGroupCode)) ? req.query.ticketGroupCode : null;
+        // const ticketGroupNameJa: string = (!_.isEmpty(req.query.ticketGroupNameJa)) ? req.query.ticketGroupNameJa : null;
+        // const conditions: any = {};
+        // if (ticketGroupCode !== null) {
+        //     const key: string = '_id';
+        //     conditions[key] = ticketGroupCode;
+        // }
+        // if (ticketGroupNameJa !== null) {
+        //     conditions['name.ja'] = { $regex: ticketGroupNameJa };
+        // }
         try {
-            const count = yield ticketTypeRepo.ticketTypeGroupModel.count(conditions).exec();
-            let results = [];
-            if (count > 0) {
-                const ticketTypeGroups = yield ticketTypeRepo.ticketTypeGroupModel.find(conditions)
-                    .skip(limit * (page - 1))
-                    .limit(limit)
-                    .exec();
-                //検索結果編集
-                results = ticketTypeGroups.map((ticketTypeGroup) => {
-                    return {
-                        id: ticketTypeGroup._id,
-                        ticketGroupCode: ticketTypeGroup._id,
-                        ticketGroupNameJa: ticketTypeGroup.get('name').ja
-                    };
-                });
-            }
+            const ticketTypeService = new chevre.service.TicketType({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const ticketTypeGroups = yield ticketTypeService.searchTicketTypeGroups({});
+            // const count = await ticketTypeRepo.ticketTypeGroupModel.count(conditions).exec();
+            // let results: any[] = [];
+            // if (count > 0) {
+            //     const ticketTypeGroups = await ticketTypeRepo.ticketTypeGroupModel.find(conditions)
+            //         .skip(limit * (page - 1))
+            //         .limit(limit)
+            //         .exec();
+            //     //検索結果編集
+            //     results = ticketTypeGroups.map((ticketTypeGroup) => {
+            //         return {
+            //             id: ticketTypeGroup._id,
+            //             ticketGroupCode: ticketTypeGroup._id,
+            //             ticketGroupNameJa: ticketTypeGroup.get('name').ja
+            //         };
+            //     });
+            // }
             res.json({
                 success: true,
-                count: count,
-                results: results
+                count: ticketTypeGroups.length,
+                results: ticketTypeGroups.map((g) => {
+                    return {
+                        id: g.id,
+                        ticketGroupCode: g.id,
+                        ticketGroupNameJa: g.name.ja
+                    };
+                })
             });
         }
         catch (err) {

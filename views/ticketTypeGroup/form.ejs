@@ -25,11 +25,11 @@
         <div>
             <% ticketTypes.forEach((ticketType) => { %>
             <label class="btn btn-default mb-x-small">
-                <span><%= ticketType.get('name').ja %> (<%= ticketType.charge %>)</span>
-                <% if (forms.ticketTypes.indexOf(ticketType.get('_id')) > -1) { %>
-                <input checked type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
+                <span><%= ticketType.name.ja %> (<%= ticketType.charge %>)</span>
+                <% if (forms.ticketTypes.indexOf(ticketType.id) > -1) { %>
+                <input checked type="checkbox" name="ticketTypes" value="<%= ticketType.id %>">
                 <% } else { %>
-                <input type="checkbox" name="ticketTypes" value="<%= ticketType.get('_id') %>">
+                <input type="checkbox" name="ticketTypes" value="<%= ticketType.id %>">
                 <% } %>
             </label>
             <% }) %>

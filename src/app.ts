@@ -1,7 +1,6 @@
 /**
  * expressアプリケーション
  */
-import * as chevre from '@chevre/domain';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
@@ -13,8 +12,6 @@ import * as multer from 'multer';
 import * as favicon from 'serve-favicon';
 // tslint:disable-next-line:no-var-requires no-require-imports
 const expressLayouts = require('express-ejs-layouts');
-
-import mongooseConnectionOptions from './mongooseConnectionOptions';
 
 // ミドルウェア
 import errorHandler from './middlewares/errorHandler';
@@ -53,9 +50,6 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
 
 app.use(expressValidator()); // バリデーション
-
-// Use native promises
-chevre.mongoose.connect(<string>process.env.MONGOLAB_URI, mongooseConnectionOptions).catch(console.error);
 
 app.use(router);
 

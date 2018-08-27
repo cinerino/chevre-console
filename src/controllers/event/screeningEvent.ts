@@ -1,20 +1,22 @@
 /**
- * パフォーマンスマスタコントローラー
+ * 上映イベントコントローラー
  */
-import * as chevre from '@chevre/domain';
+import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { NextFunction, Request, Response } from 'express';
 import * as moment from 'moment';
 
+import User from '../../user';
+
 const debug = createDebug('chevre-backend:*');
 
-/**
- * パフォーマンスマスタ管理表示
- */
-export async function index(_: Request, res: Response, next: NextFunction): Promise<void> {
+export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const movieTheaters = await placeRepo.searchMovieTheaters({});
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movieTheaters = await placeService.searchMovieTheaters({});
         if (movieTheaters.length === 0) {
             throw new Error('劇場が見つかりません');
         }
@@ -26,14 +28,19 @@ export async function index(_: Request, res: Response, next: NextFunction): Prom
         next(err);
     }
 }
-
-/**
- * パフォーマンス検索
- */
 export async function search(req: Request, res: Response): Promise<void> {
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-    const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-    const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+    const ticketTypeService = new chevre.service.TicketType({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     try {
         searchValidation(req);
         const validatorResult = await req.getValidationResult();
@@ -46,15 +53,14 @@ export async function search(req: Request, res: Response): Promise<void> {
 
             return;
         }
-        const theater = req.body.theater;
         const day = req.body.day;
-        const movieTheater = await placeRepo.findMovieTheaterByBranchCode(theater);
-        const screeningEvents = await eventRepo.searchScreeningEvents({
+        const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.theater });
+        const screeningEvents = await eventService.searchScreeningEvents({
             startFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
             endThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate()
             // theater: theater,
         });
-        const ticketGroups = await ticketTypeRepo.ticketTypeGroupModel.find().exec();
+        const ticketGroups = await ticketTypeService.searchTicketTypeGroups({});
         res.json({
             validation: null,
             error: null,
@@ -70,12 +76,14 @@ export async function search(req: Request, res: Response): Promise<void> {
         });
     }
 }
-
 /**
  * 作品検索
  */
 export async function searchScreeningEvent(req: Request, res: Response): Promise<void> {
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     try {
         validateSearchScreeningEvent(req);
         const validatorResult = await req.getValidationResult();
@@ -88,11 +96,10 @@ export async function searchScreeningEvent(req: Request, res: Response): Promise
 
             return;
         }
-        const screeningEventSeries = await eventRepo.eventModel.find({
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
-            'workPerformed.identifier': req.body.identifier,
-            'location.branchCode': req.body.movieTheaterBranchCode
-        }).then((docs) => docs.map((doc) => doc.toObject()));
+        const screeningEventSeries = await eventService.searchScreeningEventSeries({
+            // 'workPerformed.identifier': req.body.identifier,
+            // 'location.branchCode': req.body.movieTheaterBranchCode
+        });
         res.json({
             validation: null,
             error: null,
@@ -106,13 +113,15 @@ export async function searchScreeningEvent(req: Request, res: Response): Promise
         });
     }
 }
-
 /**
  * 新規登録
  */
 export async function regist(req: Request, res: Response): Promise<void> {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         addValidation(req);
         const validatorResult = await req.getValidationResult();
         const validations = req.validationErrors(true);
@@ -126,10 +135,8 @@ export async function regist(req: Request, res: Response): Promise<void> {
         }
 
         debug('saving screening event...', req.body);
-        const attributes = await createEventFromBody(req.body);
-        await eventRepo.saveScreeningEvent({
-            attributes: attributes
-        });
+        const attributes = await createEventFromBody(req.body, req.user);
+        await eventService.createScreeningEvent(attributes);
         res.json({
             validation: null,
             error: null
@@ -142,13 +149,15 @@ export async function regist(req: Request, res: Response): Promise<void> {
         });
     }
 }
-
 /**
  * 更新
  */
 export async function update(req: Request, res: Response): Promise<void> {
     try {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         updateValidation(req);
         const validatorResult = await req.getValidationResult();
         const validations = req.validationErrors(true);
@@ -160,12 +169,10 @@ export async function update(req: Request, res: Response): Promise<void> {
 
             return;
         }
-
-        const eventId = req.params.eventId;
         debug('saving screening event...', req.body);
-        const attributes = await createEventFromBody(req.body);
-        await eventRepo.saveScreeningEvent({
-            id: eventId,
+        const attributes = await createEventFromBody(req.body, req.user);
+        await eventService.updateScreeningEvent({
+            id: req.params.eventId,
             attributes: attributes
         });
         res.json({
@@ -180,18 +187,22 @@ export async function update(req: Request, res: Response): Promise<void> {
         });
     }
 }
-
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-async function createEventFromBody(body: any): Promise<chevre.factory.event.screeningEvent.IAttributes> {
-    const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-    const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-    const screeningEventSeries = await eventRepo.findById({
-        typeOf: chevre.factory.eventType.ScreeningEventSeries,
+async function createEventFromBody(body: any, user: User): Promise<chevre.factory.event.screeningEvent.IAttributes> {
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: user.authClient
+    });
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: user.authClient
+    });
+    const screeningEventSeries = await eventService.findScreeningEventSeriesById({
         id: body.screeningEventId
     });
-    const movieTheater = await placeRepo.findMovieTheaterByBranchCode(body.theater);
+    const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
     const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
     if (screeningRoom === undefined) {
         throw new Error('上映スクリーンが見つかりません');
@@ -202,8 +213,6 @@ async function createEventFromBody(body: any): Promise<chevre.factory.event.scre
 
     return {
         typeOf: chevre.factory.eventType.ScreeningEvent,
-        // _id: `IndividualScreeningEvent-${identifier}`,
-        identifier: '',
         doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
         startDate: moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
         endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
@@ -219,7 +228,6 @@ async function createEventFromBody(body: any): Promise<chevre.factory.event.scre
         eventStatus: chevre.factory.eventStatusType.EventScheduled
     };
 }
-
 /**
  * 検索バリデーション
  */

@@ -1,17 +1,14 @@
 /**
  * 券種グループマスタコントローラー
  */
-
-import * as chevre from '@chevre/domain';
+import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Response } from 'express';
 import * as _ from 'underscore';
 
 import * as Message from '../common/Const/Message';
 
-// 基数
-const DEFAULT_RADIX: number = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES: number = 10;
+// const DEFAULT_LINES: number = 10;
 // 券種グループコード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
 // 券種グループ名・日本語 全角64
@@ -31,7 +28,10 @@ export async function index(__: Request, res: Response): Promise<void> {
  * 新規登録
  */
 export async function add(req: Request, res: Response): Promise<void> {
-    const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+    const ticketTypeService = new chevre.service.TicketType({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -40,20 +40,20 @@ export async function add(req: Request, res: Response): Promise<void> {
         const validatorResult = await req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
-            // 券種グループDB登録
             try {
-                const id = req.body._id;
-                const docs = {
-                    _id: id,
+                const ticketTypeGroup = {
+                    id: req.body._id,
                     name: {
                         ja: req.body.nameJa,
                         en: req.body.nameEn
                     },
                     ticketTypes: req.body.ticketTypes
                 };
-                await ticketTypeRepo.ticketTypeGroupModel.create(docs);
+                await ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
                 message = '登録完了';
-                res.redirect(`/ticketTypeGroups/${id}/update`);
+                res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+
+                return;
             } catch (error) {
                 message = error.message;
             }
@@ -61,7 +61,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     }
 
     // 券種マスタから取得
-    const ticketTypes = await ticketTypeRepo.ticketTypeModel.find().exec();
+    const ticketTypes = await ticketTypeService.searchTicketTypes({});
     const forms = {
         _id: (_.isEmpty(req.body._id)) ? '' : req.body._id,
         nameJa: (_.isEmpty(req.body.nameJa)) ? '' : req.body.nameJa,
@@ -80,10 +80,12 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 export async function update(req: Request, res: Response): Promise<void> {
-    const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+    const ticketTypeService = new chevre.service.TicketType({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     let message = '';
     let errors: any = {};
-    const id = req.params.id;
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -93,15 +95,19 @@ export async function update(req: Request, res: Response): Promise<void> {
             // 券種グループDB登録
             try {
                 // 券種グループDB登録
-                const updateparams: any = {
+                const ticketTypeGroup = {
+                    id: req.params.id,
                     name: {
                         ja: req.body.nameJa,
                         en: req.body.nameEn
                     },
                     ticketTypes: req.body.ticketTypes
                 };
-                await ticketTypeRepo.ticketTypeGroupModel.findByIdAndUpdate(id, updateparams).exec();
+                await ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
                 message = '編集完了';
+                res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+
+                return;
             } catch (error) {
                 message = error.message;
             }
@@ -109,18 +115,13 @@ export async function update(req: Request, res: Response): Promise<void> {
     }
 
     // 券種マスタから取得
-    const ticketTypes = await ticketTypeRepo.ticketTypeModel.find().exec();
+    const ticketTypes = await ticketTypeService.searchTicketTypes({});
     // 券種グループ取得
-    const ticketGroup = await ticketTypeRepo.ticketTypeGroupModel.findById(id).exec();
-    if (ticketGroup === null) {
-        throw new Error('Ticket type group not found');
-    }
-
+    const ticketGroup = await ticketTypeService.findTicketTypeGroupById({ id: req.params.id });
     const forms = {
-        _id: (_.isEmpty(req.body._id)) ? ticketGroup.get('_id') : req.body._id,
-        nameJa: (_.isEmpty(req.body.nameJa)) ? ticketGroup.get('name').ja : req.body.nameJa,
-        ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.get('ticketTypes') : req.body.ticketTypes,
-        descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? ticketGroup.get('descriptionJa') : req.body.descriptionJa
+        _id: (_.isEmpty(req.body._id)) ? ticketGroup.id : req.body._id,
+        nameJa: (_.isEmpty(req.body.nameJa)) ? ticketGroup.name.ja : req.body.nameJa,
+        ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : req.body.ticketTypes
     };
     res.render('ticketTypeGroup/update', {
         message: message,
@@ -134,51 +135,54 @@ export async function update(req: Request, res: Response): Promise<void> {
  * 一覧データ取得API
  */
 export async function getList(req: Request, res: Response): Promise<void> {
-    const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-    // 表示件数・表示ページ
-    const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-    const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-    // 券種グループコード
-    const ticketGroupCode: string = (!_.isEmpty(req.query.ticketGroupCode)) ? req.query.ticketGroupCode : null;
-    // 管理用券種グループ名
-    const ticketGroupNameJa: string = (!_.isEmpty(req.query.ticketGroupNameJa)) ? req.query.ticketGroupNameJa : null;
+    // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+    // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+    // const ticketGroupCode: string = (!_.isEmpty(req.query.ticketGroupCode)) ? req.query.ticketGroupCode : null;
+    // const ticketGroupNameJa: string = (!_.isEmpty(req.query.ticketGroupNameJa)) ? req.query.ticketGroupNameJa : null;
 
-    // 検索条件を作成
-    const conditions: any = {};
-    // 券種グループコード
-    if (ticketGroupCode !== null) {
-        const key: string = '_id';
-        conditions[key] = ticketGroupCode;
-    }
-    // 管理用券種グループ名
-    if (ticketGroupNameJa !== null) {
-        conditions['name.ja'] = { $regex: ticketGroupNameJa };
-    }
+    // const conditions: any = {};
+    // if (ticketGroupCode !== null) {
+    //     const key: string = '_id';
+    //     conditions[key] = ticketGroupCode;
+    // }
+    // if (ticketGroupNameJa !== null) {
+    //     conditions['name.ja'] = { $regex: ticketGroupNameJa };
+    // }
 
     try {
-        const count = await ticketTypeRepo.ticketTypeGroupModel.count(conditions).exec();
-        let results: any[] = [];
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const ticketTypeGroups = await ticketTypeService.searchTicketTypeGroups({});
+        // const count = await ticketTypeRepo.ticketTypeGroupModel.count(conditions).exec();
+        // let results: any[] = [];
+        // if (count > 0) {
+        //     const ticketTypeGroups = await ticketTypeRepo.ticketTypeGroupModel.find(conditions)
+        //         .skip(limit * (page - 1))
+        //         .limit(limit)
+        //         .exec();
 
-        if (count > 0) {
-            const ticketTypeGroups = await ticketTypeRepo.ticketTypeGroupModel.find(conditions)
-                .skip(limit * (page - 1))
-                .limit(limit)
-                .exec();
-
-            //検索結果編集
-            results = ticketTypeGroups.map((ticketTypeGroup) => {
-                return {
-                    id: ticketTypeGroup._id,
-                    ticketGroupCode: ticketTypeGroup._id,
-                    ticketGroupNameJa: ticketTypeGroup.get('name').ja
-                };
-            });
-        }
+        //     //検索結果編集
+        //     results = ticketTypeGroups.map((ticketTypeGroup) => {
+        //         return {
+        //             id: ticketTypeGroup._id,
+        //             ticketGroupCode: ticketTypeGroup._id,
+        //             ticketGroupNameJa: ticketTypeGroup.get('name').ja
+        //         };
+        //     });
+        // }
 
         res.json({
             success: true,
-            count: count,
-            results: results
+            count: ticketTypeGroups.length,
+            results: ticketTypeGroups.map((g) => {
+                return {
+                    id: g.id,
+                    ticketGroupCode: g.id,
+                    ticketGroupNameJa: g.name.ja
+                };
+            })
         });
     } catch (err) {
         res.json({

@@ -9,20 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * パフォーマンスマスタコントローラー
+ * 上映イベントコントローラー
  */
-const chevre = require("@chevre/domain");
+const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const moment = require("moment");
 const debug = createDebug('chevre-backend:*');
-/**
- * パフォーマンスマスタ管理表示
- */
-function index(_, res, next) {
+function index(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-            const movieTheaters = yield placeRepo.searchMovieTheaters({});
+            const placeService = new chevre.service.Place({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const movieTheaters = yield placeService.searchMovieTheaters({});
             if (movieTheaters.length === 0) {
                 throw new Error('劇場が見つかりません');
             }
@@ -37,14 +37,20 @@ function index(_, res, next) {
     });
 }
 exports.index = index;
-/**
- * パフォーマンス検索
- */
 function search(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         try {
             searchValidation(req);
             const validatorResult = yield req.getValidationResult();
@@ -56,15 +62,14 @@ function search(req, res) {
                 });
                 return;
             }
-            const theater = req.body.theater;
             const day = req.body.day;
-            const movieTheater = yield placeRepo.findMovieTheaterByBranchCode(theater);
-            const screeningEvents = yield eventRepo.searchScreeningEvents({
+            const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.theater });
+            const screeningEvents = yield eventService.searchScreeningEvents({
                 startFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
                 endThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate()
                 // theater: theater,
             });
-            const ticketGroups = yield ticketTypeRepo.ticketTypeGroupModel.find().exec();
+            const ticketGroups = yield ticketTypeService.searchTicketTypeGroups({});
             res.json({
                 validation: null,
                 error: null,
@@ -88,7 +93,10 @@ exports.search = search;
  */
 function searchScreeningEvent(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         try {
             validateSearchScreeningEvent(req);
             const validatorResult = yield req.getValidationResult();
@@ -100,11 +108,10 @@ function searchScreeningEvent(req, res) {
                 });
                 return;
             }
-            const screeningEventSeries = yield eventRepo.eventModel.find({
-                typeOf: chevre.factory.eventType.ScreeningEventSeries,
-                'workPerformed.identifier': req.body.identifier,
-                'location.branchCode': req.body.movieTheaterBranchCode
-            }).then((docs) => docs.map((doc) => doc.toObject()));
+            const screeningEventSeries = yield eventService.searchScreeningEventSeries({
+            // 'workPerformed.identifier': req.body.identifier,
+            // 'location.branchCode': req.body.movieTheaterBranchCode
+            });
             res.json({
                 validation: null,
                 error: null,
@@ -127,7 +134,10 @@ exports.searchScreeningEvent = searchScreeningEvent;
 function regist(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventService = new chevre.service.Event({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
             addValidation(req);
             const validatorResult = yield req.getValidationResult();
             const validations = req.validationErrors(true);
@@ -139,10 +149,8 @@ function regist(req, res) {
                 return;
             }
             debug('saving screening event...', req.body);
-            const attributes = yield createEventFromBody(req.body);
-            yield eventRepo.saveScreeningEvent({
-                attributes: attributes
-            });
+            const attributes = yield createEventFromBody(req.body, req.user);
+            yield eventService.createScreeningEvent(attributes);
             res.json({
                 validation: null,
                 error: null
@@ -164,7 +172,10 @@ exports.regist = regist;
 function update(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
+            const eventService = new chevre.service.Event({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
             updateValidation(req);
             const validatorResult = yield req.getValidationResult();
             const validations = req.validationErrors(true);
@@ -175,11 +186,10 @@ function update(req, res) {
                 });
                 return;
             }
-            const eventId = req.params.eventId;
             debug('saving screening event...', req.body);
-            const attributes = yield createEventFromBody(req.body);
-            yield eventRepo.saveScreeningEvent({
-                id: eventId,
+            const attributes = yield createEventFromBody(req.body, req.user);
+            yield eventService.updateScreeningEvent({
+                id: req.params.eventId,
                 attributes: attributes
             });
             res.json({
@@ -200,15 +210,20 @@ exports.update = update;
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-function createEventFromBody(body) {
+function createEventFromBody(body, user) {
     return __awaiter(this, void 0, void 0, function* () {
-        const eventRepo = new chevre.repository.Event(chevre.mongoose.connection);
-        const placeRepo = new chevre.repository.Place(chevre.mongoose.connection);
-        const screeningEventSeries = yield eventRepo.findById({
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: user.authClient
+        });
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: user.authClient
+        });
+        const screeningEventSeries = yield eventService.findScreeningEventSeriesById({
             id: body.screeningEventId
         });
-        const movieTheater = yield placeRepo.findMovieTheaterByBranchCode(body.theater);
+        const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
         if (screeningRoom === undefined) {
             throw new Error('上映スクリーンが見つかりません');
@@ -218,8 +233,6 @@ function createEventFromBody(body) {
         }
         return {
             typeOf: chevre.factory.eventType.ScreeningEvent,
-            // _id: `IndividualScreeningEvent-${identifier}`,
-            identifier: '',
             doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
             startDate: moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
             endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),

@@ -2,7 +2,6 @@
 /**
  * expressアプリケーション
  */
-const chevre = require("@chevre/domain");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -14,7 +13,6 @@ const multer = require("multer");
 const favicon = require("serve-favicon");
 // tslint:disable-next-line:no-var-requires no-require-imports
 const expressLayouts = require('express-ejs-layouts');
-const mongooseConnectionOptions_1 = require("./mongooseConnectionOptions");
 // ミドルウェア
 const errorHandler_1 = require("./middlewares/errorHandler");
 const locals_1 = require("./middlewares/locals");
@@ -44,8 +42,6 @@ app.use(multer({ storage: storage }).any());
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
 app.use(expressValidator()); // バリデーション
-// Use native promises
-chevre.mongoose.connect(process.env.MONGOLAB_URI, mongooseConnectionOptions_1.default).catch(console.error);
 app.use(router_1.default);
 // 404
 app.use(notFoundHandler_1.default);

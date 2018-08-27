@@ -1,7 +1,4 @@
 "use strict";
-/**
- * 券種マスタコントローラー
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -11,13 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const chevre = require("@chevre/domain");
+/**
+ * 券種マスタコントローラー
+ */
+const chevre = require("@chevre/api-nodejs-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
-// 基数
-const DEFAULT_RADIX = 10;
 // 1ページに表示するデータ数
-const DEFAULT_LINES = 10;
+// const DEFAULT_LINES = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種名・日本語 全角64
@@ -31,7 +29,10 @@ const CHAGE_MAX_LENGTH = 10;
  */
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -43,18 +44,25 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const id = req.body.ticketCode;
-                    const docs = {
-                        _id: id,
+                    const ticketType = {
+                        id: req.body.ticketCode,
                         name: {
                             ja: req.body.ticketNameJa,
                             en: req.body.ticketNameEn
                         },
+                        description: {
+                            ja: '',
+                            en: ''
+                        },
+                        notes: {
+                            ja: '',
+                            en: ''
+                        },
                         charge: req.body.ticketCharge
                     };
-                    yield ticketTypeRepo.ticketTypeModel.create(docs);
+                    yield ticketTypeService.createTicketType(ticketType);
                     message = '登録完了';
-                    res.redirect(`/ticketTypes/${id}/update`);
+                    res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
                 }
                 catch (error) {
@@ -85,10 +93,13 @@ exports.add = add;
  */
 function update(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
+        const ticketTypeService = new chevre.service.TicketType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         let message = '';
         let errors = {};
-        const id = req.params.id;
+        let ticketType = yield ticketTypeService.findTicketTypeById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
@@ -98,31 +109,38 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
-                    const updateParams = {
+                    ticketType = {
+                        id: req.params.id,
                         name: {
                             ja: req.body.ticketNameJa,
                             en: req.body.ticketNameEn
                         },
+                        description: {
+                            ja: '',
+                            en: ''
+                        },
+                        notes: {
+                            ja: '',
+                            en: ''
+                        },
                         charge: req.body.ticketCharge
                     };
-                    yield ticketTypeRepo.ticketTypeModel.findByIdAndUpdate(id, updateParams).exec();
+                    yield ticketTypeService.updateTicketType(ticketType);
                     message = '編集完了';
+                    res.redirect(`/ticketTypes/${ticketType.id}/update`);
+                    return;
                 }
                 catch (error) {
                     message = error.message;
                 }
             }
         }
-        const ticket = yield ticketTypeRepo.ticketTypeModel.findById(id).exec();
-        if (ticket === null) {
-            throw new Error('Ticket type not found');
-        }
         const forms = {
-            ticketCode: (_.isEmpty(req.body.ticketCode)) ? ticket.get('_id') : req.body.ticketCode,
-            ticketNameJa: (_.isEmpty(req.body.ticketNameJa)) ? ticket.get('name').ja : req.body.ticketNameJa,
-            ticketNameEn: (_.isEmpty(req.body.ticketNameEn)) ? ticket.get('name').en : req.body.ticketNameEn,
+            ticketCode: (_.isEmpty(req.body.ticketCode)) ? ticketType.id : req.body.ticketCode,
+            ticketNameJa: (_.isEmpty(req.body.ticketNameJa)) ? ticketType.name.ja : req.body.ticketNameJa,
+            ticketNameEn: (_.isEmpty(req.body.ticketNameEn)) ? ticketType.name.en : req.body.ticketNameEn,
             managementTypeName: (_.isEmpty(req.body.managementTypeName)) ? '' : req.body.managementTypeName,
-            ticketCharge: (_.isEmpty(req.body.ticketCharge)) ? ticket.get('charge') : req.body.ticketCharge,
+            ticketCharge: (_.isEmpty(req.body.ticketCharge)) ? ticketType.charge : req.body.ticketCharge,
             descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? '' : req.body.descriptionJa,
             descriptionEn: (_.isEmpty(req.body.descriptionEn)) ? '' : req.body.descriptionEn,
             hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
@@ -140,54 +158,56 @@ exports.update = update;
  */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeRepo = new chevre.repository.TicketType(chevre.mongoose.connection);
-        // 表示件数・表示ページ
-        const limit = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        const page = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        // 券種コード
-        const ticketCode = (!_.isEmpty(req.query.ticketCode)) ? req.query.ticketCode : null;
-        // 管理用券種名
-        const managementTypeName = (!_.isEmpty(req.query.managementTypeName)) ? req.query.managementTypeName : null;
-        // 金額
-        const ticketCharge = (!_.isEmpty(req.query.ticketCharge)) ? req.query.ticketCharge : null;
-        // 検索条件を作成
-        const conditions = {};
-        // 券種コード
-        if (ticketCode !== null) {
-            const key = '_id';
-            conditions[key] = ticketCode;
-        }
-        // 管理用券種名
-        if (managementTypeName !== null) {
-            conditions['name.ja'] = { $regex: managementTypeName };
-        }
-        // 金額
-        if (ticketCharge !== null) {
-            const key = 'charge';
-            conditions[key] = ticketCharge;
-        }
+        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
+        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
+        // const ticketCode: string = (!_.isEmpty(req.query.ticketCode)) ? req.query.ticketCode : null;
+        // const managementTypeName: string = (!_.isEmpty(req.query.managementTypeName)) ? req.query.managementTypeName : null;
+        // const ticketCharge: string = (!_.isEmpty(req.query.ticketCharge)) ? req.query.ticketCharge : null;
+        // const conditions: any = {};
+        // if (ticketCode !== null) {
+        //     const key: string = '_id';
+        //     conditions[key] = ticketCode;
+        // }
+        // if (managementTypeName !== null) {
+        //     conditions['name.ja'] = { $regex: managementTypeName };
+        // }
+        // if (ticketCharge !== null) {
+        //     const key: string = 'charge';
+        //     conditions[key] = ticketCharge;
+        // }
         try {
-            const count = yield ticketTypeRepo.ticketTypeModel.count(conditions).exec();
-            let results = [];
-            if (count > 0) {
-                const ticketTypes = yield ticketTypeRepo.ticketTypeModel.find(conditions)
-                    .skip(limit * (page - 1))
-                    .limit(limit)
-                    .exec();
-                //検索結果編集
-                results = ticketTypes.map((ticketType) => {
-                    return {
-                        id: ticketType._id,
-                        ticketCode: ticketType._id,
-                        managementTypeName: ticketType.get('name').ja,
-                        ticketCharge: ticketType.get('charge')
-                    };
-                });
-            }
+            const ticketTypeService = new chevre.service.TicketType({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const ticketTypes = yield ticketTypeService.searchTicketTypes({});
+            // const count = await ticketTypeRepo.ticketTypeModel.count(conditions).exec();
+            // let results: any[] = [];
+            // if (count > 0) {
+            //     const ticketTypes = await ticketTypeRepo.ticketTypeModel.find(conditions)
+            //         .skip(limit * (page - 1))
+            //         .limit(limit)
+            //         .exec();
+            //     results = ticketTypes.map((ticketType) => {
+            //         return {
+            //             id: ticketType._id,
+            //             ticketCode: ticketType._id,
+            //             managementTypeName: ticketType.get('name').ja,
+            //             ticketCharge: ticketType.get('charge')
+            //         };
+            //     });
+            // }
             res.json({
                 success: true,
-                count: count,
-                results: results
+                count: ticketTypes.length,
+                results: ticketTypes.map((t) => {
+                    return {
+                        id: t.id,
+                        ticketCode: t.id,
+                        managementTypeName: t.name.ja,
+                        ticketCharge: t.charge
+                    };
+                })
             });
         }
         catch (err) {
