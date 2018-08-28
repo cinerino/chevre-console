@@ -14,8 +14,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
-// 1ページに表示するデータ数
-// const DEFAULT_LINES: number = 10;
 // 券種グループコード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種グループ名・日本語 全角64
@@ -51,11 +49,10 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 try {
                     const ticketTypeGroup = {
-                        id: req.body._id,
-                        name: {
-                            ja: req.body.nameJa,
-                            en: req.body.nameEn
-                        },
+                        id: req.body.id,
+                        name: req.body.name,
+                        description: req.body.description,
+                        notes: req.body.notes,
                         ticketTypes: req.body.ticketTypes
                     };
                     yield ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
@@ -69,17 +66,18 @@ function add(req, res) {
             }
         }
         // 券種マスタから取得
-        const ticketTypes = yield ticketTypeService.searchTicketTypes({});
+        const searchTicketTypesResult = yield ticketTypeService.searchTicketTypes({});
         const forms = {
-            _id: (_.isEmpty(req.body._id)) ? '' : req.body._id,
-            nameJa: (_.isEmpty(req.body.nameJa)) ? '' : req.body.nameJa,
+            id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
+            name: (_.isEmpty(req.body.name)) ? '' : req.body.name,
             ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? [] : req.body.ticketTypes,
-            descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? '' : req.body.descriptionJa
+            description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
+            notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes
         };
         res.render('ticketTypeGroup/add', {
             message: message,
             errors: errors,
-            ticketTypes: ticketTypes,
+            ticketTypes: searchTicketTypesResult.data,
             forms: forms
         });
     });
@@ -107,10 +105,9 @@ function update(req, res) {
                     // 券種グループDB登録
                     const ticketTypeGroup = {
                         id: req.params.id,
-                        name: {
-                            ja: req.body.nameJa,
-                            en: req.body.nameEn
-                        },
+                        name: req.body.name,
+                        description: req.body.description,
+                        notes: req.body.notes,
                         ticketTypes: req.body.ticketTypes
                     };
                     yield ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
@@ -124,18 +121,20 @@ function update(req, res) {
             }
         }
         // 券種マスタから取得
-        const ticketTypes = yield ticketTypeService.searchTicketTypes({});
+        const searchTicketTypesResult = yield ticketTypeService.searchTicketTypes({});
         // 券種グループ取得
         const ticketGroup = yield ticketTypeService.findTicketTypeGroupById({ id: req.params.id });
         const forms = {
-            _id: (_.isEmpty(req.body._id)) ? ticketGroup.id : req.body._id,
-            nameJa: (_.isEmpty(req.body.nameJa)) ? ticketGroup.name.ja : req.body.nameJa,
-            ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : req.body.ticketTypes
+            id: (_.isEmpty(req.body.id)) ? ticketGroup.id : req.body.id,
+            name: (_.isEmpty(req.body.name)) ? ticketGroup.name : req.body.name,
+            ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : req.body.ticketTypes,
+            description: (_.isEmpty(req.body.description)) ? ticketGroup.description : req.body.description,
+            notes: (_.isEmpty(req.body.notes)) ? ticketGroup.notes : req.body.notes
         };
         res.render('ticketTypeGroup/update', {
             message: message,
             errors: errors,
-            ticketTypes: ticketTypes,
+            ticketTypes: searchTicketTypesResult.data,
             forms: forms
         });
     });
@@ -146,44 +145,21 @@ exports.update = update;
  */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        // const ticketGroupCode: string = (!_.isEmpty(req.query.ticketGroupCode)) ? req.query.ticketGroupCode : null;
-        // const ticketGroupNameJa: string = (!_.isEmpty(req.query.ticketGroupNameJa)) ? req.query.ticketGroupNameJa : null;
-        // const conditions: any = {};
-        // if (ticketGroupCode !== null) {
-        //     const key: string = '_id';
-        //     conditions[key] = ticketGroupCode;
-        // }
-        // if (ticketGroupNameJa !== null) {
-        //     conditions['name.ja'] = { $regex: ticketGroupNameJa };
-        // }
         try {
             const ticketTypeService = new chevre.service.TicketType({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const ticketTypeGroups = yield ticketTypeService.searchTicketTypeGroups({});
-            // const count = await ticketTypeRepo.ticketTypeGroupModel.count(conditions).exec();
-            // let results: any[] = [];
-            // if (count > 0) {
-            //     const ticketTypeGroups = await ticketTypeRepo.ticketTypeGroupModel.find(conditions)
-            //         .skip(limit * (page - 1))
-            //         .limit(limit)
-            //         .exec();
-            //     //検索結果編集
-            //     results = ticketTypeGroups.map((ticketTypeGroup) => {
-            //         return {
-            //             id: ticketTypeGroup._id,
-            //             ticketGroupCode: ticketTypeGroup._id,
-            //             ticketGroupNameJa: ticketTypeGroup.get('name').ja
-            //         };
-            //     });
-            // }
+            const { totalCount, data } = yield ticketTypeService.searchTicketTypeGroups({
+                limit: req.query.limit,
+                page: req.query.page,
+                id: req.query.id,
+                name: req.query.name
+            });
             res.json({
                 success: true,
-                count: ticketTypeGroups.length,
-                results: ticketTypeGroups.map((g) => {
+                count: totalCount,
+                results: data.map((g) => {
                     return {
                         id: g.id,
                         ticketGroupCode: g.id,
@@ -208,10 +184,13 @@ exports.getList = getList;
 function validate(req) {
     // 券種グループコード
     let colName = '券種グループコード';
-    req.checkBody('_id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('_id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
-    // サイト表示用券種グループ名
+    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     colName = 'サイト表示用券種グループ名';
-    req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = '券種グループ名(英)';
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    // tslint:disable-next-line:no-magic-numbers
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
 }

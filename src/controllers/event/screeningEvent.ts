@@ -42,29 +42,20 @@ export async function search(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
     try {
-        searchValidation(req);
-        const validatorResult = await req.getValidationResult();
-        const validations = req.validationErrors(true);
-        if (!validatorResult.isEmpty()) {
-            res.json({
-                validation: validations,
-                error: null
-            });
-
-            return;
-        }
-        const day = req.body.day;
-        const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.theater });
-        const screeningEvents = await eventService.searchScreeningEvents({
-            startFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
-            endThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate()
-            // theater: theater,
+        const day = req.query.day;
+        const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
+        const searchResult = await eventService.searchScreeningEvents({
+            inSessionFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
+            inSessionThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate(),
+            superEvent: {
+                locationBranchCodes: [movieTheater.branchCode]
+            }
         });
         const ticketGroups = await ticketTypeService.searchTicketTypeGroups({});
         res.json({
             validation: null,
             error: null,
-            performances: screeningEvents,
+            performances: searchResult.data,
             screens: movieTheater.containsPlace,
             ticketGroups: ticketGroups
         });
@@ -79,31 +70,24 @@ export async function search(req: Request, res: Response): Promise<void> {
 /**
  * 作品検索
  */
-export async function searchScreeningEvent(req: Request, res: Response): Promise<void> {
+export async function searchScreeningEventSeries(req: Request, res: Response): Promise<void> {
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
     try {
-        validateSearchScreeningEvent(req);
-        const validatorResult = await req.getValidationResult();
-        const validations = req.validationErrors(true);
-        if (!validatorResult.isEmpty()) {
-            res.json({
-                validation: validations,
-                error: null
-            });
-
-            return;
-        }
-        const screeningEventSeries = await eventService.searchScreeningEventSeries({
-            // 'workPerformed.identifier': req.body.identifier,
-            // 'location.branchCode': req.body.movieTheaterBranchCode
+        const searchResult = await eventService.searchScreeningEventSeries({
+            location: {
+                branchCodes: [req.query.movieTheaterBranchCode]
+            },
+            workPerformed: {
+                identifiers: [req.query.identifier]
+            }
         });
         res.json({
             validation: null,
             error: null,
-            screeningEventSeries: screeningEventSeries
+            screeningEventSeries: searchResult.data
         });
     } catch (err) {
         debug('searchScreeningEvent error', err);
@@ -229,21 +213,6 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
     };
 }
 /**
- * 検索バリデーション
- */
-function searchValidation(req: Request): void {
-    req.checkBody('theater', '作品が未選択です').notEmpty();
-    req.checkBody('day', '上映日が未選択です').notEmpty();
-}
-
-/**
- * 作品検索バリデーション
- */
-function validateSearchScreeningEvent(req: Request): void {
-    req.checkBody('identifier', '作品コードが未選択です').notEmpty();
-}
-
-/**
  * 新規登録バリデーション
  */
 function addValidation(req: Request): void {
@@ -255,7 +224,6 @@ function addValidation(req: Request): void {
     req.checkBody('screen', 'スクリーンが未選択です').notEmpty();
     req.checkBody('ticketTypeGroup', '券種グループが未選択です').notEmpty();
 }
-
 /**
  * 編集バリデーション
  */

@@ -181,7 +181,7 @@ function search(theater, day) {
     $.ajax({
         dataType: 'json',
         url: '/events/screeningEvent/search',
-        type: 'POST',
+        type: 'GET',
         data: {
             theater: theater,
             day: day
@@ -250,8 +250,8 @@ function filmSearch() {
 
     $.ajax({
         dataType: 'json',
-        url: '/events/screeningEvent/searchScreeningEvent',
-        type: 'POST',
+        url: '/events/screeningEvent/searchScreeningEventSeries',
+        type: 'GET',
         data: {
             identifier: identifier,
             movieTheaterBranchCode: modal.find('input[name=theater]').val()

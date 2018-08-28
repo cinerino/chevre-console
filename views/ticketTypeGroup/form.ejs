@@ -1,22 +1,34 @@
-<% /* 券種グループ名 */ %>
 <div class="form-group ">
-    <label for="nameJa" class="col-sm-3 control-label label-title">
+    <label for="name[ja]" class="col-sm-3 control-label label-title">
         券種グループ名<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
+        <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%= forms.name.ja %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
-            <% if (errors && errors.nameJa) { %>
-            <%- errors.nameJa.msg %>
+            <% if (errors && errors['name.ja']) { %>
+            <%- errors['name.ja'].msg %>
             <% } %>
         </p>
     </div>
 </div>
-
-<% /* 対象券種名 */ %>
+<div class="form-group ">
+    <label for="name[en]" class="col-sm-3 control-label label-title">
+        券種グループ名英<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%= forms.name.en %>">
+        <p class="message">
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['name.en']) { %>
+            <%- errors['name.en'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
 <div class="form-group ">
     <label for="ticketTypes" class="col-sm-3 control-label label-title">
         対象券種名<font color="red">＊</font>
@@ -41,20 +53,33 @@
         </p>
     </div>
 </div>
-
-<% /* 補足説明 */ %>
 <div class="form-group ">
-    <label for="descriptionJa" class="col-sm-3 control-label label-title">
+    <label for="description.ja" class="col-sm-3 control-label label-title">
         補足説明
     </label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="descriptionJa" id="descriptionJa" placeholder="" maxlength=64 value="<%= forms.descriptionJa %>">
+        <input type="text" class="form-control" name="description[ja]" id="description.ja" placeholder="" maxlength=64 value="<%= forms.description.ja %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
-            <% if (errors && errors.descriptionJa) { %>
-            <%- errors.descriptionJa.msg %>
+            <% if (errors && errors['description.ja']) { %>
+            <%- errors['description.ja'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="description.en" class="col-sm-3 control-label label-title">
+        補足説明英
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="description[en]" id="description.en" placeholder="" maxlength=64 value="<%= forms.description.en %>">
+        <p class="message">
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['description.en']) { %>
+            <%- errors['description.en'].msg %>
             <% } %>
         </p>
     </div>

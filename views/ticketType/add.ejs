@@ -21,17 +21,17 @@ Aa-5
 
         <% /* 券種コード */ %>
         <div class="form-group ">
-            <label for="ticketCode" class="col-sm-3 control-label label-title">
+            <label for="id" class="col-sm-3 control-label label-title">
                 券種コード<font color="red">＊</font>
             </label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="ticketCode" id="ticketCode" placeholder="" maxlength=64 value=<%= forms.ticketCode %>>
+                <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64 value=<%= forms.id %>>
                 <p class="message">
                     半角64文字以内でご入力ください。
                 </p>
                 <p class="error message text-danger">
-                <% if (errors && errors.ticketCode) { %>
-                    <%- errors.ticketCode.msg %>
+                <% if (errors && errors.id) { %>
+                    <%- errors.id.msg %>
                 <% } %>
                 </p>
             </div>

@@ -24,15 +24,13 @@
         </select>
     </div>
 </div>
-<% /* 作品名 */ %>
 <div class="form-group">
     <label for="nameJa" class="col-sm-3 control-label label-title">
-        作品名<font color="red">＊</font>
+        イベント名<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
         <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
         <p class="message">
-        <% /*全角64文字以内でご入力ください。*/ %>
         全角64文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
@@ -42,15 +40,13 @@
         </p>
     </div>
 </div>
-<% /* 作品名カナ */ %>
 <div class="form-group">
     <label for="kanaName" class="col-sm-3 control-label label-title">
-        作品名カナ<font color="red">＊</font>
+        イベント名カナ<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
         <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64 value="<%= forms.kanaName %>">
         <p class="message">
-        <% /*全角64文字以内でご入力ください。*/ %>
         全角64文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
@@ -60,15 +56,13 @@
         </p>
     </div>
 </div>
-<% /* 作品名英 */ %>
 <div class="form-group">
     <label for="nameEn" class="col-sm-3 control-label label-title">
-        作品名英
+        イベント名英
     </label>
     <div class="col-sm-9">
         <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128 value="<%- forms.nameEn %>">
         <p class="message">
-        <% /*半角128文字以内でご入力ください。*/ %>
         半角128文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
@@ -78,7 +72,6 @@
         </p>
     </div>
 </div>
-<% /* 上映開始日 */ %>
 <div class="form-group">
     <label for="startDate" class="col-sm-3 control-label label-title">
         上映開始日
@@ -92,7 +85,6 @@
         </p>  
     </div>
 </div>
-<% /* 上映終了日 */ %>
 <div class="form-group">
     <label for="endDate" class="col-sm-3 control-label label-title">
         上映終了日
@@ -106,7 +98,6 @@
         </p>  
     </div>
 </div>
-<% /* レイティング */ %>
 <div class="form-group">
     <label for="contentRating" class="col-sm-3 control-label label-title">
         レイティング<font color="red">＊</font>
@@ -133,7 +124,6 @@
         </p>
     </div>
 </div>
-<% /* 字幕 */ %>
 <div class="form-group">
     <label for="nameEn" class="col-sm-3 control-label label-title">
         字幕言語
@@ -149,7 +139,6 @@
         </p>
     </div>
 </div>
-<% /* 上映形態 */ %>
 <div class="form-group">
     <label for="videoFormat" class="col-sm-3 control-label label-title">
         上映形態<font color="red">＊</font>

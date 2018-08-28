@@ -7,8 +7,8 @@ import * as ScreeningEventController from '../../controllers/event/screeningEven
 
 const screeningEventRouter = Router();
 screeningEventRouter.get('', ScreeningEventController.index);
-screeningEventRouter.post('/search', ScreeningEventController.search);
-screeningEventRouter.post('/searchScreeningEvent', ScreeningEventController.searchScreeningEvent);
+screeningEventRouter.get('/search', ScreeningEventController.search);
+screeningEventRouter.get('/searchScreeningEventSeries', ScreeningEventController.searchScreeningEventSeries);
 screeningEventRouter.post('/regist', ScreeningEventController.regist);
 screeningEventRouter.post('/:eventId/update', ScreeningEventController.update);
 export default screeningEventRouter;

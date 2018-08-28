@@ -23,29 +23,20 @@ Aa-6
     </div>
     <% /* 券種コード */ %>
     <div class="form-group ">
-      <label for="ticketCode" class="col-sm-3 control-label label-title">
+      <label for="id" class="col-sm-3 control-label label-title">
       券種コード
       </label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" name="ticketCode" id="ticketCode" placeholder="" maxlength=64 value=<%= req.body.ticketCode %>>
+        <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
       </div>
     </div>
     <% /* 管理用券種名 */ %>
     <div class="form-group ">
-      <label for="managementTypeName" class="col-sm-3 control-label label-title">
+      <label for="name" class="col-sm-3 control-label label-title">
       管理用券種名
       </label>
       <div class="col-sm-9">
-        <input type="text" class="form-control" name="managementTypeName" id="managementTypeName" placeholder="" maxlength=64 value=<%= req.body.ticketCode %>>
-      </div>
-    </div>
-    <% /* 金額 */ %>
-    <div class="form-group ">
-      <label for="ticketCharge" class="col-sm-3 control-label label-title">
-      金額
-      </label>
-      <div class="col-sm-9">
-        <input type="text" class="form-control" name="ticketCharge" id="ticketCharge" placeholder="" maxlength=64 value=<%= req.body.ticketCode %>>
+        <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
       </div>
     </div>
     <% /* 検索ボタン */ %>

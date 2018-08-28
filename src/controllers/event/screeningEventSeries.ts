@@ -36,7 +36,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const movies = await creativeWorkService.searchMovies({});
+    const searchMoviesResult = await creativeWorkService.searchMovies({});
+    const movies = searchMoviesResult.data;
     const movieTheaters = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
@@ -48,14 +49,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = movies.find((m) => m.identifier === req.body.movieIdentifier);
-                if (movie === undefined) {
-                    throw new Error('作品が存在しません');
-                }
-                const movieTheater = movieTheaters.find((m) => m.branchCode === req.body.locationBranchCode);
-                if (movieTheater === undefined) {
-                    throw new Error('劇場が存在しません');
-                }
+                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.movieIdentifier });
+                const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 const event = await eventService.createScreeningEventSeries(attributes);
@@ -96,7 +91,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const movies = await creativeWorkService.searchMovies({});
+    const searchMoviesResult = await creativeWorkService.searchMovies({});
     const movieTheaters = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
@@ -113,14 +108,8 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = movies.find((m) => m.identifier === req.body.movieIdentifier);
-                if (movie === undefined) {
-                    throw new Error('作品が存在しません');
-                }
-                const movieTheater = movieTheaters.find((m) => m.branchCode === req.body.locationBranchCode);
-                if (movieTheater === undefined) {
-                    throw new Error('劇場が存在しません');
-                }
+                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.movieIdentifier });
+                const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
                 await eventService.updateScreeningEventSeries({
@@ -158,7 +147,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
-        movies: movies,
+        movies: searchMoviesResult.data,
         movieTheaters: movieTheaters
     });
 }
@@ -192,57 +181,27 @@ function createEventFromBody(
         eventStatus: chevre.factory.eventStatusType.EventScheduled
     };
 }
-
 /**
  * 一覧データ取得API
  */
-// tslint:disable-next-line:max-func-body-length
 export async function getList(req: Request, res: Response): Promise<void> {
-    // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-    // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-    // const locationBranchCode: string = (!_.isEmpty(req.query.locationBranchCode)) ? req.query.identifier : null;
-    // const movieIdentifier: string = (!_.isEmpty(req.query.movieIdentifier)) ? req.query.movieIdentifier : null;
-    // const createDateFrom: string = (!_.isEmpty(req.query.dateFrom)) ? req.query.dateFrom : null;
-    // const createDateTo: string = (!_.isEmpty(req.query.dateTo)) ? req.query.dateTo : null;
-    // const filmNameJa: string = (!_.isEmpty(req.query.filmNameJa)) ? req.query.filmNameJa : null;
-    // const kanaName: string = (!_.isEmpty(req.query.kanaName)) ? req.query.kanaName : null;
-    // const filmNameEn: string = (!_.isEmpty(req.query.filmNameEn)) ? req.query.filmNameEn : null;
-    // const conditions: any = {
-    //     typeOf: chevre.factory.eventType.ScreeningEventSeries
-    // };
-    // if (locationBranchCode !== null) {
-    //     conditions['location.branchCode'] = req.query.locationBranchCode;
-    // }
-    // if (movieIdentifier !== null) {
-    //     conditions['workPerformed.identifier'] = movieIdentifier;
-    // }
-    // if (createDateFrom !== null || createDateTo !== null) {
-    //     const conditionsDate: any = {};
-    //     if (createDateFrom !== null) {
-    //         conditionsDate.$gte = moment(`${createDateFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(0, 'days').toDate();
-    //     }
-    //     if (createDateTo !== null) {
-    //         conditionsDate.$lt = moment(`${createDateTo}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'days').toDate();
-    //     }
-    //     conditions.createdAt = conditionsDate;
-    // }
-    // if (filmNameJa !== null) {
-    //     conditions['name.ja'] = { $regex: `^${filmNameJa}` };
-    // }
-    // if (kanaName !== null) {
-    //     conditions.kanaName = { $regex: kanaName };
-    // }
-    // if (filmNameEn !== null) {
-    //     conditions['name.en'] = { $regex: filmNameEn };
-    // }
-
     try {
         const eventService = new chevre.service.Event({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const events = await eventService.searchScreeningEventSeries({});
-        const results = events.map((event) => {
+        const { totalCount, data } = await eventService.searchScreeningEventSeries({
+            limit: req.query.limit,
+            page: req.query.page,
+            name: req.query.name,
+            location: {
+                branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
+            },
+            workPerformed: {
+                identifiers: (req.query.movieIdentifier !== '') ? [req.query.movieIdentifier] : undefined
+            }
+        });
+        const results = data.map((event) => {
             return {
                 id: event.id,
                 movieIdentifier: event.workPerformed.identifier,
@@ -255,31 +214,9 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 videoFormat: event.videoFormat
             };
         });
-
-        // const numDocs = await eventRepo.eventModel.count(conditions).exec();
-        // let results: any[] = [];
-        // if (numDocs > 0) {
-        //     const docs = await eventRepo.eventModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
-        //     results = docs.map((doc) => {
-        //         const event = doc.toObject();
-
-        //         return {
-        //             id: event.id,
-        //             movieIdentifier: event.workPerformed.identifier,
-        //             filmNameJa: event.name.ja,
-        //             filmNameEn: event.name.en,
-        //             kanaName: event.kanaName,
-        //             duration: moment.duration(event.duration).asMinutes(),
-        //             contentRating: event.contentRating,
-        //             subtitleLanguage: event.subtitleLanguage,
-        //             videoFormat: event.videoFormat
-        //         };
-        //     });
-        // }
-
         res.json({
             success: true,
-            count: events.length,
+            count: totalCount,
             results: results
         });
     } catch (error) {

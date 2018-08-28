@@ -52,28 +52,20 @@ function search(req, res) {
             auth: req.user.authClient
         });
         try {
-            searchValidation(req);
-            const validatorResult = yield req.getValidationResult();
-            const validations = req.validationErrors(true);
-            if (!validatorResult.isEmpty()) {
-                res.json({
-                    validation: validations,
-                    error: null
-                });
-                return;
-            }
-            const day = req.body.day;
-            const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.theater });
-            const screeningEvents = yield eventService.searchScreeningEvents({
-                startFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
-                endThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate()
-                // theater: theater,
+            const day = req.query.day;
+            const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
+            const searchResult = yield eventService.searchScreeningEvents({
+                inSessionFrom: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
+                inSessionThrough: moment(`${day}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(1, 'day').toDate(),
+                superEvent: {
+                    locationBranchCodes: [movieTheater.branchCode]
+                }
             });
             const ticketGroups = yield ticketTypeService.searchTicketTypeGroups({});
             res.json({
                 validation: null,
                 error: null,
-                performances: screeningEvents,
+                performances: searchResult.data,
                 screens: movieTheater.containsPlace,
                 ticketGroups: ticketGroups
             });
@@ -91,31 +83,25 @@ exports.search = search;
 /**
  * 作品検索
  */
-function searchScreeningEvent(req, res) {
+function searchScreeningEventSeries(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         try {
-            validateSearchScreeningEvent(req);
-            const validatorResult = yield req.getValidationResult();
-            const validations = req.validationErrors(true);
-            if (!validatorResult.isEmpty()) {
-                res.json({
-                    validation: validations,
-                    error: null
-                });
-                return;
-            }
-            const screeningEventSeries = yield eventService.searchScreeningEventSeries({
-            // 'workPerformed.identifier': req.body.identifier,
-            // 'location.branchCode': req.body.movieTheaterBranchCode
+            const searchResult = yield eventService.searchScreeningEventSeries({
+                location: {
+                    branchCodes: [req.query.movieTheaterBranchCode]
+                },
+                workPerformed: {
+                    identifiers: [req.query.identifier]
+                }
             });
             res.json({
                 validation: null,
                 error: null,
-                screeningEventSeries: screeningEventSeries
+                screeningEventSeries: searchResult.data
             });
         }
         catch (err) {
@@ -127,7 +113,7 @@ function searchScreeningEvent(req, res) {
         }
     });
 }
-exports.searchScreeningEvent = searchScreeningEvent;
+exports.searchScreeningEventSeries = searchScreeningEventSeries;
 /**
  * 新規登録
  */
@@ -248,19 +234,6 @@ function createEventFromBody(body, user) {
             eventStatus: chevre.factory.eventStatusType.EventScheduled
         };
     });
-}
-/**
- * 検索バリデーション
- */
-function searchValidation(req) {
-    req.checkBody('theater', '作品が未選択です').notEmpty();
-    req.checkBody('day', '上映日が未選択です').notEmpty();
-}
-/**
- * 作品検索バリデーション
- */
-function validateSearchScreeningEvent(req) {
-    req.checkBody('identifier', '作品コードが未選択です').notEmpty();
 }
 /**
  * 新規登録バリデーション

@@ -1,5 +1,5 @@
 $(function () {
-    var ITEMS_ON_PAGE = 10;
+    var ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
     // datepickerセット
     $('.datepicker').datepicker({
@@ -42,6 +42,7 @@ $(function () {
     // 検索API呼び出し
     //--------------------------------
     function search(pageNumber) {
+        conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
         var url = '/events/screeningEventSeries/getlist';
         //alert(JSON.stringify(conditions));

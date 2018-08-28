@@ -10,7 +10,6 @@ Aa-3
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/events/screeningEventSeriesList.js"></script>
 <%- contentFor('body') %>
-<% /* フォーム */ %>
 <div class="col-sm-12 form-container search">
     <form method="post" class="form-horizontal" >
     <%- include('../../common/master/_hidden') %>
@@ -21,7 +20,7 @@ Aa-3
         </div>
         <div class="form-group">
             <label for="locationBranchCode" class="col-sm-3 control-label label-title">
-                劇場<font color="red">＊</font>
+                劇場
             </label>
             <div class="col-sm-9">
                 <select class="form-control" name="locationBranchCode">
@@ -40,40 +39,14 @@ Aa-3
                     <input type="text" class="form-control" name="movieIdentifier" id="movieIdentifier" placeholder="" maxlength=64 value="<%= filmModel.movieIdentifier %>">
                 </div>
             </div>
-            <div class="form-group form-inline">
-                <label for="dateFrom" class="col-sm-3 control-label label-title">
-                登録日
+            <div class="form-group">
+                <label for="name" class="col-sm-3 control-label label-title">
+                イベント名
                 </label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control datepicker" name="dateFrom" id="dateFrom" />
-                    ～
-                    <input type="text" class="form-control datepicker" name="dateTo" id="dateTo" />
+                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= filmModel.name %>">
                 </div>
             </div>
-            <div class="form-group">
-                <label for="filmNameJa" class="col-sm-3 control-label label-title">
-                作品名
-                </label>
-                <div class="col-sm-9">
-                    <input class="form-control" name="filmNameJa" id="filmNameJa" placeholder="" maxlength=64 value="<%= filmModel.filmNameJa %>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="kanaName" class="col-sm-3 control-label label-title">
-                作品名カナ
-                </label>
-                <div class="col-sm-9">
-                    <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64 value="<%= filmModel.kanaName %>">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="filmNameEn" class="col-sm-3 control-label label-title">
-                作品名英
-                </label>
-            <div class="col-sm-9">
-                <input class="form-control" name="filmNameEn" id="filmNameEn" placeholder="" maxlength=128 value="<%= filmModel.filmNameEn %>">
-            </div>
-        </div>
         <div class="form-group">
             <div class="panel-body">
                 <a class="btn btn-ok search btn-primary"><span>検索する</span></a>

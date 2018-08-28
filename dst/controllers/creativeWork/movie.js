@@ -17,8 +17,6 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const debug = createDebug('chevre-backend:*');
-// 1ページに表示するデータ数
-// const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 作品名・日本語 全角64
@@ -58,7 +56,6 @@ function add(req, res) {
         }
         const forms = req.body;
         // 作品マスタ画面遷移
-        debug('errors:', errors);
         res.render('creativeWorks/movie/add', {
             message: message,
             errors: errors,
@@ -130,35 +127,21 @@ function createMovieFromBody(body) {
  */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        // const identifier: string = (!_.isEmpty(req.query.identifier)) ? req.query.identifier : null;
-        // const name: string = (!_.isEmpty(req.query.name)) ? req.query.name : null;
-        // const conditions: any = {
-        //     typeOf: chevre.factory.creativeWorkType.Movie
-        // };
-        // if (identifier !== null) {
-        //     conditions.identifier = identifier;
-        // }
-        // if (name !== null) {
-        //     conditions.name = { $regex: `^${name}` };
-        // }
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const movies = yield creativeWorkService.searchMovies({});
-            // const numDocs = await creativeWorkRepo.creativeWorkModel.count(conditions).exec();
-            // let results: any[] = [];
-            // if (numDocs > 0) {
-            //     const docs = await creativeWorkRepo.creativeWorkModel.find(conditions).skip(limit * (page - 1)).limit(limit).exec();
-            //     results = docs.map((doc) => doc.toObject());
-            // }
+            const result = yield creativeWorkService.searchMovies({
+                limit: req.query.limit,
+                page: req.query.page,
+                identifier: req.query.identifier,
+                name: req.query.name
+            });
             res.json({
                 success: true,
-                count: movies.length,
-                results: movies
+                count: result.totalCount,
+                results: result.data
             });
         }
         catch (error) {

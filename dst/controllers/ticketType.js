@@ -14,8 +14,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
-// 1ページに表示するデータ数
-// const DEFAULT_LINES = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種名・日本語 全角64
@@ -45,20 +43,11 @@ function add(req, res) {
                 // 券種DB登録プロセス
                 try {
                     const ticketType = {
-                        id: req.body.ticketCode,
-                        name: {
-                            ja: req.body.ticketNameJa,
-                            en: req.body.ticketNameEn
-                        },
-                        description: {
-                            ja: '',
-                            en: ''
-                        },
-                        notes: {
-                            ja: '',
-                            en: ''
-                        },
-                        charge: req.body.ticketCharge
+                        id: req.body.id,
+                        name: req.body.name,
+                        description: req.body.description,
+                        notes: req.body.notes,
+                        charge: req.body.charge
                     };
                     yield ticketTypeService.createTicketType(ticketType);
                     message = '登録完了';
@@ -71,13 +60,11 @@ function add(req, res) {
             }
         }
         const forms = {
-            ticketCode: (_.isEmpty(req.body.ticketCode)) ? '' : req.body.ticketCode,
-            ticketNameJa: (_.isEmpty(req.body.ticketNameJa)) ? '' : req.body.ticketNameJa,
-            ticketNameEn: (_.isEmpty(req.body.ticketNameEn)) ? '' : req.body.ticketNameEn,
-            managementTypeName: (_.isEmpty(req.body.managementTypeName)) ? '' : req.body.managementTypeName,
-            ticketCharge: (_.isEmpty(req.body.ticketCharge)) ? '' : req.body.ticketCharge,
-            descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? '' : req.body.descriptionJa,
-            descriptionEn: (_.isEmpty(req.body.descriptionEn)) ? '' : req.body.descriptionEn,
+            id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
+            name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
+            charge: (_.isEmpty(req.body.charge)) ? '' : req.body.charge,
+            description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
+            notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes,
             hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
         };
         res.render('ticketType/add', {
@@ -111,19 +98,10 @@ function update(req, res) {
                 try {
                     ticketType = {
                         id: req.params.id,
-                        name: {
-                            ja: req.body.ticketNameJa,
-                            en: req.body.ticketNameEn
-                        },
-                        description: {
-                            ja: '',
-                            en: ''
-                        },
-                        notes: {
-                            ja: '',
-                            en: ''
-                        },
-                        charge: req.body.ticketCharge
+                        name: req.body.name,
+                        description: req.body.description,
+                        notes: req.body.notes,
+                        charge: req.body.charge
                     };
                     yield ticketTypeService.updateTicketType(ticketType);
                     message = '編集完了';
@@ -136,13 +114,11 @@ function update(req, res) {
             }
         }
         const forms = {
-            ticketCode: (_.isEmpty(req.body.ticketCode)) ? ticketType.id : req.body.ticketCode,
-            ticketNameJa: (_.isEmpty(req.body.ticketNameJa)) ? ticketType.name.ja : req.body.ticketNameJa,
-            ticketNameEn: (_.isEmpty(req.body.ticketNameEn)) ? ticketType.name.en : req.body.ticketNameEn,
-            managementTypeName: (_.isEmpty(req.body.managementTypeName)) ? '' : req.body.managementTypeName,
-            ticketCharge: (_.isEmpty(req.body.ticketCharge)) ? ticketType.charge : req.body.ticketCharge,
-            descriptionJa: (_.isEmpty(req.body.descriptionJa)) ? '' : req.body.descriptionJa,
-            descriptionEn: (_.isEmpty(req.body.descriptionEn)) ? '' : req.body.descriptionEn,
+            id: (_.isEmpty(req.body.id)) ? ticketType.id : req.body.id,
+            name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
+            charge: (_.isEmpty(req.body.charge)) ? ticketType.charge : req.body.charge,
+            description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
+            notes: (_.isEmpty(req.body.notes)) ? ticketType.notes : req.body.notes,
             hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
         };
         res.render('ticketType/update', {
@@ -158,49 +134,21 @@ exports.update = update;
  */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // const limit: number = (!_.isEmpty(req.query.limit)) ? parseInt(req.query.limit, DEFAULT_RADIX) : DEFAULT_LINES;
-        // const page: number = (!_.isEmpty(req.query.page)) ? parseInt(req.query.page, DEFAULT_RADIX) : 1;
-        // const ticketCode: string = (!_.isEmpty(req.query.ticketCode)) ? req.query.ticketCode : null;
-        // const managementTypeName: string = (!_.isEmpty(req.query.managementTypeName)) ? req.query.managementTypeName : null;
-        // const ticketCharge: string = (!_.isEmpty(req.query.ticketCharge)) ? req.query.ticketCharge : null;
-        // const conditions: any = {};
-        // if (ticketCode !== null) {
-        //     const key: string = '_id';
-        //     conditions[key] = ticketCode;
-        // }
-        // if (managementTypeName !== null) {
-        //     conditions['name.ja'] = { $regex: managementTypeName };
-        // }
-        // if (ticketCharge !== null) {
-        //     const key: string = 'charge';
-        //     conditions[key] = ticketCharge;
-        // }
         try {
             const ticketTypeService = new chevre.service.TicketType({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const ticketTypes = yield ticketTypeService.searchTicketTypes({});
-            // const count = await ticketTypeRepo.ticketTypeModel.count(conditions).exec();
-            // let results: any[] = [];
-            // if (count > 0) {
-            //     const ticketTypes = await ticketTypeRepo.ticketTypeModel.find(conditions)
-            //         .skip(limit * (page - 1))
-            //         .limit(limit)
-            //         .exec();
-            //     results = ticketTypes.map((ticketType) => {
-            //         return {
-            //             id: ticketType._id,
-            //             ticketCode: ticketType._id,
-            //             managementTypeName: ticketType.get('name').ja,
-            //             ticketCharge: ticketType.get('charge')
-            //         };
-            //     });
-            // }
+            const result = yield ticketTypeService.searchTicketTypes({
+                limit: req.query.limit,
+                page: req.query.page,
+                id: req.query.id,
+                name: req.query.name
+            });
             res.json({
                 success: true,
-                count: ticketTypes.length,
-                results: ticketTypes.map((t) => {
+                count: result.totalCount,
+                results: result.data.map((t) => {
                     return {
                         id: t.id,
                         ticketCode: t.id,
@@ -225,7 +173,7 @@ exports.getList = getList;
  */
 function index(__, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // 券種グループマスタ画面遷移
+        // 券種マスタ画面遷移
         res.render('ticketType/index', {
             message: ''
         });
@@ -238,17 +186,16 @@ exports.index = index;
 function validateFormAdd(req) {
     // 券種コード
     let colName = '券種コード';
-    req.checkBody('ticketCode', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('ticketCode', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     // サイト表示用券種名
     colName = 'サイト表示用券種名';
-    req.checkBody('ticketNameJa', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('ticketNameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
     // サイト表示用券種名英
     colName = 'サイト表示用券種名英';
-    req.checkBody('ticketNameEn', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('ticketNameEn', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN))
-        .len({ max: NAME_MAX_LENGTH_NAME_EN });
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
     // 管理用券種名
     // colName = '管理用券種名';
     // req.checkBody('managementTypeName', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
@@ -258,6 +205,6 @@ function validateFormAdd(req) {
     //     );
     // 金額
     colName = '金額';
-    req.checkBody('ticketCharge', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('ticketCharge', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
+    req.checkBody('charge', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('charge', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
 }

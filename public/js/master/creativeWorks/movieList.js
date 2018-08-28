@@ -1,5 +1,5 @@
 $(function () {
-    var ITEMS_ON_PAGE = 10;
+    var ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
     // datepickerセット
     $('.datepicker').datepicker({
