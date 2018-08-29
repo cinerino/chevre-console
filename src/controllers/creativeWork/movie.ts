@@ -9,7 +9,7 @@ import * as _ from 'underscore';
 
 import * as Message from '../../common/Const/Message';
 
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:controllers');
 
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;

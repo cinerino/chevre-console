@@ -10,8 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const chevreapi = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
-// import * as jwt from 'jsonwebtoken';
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:user');
 /**
  * リクエストユーザー
  */

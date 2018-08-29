@@ -23,12 +23,12 @@ Aa-4
             <select class="form-control" name="day">
             <option value="">選択してください</option>
             <% 
-            const now = Number(moment().format('YYYYMMDD')); 
-            const start = now;
-            const end = now + 5;
+            const now = moment(); 
+            const start = 0;
+            const end = 5;
             %>
             <% for (let i = start; i < end; i++) { %>
-                <option value="<%= String(i) %>"><%= moment(String(i)).format('YYYY/MM/DD') %></option>
+                <option value="<%= moment(now).add(i, 'days').format('YYYYMMDD') %>"><%= moment(now).add(i, 'days').format('YYYY/MM/DD') %></option>
             <% } %>
             </select>
         </div>

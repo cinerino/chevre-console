@@ -8,7 +8,7 @@ import * as moment from 'moment';
 
 import User from '../../user';
 
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:controllers');
 
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -16,12 +16,12 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const movieTheaters = await placeService.searchMovieTheaters({});
-        if (movieTheaters.length === 0) {
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
+        if (searchMovieTheatersResult.totalCount === 0) {
             throw new Error('劇場が見つかりません');
         }
         res.render('events/screeningEvent/index', {
-            movieTheaters: movieTheaters,
+            movieTheaters: searchMovieTheatersResult.data,
             moment: moment
         });
     } catch (err) {

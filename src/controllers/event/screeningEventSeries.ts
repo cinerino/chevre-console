@@ -9,7 +9,7 @@ import * as _ from 'underscore';
 
 import * as Message from '../../common/Const/Message';
 
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:controllers');
 
 // 1ページに表示するデータ数
 // const DEFAULT_LINES: number = 10;

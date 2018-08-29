@@ -16,7 +16,7 @@ const createDebug = require("debug");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:controllers');
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 作品名・日本語 全角64

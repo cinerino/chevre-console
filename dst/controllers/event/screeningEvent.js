@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const moment = require("moment");
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:controllers');
 function index(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -22,12 +22,12 @@ function index(req, res, next) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const movieTheaters = yield placeService.searchMovieTheaters({});
-            if (movieTheaters.length === 0) {
+            const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
+            if (searchMovieTheatersResult.totalCount === 0) {
                 throw new Error('劇場が見つかりません');
             }
             res.render('events/screeningEvent/index', {
-                movieTheaters: movieTheaters,
+                movieTheaters: searchMovieTheatersResult.data,
                 moment: moment
             });
         }

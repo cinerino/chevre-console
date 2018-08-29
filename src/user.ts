@@ -1,8 +1,7 @@
 import * as chevreapi from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
-// import * as jwt from 'jsonwebtoken';
 
-const debug = createDebug('chevre-backend:*');
+const debug = createDebug('chevre-backend:user');
 
 /**
  * ユーザー設定インターフェース
