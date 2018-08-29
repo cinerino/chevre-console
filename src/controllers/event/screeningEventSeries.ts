@@ -38,7 +38,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     });
     const searchMoviesResult = await creativeWorkService.searchMovies({});
     const movies = searchMoviesResult.data;
-    const movieTheaters = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -72,7 +72,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         errors: errors,
         forms: forms,
         movies: movies,
-        movieTheaters: movieTheaters
+        movieTheaters: searchMovieTheatersResult.data
     });
 }
 /**
@@ -92,7 +92,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
     const searchMoviesResult = await creativeWorkService.searchMovies({});
-    const movieTheaters = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
@@ -148,7 +148,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         errors: errors,
         forms: forms,
         movies: searchMoviesResult.data,
-        movieTheaters: movieTheaters
+        movieTheaters: searchMovieTheatersResult.data
     });
 }
 
@@ -235,10 +235,10 @@ export async function index(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const movieTheaters = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     res.render('events/screeningEventSeries/index', {
         filmModel: {},
-        movieTheaters: movieTheaters
+        movieTheaters: searchMovieTheatersResult.data
     });
 }
 /**

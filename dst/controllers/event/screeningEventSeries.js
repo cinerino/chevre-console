@@ -44,7 +44,7 @@ function add(req, res) {
         });
         const searchMoviesResult = yield creativeWorkService.searchMovies({});
         const movies = searchMoviesResult.data;
-        const movieTheaters = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -76,7 +76,7 @@ function add(req, res) {
             errors: errors,
             forms: forms,
             movies: movies,
-            movieTheaters: movieTheaters
+            movieTheaters: searchMovieTheatersResult.data
         });
     });
 }
@@ -99,7 +99,7 @@ function update(req, res) {
             auth: req.user.authClient
         });
         const searchMoviesResult = yield creativeWorkService.searchMovies({});
-        const movieTheaters = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
         let message = '';
         let errors = {};
         const eventId = req.params.eventId;
@@ -154,7 +154,7 @@ function update(req, res) {
             errors: errors,
             forms: forms,
             movies: searchMoviesResult.data,
-            movieTheaters: movieTheaters
+            movieTheaters: searchMovieTheatersResult.data
         });
     });
 }
@@ -245,10 +245,10 @@ function index(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const movieTheaters = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
         res.render('events/screeningEventSeries/index', {
             filmModel: {},
-            movieTheaters: movieTheaters
+            movieTheaters: searchMovieTheatersResult.data
         });
     });
 }
