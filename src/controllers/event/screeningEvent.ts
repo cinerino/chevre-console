@@ -51,13 +51,13 @@ export async function search(req: Request, res: Response): Promise<void> {
                 locationBranchCodes: [movieTheater.branchCode]
             }
         });
-        const ticketGroups = await ticketTypeService.searchTicketTypeGroups({});
+        const searchTicketTypeGroupsResult = await ticketTypeService.searchTicketTypeGroups({});
         res.json({
             validation: null,
             error: null,
             performances: searchResult.data,
             screens: movieTheater.containsPlace,
-            ticketGroups: ticketGroups
+            ticketGroups: searchTicketTypeGroupsResult.data
         });
     } catch (err) {
         debug('search error', err);

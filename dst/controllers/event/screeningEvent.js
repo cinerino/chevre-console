@@ -61,13 +61,13 @@ function search(req, res) {
                     locationBranchCodes: [movieTheater.branchCode]
                 }
             });
-            const ticketGroups = yield ticketTypeService.searchTicketTypeGroups({});
+            const searchTicketTypeGroupsResult = yield ticketTypeService.searchTicketTypeGroups({});
             res.json({
                 validation: null,
                 error: null,
                 performances: searchResult.data,
                 screens: movieTheater.containsPlace,
-                ticketGroups: ticketGroups
+                ticketGroups: searchTicketTypeGroupsResult.data
             });
         }
         catch (err) {
