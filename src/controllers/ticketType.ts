@@ -39,7 +39,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                     name: req.body.name,
                     description: req.body.description,
                     notes: req.body.notes,
-                    charge: req.body.charge
+                    price: req.body.price
                 };
                 await ticketTypeService.createTicketType(ticketType);
                 message = '登録完了';
@@ -54,7 +54,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     const forms = {
         id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
         name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
-        charge: (_.isEmpty(req.body.charge)) ? '' : req.body.charge,
+        price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
         description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
         notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes,
         hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
@@ -91,7 +91,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                     name: req.body.name,
                     description: req.body.description,
                     notes: req.body.notes,
-                    charge: req.body.charge
+                    price: req.body.price
                 };
                 await ticketTypeService.updateTicketType(ticketType);
                 message = '編集完了';
@@ -106,7 +106,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     const forms = {
         id: (_.isEmpty(req.body.id)) ? ticketType.id : req.body.id,
         name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
-        charge: (_.isEmpty(req.body.charge)) ? ticketType.charge : req.body.charge,
+        price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
         description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
         notes: (_.isEmpty(req.body.notes)) ? ticketType.notes : req.body.notes,
         hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
@@ -140,7 +140,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     id: t.id,
                     ticketCode: t.id,
                     managementTypeName: t.name.ja,
-                    ticketCharge: t.charge
+                    ticketPrice: t.price
                 };
             })
         });
@@ -186,6 +186,6 @@ function validateFormAdd(req: Request): void {
     //     );
     // 金額
     colName = '金額';
-    req.checkBody('charge', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('charge', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
+    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
 }

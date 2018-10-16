@@ -68,7 +68,7 @@ function add(req, res) {
                 }
             }
         }
-        const forms = req.body;
+        const forms = Object.assign({ videoFormatType: [] }, req.body);
         // 作品マスタ画面遷移
         debug('errors:', errors);
         res.render('events/screeningEventSeries/add', {
@@ -76,7 +76,8 @@ function add(req, res) {
             errors: errors,
             forms: forms,
             movies: movies,
-            movieTheaters: searchMovieTheatersResult.data
+            movieTheaters: searchMovieTheatersResult.data,
+            VideoFormatType: chevre.factory.videoFormatType
         });
     });
 }
@@ -139,7 +140,7 @@ function update(req, res) {
             locationBranchCode: event.location.branchCode,
             contentRating: event.workPerformed.contentRating,
             subtitleLanguage: event.subtitleLanguage,
-            videoFormat: event.videoFormat,
+            videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
             startDate: (_.isEmpty(req.body.startDate)) ?
                 (event.startDate !== null) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
                 req.body.startDate,
@@ -154,7 +155,8 @@ function update(req, res) {
             errors: errors,
             forms: forms,
             movies: searchMoviesResult.data,
-            movieTheaters: searchMovieTheatersResult.data
+            movieTheaters: searchMovieTheatersResult.data,
+            VideoFormatType: chevre.factory.videoFormatType
         });
     });
 }
@@ -163,6 +165,12 @@ exports.update = update;
  * リクエストボディからイベントオブジェクトを作成する
  */
 function createEventFromBody(body, movie, movieTheater) {
+    const videoFormat = (Array.isArray(body.videoFormatType)) ? body.videoFormatType.map((f) => {
+        return { typeOf: f, name: f };
+    }) : [];
+    const soundFormat = (Array.isArray(body.soundFormatType)) ? body.soundFormatType.map((f) => {
+        return { typeOf: f, name: f };
+    }) : [];
     return {
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
@@ -183,7 +191,8 @@ function createEventFromBody(body, movie, movieTheater) {
         //     identifier: params.movieTheater.identifier,
         //     name: params.movieTheater.name
         // },
-        videoFormat: body.videoFormat,
+        videoFormat: videoFormat,
+        soundFormat: soundFormat,
         subtitleLanguage: body.subtitleLanguage,
         workPerformed: movie,
         duration: movie.duration,
@@ -223,7 +232,7 @@ function getList(req, res) {
                     duration: moment.duration(event.duration).humanize(),
                     contentRating: event.workPerformed.contentRating,
                     subtitleLanguage: event.subtitleLanguage,
-                    videoFormat: event.videoFormat
+                    videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : ''
                 };
             });
             res.json({
@@ -295,7 +304,4 @@ function validate(req) {
     // レイティング
     colName = 'レイティング';
     req.checkBody('contentRating', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    // 上映形態
-    colName = '上映形態';
-    req.checkBody('videoFormat', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

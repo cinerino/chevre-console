@@ -11,7 +11,7 @@
                         <div class="form-group">
                             <label class="col-sm-3 control-label" for="screeningEventIdentifier">作品コード</label>
                             <div class="col-sm-9 form-inline">
-                                <input type="text" maxlength="6" class="form-control" name="screeningEventIdentifier" placeholder="作品コード">
+                                <input type="text" class="form-control" name="screeningEventIdentifier" placeholder="作品コード">
                                 <button type="button" class="btn btn-default film-search-button">検索</button>
                             </div>
                         </div>
@@ -35,20 +35,20 @@
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="doorTimeHour">
                                     <% for (let i = 0; i < 24; i++) { %>
-                                        <% let hour = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= hour %>">
-                                                <%= hour %>
-                                            </option>
-                                            <% } %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="doorTimeMinutes">
                                     <% for (let i = 0; i < 60; i++) { %>
-                                        <% let minutes = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= minutes %>">
-                                                <%= minutes %>
-                                            </option>
-                                            <% } %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>
@@ -58,20 +58,20 @@
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="startTimeHour">
                                     <% for (let i = 0; i < 24; i++) { %>
-                                        <% let hour = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= hour %>">
-                                                <%= hour %>
-                                            </option>
-                                            <% } %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="startTimeMinutes">
                                     <% for (let i = 0; i < 60; i++) { %>
-                                        <% let minutes = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= minutes %>">
-                                                <%= minutes %>
-                                            </option>
-                                            <% } %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>
@@ -81,20 +81,20 @@
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="endTimeHour">
                                     <% for (let i = 0; i < 24; i++) { %>
-                                        <% let hour = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= hour %>">
-                                                <%= hour %>
-                                            </option>
-                                            <% } %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="endTimeMinutes">
                                     <% for (let i = 0; i < 60; i++) { %>
-                                        <% let minutes = ('00' + String(i)).slice(-2); %>
-                                            <option value="<%= minutes %>">
-                                                <%= minutes %>
-                                            </option>
-                                            <% } %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>

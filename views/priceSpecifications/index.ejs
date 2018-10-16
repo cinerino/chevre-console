@@ -1,0 +1,98 @@
+<%- contentFor('title') %>
+予約管理
+<%- contentFor('displayId') %>
+Aa-13
+<%- contentFor('styles') %>
+<%- contentFor('scripts') %>
+<%- contentFor('body') %>
+
+<div class="col-sm-12">
+    <h2>単価仕様</h2>
+    <h2>上映方式チャージ仕様</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <% videoFormaChargeSpecifications.forEach((specification) => { %>
+                    <th>
+                        <%= specification.appliesToVideoFormat %>
+                    </th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <% videoFormaChargeSpecifications.forEach((specification) => { %>
+                    <td>
+                        <input type="text" class="form-control" value="<%= specification.price %> <%= specification.priceCurrency %>">
+                    </td>
+                    <% }) %>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="col-sm-12">
+    <h2>音響方式チャージ仕様</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <% soundFormaChargeSpecifications.forEach((specification) => { %>
+                    <th>
+                        <%= specification.appliesToSoundFormat %>
+                    </th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <% soundFormaChargeSpecifications.forEach((specification) => { %>
+                    <td>
+                        <input type="text" class="form-control" value="<%= specification.price %> <%= specification.priceCurrency %>">
+                    </td>
+                    <% }) %>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="col-sm-12">
+    <h2>ムビチケ券種区分チャージ仕様</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>
+                    </th>
+
+                    <% Object.keys(videoFormatType).forEach((key) => { %>
+                    <th>
+                        <%= videoFormatType[key] %>
+                    </th>
+                    <% }) %>
+                </tr>
+            </thead>
+            <tbody>
+                <% movieTicketTypeCodes.forEach((movieTicketTypeCode) => { %>
+                <tr>
+                    <td>
+                        <% const movieTicketType = movieTicketTypes.find((type)=>type.code===movieTicketTypeCode) %>
+                        <%= (movieTicketType !== undefined) ? movieTicketType.name : 'Unknown' %>
+                    </td>
+                    <% const specifications = movieTicketTypeChargeSpecifications.filter((s) => s.appliesToMovieTicketType === movieTicketTypeCode) %>
+                    <% Object.keys(videoFormatType).forEach((key) => { %>
+                    <td>
+                        <% const specification = specifications.find((s) => s.appliesToVideoFormat === videoFormatType[key]) %>
+                        <input type="text" class="form-control" value="<%= (specification !== undefined) ? specification.price : '' %>">
+                    </td>
+                    <% }) %>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include('../common/master/_loading') %>
