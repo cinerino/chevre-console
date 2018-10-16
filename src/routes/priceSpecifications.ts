@@ -2,7 +2,7 @@
  * 価格仕様ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { mvtk } from '@movieticket/reserve-api-abstract-client'
+import { mvtk } from '@movieticket/reserve-api-abstract-client';
 import { Router } from 'express';
 
 const priceSpecificationsRouter = Router();
