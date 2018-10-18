@@ -42,14 +42,7 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const ticketType = {
-                        id: req.body.id,
-                        name: req.body.name,
-                        description: req.body.description,
-                        notes: req.body.notes,
-                        price: req.body.price
-                    };
-                    yield ticketTypeService.createTicketType(ticketType);
+                    const ticketType = yield ticketTypeService.createTicketType(req.body);
                     message = '登録完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
@@ -65,12 +58,14 @@ function add(req, res) {
             price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
             description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
             notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes,
+            availability: (_.isEmpty(req.body.availability)) ? '' : req.body.availability,
             hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
         };
         res.render('ticketType/add', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            ItemAvailability: chevre.factory.itemAvailability
         });
     });
 }
@@ -96,13 +91,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
-                    ticketType = {
-                        id: req.params.id,
-                        name: req.body.name,
-                        description: req.body.description,
-                        notes: req.body.notes,
-                        price: req.body.price
-                    };
+                    ticketType = Object.assign({ id: req.params.id }, req.body);
                     yield ticketTypeService.updateTicketType(ticketType);
                     message = '編集完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
@@ -119,12 +108,14 @@ function update(req, res) {
             price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
             description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
             notes: (_.isEmpty(req.body.notes)) ? ticketType.notes : req.body.notes,
+            availability: (_.isEmpty(req.body.availability)) ? ticketType.availability : req.body.availability,
             hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
         };
         res.render('ticketType/update', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            ItemAvailability: chevre.factory.itemAvailability
         });
     });
 }
@@ -153,7 +144,8 @@ function getList(req, res) {
                         id: t.id,
                         ticketCode: t.id,
                         managementTypeName: t.name.ja,
-                        ticketPrice: t.price
+                        ticketPrice: t.price,
+                        availability: t.availability
                     };
                 })
             });
@@ -207,4 +199,6 @@ function validateFormAdd(req) {
     colName = '金額';
     req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
+    colName = '在庫';
+    req.checkBody('availability', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

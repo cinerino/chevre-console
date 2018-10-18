@@ -48,14 +48,7 @@ function add(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    const ticketTypeGroup = {
-                        id: req.body.id,
-                        name: req.body.name,
-                        description: req.body.description,
-                        notes: req.body.notes,
-                        ticketTypes: req.body.ticketTypes
-                    };
-                    yield ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
+                    const ticketTypeGroup = yield ticketTypeService.createTicketTypeGroup(req.body);
                     message = '登録完了';
                     res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
                     return;
@@ -103,13 +96,7 @@ function update(req, res) {
                 // 券種グループDB登録
                 try {
                     // 券種グループDB登録
-                    const ticketTypeGroup = {
-                        id: req.params.id,
-                        name: req.body.name,
-                        description: req.body.description,
-                        notes: req.body.notes,
-                        ticketTypes: req.body.ticketTypes
-                    };
+                    const ticketTypeGroup = Object.assign({ id: req.params.id }, req.body);
                     yield ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
                     message = '編集完了';
                     res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);

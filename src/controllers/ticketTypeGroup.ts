@@ -38,14 +38,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                const ticketTypeGroup = {
-                    id: req.body.id,
-                    name: req.body.name,
-                    description: req.body.description,
-                    notes: req.body.notes,
-                    ticketTypes: req.body.ticketTypes
-                };
-                await ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
+                const ticketTypeGroup = await ticketTypeService.createTicketTypeGroup(req.body);
                 message = '登録完了';
                 res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
 
@@ -92,10 +85,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 // 券種グループDB登録
                 const ticketTypeGroup = {
                     id: req.params.id,
-                    name: req.body.name,
-                    description: req.body.description,
-                    notes: req.body.notes,
-                    ticketTypes: req.body.ticketTypes
+                    ...req.body
                 };
                 await ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
                 message = '編集完了';
