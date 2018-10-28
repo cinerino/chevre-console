@@ -16,6 +16,11 @@ var HOUR_HEIGHT = 60;
 var SCREEN_WIDTH = 100;
 
 $(function () {
+    $('.datetimepicker').datetimepicker({
+        locale: 'ja',
+        format: 'YYYY-MM-DDTHH:mm:ss+09:00'
+    });
+
     // 検索
     $(document).on('click', '.search-button', function (event) {
         event.preventDefault();
@@ -130,6 +135,23 @@ function update() {
     var startTime = modal.find('select[name=startTimeHour]').val() + modal.find('select[name=startTimeMinutes]').val();
     var endTime = modal.find('select[name=endTimeHour]').val() + modal.find('select[name=endTimeMinutes]').val();
     var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    // console.log($('form', modal).serializeArray().find((a) => {
+    //     return a.name === 'offers[availabilityStarts]';
+    // }));
+    const datas = {
+        theater: theater,
+        screen: screen,
+        day: day,
+        screeningEventId: screeningEventId,
+        doorTime: doorTime,
+        startTime: startTime,
+        endTime: endTime,
+        ticketTypeGroup: ticketTypeGroup,
+    };
+    $('form', modal).serializeArray().forEach(function (a) {
+        datas[a.name] = a.value;
+    });
+    console.log(datas);
     if (performance === ''
         || screen === ''
         || doorTime === ''
@@ -143,16 +165,7 @@ function update() {
         dataType: 'json',
         url: '/events/screeningEvent/' + performance + '/update',
         type: 'POST',
-        data: {
-            theater: theater,
-            screen: screen,
-            day: day,
-            screeningEventId: screeningEventId,
-            doorTime: doorTime,
-            startTime: startTime,
-            endTime: endTime,
-            ticketTypeGroup: ticketTypeGroup
-        }
+        data: datas
     }).done(function (data) {
         if (!data.error) {
             modal.modal('hide');
@@ -333,7 +346,13 @@ function edit(target) {
     var film = target.attr('data-film');
     var filmName = target.text();
     var ticketTypeGroup = target.attr('data-ticketTypeGroup');
+    var datas = target.data();
+    console.log(datas);
+
     var modal = $('#editModal');
+    Object.keys(target.data()).forEach(function (key) {
+        modal.find('input[name="' + key + '"]').val(target.data()[key]);
+    });
     modal.find('input[name=performance]').val(performance);
     modal.find('input[name=theater]').val(theater);
     modal.find('input[name=day]').val(day);
@@ -449,7 +468,7 @@ function createScreen(performances) {
             width: width + '%'
         };
 
-        var performanceDom = $('<div class="performance">' +
+        var html = '<div class="performance">' +
             '<div ' +
             'data-performance="' + performance._id + '" ' +
             'data-day="' + moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD') + '" ' +
@@ -459,9 +478,18 @@ function createScreen(performances) {
             'data-screen="' + performance.location.branchCode + '" ' +
             'data-theater="' + performance.superEvent.location.branchCode + '" ' +
             'data-film="' + performance.superEvent.id + '" ' +
-            'data-ticketTypeGroup="' + performance.ticketTypeGroup + '" ' +
-            'role="button" class="inner">' + performance.name.ja + '</div>' +
-            '</div>');
+            'data-ticketTypeGroup="' + performance.ticketTypeGroup + '" ';
+        html += 'role="button" class="inner">' + performance.name.ja + '</div></div>';
+        var performanceDom = $(html);
+        if (performance.offers !== undefined) {
+            performanceDom.children().data('offers[availabilityStarts]', performance.offers.availabilityStarts);
+            performanceDom.children().data('offers[validFrom]', performance.offers.validFrom);
+            performanceDom.children().data('offers[eligibleQuantity][value]', performance.offers.eligibleQuantity.value);
+        } else {
+            performanceDom.children().data('offers[availabilityStarts]', '');
+            performanceDom.children().data('offers[validFrom]', '');
+            performanceDom.children().data('offers[eligibleQuantity][value]', '4');
+        }
         performanceDom.css(style);
         dom.append(performanceDom);
     }

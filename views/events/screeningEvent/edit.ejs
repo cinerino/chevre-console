@@ -1,11 +1,11 @@
 <div class="modal fade" id="editModal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span>×</span></button>
-				<h4 class="modal-title">パフォーマンス編集</h4>
-			</div>
-			<div class="modal-body">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">パフォーマンス編集</h4>
+            </div>
+            <div class="modal-body">
                 <div class="panel-body">
                     <form class="form-horizontal">
                         <ul class="list-group">
@@ -17,17 +17,21 @@
                             <label class="col-sm-3 control-label" for="doorTime">開場時間</label>
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="doorTimeHour">
-                                <% for (let i = 0; i < 24; i++) { %>
-                                <% let hour = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= hour %>"><%= hour %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 24; i++) { %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="doorTimeMinutes">
-                                <% for (let i = 0; i < 60; i++) { %>
-                                <% let minutes = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= minutes %>"><%= minutes %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 60; i++) { %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>
@@ -36,17 +40,21 @@
                             <label class="col-sm-3 control-label" for="startTime">開始時間</label>
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="startTimeHour">
-                                <% for (let i = 0; i < 24; i++) { %>
-                                <% let hour = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= hour %>"><%= hour %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 24; i++) { %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="startTimeMinutes">
-                                <% for (let i = 0; i < 60; i++) { %>
-                                <% let minutes = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= minutes %>"><%= minutes %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 60; i++) { %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>
@@ -55,17 +63,21 @@
                             <label class="col-sm-3 control-label" for="endTime">終了時間</label>
                             <div class="col-sm-9 form-inline">
                                 <select class="form-control" name="endTimeHour">
-                                <% for (let i = 0; i < 24; i++) { %>
-                                <% let hour = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= hour %>"><%= hour %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 24; i++) { %>
+                                    <% let hour = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= hour %>">
+                                        <%= hour %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 時
                                 <select class="form-control" name="endTimeMinutes">
-                                <% for (let i = 0; i < 60; i++) { %>
-                                <% let minutes = ('00' + String(i)).slice(-2); %>
-                                    <option value="<%= minutes %>"><%= minutes %></option>
-                                <% } %>
+                                    <% for (let i = 0; i < 60; i++) { %>
+                                    <% let minutes = ('00' + String(i)).slice(-2); %>
+                                    <option value="<%= minutes %>">
+                                        <%= minutes %>
+                                    </option>
+                                    <% } %>
                                 </select>
                                 分
                             </div>
@@ -82,18 +94,44 @@
                                 <select class="form-control" name="ticketTypeGroup"></select>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="offers[validFrom]">販売開始日時</label>
+                            <div class="col-sm-9 form-inline">
+                                <div class="input-group">
+                                    <input type="text" class="form-control datetimepicker" name="offers[validFrom]" id="offers[validFrom]" />
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="offers[availabilityStarts]">情報提供開始日時</label>
+                            <div class="col-sm-9 form-inline">
+                                <div class="input-group">
+                                    <input type="text" class="form-control datetimepicker" name="offers[availabilityStarts]"
+                                        id="offers[availabilityStarts]" />
+                                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label" for="offers[eligibleQuantity][value]">注文上限数</label>
+                            <div class="col-sm-9 form-inline">
+                                <input class="form-control" type="number" name="offers[eligibleQuantity][value]"
+                                    placeholder="1" maxlength=10>
+                            </div>
+                        </div>
                     </form>
                 </div>
-			</div>
+            </div>
             <input type="hidden" name="screeningEventId" value="">
             <input type="hidden" name="performance" value="">
             <input type="hidden" name="film" value="">
             <input type="hidden" name="theater" value="">
             <input type="hidden" name="day" value="">
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-				<button type="button" class="btn btn-primary update-button">パフォーマンスを更新</button>
-			</div>
-		</div>
-	</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                <button type="button" class="btn btn-primary update-button">パフォーマンスを更新</button>
+            </div>
+        </div>
+    </div>
 </div>

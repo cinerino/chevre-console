@@ -172,7 +172,7 @@ function update(req, res) {
                 });
                 return;
             }
-            debug('saving screening event...', req.body);
+            debug('saving screening event...', req.params.eventId, req.body);
             const attributes = yield createEventFromBody(req.body, req.user);
             yield eventService.updateScreeningEvent({
                 id: req.params.eventId,
@@ -217,11 +217,36 @@ function createEventFromBody(body, user) {
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
+        const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+        const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+        const endDate = moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+        const offers = {
+            typeOf: 'Offer',
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            availabilityEnds: endDate,
+            availabilityStarts: endDate,
+            validFrom: endDate,
+            validThrough: endDate,
+            eligibleQuantity: {
+                value: 4,
+                unitCode: chevre.factory.unitCode.C62,
+                typeOf: 'QuantitativeValue'
+            }
+        };
+        if (body.offers !== undefined) {
+            offers.availabilityStarts = moment(body.offers.availabilityStarts).toDate();
+            offers.validFrom = moment(body.offers.validFrom).toDate();
+            offers.eligibleQuantity = {
+                value: Number(body.offers.eligibleQuantity.value),
+                unitCode: chevre.factory.unitCode.C62,
+                typeOf: 'QuantitativeValue'
+            };
+        }
         return {
             typeOf: chevre.factory.eventType.ScreeningEvent,
-            doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
-            startDate: moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
-            endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+            doorTime: doorTime,
+            startDate: startDate,
+            endDate: endDate,
             ticketTypeGroup: body.ticketTypeGroup,
             workPerformed: screeningEventSeries.workPerformed,
             location: {
@@ -231,7 +256,8 @@ function createEventFromBody(body, user) {
             },
             superEvent: screeningEventSeries,
             name: screeningEventSeries.name,
-            eventStatus: chevre.factory.eventStatusType.EventScheduled
+            eventStatus: chevre.factory.eventStatusType.EventScheduled,
+            offers: offers
         };
     });
 }

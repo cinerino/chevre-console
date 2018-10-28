@@ -153,7 +153,7 @@ export async function update(req: Request, res: Response): Promise<void> {
 
             return;
         }
-        debug('saving screening event...', req.body);
+        debug('saving screening event...', req.params.eventId, req.body);
         const attributes = await createEventFromBody(req.body, req.user);
         await eventService.updateScreeningEvent({
             id: req.params.eventId,
@@ -195,11 +195,38 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         throw new Error('上映スクリーン名が見つかりません');
     }
 
+    const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+    const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+    const endDate = moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+
+    const offers: chevre.factory.event.screeningEvent.IOffer = {
+        typeOf: 'Offer',
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        availabilityEnds: endDate,
+        availabilityStarts: endDate,
+        validFrom: endDate,
+        validThrough: endDate,
+        eligibleQuantity: {
+            value: 4,
+            unitCode: chevre.factory.unitCode.C62,
+            typeOf: 'QuantitativeValue'
+        }
+    };
+    if (body.offers !== undefined) {
+        offers.availabilityStarts = moment(body.offers.availabilityStarts).toDate();
+        offers.validFrom = moment(body.offers.validFrom).toDate();
+        offers.eligibleQuantity = {
+            value: Number(body.offers.eligibleQuantity.value),
+            unitCode: chevre.factory.unitCode.C62,
+            typeOf: 'QuantitativeValue'
+        };
+    }
+
     return {
         typeOf: chevre.factory.eventType.ScreeningEvent,
-        doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
-        startDate: moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
-        endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+        doorTime: doorTime,
+        startDate: startDate,
+        endDate: endDate,
         ticketTypeGroup: body.ticketTypeGroup,
         workPerformed: screeningEventSeries.workPerformed,
         location: {
@@ -209,7 +236,8 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         },
         superEvent: screeningEventSeries,
         name: screeningEventSeries.name,
-        eventStatus: chevre.factory.eventStatusType.EventScheduled
+        eventStatus: chevre.factory.eventStatusType.EventScheduled,
+        offers: offers
     };
 }
 /**
