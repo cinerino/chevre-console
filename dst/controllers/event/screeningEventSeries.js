@@ -77,7 +77,8 @@ function add(req, res) {
             forms: forms,
             movies: movies,
             movieTheaters: searchMovieTheatersResult.data,
-            VideoFormatType: chevre.factory.videoFormatType
+            VideoFormatType: chevre.factory.videoFormatType,
+            PaymentMethodType: chevre.factory.paymentMethodType
         });
     });
 }
@@ -108,6 +109,7 @@ function update(req, res) {
             id: eventId
         });
         if (req.method === 'POST') {
+            debug('body:', req.body);
             // バリデーション
             validate(req);
             const validatorResult = yield req.getValidationResult();
@@ -146,7 +148,8 @@ function update(req, res) {
                 req.body.startDate,
             endDate: (_.isEmpty(req.body.endDate)) ?
                 (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
-                req.body.endDate
+                req.body.endDate,
+            offers: (_.isEmpty(req.body.offers)) ? event.offers : req.body.offers
         };
         // 作品マスタ画面遷移
         debug('errors:', errors);
@@ -156,7 +159,8 @@ function update(req, res) {
             forms: forms,
             movies: searchMoviesResult.data,
             movieTheaters: searchMovieTheatersResult.data,
-            VideoFormatType: chevre.factory.videoFormatType
+            VideoFormatType: chevre.factory.videoFormatType,
+            PaymentMethodType: chevre.factory.paymentMethodType
         });
     });
 }
@@ -171,6 +175,14 @@ function createEventFromBody(body, movie, movieTheater) {
     const soundFormat = (Array.isArray(body.soundFormatType)) ? body.soundFormatType.map((f) => {
         return { typeOf: f, name: f };
     }) : [];
+    const offers = {
+        typeOf: 'Offer',
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        acceptedPaymentMethod: []
+    };
+    if (body.offers !== undefined && Array.isArray(body.offers.acceptedPaymentMethod)) {
+        offers.acceptedPaymentMethod = body.offers.acceptedPaymentMethod;
+    }
     return {
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
@@ -198,7 +210,8 @@ function createEventFromBody(body, movie, movieTheater) {
         duration: movie.duration,
         startDate: (!_.isEmpty(body.startDate)) ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
         endDate: (!_.isEmpty(body.endDate)) ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-        eventStatus: chevre.factory.eventStatusType.EventScheduled
+        eventStatus: chevre.factory.eventStatusType.EventScheduled,
+        offers: offers
     };
 }
 /**

@@ -170,3 +170,31 @@
         </p>
     </div>
 </div>
+
+<div class="form-group">
+    <label for="videoFormat" class="col-sm-3 control-label label-title">
+        利用可能決済方法
+    </label>
+    <div class="col-sm-9">
+        <input type="checkbox" class="check" id="acceptAllPaymentMethod"> 全て許可
+        <% Object.keys(PaymentMethodType).forEach((key) => { %>
+        <% var checked = forms.offers === undefined || forms.offers.acceptedPaymentMethod === undefined || forms.offers.acceptedPaymentMethod.indexOf(PaymentMethodType[key]) >= 0 %>
+        <input type="checkbox" name="offers[acceptedPaymentMethod][]" value="<%= PaymentMethodType[key] %>" <% if
+            (checked) { %> checked
+        <% } %>>
+        <%= PaymentMethodType[key] %>
+        <% }) %>
+
+        <p class="error message text-danger">
+            <% if (errors && errors['offers[acceptedPaymentMethod][]']) { %>
+            <%- errors['offers[acceptedPaymentMethod][]'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<script>
+    $('#acceptAllPaymentMethod').click(function () {
+        $('input[name="offers[acceptedPaymentMethod][]"]').prop('checked', $(this).prop('checked'));
+    });
+</script>

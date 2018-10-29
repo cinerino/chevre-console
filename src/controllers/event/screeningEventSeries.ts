@@ -76,7 +76,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: movies,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType
+        VideoFormatType: chevre.factory.videoFormatType,
+        PaymentMethodType: chevre.factory.paymentMethodType
     });
 }
 /**
@@ -105,6 +106,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 
     if (req.method === 'POST') {
+        debug('body:', req.body);
         // バリデーション
         validate(req);
         const validatorResult = await req.getValidationResult();
@@ -143,7 +145,8 @@ export async function update(req: Request, res: Response): Promise<void> {
             req.body.startDate,
         endDate: (_.isEmpty(req.body.endDate)) ?
             (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
-            req.body.endDate
+            req.body.endDate,
+        offers: (_.isEmpty(req.body.offers)) ? event.offers : req.body.offers
     };
     // 作品マスタ画面遷移
     debug('errors:', errors);
@@ -153,7 +156,8 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: searchMoviesResult.data,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType
+        VideoFormatType: chevre.factory.videoFormatType,
+        PaymentMethodType: chevre.factory.paymentMethodType
     });
 }
 
@@ -171,6 +175,14 @@ function createEventFromBody(
     const soundFormat = (Array.isArray(body.soundFormatType)) ? body.soundFormatType.map((f: string) => {
         return { typeOf: f, name: f };
     }) : [];
+    const offers: chevre.factory.event.screeningEventSeries.IOffer = {
+        typeOf: 'Offer',
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        acceptedPaymentMethod: []
+    };
+    if (body.offers !== undefined && Array.isArray(body.offers.acceptedPaymentMethod)) {
+        offers.acceptedPaymentMethod = body.offers.acceptedPaymentMethod;
+    }
 
     return {
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -199,7 +211,8 @@ function createEventFromBody(
         duration: movie.duration,
         startDate: (!_.isEmpty(body.startDate)) ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
         endDate: (!_.isEmpty(body.endDate)) ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-        eventStatus: chevre.factory.eventStatusType.EventScheduled
+        eventStatus: chevre.factory.eventStatusType.EventScheduled,
+        offers: offers
     };
 }
 /**
