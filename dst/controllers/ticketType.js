@@ -42,7 +42,7 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const ticketType = yield ticketTypeService.createTicketType(req.body);
+                    const ticketType = yield ticketTypeService.createTicketType(createFromBody(req.body));
                     message = '登録完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
@@ -57,9 +57,10 @@ function add(req, res) {
             name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
             price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
             description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-            notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes,
+            alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName,
             availability: (_.isEmpty(req.body.availability)) ? '' : req.body.availability,
-            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
+            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
+            eligibleQuantity: (_.isEmpty(req.body.hiddenColor)) ? {} : req.body.eligibleQuantity
         };
         res.render('ticketType/add', {
             message: message,
@@ -91,7 +92,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
-                    ticketType = Object.assign({ id: req.params.id }, req.body);
+                    ticketType = Object.assign({ id: req.params.id }, createFromBody(req.body));
                     yield ticketTypeService.updateTicketType(ticketType);
                     message = '編集完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
@@ -107,9 +108,10 @@ function update(req, res) {
             name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
             price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
             description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
-            notes: (_.isEmpty(req.body.notes)) ? ticketType.notes : req.body.notes,
+            alternateName: (_.isEmpty(req.body.alternateName)) ? ticketType.alternateName : req.body.alternateName,
             availability: (_.isEmpty(req.body.availability)) ? ticketType.availability : req.body.availability,
-            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
+            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
+            eligibleQuantity: (_.isEmpty(req.body.eligibleQuantity)) ? ticketType.eligibleQuantity : req.body.eligibleQuantity
         };
         res.render('ticketType/update', {
             message: message,
@@ -144,8 +146,9 @@ function getList(req, res) {
                         id: t.id,
                         ticketCode: t.id,
                         managementTypeName: t.name.ja,
-                        ticketPrice: t.price,
-                        availability: t.availability
+                        price: t.price,
+                        availability: t.availability,
+                        eligilbleQuantityValue: t.eligibleQuantity.value
                     };
                 })
             });
@@ -172,6 +175,17 @@ function index(__, res) {
     });
 }
 exports.index = index;
+function createFromBody(body) {
+    const eligibleQuantity = {
+        typeOf: 'QuantitativeValue',
+        value: 1,
+        unitCode: chevre.factory.unitCode.C62
+    };
+    if (body.eligibleQuantity !== undefined && body.eligibleQuantity.value !== '') {
+        eligibleQuantity.value = Number(body.eligibleQuantity.value);
+    }
+    return Object.assign({}, body, { eligibleQuantity: eligibleQuantity });
+}
 /**
  * 券種マスタ新規登録画面検証
  */
@@ -201,4 +215,6 @@ function validateFormAdd(req) {
     req.checkBody('price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
     colName = '在庫';
     req.checkBody('availability', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    colName = '価格単位';
+    req.checkBody('eligibleQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

@@ -34,7 +34,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB登録プロセス
             try {
-                const ticketType = await ticketTypeService.createTicketType(req.body);
+                const ticketType = await ticketTypeService.createTicketType(createFromBody(req.body));
                 message = '登録完了';
                 res.redirect(`/ticketTypes/${ticketType.id}/update`);
 
@@ -44,15 +44,18 @@ export async function add(req: Request, res: Response): Promise<void> {
             }
         }
     }
+
     const forms = {
         id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
         name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
         price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
         description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-        notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes,
+        alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName,
         availability: (_.isEmpty(req.body.availability)) ? '' : req.body.availability,
-        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
+        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
+        eligibleQuantity: (_.isEmpty(req.body.hiddenColor)) ? {} : req.body.eligibleQuantity
     };
+
     res.render('ticketType/add', {
         message: message,
         errors: errors,
@@ -83,7 +86,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             try {
                 ticketType = {
                     id: req.params.id,
-                    ...req.body
+                    ...createFromBody(req.body)
                 };
                 await ticketTypeService.updateTicketType(ticketType);
                 message = '編集完了';
@@ -95,15 +98,18 @@ export async function update(req: Request, res: Response): Promise<void> {
             }
         }
     }
+
     const forms = {
         id: (_.isEmpty(req.body.id)) ? ticketType.id : req.body.id,
         name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
         price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
         description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
-        notes: (_.isEmpty(req.body.notes)) ? ticketType.notes : req.body.notes,
+        alternateName: (_.isEmpty(req.body.alternateName)) ? ticketType.alternateName : req.body.alternateName,
         availability: (_.isEmpty(req.body.availability)) ? ticketType.availability : req.body.availability,
-        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor
+        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
+        eligibleQuantity: (_.isEmpty(req.body.eligibleQuantity)) ? ticketType.eligibleQuantity : req.body.eligibleQuantity
     };
+
     res.render('ticketType/update', {
         message: message,
         errors: errors,
@@ -134,8 +140,9 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     id: t.id,
                     ticketCode: t.id,
                     managementTypeName: t.name.ja,
-                    ticketPrice: t.price,
-                    availability: t.availability
+                    price: t.price,
+                    availability: t.availability,
+                    eligilbleQuantityValue: t.eligibleQuantity.value
                 };
             })
         });
@@ -156,6 +163,23 @@ export async function index(__: Request, res: Response): Promise<void> {
         message: ''
     });
 }
+
+function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
+    const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue = {
+        typeOf: 'QuantitativeValue',
+        value: 1,
+        unitCode: chevre.factory.unitCode.C62
+    };
+    if (body.eligibleQuantity !== undefined && body.eligibleQuantity.value !== '') {
+        eligibleQuantity.value = Number(body.eligibleQuantity.value);
+    }
+
+    return {
+        ...body,
+        eligibleQuantity: eligibleQuantity
+    };
+}
+
 /**
  * 券種マスタ新規登録画面検証
  */
@@ -183,6 +207,10 @@ function validateFormAdd(req: Request): void {
     colName = '金額';
     req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
+
     colName = '在庫';
     req.checkBody('availability', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+
+    colName = '価格単位';
+    req.checkBody('eligibleQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

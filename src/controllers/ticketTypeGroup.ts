@@ -55,7 +55,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         name: (_.isEmpty(req.body.name)) ? '' : req.body.name,
         ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? [] : req.body.ticketTypes,
         description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-        notes: (_.isEmpty(req.body.notes)) ? {} : req.body.notes
+        alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName
     };
     res.render('ticketTypeGroup/add', {
         message: message,
@@ -106,7 +106,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         name: (_.isEmpty(req.body.name)) ? ticketGroup.name : req.body.name,
         ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : req.body.ticketTypes,
         description: (_.isEmpty(req.body.description)) ? ticketGroup.description : req.body.description,
-        notes: (_.isEmpty(req.body.notes)) ? ticketGroup.notes : req.body.notes
+        alternateName: (_.isEmpty(req.body.alternateName)) ? ticketGroup.alternateName : req.body.alternateName
     };
     res.render('ticketTypeGroup/update', {
         message: message,

@@ -115,3 +115,20 @@
         </select>
     </div>
 </div>
+<div class="form-group ">
+    <label for="eligibleQuantity[value]" class="col-sm-3 control-label label-title">
+        価格単位<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <% const choices = [1,2,3,4] %>
+        <select class="form-control" name="eligibleQuantity[value]" id="eligibleQuantity[value]">
+            <% choices.forEach((choice) => { %>
+            <option value="<%= choice %>" <% if (forms.eligibleQuantity.value === choice) { %> selected
+                <% } %>>
+                <%= choice %>
+            </option>
+            <% }) %>
+        </select>
+        <p class="error message text-danger"></p>
+    </div>
+</div>
