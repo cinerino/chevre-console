@@ -5,25 +5,29 @@ Aa-9
 <%- contentFor('styles') %>
 
 <%- contentFor('scripts') %>
+<script src="/js/master/creativeWork/movieForm.js"></script>
 
 <%- contentFor('body') %>
 <div class="col-sm-12 form-container">
     <% /* フォーム */ %>
-    <form method="post" class="form-horizontal" >
+    <form method="post" class="form-horizontal">
         <div class="menu-group">
             <% /* メッセージ */ %>
             <% if (message !== '') { %>
-            <p class="error message text-danger panel-body bg-danger"><%= message %></p>
+            <p class="error message text-danger panel-body bg-danger">
+                <%= message %>
+            </p>
             <% } %>
         </div>
 
         <% /* 作品コード */ %>
         <div class="form-group ">
             <label class="col-sm-3 control-label label-title">
-            作品コード
+                作品コード
             </label>
             <div class="col-sm-9">
-                <input readonly style="width:auto;" type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier %>">
+                <input readonly type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+                    maxlength=64 value="<%= forms.identifier %>">
             </div>
         </div>
 
@@ -39,13 +43,17 @@ Aa-9
     </form>
 </div>
 <script>
-$(function(){
-    $('.btn-ok').on('click', function(){
-        $('form').submit();
+    $(function () {
+        $('.btn-ok').on('click', function () {
+            $('form').submit();
+        });
+        // datepickerセット
+        $('.datepicker').datepicker({
+            language: 'ja'
+        });
+        $('.datetimepicker').datetimepicker({
+            locale: 'ja',
+            format: 'YYYY-MM-DDTHH:mm:ss+09:00'
+        });
     });
-    // datepickerセット
-    $('.datepicker').datepicker({
-        language: 'ja'
-    })
-});
 </script>

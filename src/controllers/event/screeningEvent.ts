@@ -207,7 +207,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         validFrom: endDate,
         validThrough: endDate,
         eligibleQuantity: {
-            value: 4,
+            value: 1,
             unitCode: chevre.factory.unitCode.C62,
             typeOf: 'QuantitativeValue'
         }
@@ -237,7 +237,9 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         superEvent: screeningEventSeries,
         name: screeningEventSeries.name,
         eventStatus: chevre.factory.eventStatusType.EventScheduled,
-        offers: offers
+        offers: offers,
+        checkInCount: <any>undefined,
+        attendeeCount: <any>undefined
     };
 }
 /**

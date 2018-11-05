@@ -48,7 +48,9 @@ export async function add(req: Request, res: Response): Promise<void> {
             }
         }
     }
+
     const forms = req.body;
+
     // 作品マスタ画面遷移
     res.render('creativeWorks/movie/add', {
         message: message,
@@ -79,7 +81,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             try {
                 movie = createMovieFromBody(req.body);
                 debug('saving an movie...', movie);
-                await creativeWorkService.createMovie(movie);
+                await creativeWorkService.updateMovie(movie);
                 res.redirect(req.originalUrl);
 
                 return;
@@ -92,10 +94,22 @@ export async function update(req: Request, res: Response): Promise<void> {
         identifier: (_.isEmpty(req.body.identifier)) ? movie.identifier : req.body.identifier,
         name: (_.isEmpty(req.body.nameJa)) ? movie.name : req.body.name,
         duration: (_.isEmpty(req.body.duration)) ? moment.duration(movie.duration).asMinutes() : req.body.duration,
-        contentRating: movie.contentRating
+        contentRating: (_.isEmpty(req.body.duration)) ? movie.contentRating : req.body.contentRating,
+        datePublished: (_.isEmpty(req.body.duration))
+            ? (movie.datePublished !== undefined)
+                ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ')
+                : undefined
+            : req.body.datePublished,
+        offers: {
+            availabilityEnds: (_.isEmpty(req.body.offers))
+                ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
+                    ? moment(movie.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ')
+                    : undefined
+                : req.body.offers.availabilityEnds
+        }
     };
+
     // 作品マスタ画面遷移
-    debug('errors:', errors);
     res.render('creativeWorks/movie/edit', {
         message: message,
         errors: errors,
@@ -103,12 +117,23 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICreativeWork {
+    const offers: chevre.factory.creativeWork.movie.IOffer = {
+        ...body.offers,
+        availabilityEnds: (body.offers !== undefined && body.offers.availabilityEnds !== '')
+            ? moment(body.offers.availabilityEnds).toDate()
+            : undefined,
+        typeOf: 'Offer',
+        priceCurrency: chevre.factory.priceCurrency.JPY
+    };
+
     return {
         typeOf: chevre.factory.creativeWorkType.Movie,
         identifier: body.identifier,
         name: body.name,
         duration: moment.duration(Number(body.duration), 'm').toISOString(),
-        contentRating: body.contentRating
+        contentRating: body.contentRating,
+        datePublished: (body.datePublished !== '') ? moment(body.datePublished).toDate() : undefined,
+        offers: offers
     };
 }
 /**
