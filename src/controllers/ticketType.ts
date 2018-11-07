@@ -165,7 +165,7 @@ export async function index(__: Request, res: Response): Promise<void> {
 }
 
 function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
-    const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue = {
+    const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: 'QuantitativeValue',
         value: 1,
         unitCode: chevre.factory.unitCode.C62
