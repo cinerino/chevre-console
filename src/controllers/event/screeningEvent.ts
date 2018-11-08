@@ -230,7 +230,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         ticketTypeGroup: body.ticketTypeGroup,
         workPerformed: screeningEventSeries.workPerformed,
         location: {
-            typeOf: screeningRoom.typeOf,
+            typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
             branchCode: <string>screeningRoom.branchCode,
             name: screeningRoom.name
         },
