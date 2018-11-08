@@ -232,7 +232,10 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         location: {
             typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
             branchCode: <string>screeningRoom.branchCode,
-            name: screeningRoom.name
+            name: screeningRoom.name,
+            alternateName: screeningRoom.alternateName,
+            address: screeningRoom.address,
+            description: screeningRoom.description
         },
         superEvent: screeningEventSeries,
         name: screeningEventSeries.name,

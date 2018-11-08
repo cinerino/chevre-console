@@ -252,7 +252,10 @@ function createEventFromBody(body, user) {
             location: {
                 typeOf: screeningRoom.typeOf,
                 branchCode: screeningRoom.branchCode,
-                name: screeningRoom.name
+                name: screeningRoom.name,
+                alternateName: screeningRoom.alternateName,
+                address: screeningRoom.address,
+                description: screeningRoom.description
             },
             superEvent: screeningEventSeries,
             name: screeningEventSeries.name,
