@@ -228,7 +228,7 @@ function createEventFromBody(body, user) {
             validFrom: endDate,
             validThrough: endDate,
             eligibleQuantity: {
-                value: 1,
+                maxValue: 1,
                 unitCode: chevre.factory.unitCode.C62,
                 typeOf: 'QuantitativeValue'
             }
@@ -237,7 +237,7 @@ function createEventFromBody(body, user) {
             offers.availabilityStarts = moment(body.offers.availabilityStarts).toDate();
             offers.validFrom = moment(body.offers.validFrom).toDate();
             offers.eligibleQuantity = {
-                value: Number(body.offers.eligibleQuantity.value),
+                maxValue: Number(body.offers.eligibleQuantity.maxValue),
                 unitCode: chevre.factory.unitCode.C62,
                 typeOf: 'QuantitativeValue'
             };

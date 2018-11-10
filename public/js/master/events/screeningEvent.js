@@ -484,11 +484,11 @@ function createScreen(performances) {
         if (performance.offers !== undefined) {
             performanceDom.children().data('offers[availabilityStarts]', performance.offers.availabilityStarts);
             performanceDom.children().data('offers[validFrom]', performance.offers.validFrom);
-            performanceDom.children().data('offers[eligibleQuantity][value]', performance.offers.eligibleQuantity.value);
+            performanceDom.children().data('offers[eligibleQuantity][maxValue]', performance.offers.eligibleQuantity.maxValue);
         } else {
             performanceDom.children().data('offers[availabilityStarts]', '');
             performanceDom.children().data('offers[validFrom]', '');
-            performanceDom.children().data('offers[eligibleQuantity][value]', '4');
+            performanceDom.children().data('offers[eligibleQuantity][maxValue]', '4');
         }
         performanceDom.css(style);
         dom.append(performanceDom);

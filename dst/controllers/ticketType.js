@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 券種マスタコントローラー
  */
 const chevre = require("@chevre/api-nodejs-client");
-const _ = require("underscore");
 const Message = require("../common/Const/Message");
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -31,6 +30,11 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchAccountTitlesResult = yield accountTitleService.search({});
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -42,7 +46,7 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const ticketType = yield ticketTypeService.createTicketType(createFromBody(req.body));
+                    const ticketType = yield ticketTypeService.createTicketType(yield createFromBody(req.body, req.user));
                     message = '登録完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
@@ -52,21 +56,13 @@ function add(req, res) {
                 }
             }
         }
-        const forms = {
-            id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
-            name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
-            price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
-            description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-            alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName,
-            availability: (_.isEmpty(req.body.availability)) ? '' : req.body.availability,
-            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
-            eligibleQuantity: (_.isEmpty(req.body.hiddenColor)) ? {} : req.body.eligibleQuantity
-        };
+        const forms = Object.assign({ name: {}, description: {}, alternateName: {}, eligibleQuantity: {}, accounting: { operatingRevenue: {} } }, req.body);
         res.render('ticketType/add', {
             message: message,
             errors: errors,
             forms: forms,
-            ItemAvailability: chevre.factory.itemAvailability
+            ItemAvailability: chevre.factory.itemAvailability,
+            accountTitles: searchAccountTitlesResult.data
         });
     });
 }
@@ -80,6 +76,11 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchAccountTitlesResult = yield accountTitleService.search({});
         let message = '';
         let errors = {};
         let ticketType = yield ticketTypeService.findTicketTypeById({ id: req.params.id });
@@ -92,7 +93,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
-                    ticketType = Object.assign({ id: req.params.id }, createFromBody(req.body));
+                    ticketType = Object.assign({ id: req.params.id }, yield createFromBody(req.body, req.user));
                     yield ticketTypeService.updateTicketType(ticketType);
                     message = '編集完了';
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
@@ -103,21 +104,13 @@ function update(req, res) {
                 }
             }
         }
-        const forms = {
-            id: (_.isEmpty(req.body.id)) ? ticketType.id : req.body.id,
-            name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
-            price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
-            description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
-            alternateName: (_.isEmpty(req.body.alternateName)) ? ticketType.alternateName : req.body.alternateName,
-            availability: (_.isEmpty(req.body.availability)) ? ticketType.availability : req.body.availability,
-            hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
-            eligibleQuantity: (_.isEmpty(req.body.eligibleQuantity)) ? ticketType.eligibleQuantity : req.body.eligibleQuantity
-        };
+        const forms = Object.assign({}, ticketType, { accounting: Object.assign({ operatingRevenue: {} }, ticketType.accounting) }, req.body);
         res.render('ticketType/update', {
             message: message,
             errors: errors,
             forms: forms,
-            ItemAvailability: chevre.factory.itemAvailability
+            ItemAvailability: chevre.factory.itemAvailability,
+            accountTitles: searchAccountTitlesResult.data
         });
     });
 }
@@ -175,16 +168,55 @@ function index(__, res) {
     });
 }
 exports.index = index;
-function createFromBody(body) {
-    const eligibleQuantity = {
-        typeOf: 'QuantitativeValue',
-        value: 1,
-        unitCode: chevre.factory.unitCode.C62
-    };
-    if (body.eligibleQuantity !== undefined && body.eligibleQuantity.value !== '') {
-        eligibleQuantity.value = Number(body.eligibleQuantity.value);
-    }
-    return Object.assign({}, body, { eligibleQuantity: eligibleQuantity });
+function createFromBody(body, user) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: user.authClient
+        });
+        const priceSpecificationService = new chevre.service.PriceSpecification({
+            endpoint: process.env.API_ENDPOINT,
+            auth: user.authClient
+        });
+        // ムビチケ券種区分指定であれば、価格仕様が登録されているかどうか確認
+        if (body.eligibleMovieTicketType !== undefined && body.eligibleMovieTicketType !== '') {
+            const searchMvtkCompoundSpecsResult = yield priceSpecificationService.searchCompoundPriceSpecifications({
+                limit: 1,
+                typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
+                priceComponent: { typeOf: chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification }
+            });
+            if (searchMvtkCompoundSpecsResult.totalCount === 0) {
+                throw new Error('ムビチケ券種区分チャージ仕様が見つかりません');
+            }
+            const mvtkSpecs = searchMvtkCompoundSpecsResult.data[0].priceComponent.filter((spec) => spec.appliesToMovieTicketType === body.eligibleMovieTicketType);
+            if (mvtkSpecs.length === 0) {
+                throw new Error(`指定されたムビチケ券種区分 ${body.eligibleMovieTicketType} のチャージ仕様が見つかりません`);
+            }
+        }
+        const operatingRevenue = yield accountTitleService.findByIdentifier({ identifier: body.accounting.operatingRevenue.identifier });
+        let nonOperatingRevenue;
+        if (body.accounting !== undefined
+            && body.accounting.nonOperatingRevenue !== undefined
+            && body.accounting.nonOperatingRevenue.identifier !== undefined
+            && body.accounting.nonOperatingRevenue.identifier !== '') {
+            nonOperatingRevenue = yield accountTitleService.findByIdentifier({ identifier: body.accounting.nonOperatingRevenue.identifier });
+        }
+        const accounting = {
+            typeOf: 'Accounting',
+            accountsReceivable: Number(body.accounting.accountsReceivable),
+            operatingRevenue: operatingRevenue,
+            nonOperatingRevenue: nonOperatingRevenue
+        };
+        const eligibleQuantity = {
+            typeOf: 'QuantitativeValue',
+            value: 1,
+            unitCode: chevre.factory.unitCode.C62
+        };
+        if (body.eligibleQuantity !== undefined && body.eligibleQuantity.value !== '') {
+            eligibleQuantity.value = Number(body.eligibleQuantity.value);
+        }
+        return Object.assign({}, body, { eligibleQuantity: eligibleQuantity, accounting: accounting });
+    });
 }
 /**
  * 券種マスタ新規登録画面検証
@@ -217,4 +249,6 @@ function validateFormAdd(req) {
     req.checkBody('availability', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '価格単位';
     req.checkBody('eligibleQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    colName = '営業収益科目';
+    req.checkBody('accounting.operatingRevenue.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

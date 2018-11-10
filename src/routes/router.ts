@@ -5,6 +5,7 @@ import * as express from 'express';
 
 import authentication from '../middlewares/authentication';
 
+import accountTitlesRouter from './accountTitles';
 import authRouter from './auth';
 import movieRouter from './creativeWork/movie';
 import screeningEventRouter from './event/screeningEvent';
@@ -18,6 +19,7 @@ import ticketTypeGroupMasterRouter from './ticketTypeGroup';
 const router = express.Router();
 router.use(authRouter);
 router.use(authentication);
+router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks/movie', movieRouter);
 router.use('/events/screeningEvent', screeningEventRouter);
 router.use('/events/screeningEventSeries', screeningEventSeriesRouter);

@@ -6,6 +6,8 @@ import { Request, Response } from 'express';
 import * as _ from 'underscore';
 import * as Message from '../common/Const/Message';
 
+import User from '../user';
+
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種名・日本語 全角64
@@ -23,6 +25,12 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchAccountTitlesResult = await accountTitleService.search({});
+
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -34,7 +42,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB登録プロセス
             try {
-                const ticketType = await ticketTypeService.createTicketType(createFromBody(req.body));
+                const ticketType = await ticketTypeService.createTicketType(await createFromBody(req.body, req.user));
                 message = '登録完了';
                 res.redirect(`/ticketTypes/${ticketType.id}/update`);
 
@@ -46,21 +54,20 @@ export async function add(req: Request, res: Response): Promise<void> {
     }
 
     const forms = {
-        id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
-        name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
-        price: (_.isEmpty(req.body.price)) ? '' : req.body.price,
-        description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-        alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName,
-        availability: (_.isEmpty(req.body.availability)) ? '' : req.body.availability,
-        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
-        eligibleQuantity: (_.isEmpty(req.body.hiddenColor)) ? {} : req.body.eligibleQuantity
+        name: {},
+        description: {},
+        alternateName: {},
+        eligibleQuantity: {},
+        accounting: { operatingRevenue: {} },
+        ...req.body
     };
 
     res.render('ticketType/add', {
         message: message,
         errors: errors,
         forms: forms,
-        ItemAvailability: chevre.factory.itemAvailability
+        ItemAvailability: chevre.factory.itemAvailability,
+        accountTitles: searchAccountTitlesResult.data
     });
 }
 
@@ -72,6 +79,12 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchAccountTitlesResult = await accountTitleService.search({});
+
     let message = '';
     let errors: any = {};
     let ticketType = await ticketTypeService.findTicketTypeById({ id: req.params.id });
@@ -86,7 +99,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             try {
                 ticketType = {
                     id: req.params.id,
-                    ...createFromBody(req.body)
+                    ...await createFromBody(req.body, req.user)
                 };
                 await ticketTypeService.updateTicketType(ticketType);
                 message = '編集完了';
@@ -100,21 +113,20 @@ export async function update(req: Request, res: Response): Promise<void> {
     }
 
     const forms = {
-        id: (_.isEmpty(req.body.id)) ? ticketType.id : req.body.id,
-        name: (_.isEmpty(req.body.name)) ? ticketType.name : req.body.name,
-        price: (_.isEmpty(req.body.price)) ? ticketType.price : req.body.price,
-        description: (_.isEmpty(req.body.description)) ? ticketType.description : req.body.description,
-        alternateName: (_.isEmpty(req.body.alternateName)) ? ticketType.alternateName : req.body.alternateName,
-        availability: (_.isEmpty(req.body.availability)) ? ticketType.availability : req.body.availability,
-        hiddenColor: (_.isEmpty(req.body.hiddenColor)) ? '' : req.body.hiddenColor,
-        eligibleQuantity: (_.isEmpty(req.body.eligibleQuantity)) ? ticketType.eligibleQuantity : req.body.eligibleQuantity
+        ...ticketType,
+        accounting: {
+            operatingRevenue: {},
+            ...ticketType.accounting
+        },
+        ...req.body
     };
 
     res.render('ticketType/update', {
         message: message,
         errors: errors,
         forms: forms,
-        ItemAvailability: chevre.factory.itemAvailability
+        ItemAvailability: chevre.factory.itemAvailability,
+        accountTitles: searchAccountTitlesResult.data
     });
 }
 /**
@@ -164,7 +176,49 @@ export async function index(__: Request, res: Response): Promise<void> {
     });
 }
 
-function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
+async function createFromBody(body: any, user: User): Promise<chevre.factory.ticketType.ITicketType> {
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: user.authClient
+    });
+    const priceSpecificationService = new chevre.service.PriceSpecification({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: user.authClient
+    });
+
+    // ムビチケ券種区分指定であれば、価格仕様が登録されているかどうか確認
+    if (body.eligibleMovieTicketType !== undefined && body.eligibleMovieTicketType !== '') {
+        const searchMvtkCompoundSpecsResult = await priceSpecificationService.searchCompoundPriceSpecifications({
+            limit: 1,
+            typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
+            priceComponent: { typeOf: chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification }
+        });
+        if (searchMvtkCompoundSpecsResult.totalCount === 0) {
+            throw new Error('ムビチケ券種区分チャージ仕様が見つかりません');
+        }
+        const mvtkSpecs = searchMvtkCompoundSpecsResult.data[0].priceComponent.filter(
+            (spec) => spec.appliesToMovieTicketType === body.eligibleMovieTicketType
+        );
+        if (mvtkSpecs.length === 0) {
+            throw new Error(`指定されたムビチケ券種区分 ${body.eligibleMovieTicketType} のチャージ仕様が見つかりません`);
+        }
+    }
+
+    const operatingRevenue = await accountTitleService.findByIdentifier({ identifier: body.accounting.operatingRevenue.identifier });
+    let nonOperatingRevenue: chevre.factory.accountTitle.IAccountTitle | undefined;
+    if (body.accounting !== undefined
+        && body.accounting.nonOperatingRevenue !== undefined
+        && body.accounting.nonOperatingRevenue.identifier !== undefined
+        && body.accounting.nonOperatingRevenue.identifier !== '') {
+        nonOperatingRevenue = await accountTitleService.findByIdentifier({ identifier: body.accounting.nonOperatingRevenue.identifier });
+    }
+    const accounting: chevre.factory.ticketType.IAccounting = {
+        typeOf: 'Accounting',
+        accountsReceivable: Number(body.accounting.accountsReceivable),
+        operatingRevenue: operatingRevenue,
+        nonOperatingRevenue: nonOperatingRevenue
+    };
+
     const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: 'QuantitativeValue',
         value: 1,
@@ -176,7 +230,8 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
 
     return {
         ...body,
-        eligibleQuantity: eligibleQuantity
+        eligibleQuantity: eligibleQuantity,
+        accounting: accounting
     };
 }
 
@@ -213,4 +268,7 @@ function validateFormAdd(req: Request): void {
 
     colName = '価格単位';
     req.checkBody('eligibleQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+
+    colName = '営業収益科目';
+    req.checkBody('accounting.operatingRevenue.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

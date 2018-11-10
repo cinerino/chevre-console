@@ -123,12 +123,87 @@
         <% const choices = [1,2,3,4] %>
         <select class="form-control" name="eligibleQuantity[value]" id="eligibleQuantity[value]">
             <% choices.forEach((choice) => { %>
-            <option value="<%= choice %>" <% if (forms.eligibleQuantity.value === choice) { %> selected
+            <option value="<%= choice %>" <% if (forms.eligibleQuantity.value===choice) { %> selected
                 <% } %>>
                 <%= choice %>
             </option>
             <% }) %>
         </select>
         <p class="error message text-danger"></p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="eligibleMovieTicketType" class="col-sm-3 control-label label-title">
+        ムビチケ券種区分
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="eligibleMovieTicketType" id="eligibleMovieTicketType" placeholder=""
+            maxlength=10 value=<%=forms.eligibleMovieTicketType %>>
+        <p class="message">
+            半角10文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors.eligibleMovieTicketType) { %>
+            <%- errors.eligibleMovieTicketType.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="accounting[accountsReceivable]" class="col-sm-3 control-label label-title">
+        売掛金額
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="accounting[accountsReceivable]" id="accounting[accountsReceivable]"
+            placeholder="" maxlength=10 value=<%=forms.accounting.accountsReceivable %>>
+        <p class="message">
+            半角10文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['accounting.accountsReceivable']) { %>
+            <%- errors['accounting.accountsReceivable'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="accounting[operatingRevenue][identifier]" class="col-sm-3 control-label label-title">
+        営業収益科目<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <select class="form-control" name="accounting[operatingRevenue][identifier]">
+            <option value="">選択してください</option>
+            <% for (let accountTitle of accountTitles) { %>
+            <option value="<%= accountTitle.identifier %>" <% if (forms.accounting.operatingRevenue.identifier===accountTitle.identifier)
+                { %>
+                selected
+                <% } %> >
+                <%= accountTitle.name %>
+            </option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
+            <% if (errors && errors['accounting.operatingRevenue.identifier']) { %>
+            <%- errors['accounting.operatingRevenue.identifier'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="accounting[nonOperatingRevenue][identifier]" class="col-sm-3 control-label label-title">
+        営業外収益科目
+    </label>
+    <div class="col-sm-9">
+        <select class="form-control" name="accounting[nonOperatingRevenue][identifier]">
+            <option value="">選択してください</option>
+            <% for (let accountTitle of accountTitles) { %>
+            <option value="<%= accountTitle.identifier %>" <% if (forms.accounting.nonOperatingRevenue !==undefined &&
+                forms.accounting.nonOperatingRevenue.identifier===accountTitle.identifier) { %>
+                selected
+                <% } %> >
+                <%= accountTitle.name %>
+            </option>
+            <% } %>
+        </select>
     </div>
 </div>

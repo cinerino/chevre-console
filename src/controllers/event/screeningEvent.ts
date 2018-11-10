@@ -207,7 +207,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         validFrom: endDate,
         validThrough: endDate,
         eligibleQuantity: {
-            value: 1,
+            maxValue: 1,
             unitCode: chevre.factory.unitCode.C62,
             typeOf: 'QuantitativeValue'
         }
@@ -216,7 +216,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         offers.availabilityStarts = moment(body.offers.availabilityStarts).toDate();
         offers.validFrom = moment(body.offers.validFrom).toDate();
         offers.eligibleQuantity = {
-            value: Number(body.offers.eligibleQuantity.value),
+            maxValue: Number(body.offers.eligibleQuantity.maxValue),
             unitCode: chevre.factory.unitCode.C62,
             typeOf: 'QuantitativeValue'
         };

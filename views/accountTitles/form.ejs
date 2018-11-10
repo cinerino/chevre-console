@@ -1,0 +1,88 @@
+<% /* 科目分類コード */ %>
+<div class="form-group">
+    <label for="category[category][identifier]" class="col-sm-3 control-label label-title">
+        科目分類コード<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="category[category][identifier]" id="category[category][identifier]"
+            placeholder="" maxlength=64 value="<%= forms.category.category.identifier %>">
+        <p class="message">半角64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['category.category.identifier']) { %>
+            <%- errors['category.category.identifier'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="category[category][name]" class="col-sm-3 control-label label-title">
+        科目分類名称<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="category[category][name]" id="category[category][name]" placeholder=""
+            maxlength=64 value="<%= forms.category.category.name %>">
+        <p class="message">64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['category.category.name']) { %>
+            <%- errors['category.category.name'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="category[identifier]" class="col-sm-3 control-label label-title">
+        科目コード<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="category[identifier]" id="category[identifier]" placeholder="" maxlength=64
+            value="<%= forms.category.identifier %>">
+        <p class="message">半角64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['category.identifier']) { %>
+            <%- errors['category.identifier'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="category[name]" class="col-sm-3 control-label label-title">
+        科目名称<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="category[name]" id="category[name]" placeholder="" maxlength=64 value="<%= forms.category.name %>">
+        <p class="message">64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['category.name']) { %>
+            <%- errors['category.name'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="identifier" class="col-sm-3 control-label label-title">
+        細目コード<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier %>">
+        <p class="message">半角64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors.identifier) { %>
+            <%- errors.identifier.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="name" class="col-sm-3 control-label label-title">
+        細目名称<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
+        <p class="message">64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors.name) { %>
+            <%- errors.name.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>

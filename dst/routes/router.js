@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express = require("express");
 const authentication_1 = require("../middlewares/authentication");
+const accountTitles_1 = require("./accountTitles");
 const auth_1 = require("./auth");
 const movie_1 = require("./creativeWork/movie");
 const screeningEvent_1 = require("./event/screeningEvent");
@@ -17,6 +18,7 @@ const ticketTypeGroup_1 = require("./ticketTypeGroup");
 const router = express.Router();
 router.use(auth_1.default);
 router.use(authentication_1.default);
+router.use('/accountTitles', accountTitles_1.default);
 router.use('/creativeWorks/movie', movie_1.default);
 router.use('/events/screeningEvent', screeningEvent_1.default);
 router.use('/events/screeningEventSeries', screeningEventSeries_1.default);
