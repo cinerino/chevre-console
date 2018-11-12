@@ -95,6 +95,19 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="control-label col-sm-12" for="eventStatus">イベントステータス</label>
+                            <div class="col-sm-12">
+                                <select class="form-control" name="eventStatus">
+                                    <option value="">選択してください</option>
+                                    <% Object.keys(EventStatusType).forEach((key) => { %>
+                                    <option value="<%= EventStatusType[key] %>">
+                                        <%= EventStatusType[key] %>
+                                    </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-sm-3 control-label" for="offers[validFrom]">販売開始日時</label>
                             <div class="col-sm-9 form-inline">
                                 <div class="input-group">

@@ -22,7 +22,8 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
         }
         res.render('events/screeningEvent/index', {
             movieTheaters: searchMovieTheatersResult.data,
-            moment: moment
+            moment: moment,
+            EventStatusType: chevre.factory.eventStatusType
         });
     } catch (err) {
         next(err);
@@ -239,7 +240,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         },
         superEvent: screeningEventSeries,
         name: screeningEventSeries.name,
-        eventStatus: chevre.factory.eventStatusType.EventScheduled,
+        eventStatus: body.eventStatus,
         offers: offers,
         checkInCount: <any>undefined,
         attendeeCount: <any>undefined

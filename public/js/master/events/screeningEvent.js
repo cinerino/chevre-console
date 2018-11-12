@@ -80,6 +80,7 @@ function regist() {
     var startTime = modal.find('select[name=startTimeHour]').val() + modal.find('select[name=startTimeMinutes]').val();
     var endTime = modal.find('select[name=endTimeHour]').val() + modal.find('select[name=endTimeMinutes]').val();
     var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    var eventStatus = modal.find('select[name=eventStatus]').val();
     if (theater === ''
         || screen === ''
         || day === ''
@@ -88,6 +89,7 @@ function regist() {
         || startTime === ''
         || endTime === ''
         || ticketTypeGroup === ''
+        || eventStatus === ''
     ) {
         alert('情報が足りません');
         return;
@@ -104,7 +106,8 @@ function regist() {
             doorTime: doorTime,
             startTime: startTime,
             endTime: endTime,
-            ticketTypeGroup: ticketTypeGroup
+            ticketTypeGroup: ticketTypeGroup,
+            eventStatus: eventStatus
         }
     }).done(function (data) {
         if (!data.error) {
@@ -135,6 +138,7 @@ function update() {
     var startTime = modal.find('select[name=startTimeHour]').val() + modal.find('select[name=startTimeMinutes]').val();
     var endTime = modal.find('select[name=endTimeHour]').val() + modal.find('select[name=endTimeMinutes]').val();
     var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    var eventStatus = modal.find('select[name=eventStatus]').val();
     // console.log($('form', modal).serializeArray().find((a) => {
     //     return a.name === 'offers[availabilityStarts]';
     // }));
@@ -147,6 +151,7 @@ function update() {
         startTime: startTime,
         endTime: endTime,
         ticketTypeGroup: ticketTypeGroup,
+        eventStatus: eventStatus
     };
     $('form', modal).serializeArray().forEach(function (a) {
         datas[a.name] = a.value;
@@ -346,6 +351,7 @@ function edit(target) {
     var film = target.attr('data-film');
     var filmName = target.text();
     var ticketTypeGroup = target.attr('data-ticketTypeGroup');
+    var eventStatus = target.attr('data-eventStatus');
     var datas = target.data();
     console.log(datas);
 
@@ -366,6 +372,7 @@ function edit(target) {
     modal.find('select[name=endTimeMinutes]').val(endTime.slice(2, 4));
     modal.find('select[name=screen]').val(screen);
     modal.find('select[name=ticketTypeGroup]').val(ticketTypeGroup);
+    modal.find('select[name=eventStatus]').val(eventStatus);
 
     modal.find('.film span').text(filmName);
     modal.modal();
@@ -478,6 +485,7 @@ function createScreen(performances) {
             'data-screen="' + performance.location.branchCode + '" ' +
             'data-theater="' + performance.superEvent.location.branchCode + '" ' +
             'data-film="' + performance.superEvent.id + '" ' +
+            'data-eventStatus="' + performance.eventStatus + '" ' +
             'data-ticketTypeGroup="' + performance.ticketTypeGroup + '" ';
         html += 'role="button" class="inner">' + performance.name.ja + '</div></div>';
         var performanceDom = $(html);

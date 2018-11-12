@@ -28,7 +28,8 @@ function index(req, res, next) {
             }
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
-                moment: moment
+                moment: moment,
+                EventStatusType: chevre.factory.eventStatusType
             });
         }
         catch (err) {
@@ -259,7 +260,7 @@ function createEventFromBody(body, user) {
             },
             superEvent: screeningEventSeries,
             name: screeningEventSeries.name,
-            eventStatus: chevre.factory.eventStatusType.EventScheduled,
+            eventStatus: body.eventStatus,
             offers: offers,
             checkInCount: undefined,
             attendeeCount: undefined
