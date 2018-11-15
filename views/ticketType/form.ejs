@@ -33,18 +33,35 @@
     </div>
 </div>
 <div class="form-group ">
-    <label for="price" class="col-sm-3 control-label label-title">
-        金額<font color="red">＊</font>
+    <label for="priceSpecification[price]" class="col-sm-3 control-label label-title">
+        価格<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value=<%=forms.price
-            %>>
+        <input type="text" class="form-control" name="priceSpecification[price]" id="priceSpecification[price]"
+            placeholder="" maxlength=10 value=<%=forms.priceSpecification.price %>>
         <p class="message">
             半角10文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
-            <% if (errors && errors.price) { %>
-            <%- errors.price.msg %>
+            <% if (errors && errors['priceSpecification.price']) { %>
+            <%- errors['priceSpecification.price'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="priceSpecification[accounting][accountsReceivable]" class="col-sm-3 control-label label-title">
+        売上金額
+    </label>
+    <div class="col-sm-9">
+        <input type="text" class="form-control" name="priceSpecification[accounting][accountsReceivable]" id="priceSpecification[accounting][accountsReceivable]"
+            placeholder="" maxlength=10 value=<%=forms.priceSpecification.accounting.accountsReceivable %>>
+        <p class="message">
+            半角10文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['priceSpecification.accounting.accountsReceivable']) { %>
+            <%- errors['priceSpecification.accounting.accountsReceivable'].msg %>
             <% } %>
         </p>
     </div>
@@ -116,14 +133,15 @@
     </div>
 </div>
 <div class="form-group ">
-    <label for="eligibleQuantity[value]" class="col-sm-3 control-label label-title">
+    <label for="priceSpecification[referenceQuantity][value]" class="col-sm-3 control-label label-title">
         価格単位<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
         <% const choices = [1,2,3,4] %>
-        <select class="form-control" name="eligibleQuantity[value]" id="eligibleQuantity[value]">
+        <select class="form-control" name="priceSpecification[referenceQuantity][value]" id="priceSpecification[referenceQuantity][value]">
             <% choices.forEach((choice) => { %>
-            <option value="<%= choice %>" <% if (forms.eligibleQuantity.value===choice) { %> selected
+            <option value="<%= choice %>" <% if (forms.priceSpecification.referenceQuantity.value===choice) { %>
+                selected
                 <% } %>>
                 <%= choice %>
             </option>
@@ -133,49 +151,32 @@
     </div>
 </div>
 <div class="form-group ">
-    <label for="eligibleMovieTicketType" class="col-sm-3 control-label label-title">
+    <label for="priceSpecification[appliesToMovieTicketType]" class="col-sm-3 control-label label-title">
         ムビチケ券種区分
     </label>
     <div class="col-sm-9">
-        <input type="text" class="form-control" name="eligibleMovieTicketType" id="eligibleMovieTicketType" placeholder=""
-            maxlength=10 value=<%=forms.eligibleMovieTicketType %>>
+        <input type="text" class="form-control" name="priceSpecification[appliesToMovieTicketType]" id="priceSpecification[appliesToMovieTicketType]"
+            placeholder="" maxlength=10 value=<%=forms.priceSpecification.appliesToMovieTicketType %>>
         <p class="message">
             半角10文字以内でご入力ください。
         </p>
         <p class="error message text-danger">
-            <% if (errors && errors.eligibleMovieTicketType) { %>
-            <%- errors.eligibleMovieTicketType.msg %>
+            <% if (errors && errors['priceSpecification.appliesToMovieTicketType']) { %>
+            <%- errors['priceSpecification.appliesToMovieTicketType'].msg %>
             <% } %>
         </p>
     </div>
 </div>
 <div class="form-group ">
-    <label for="accounting[accountsReceivable]" class="col-sm-3 control-label label-title">
-        売掛金額
-    </label>
-    <div class="col-sm-9">
-        <input type="text" class="form-control" name="accounting[accountsReceivable]" id="accounting[accountsReceivable]"
-            placeholder="" maxlength=10 value=<%=forms.accounting.accountsReceivable %>>
-        <p class="message">
-            半角10文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors['accounting.accountsReceivable']) { %>
-            <%- errors['accounting.accountsReceivable'].msg %>
-            <% } %>
-        </p>
-    </div>
-</div>
-<div class="form-group ">
-    <label for="accounting[operatingRevenue][identifier]" class="col-sm-3 control-label label-title">
+    <label for="priceSpecification[accounting][operatingRevenue][identifier]" class="col-sm-3 control-label label-title">
         営業収益科目<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <select class="form-control" name="accounting[operatingRevenue][identifier]">
+        <select class="form-control" name="priceSpecification[accounting][operatingRevenue][identifier]">
             <option value="">選択してください</option>
             <% for (let accountTitle of accountTitles) { %>
-            <option value="<%= accountTitle.identifier %>" <% if (forms.accounting.operatingRevenue.identifier===accountTitle.identifier)
-                { %>
+            <option value="<%= accountTitle.identifier %>" <% if
+                (forms.priceSpecification.accounting.operatingRevenue.identifier===accountTitle.identifier) { %>
                 selected
                 <% } %> >
                 <%= accountTitle.name %>
@@ -183,22 +184,23 @@
             <% } %>
         </select>
         <p class="error message text-danger">
-            <% if (errors && errors['accounting.operatingRevenue.identifier']) { %>
-            <%- errors['accounting.operatingRevenue.identifier'].msg %>
+            <% if (errors && errors['priceSpecification.accounting.operatingRevenue.identifier']) { %>
+            <%- errors['priceSpecification.accounting.operatingRevenue.identifier'].msg %>
             <% } %>
         </p>
     </div>
 </div>
 <div class="form-group ">
-    <label for="accounting[nonOperatingRevenue][identifier]" class="col-sm-3 control-label label-title">
+    <label for="priceSpecification[accounting][nonOperatingRevenue][identifier]" class="col-sm-3 control-label label-title">
         営業外収益科目
     </label>
     <div class="col-sm-9">
-        <select class="form-control" name="accounting[nonOperatingRevenue][identifier]">
+        <select class="form-control" name="priceSpecification[accounting][nonOperatingRevenue][identifier]">
             <option value="">選択してください</option>
             <% for (let accountTitle of accountTitles) { %>
-            <option value="<%= accountTitle.identifier %>" <% if (forms.accounting.nonOperatingRevenue !==undefined &&
-                forms.accounting.nonOperatingRevenue.identifier===accountTitle.identifier) { %>
+            <option value="<%= accountTitle.identifier %>" <% if
+                (forms.priceSpecification.accounting.nonOperatingRevenue !==undefined &&
+                forms.priceSpecification.accounting.nonOperatingRevenue.identifier===accountTitle.identifier) { %>
                 selected
                 <% } %> >
                 <%= accountTitle.name %>

@@ -56,7 +56,10 @@ function add(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ name: {}, description: {}, alternateName: {}, eligibleQuantity: {}, accounting: { operatingRevenue: {} } }, req.body);
+        const forms = Object.assign({ name: {}, description: {}, alternateName: {}, priceSpecification: {
+                referenceQuantity: {},
+                accounting: { operatingRevenue: {} }
+            } }, req.body);
         res.render('ticketType/add', {
             message: message,
             errors: errors,
@@ -104,7 +107,9 @@ function update(req, res) {
                 }
             }
         }
-        const forms = Object.assign({}, ticketType, { accounting: Object.assign({ operatingRevenue: {} }, ticketType.accounting) }, req.body);
+        const forms = Object.assign({}, ticketType, { priceSpecification: Object.assign({ referenceQuantity: {}, accounting: {
+                    operatingRevenue: {}
+                } }, ticketType.priceSpecification) }, req.body);
         res.render('ticketType/update', {
             message: message,
             errors: errors,
@@ -135,14 +140,9 @@ function getList(req, res) {
                 success: true,
                 count: result.totalCount,
                 results: result.data.map((t) => {
-                    return {
-                        id: t.id,
-                        ticketCode: t.id,
-                        managementTypeName: t.name.ja,
-                        price: t.price,
-                        availability: t.availability,
-                        eligilbleQuantityValue: t.eligibleQuantity.value
-                    };
+                    return Object.assign({}, t, { 
+                        // id: t.id,
+                        ticketCode: t.id, managementTypeName: t.name.ja });
                 })
             });
         }
@@ -179,7 +179,9 @@ function createFromBody(body, user) {
             auth: user.authClient
         });
         // ムビチケ券種区分指定であれば、価格仕様が登録されているかどうか確認
-        if (body.eligibleMovieTicketType !== undefined && body.eligibleMovieTicketType !== '') {
+        let appliesToMovieTicketType;
+        if (body.priceSpecification.appliesToMovieTicketType !== undefined && body.priceSpecification.appliesToMovieTicketType !== '') {
+            appliesToMovieTicketType = body.priceSpecification.appliesToMovieTicketType;
             const searchMvtkCompoundSpecsResult = yield priceSpecificationService.searchCompoundPriceSpecifications({
                 limit: 1,
                 typeOf: chevre.factory.priceSpecificationType.CompoundPriceSpecification,
@@ -188,34 +190,43 @@ function createFromBody(body, user) {
             if (searchMvtkCompoundSpecsResult.totalCount === 0) {
                 throw new Error('ムビチケ券種区分チャージ仕様が見つかりません');
             }
-            const mvtkSpecs = searchMvtkCompoundSpecsResult.data[0].priceComponent.filter((spec) => spec.appliesToMovieTicketType === body.eligibleMovieTicketType);
+            const mvtkSpecs = searchMvtkCompoundSpecsResult.data[0].priceComponent.filter((spec) => spec.appliesToMovieTicketType === appliesToMovieTicketType);
             if (mvtkSpecs.length === 0) {
-                throw new Error(`指定されたムビチケ券種区分 ${body.eligibleMovieTicketType} のチャージ仕様が見つかりません`);
+                throw new Error(`指定されたムビチケ券種区分 ${appliesToMovieTicketType} のチャージ仕様が見つかりません`);
             }
         }
-        const operatingRevenue = yield accountTitleService.findByIdentifier({ identifier: body.accounting.operatingRevenue.identifier });
+        const operatingRevenue = yield accountTitleService.findByIdentifier({
+            identifier: body.priceSpecification.accounting.operatingRevenue.identifier
+        });
         let nonOperatingRevenue;
         if (body.accounting !== undefined
             && body.accounting.nonOperatingRevenue !== undefined
             && body.accounting.nonOperatingRevenue.identifier !== undefined
             && body.accounting.nonOperatingRevenue.identifier !== '') {
-            nonOperatingRevenue = yield accountTitleService.findByIdentifier({ identifier: body.accounting.nonOperatingRevenue.identifier });
+            nonOperatingRevenue = yield accountTitleService.findByIdentifier({
+                identifier: body.priceSpecification.accounting.nonOperatingRevenue.identifier
+            });
         }
-        const accounting = {
-            typeOf: 'Accounting',
-            accountsReceivable: Number(body.accounting.accountsReceivable),
-            operatingRevenue: operatingRevenue,
-            nonOperatingRevenue: nonOperatingRevenue
-        };
-        const eligibleQuantity = {
+        const referenceQuantity = {
             typeOf: 'QuantitativeValue',
-            value: 1,
+            value: Number(body.priceSpecification.referenceQuantity.value),
             unitCode: chevre.factory.unitCode.C62
         };
-        if (body.eligibleQuantity !== undefined && body.eligibleQuantity.value !== '') {
-            eligibleQuantity.value = Number(body.eligibleQuantity.value);
-        }
-        return Object.assign({}, body, { eligibleQuantity: eligibleQuantity, accounting: accounting });
+        const priceSpecification = {
+            typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
+            price: Number(body.priceSpecification.price),
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            valueAddedTaxIncluded: true,
+            referenceQuantity: referenceQuantity,
+            appliesToMovieTicketType: appliesToMovieTicketType,
+            accounting: {
+                typeOf: 'Accounting',
+                accountsReceivable: Number(body.priceSpecification.accounting.accountsReceivable),
+                operatingRevenue: operatingRevenue,
+                nonOperatingRevenue: nonOperatingRevenue
+            }
+        };
+        return Object.assign({}, body, { typeOf: 'Offer', priceSpecification: priceSpecification });
     });
 }
 /**
@@ -243,12 +254,13 @@ function validateFormAdd(req) {
     //     );
     // 金額
     colName = '金額';
-    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
+    req.checkBody('priceSpecification.price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.price', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: CHAGE_MAX_LENGTH });
     colName = '在庫';
     req.checkBody('availability', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '価格単位';
-    req.checkBody('eligibleQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '営業収益科目';
-    req.checkBody('accounting.operatingRevenue.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.accounting.operatingRevenue.identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 }

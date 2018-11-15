@@ -91,7 +91,7 @@ $(function () {
                     var fieldIds = key.split("__");
                     var temp = outerHtml;
                     $.each(fieldIds, function (index, fieldId) {
-                        var value = $.fn.getStringValue(data, fieldId, "?" + fieldId + "?");
+                        var value = $.fn.getStringValue(data, fieldId, '');
                         temp = temp.replace("\$" + fieldId + "\$", value);
                         if (fieldId === 'edit') {
                             var id = $.fn.getStringValue(data, "id", "");
