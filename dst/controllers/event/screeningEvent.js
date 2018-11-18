@@ -226,13 +226,20 @@ function createEventFromBody(body, user) {
             priceCurrency: chevre.factory.priceCurrency.JPY,
             availabilityEnds: endDate,
             availabilityStarts: endDate,
-            validFrom: endDate,
-            validThrough: endDate,
+            category: {
+                id: body.ticketTypeGroup,
+                name: { ja: '', en: '' }
+            },
             eligibleQuantity: {
                 maxValue: 1,
                 unitCode: chevre.factory.unitCode.C62,
                 typeOf: 'QuantitativeValue'
-            }
+            },
+            itemOffered: {
+                serviceType: { typeOf: 'ServiceType', id: '', name: '' }
+            },
+            validFrom: endDate,
+            validThrough: endDate
         };
         if (body.offers !== undefined) {
             offers.availabilityStarts = moment(body.offers.availabilityStarts).toDate();
@@ -248,7 +255,6 @@ function createEventFromBody(body, user) {
             doorTime: doorTime,
             startDate: startDate,
             endDate: endDate,
-            ticketTypeGroup: body.ticketTypeGroup,
             workPerformed: screeningEventSeries.workPerformed,
             location: {
                 typeOf: screeningRoom.typeOf,
