@@ -33,26 +33,35 @@
     <label for="ticketTypes" class="col-sm-3 control-label label-title">
         対象券種名<font color="red">＊</font>
     </label>
+    <div class="col-sm-9"></div>
+</div>
+<div class="form-group ">
+    <span for="price" class="col-sm-3  control-label label-title">
+        券種売上金額
+    </span>
     <div class="col-sm-9">
-        <div>
-            <% ticketTypes.forEach((ticketType) => { %>
-            <label class="btn btn-default mb-x-small">
-                <span>
-                    <%= ticketType.name.ja %> (
-                    <%= ticketType.price %>)</span>
-                <% if (forms.ticketTypes.indexOf(ticketType.id) > -1) { %>
-                <input checked type="checkbox" name="ticketTypes" value="<%= ticketType.id %>">
-                <% } else { %>
-                <input type="checkbox" name="ticketTypes" value="<%= ticketType.id %>">
-                <% } %>
-            </label>
-            <% }) %>
-        </div>
+        <input type="number" class="form-control" name="price" id="price" placeholder="" maxlength=10>
         <p class="error message text-danger">
             <% if (errors && errors.ticketTypes) { %>
             <%- errors.ticketTypes.msg %>
             <% } %>
         </p>
+    </div>
+    <div class="col-sm-3 control-label label-title"></div>
+    <div class="col-sm-9" id="price-list">
+        <ul id="sortable1" class="connectedSortable">
+
+        </ul>
+        <ul id="sortable2" class="connectedSortable">
+            <% ticketTypes.forEach((ticketType) => { %>
+            <li class="ui-state-highlight" uid="<%= ticketType.id %>" appliesToMovieTicketType="<%= ticketType.priceSpecification.appliesToMovieTicketType %>"
+                accountsReceivable="<%= ticketType.priceSpecification.accounting.accountsReceivable %>">
+                <%= ticketType.alternateName.ja %>
+                <%= `(${Math.floor(ticketType.priceSpecification.price / ticketType.priceSpecification.referenceQuantity.value)})` %>
+                <%= (ticketType.priceSpecification.appliesToMovieTicketType !== undefined) ? `(${ticketType.priceSpecification.appliesToMovieTicketType})` : '' %>
+            </li>
+            <% }) %>
+        </ul>
     </div>
 </div>
 <div class="form-group ">
@@ -84,6 +93,31 @@
         <p class="error message text-danger">
             <% if (errors && errors['description.en']) { %>
             <%- errors['description.en'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group ">
+    <label for="serviceType" class="col-sm-3 control-label label-title">
+        興行区分<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <select name="serviceType" id="serviceType" class="form-control">
+            <% for (let serviceType of serviceTypes) { %>
+            <% if (forms.serviceType === serviceType.id) { %>
+            <option value="<%= serviceType.id %>" selected>
+                <%= serviceType.name %>
+            </option>
+            <% } else { %>
+            <option value="<%= serviceType.id %>">
+                <%= serviceType.name %>
+            </option>
+            <% } %>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
+            <% if (errors && errors.serviceType) { %>
+            <%- errors.serviceType.msg %>
             <% } %>
         </p>
     </div>

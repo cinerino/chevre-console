@@ -1,9 +1,6 @@
 /**
  * エラーコントローラー
- *
- * @namespace controller/error
  */
-
 import { Request, Response } from 'express';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status';
 

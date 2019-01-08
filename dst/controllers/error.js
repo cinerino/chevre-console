@@ -1,9 +1,4 @@
 "use strict";
-/**
- * エラーコントローラー
- *
- * @namespace controller/error
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 const http_status_1 = require("http-status");
 function notFound(req, res) {

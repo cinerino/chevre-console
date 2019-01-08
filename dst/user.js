@@ -9,8 +9,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const chevreapi = require("@chevre/api-nodejs-client");
+// import * as cinerinoapi from '@cinerino/api-nodejs-client';
 const createDebug = require("debug");
 const debug = createDebug('chevre-backend:user');
+/**
+ * ApiEndpointを確定のため
+ */
+var ApiEndpoint;
+(function (ApiEndpoint) {
+    ApiEndpoint["cinerino"] = "cinerino";
+    ApiEndpoint["chevre"] = "chevre";
+})(ApiEndpoint = exports.ApiEndpoint || (exports.ApiEndpoint = {}));
 /**
  * リクエストユーザー
  */
@@ -25,6 +34,13 @@ class User {
             redirectUri: `https://${configurations.host}/signIn`,
             logoutUri: `https://${configurations.host}/logout`
         });
+        // this.cinerinoAuthClient = new cinerinoapi.auth.OAuth2({
+        //     domain: <string>process.env.CINERINO_AUTHORIZE_SERVER_DOMAIN,
+        //     clientId: <string>process.env.CINERINO_CLIENT_ID,
+        //     clientSecret: <string>process.env.CINERINO_CLIENT_SECRET,
+        //     redirectUri: `https://${configurations.host}/signIn`,
+        //     logoutUri: `https://${configurations.host}/logout`
+        // });
         this.authClient.setCredentials({ refresh_token: this.getRefreshToken() });
     }
     generateAuthUrl() {

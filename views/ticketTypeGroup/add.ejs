@@ -2,18 +2,20 @@
 券種グループマスタ新規登録
 <%- contentFor('displayId') %>
 Aa-7
+<%- contentFor('styles') %>
+<link rel="stylesheet" href="/css/ticketTypeGroupAddEdit.css">
+<%- contentFor('scripts') %>
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/master/ticketTypeGroup/ticketTypeGroupAddEdit.js"></script>
+
 <%- contentFor('body') %>
 <div class="col-sm-12 form-container">
-    <% /* フォーム */ %>
-    <form method="post" class="form-horizontal" >
+    <form method="post" class="form-horizontal" id="ticketTypeGroupsForm">
         <div class="menu-group">
-            <% /* メッセージ */ %>
-            <% if (message != '') { %>
-            <p class="error message text-danger panel-body bg-danger"><%= message %></p>
-            <% } %>
+            <%- include('../common/errorMessage') %>
+            <%- include('../common/successMessage') %>
         </div>
 
-        <% /* 券種グループコード */ %>
         <div class="form-group ">
             <label for="id" class="col-sm-3 control-label label-title">
                 券種グループコード<font color="red">＊</font>
@@ -21,19 +23,18 @@ Aa-7
             <div class="col-sm-9">
                 <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64 value="<%= forms.id %>">
                 <p class="message">
-                半角64文字以内でご入力ください。
+                    半角64文字以内でご入力ください。
                 </p>
                 <p class="error message text-danger">
-                <% if (errors && errors.id) { %>
-                <%- errors.id.msg %>
-                <% } %>
+                    <% if (errors && errors.id) { %>
+                    <%- errors.id.msg %>
+                    <% } %>
                 </p>
             </div>
         </div>
 
         <%- include('form', { forms: forms }) %>
 
-        <% /* 登録ボタン */ %>
         <div class="form-group">
             <div class="btn-area panel-body">
                 <a class="btn btn-ok btn-primary">登録する</a>
@@ -41,10 +42,3 @@ Aa-7
         </div>
     </form>
 </div>
-<script>
-$(function(){
-    $('.btn-ok').on('click', function(){
-        $('form').submit();
-    });
-});
-</script>

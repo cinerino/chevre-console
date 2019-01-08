@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Response } from 'express';
+import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -17,8 +18,6 @@ const debug = createDebug('chevre-backend:controllers');
 const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
-// 作品名・英語 半角128
-const NAME_MAX_LENGTH_NAME_EN: number = 128;
 
 /**
  * 新規登録
@@ -36,7 +35,14 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchMoviesResult = await creativeWorkService.searchMovies({});
+    const searchMoviesResult = await creativeWorkService.searchMovies({
+        sort: {
+            datePublished: chevre.factory.sortType.Descending
+        },
+        offers: {
+            availableFrom: new Date()
+        }
+    });
     const movies = searchMoviesResult.data;
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     let message = '';
@@ -49,21 +55,27 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.movieIdentifier });
+                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
                 const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
-                const event = await eventService.createScreeningEventSeries(attributes);
+                const event = await eventService.create(attributes);
+                req.flash('message', '登録しました');
                 res.redirect(`/events/screeningEventSeries/${event.id}/update`);
 
                 return;
             } catch (error) {
                 message = error.message;
             }
+        } else {
+            message = '入力に誤りがあります';
         }
     }
 
     const forms = {
+        headline: {},
+        workPerformed: {},
         videoFormatType: [],
         ...req.body
     };
@@ -76,13 +88,13 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: movies,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType,
-        PaymentMethodType: chevre.factory.paymentMethodType
+        VideoFormatType: chevre.factory.videoFormatType
     });
 }
 /**
  * 編集
  */
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 export async function update(req: Request, res: Response): Promise<void> {
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: <string>process.env.API_ENDPOINT,
@@ -96,17 +108,23 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchMoviesResult = await creativeWorkService.searchMovies({});
+    const searchMoviesResult = await creativeWorkService.searchMovies({
+        sort: {
+            datePublished: chevre.factory.sortType.Descending
+        },
+        offers: {
+            availableFrom: new Date()
+        }
+    });
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
-    const event = await eventService.findScreeningEventSeriesById({
+    const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
         id: eventId
     });
 
     if (req.method === 'POST') {
-        debug('body:', req.body);
         // バリデーション
         validate(req);
         const validatorResult = await req.getValidationResult();
@@ -114,40 +132,68 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.movieIdentifier });
+                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
                 const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req.body, movie, movieTheater);
                 debug('saving an event...', attributes);
-                await eventService.updateScreeningEventSeries({
+                await eventService.update({
                     id: eventId,
                     attributes: attributes
                 });
+                req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
                 return;
             } catch (error) {
                 message = error.message;
             }
+        } else {
+            message = '入力に誤りがあります';
         }
     }
+
+    let mvtkFlg = 1;
+    if (event.offers !== undefined
+        && Array.isArray(event.offers.acceptedPaymentMethod)
+        && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+        mvtkFlg = 0;
+    }
+
+    let translationType = '';
+    if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
+        translationType = '0';
+    }
+    if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
+        translationType = '1';
+    }
+    const additionalProperty = (event.additionalProperty !== undefined) ? event.additionalProperty : [];
+    const signageDisplayName = additionalProperty.find((p) => p.name === 'signageDisplayName');
+    const signageDislaySubtitleName = additionalProperty.find((p) => p.name === 'signageDislaySubtitleName');
+    const summaryStartDay = additionalProperty.find((p) => p.name === 'summaryStartDay');
+
     const forms = {
-        movieIdentifier: (_.isEmpty(req.body.movieIdentifier)) ? event.workPerformed.identifier : req.body.movieIdentifier,
+        headline: {},
+        ...event,
+        signageDisplayName: (signageDisplayName !== undefined) ? signageDisplayName.value : '',
+        signageDislaySubtitleName: (signageDislaySubtitleName !== undefined) ? signageDislaySubtitleName.value : '',
+        summaryStartDay: (summaryStartDay !== undefined) ? summaryStartDay.value : '',
+        ...req.body,
         nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
         nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
-        kanaName: (_.isEmpty(req.body.kanaName)) ? event.kanaName : req.body.kanaName,
         duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration,
         locationBranchCode: event.location.branchCode,
-        contentRating: event.workPerformed.contentRating,
-        subtitleLanguage: event.subtitleLanguage,
+        translationType: translationType,
         videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
         startDate: (_.isEmpty(req.body.startDate)) ?
             (event.startDate !== null) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
             req.body.startDate,
         endDate: (_.isEmpty(req.body.endDate)) ?
-            (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
+            (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '' :
             req.body.endDate,
-        offers: (_.isEmpty(req.body.offers)) ? event.offers : req.body.offers
+        mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg
     };
+
     // 作品マスタ画面遷移
     debug('errors:', errors);
     res.render('events/screeningEventSeries/edit', {
@@ -156,14 +202,38 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: searchMoviesResult.data,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType,
-        PaymentMethodType: chevre.factory.paymentMethodType
+        VideoFormatType: chevre.factory.videoFormatType
     });
+}
+/**
+ * 作品 - レイティング
+ */
+export async function getRating(req: Request, res: Response): Promise<void> {
+    try {
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movie = await creativeWorkService.findMovieByIdentifier({
+            identifier: req.query.identifier
+        });
+        res.json({
+            success: true,
+            results: movie.contentRating
+        });
+    } catch (error) {
+        res.json({
+            success: false,
+            count: 0,
+            results: []
+        });
+    }
 }
 
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
+// tslint:disable-next-line:max-func-body-length
 function createEventFromBody(
     body: any,
     movie: chevre.factory.creativeWork.movie.ICreativeWork,
@@ -175,23 +245,50 @@ function createEventFromBody(
     const soundFormat = (Array.isArray(body.soundFormatType)) ? body.soundFormatType.map((f: string) => {
         return { typeOf: f, name: f };
     }) : [];
+
+    let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
+    // ムビチケ除外の場合は対応決済方法を追加
+    Object.keys(chevre.factory.paymentMethodType).forEach((key) => {
+        if (acceptedPaymentMethod === undefined) {
+            acceptedPaymentMethod = [];
+        }
+
+        const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
+        if (body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
+            return;
+        }
+
+        acceptedPaymentMethod.push(paymentMethodType);
+    });
+
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
         typeOf: 'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        acceptedPaymentMethod: []
+        acceptedPaymentMethod: acceptedPaymentMethod
     };
-    if (body.offers !== undefined && Array.isArray(body.offers.acceptedPaymentMethod)) {
-        offers.acceptedPaymentMethod = body.offers.acceptedPaymentMethod;
+
+    let subtitleLanguage: chevre.factory.language.ILanguage | null = null;
+    if (body.translationType === '0') {
+        subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };
+    }
+
+    let dubLanguage: chevre.factory.language.ILanguage | null = null;
+    if (body.translationType === '1') {
+        dubLanguage = { typeOf: 'Language', name: 'Japanese' };
+    }
+
+    if (typeof movie.duration !== 'string') {
+        throw new Error('作品の上映時間が未登録です');
     }
 
     return {
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
             ja: body.nameJa,
-            en: body.nameEn
+            en: body.nameEn,
+            kr: ''
         },
         kanaName: body.kanaName,
-        alternativeHeadline: body.nameJa,
         location: {
             id: movieTheater.id,
             typeOf: <chevre.factory.placeType.MovieTheater>movieTheater.typeOf,
@@ -206,14 +303,134 @@ function createEventFromBody(
         // },
         videoFormat: videoFormat,
         soundFormat: soundFormat,
-        subtitleLanguage: body.subtitleLanguage,
+        subtitleLanguage: subtitleLanguage,
+        dubLanguage: dubLanguage,
         workPerformed: movie,
         duration: movie.duration,
         startDate: (!_.isEmpty(body.startDate)) ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-        endDate: (!_.isEmpty(body.endDate)) ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+        endDate: (!_.isEmpty(body.endDate))
+            ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
+            : undefined,
         eventStatus: chevre.factory.eventStatusType.EventScheduled,
-        offers: offers
+        headline: {
+            ja: <string>body.headline.ja,
+            en: ''
+        },
+        additionalProperty: [
+            {
+                name: 'signageDisplayName',
+                value: body.signageDisplayName
+            },
+            {
+                name: 'signageDislaySubtitleName',
+                value: body.signageDislaySubtitleName
+            },
+            {
+                name: 'summaryStartDay',
+                value: body.summaryStartDay
+            }
+        ],
+        offers: offers,
+        description: {
+            ja: body.description,
+            en: '',
+            kr: ''
+        }
     };
+}
+/**
+ * 検索API
+ */
+export async function search(req: Request, res: Response): Promise<void> {
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const branchCode = req.query.branchCode;
+        const fromDate = req.query.fromDate;
+        const toDate = req.query.toDate;
+        if (branchCode === undefined) {
+            throw new Error();
+        }
+        // 上映終了して「いない」劇場上映作品を検索
+        const { totalCount, data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            inSessionFrom: (fromDate !== undefined) ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : new Date(),
+            inSessionThrough: (toDate !== undefined) ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : undefined,
+            location: {
+                branchCodes: branchCode
+            }
+        });
+        const results = data.map((event) => {
+            let mvtkFlg = 1;
+            if (event.offers !== undefined && Array.isArray(event.offers.acceptedPaymentMethod)
+                && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+                mvtkFlg = 0;
+            }
+
+            let translationType = '';
+            if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
+                translationType = '字幕';
+            }
+            if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
+                translationType = '吹替';
+            }
+
+            return {
+                ...event,
+                id: event.id,
+                filmNameJa: event.name.ja,
+                filmNameEn: event.name.en,
+                kanaName: event.kanaName,
+                duration: moment.duration(event.duration).humanize(),
+                contentRating: event.workPerformed.contentRating,
+                translationType: translationType,
+                videoFormat: event.videoFormat,
+                mvtkFlg: mvtkFlg
+            };
+        });
+        results.sort((event1, event2) => {
+            if (event1.filmNameJa > event2.filmNameJa) {
+                return 1;
+            }
+            if (event1.filmNameJa < event2.filmNameJa) {
+                return -1;
+            }
+
+            return 0;
+        });
+        res.json({
+            success: true,
+            count: totalCount,
+            results: results
+        });
+    } catch (_) {
+        res.json({
+            success: false,
+            count: 0,
+            results: []
+        });
+    }
+}
+/**
+ * 劇場作品のスケジュール検索
+ */
+export async function searchScreeningEvents(req: Request, res: Response) {
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchScreeningEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+            ...req.query,
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            superEvent: { ids: [req.params.eventId] }
+        });
+        res.json(searchScreeningEventsResult);
+    } catch (error) {
+        res.status(INTERNAL_SERVER_ERROR).json({ error: { message: error.message } });
+    }
 }
 /**
  * 一覧データ取得API
@@ -224,10 +441,12 @@ export async function getList(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { totalCount, data } = await eventService.searchScreeningEventSeries({
+        const { totalCount, data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
             limit: req.query.limit,
             page: req.query.page,
             name: req.query.name,
+            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
             location: {
                 branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
             },
@@ -235,16 +454,21 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 identifiers: (req.query.movieIdentifier !== '') ? [req.query.movieIdentifier] : undefined
             }
         });
+
         const results = data.map((event) => {
+            let translationType = '';
+            if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
+                translationType = '字幕';
+            }
+            if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
+                translationType = '吹替';
+            }
+
             return {
-                id: event.id,
-                movieIdentifier: event.workPerformed.identifier,
-                filmNameJa: event.name.ja,
-                filmNameEn: event.name.en,
-                kanaName: event.kanaName,
-                duration: moment.duration(event.duration).humanize(),
-                contentRating: event.workPerformed.contentRating,
-                subtitleLanguage: event.subtitleLanguage,
+                ...event,
+                translationType: translationType,
+                startDay: (event.startDate !== undefined) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '',
+                endDay: (event.endDate !== undefined) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '',
                 videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : ''
             };
         });
@@ -257,7 +481,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         res.json({
             success: false,
             count: 0,
-            results: []
+            results: error
         });
     }
 }
@@ -271,7 +495,6 @@ export async function index(req: Request, res: Response): Promise<void> {
     });
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
     res.render('events/screeningEventSeries/index', {
-        filmModel: {},
         movieTheaters: searchMovieTheatersResult.data
     });
 }
@@ -280,35 +503,34 @@ export async function index(req: Request, res: Response): Promise<void> {
  */
 function validate(req: Request): void {
     let colName: string = '';
-    // 作品コード
     colName = '作品コード';
-    req.checkBody('movieIdentifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('movieIdentifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('workPerformed.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('workPerformed.identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
-    // 作品名
+
     colName = '作品名';
     req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // 作品名カナ
+
     colName = '作品名カナ';
-    req.checkBody('kanaName', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).optional()
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     // .regex(/^[ァ-ロワヲンーa-zA-Z]*$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
-    // 作品名英
-    colName = '作品名英';
-    req.checkBody('nameEn', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('nameEn', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
-    // 上映開始日
+
     colName = '上映開始日';
-    if (!_.isEmpty(req.body.startDate)) {
-        req.checkBody('startDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
-    }
-    // 上映終了日
+    req.checkBody('startDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+
     colName = '上映終了日';
-    if (!_.isEmpty(req.body.endDate)) {
-        req.checkBody('endDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
-    }
-    // レイティング
-    colName = 'レイティング';
-    req.checkBody('contentRating', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('endDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+
+    colName = '上映作品サブタイトル名';
+    req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+
+    colName = '集計開始曜日';
+    req.checkBody('summaryStartDay', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+
+    colName = '上映形態';
+    req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

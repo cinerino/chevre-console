@@ -90,10 +90,21 @@ $(function () {
                 $.each(listCols, function (key, outerHtml) {
                     var fieldIds = key.split("__");
                     var temp = outerHtml;
+                    var value = '';
                     $.each(fieldIds, function (index, fieldId) {
-                        var value = $.fn.getStringValue(data, fieldId, '');
+                        if (fieldId.indexOf('|parseDateTime') > -1) {
+                            fieldId = fieldId.replace('|parseDateTime', '');
+                            value = $.fn.getStringValue(data, fieldId, "");
+                            if (value) value = moment(value).format('YYYY-MM-DD HH:mm:ss');
+                        } else {
+                            value = $.fn.getStringValue(data, fieldId, '');
+                        }
                         temp = temp.replace("\$" + fieldId + "\$", value);
                         if (fieldId === 'edit') {
+                            var id = $.fn.getStringValue(data, "id", "");
+                            temp = temp.replace("\$id\$", id);
+                        }
+                        if (fieldId === 'popup') {
                             var id = $.fn.getStringValue(data, "id", "");
                             temp = temp.replace("\$id\$", id);
                         }

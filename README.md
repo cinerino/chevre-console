@@ -12,7 +12,7 @@
 ### Environment variables
 
 | Name                          | Required | Value            | Purpose                |
-|-------------------------------|----------|------------------|------------------------|
+| ----------------------------- | -------- | ---------------- | ---------------------- |
 | `DEBUG`                       | false    | chevre-backend:* | Debug                  |
 | `NODE_ENV`                    | true     |                  | Environment name       |
 | `MONGOLAB_URI`                | true     |                  | MongoDB Connection URI |

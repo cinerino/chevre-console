@@ -12,12 +12,8 @@ Aa-16
     <% /* フォーム */ %>
     <form method="post" class="form-horizontal">
         <div class="menu-group">
-            <% /* メッセージ */ %>
-            <% if (message !== '') { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= message %>
-            </p>
-            <% } %>
+            <%- include('../common/errorMessage') %>
+            <%- include('../common/successMessage') %>
         </div>
         <div class="form-group ">
             <label for="id" class="col-sm-3 control-label label-title">

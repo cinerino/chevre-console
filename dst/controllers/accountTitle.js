@@ -41,6 +41,7 @@ function add(req, res) {
                         auth: req.user.authClient
                     });
                     yield accountTitleService.create(accountTitle);
+                    req.flash('message', '登録しました');
                     res.redirect(`/accountTitles/${accountTitle.identifier}/update`);
                     return;
                 }
@@ -49,7 +50,6 @@ function add(req, res) {
                 }
             }
         }
-        console.error(errors);
         const forms = Object.assign({ category: {
                 category: {}
             } }, req.body);
@@ -87,6 +87,7 @@ function update(req, res) {
                     accountTitle = createFromBody(req.body);
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.update(accountTitle);
+                    req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
                 }
@@ -145,7 +146,6 @@ function getList(req, res) {
             });
         }
         catch (error) {
-            console.error(error);
             res.json({
                 success: false,
                 count: 0,

@@ -35,6 +35,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                     auth: req.user.authClient
                 });
                 await serviceTypeService.create(serviceType);
+                req.flash('message', '登録しました');
                 res.redirect(`/serviceTypes/${serviceType.id}/update`);
 
                 return;
@@ -78,6 +79,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 serviceType = createMovieFromBody(req.body);
                 debug('saving an serviceType...', serviceType);
                 await serviceTypeService.update(serviceType);
+                req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
                 return;
@@ -128,7 +130,6 @@ export async function getList(req: Request, res: Response): Promise<void> {
             results: result.data
         });
     } catch (error) {
-        console.error(error);
         res.json({
             success: false,
             count: 0,

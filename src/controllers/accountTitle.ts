@@ -35,6 +35,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                     auth: req.user.authClient
                 });
                 await accountTitleService.create(accountTitle);
+                req.flash('message', '登録しました');
                 res.redirect(`/accountTitles/${accountTitle.identifier}/update`);
 
                 return;
@@ -43,7 +44,6 @@ export async function add(req: Request, res: Response): Promise<void> {
             }
         }
     }
-    console.error(errors);
 
     const forms = {
         category: {
@@ -84,6 +84,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 accountTitle = createFromBody(req.body);
                 debug('saving account title...', accountTitle);
                 await accountTitleService.update(accountTitle);
+                req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
                 return;
@@ -151,7 +152,6 @@ export async function getList(req: Request, res: Response): Promise<void> {
             results: result.data
         });
     } catch (error) {
-        console.error(error);
         res.json({
             success: false,
             count: 0,

@@ -40,6 +40,7 @@ function add(req, res) {
                         auth: req.user.authClient
                     });
                     yield serviceTypeService.create(serviceType);
+                    req.flash('message', '登録しました');
                     res.redirect(`/serviceTypes/${serviceType.id}/update`);
                     return;
                 }
@@ -83,6 +84,7 @@ function update(req, res) {
                     serviceType = createMovieFromBody(req.body);
                     debug('saving an serviceType...', serviceType);
                     yield serviceTypeService.update(serviceType);
+                    req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
                 }
@@ -131,7 +133,6 @@ function getList(req, res) {
             });
         }
         catch (error) {
-            console.error(error);
             res.json({
                 success: false,
                 count: 0,

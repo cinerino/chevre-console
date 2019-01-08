@@ -14,11 +14,6 @@ Aa-3
     <form method="post" class="form-horizontal">
         <%- include('../../common/master/_hidden') %>
         <div class="menu-group">
-            <% if (filmModel.message !== undefined) { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= filmModel.message %>
-            </p>
-            <% } %>
         </div>
         <div class="form-group">
             <label for="locationBranchCode" class="col-sm-3 control-label label-title">
@@ -41,17 +36,30 @@ Aa-3
             </label>
             <div class="col-sm-9">
                 <input type="text" class="form-control" name="movieIdentifier" id="movieIdentifier" placeholder=""
-                    maxlength=64 value="<%= filmModel.movieIdentifier %>">
+                    maxlength=64 value="">
             </div>
         </div>
         <div class="form-group">
             <label for="name" class="col-sm-3 control-label label-title">
-                イベント名
+                上映作品名
             </label>
             <div class="col-sm-9">
-                <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= filmModel.name %>">
+                <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
             </div>
         </div>
+        <div class="form-group">
+            <label for="name" class="col-sm-3 control-label label-title">
+            </label>
+            <div class="col-sm-9">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="containsEnded" value="1" id="containsEnded">
+                    <label class="form-check-label" for="containsEnded">
+                        終了作品を含む
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="panel-body">
                 <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
@@ -71,8 +79,8 @@ Aa-3
             <thead>
                 <tr>
                     <th>作品コード</th>
-                    <th style="text-align:left;">作品名<br />作品名カナ<br />作品名英</th>
-                    <th>上映<br />時間(分)</th>
+                    <th class="text-left">作品名<br>サブタイトル</th>
+                    <th>上映開始日<br>上映終了日</th>
                     <th>字幕</th>
                     <th>上映形態</th>
                     <th></th>
@@ -80,14 +88,13 @@ Aa-3
             </thead>
             <tbody>
                 <tr id="templateRow" eventId="$id$">
-                    <td name="movieIdentifier">$movieIdentifier$</td>
-                    <td name="filmNameJa__kanaName__filmNameEn">
-                        $filmNameJa$<br />
-                        $kanaName$<br />
-                        $filmNameEn$<br />
+                    <td name="workPerformed.identifier">$workPerformed.identifier$</td>
+                    <td name="name.ja__headline.ja">
+                        $name.ja$<br>
+                        $headline.ja$<br>
                     </td>
-                    <td name="duration" style="text-align:right;">$duration$</td>
-                    <td name="subtitleLanguage">$subtitleLanguage$</td>
+                    <td name="startDay__endDay">$startDay$<br>$endDay$</td>
+                    <td name="translationType">$translationType$</td>
                     <td name="videoFormat">$videoFormat$</td>
                     <td name="edit" class="center">
                         <div class="btn-area">

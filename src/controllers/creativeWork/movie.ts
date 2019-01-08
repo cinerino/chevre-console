@@ -16,7 +16,7 @@ const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 // 作品名・英語 半角128
-const NAME_MAX_LENGTH_NAME_EN: number = 128;
+// const NAME_MAX_LENGTH_NAME_EN: number = 128;
 // 上映時間・数字10
 const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
 
@@ -34,12 +34,19 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             try {
                 const movie = createMovieFromBody(req.body);
-                debug('saving an movie...', movie);
                 const creativeWorkService = new chevre.service.CreativeWork({
                     endpoint: <string>process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
+
+                const { totalCount } = await creativeWorkService.searchMovies({ identifier: `^${movie.identifier}$` });
+                if (totalCount > 0) {
+                    throw new Error('既に存在する作品コードです');
+                }
+
+                debug('saving an movie...', movie);
                 await creativeWorkService.createMovie(movie);
+                req.flash('message', '登録しました');
                 res.redirect(`/creativeWorks/movie/${movie.identifier}/update`);
 
                 return;
@@ -50,7 +57,6 @@ export async function add(req: Request, res: Response): Promise<void> {
     }
 
     const forms = req.body;
-
     // 作品マスタ画面遷移
     res.render('creativeWorks/movie/add', {
         message: message,
@@ -82,6 +88,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 movie = createMovieFromBody(req.body);
                 debug('saving an movie...', movie);
                 await creativeWorkService.updateMovie(movie);
+                req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
                 return;
@@ -90,26 +97,27 @@ export async function update(req: Request, res: Response): Promise<void> {
             }
         }
     }
-    const forms = {
-        identifier: (_.isEmpty(req.body.identifier)) ? movie.identifier : req.body.identifier,
-        name: (_.isEmpty(req.body.nameJa)) ? movie.name : req.body.name,
-        duration: (_.isEmpty(req.body.duration)) ? moment.duration(movie.duration).asMinutes() : req.body.duration,
-        contentRating: (_.isEmpty(req.body.duration)) ? movie.contentRating : req.body.contentRating,
-        datePublished: (_.isEmpty(req.body.duration))
-            ? (movie.datePublished !== undefined)
-                ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ')
-                : undefined
-            : req.body.datePublished,
-        offers: {
-            availabilityEnds: (_.isEmpty(req.body.offers))
-                ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
-                    ? moment(movie.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm:ssZ')
-                    : undefined
-                : req.body.offers.availabilityEnds
-        }
-    };
 
+    const forms = {
+        ...movie,
+        distribution: (movie.distributor !== undefined) ? movie.distributor.id : '',
+        ...req.body,
+        duration: (_.isEmpty(req.body.duration))
+            ? (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : ''
+            : req.body.duration,
+        datePublished: (_.isEmpty(req.body.datePublished)) ?
+            (movie.datePublished !== undefined) ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
+            req.body.datePublished,
+        offers: (_.isEmpty(req.body.offers)) ?
+            (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
+                ? {
+                    availabilityEnds: moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
+                }
+                : undefined
+            : req.body.offers
+    };
     // 作品マスタ画面遷移
+    debug('errors:', errors);
     res.render('creativeWorks/movie/edit', {
         message: message,
         errors: errors,
@@ -117,24 +125,31 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICreativeWork {
-    const offers: chevre.factory.creativeWork.movie.IOffer = {
-        ...body.offers,
-        availabilityEnds: (body.offers !== undefined && body.offers.availabilityEnds !== '')
-            ? moment(body.offers.availabilityEnds).toDate()
-            : undefined,
-        typeOf: 'Offer',
-        priceCurrency: chevre.factory.priceCurrency.JPY
-    };
-
-    return {
+    const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
         typeOf: chevre.factory.creativeWorkType.Movie,
         identifier: body.identifier,
         name: body.name,
-        duration: moment.duration(Number(body.duration), 'm').toISOString(),
-        contentRating: body.contentRating,
-        datePublished: (body.datePublished !== '') ? moment(body.datePublished).toDate() : undefined,
-        offers: offers
+        duration: (body.duration !== '') ? moment.duration(Number(body.duration), 'm').toISOString() : null,
+        contentRating: (body.contentRating !== '') ? body.contentRating : null,
+        headline: body.headline,
+        datePublished: (!_.isEmpty(body.datePublished)) ?
+            moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+        offers: {
+            typeOf: 'Offer',
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            availabilityEnds: (!_.isEmpty(body.offers) && !_.isEmpty(body.offers.availabilityEnds)) ?
+                moment(`${body.offers.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate() : undefined
+        }
     };
+
+    if (movie.offers !== undefined
+        && movie.offers.availabilityEnds !== undefined
+        && movie.datePublished !== undefined
+        && movie.offers.availabilityEnds <= movie.datePublished) {
+        throw new Error('興行終了予定日が公開日よりも前です');
+    }
+
+    return movie;
 }
 /**
  * 一覧データ取得API
@@ -149,7 +164,11 @@ export async function getList(req: Request, res: Response): Promise<void> {
             limit: req.query.limit,
             page: req.query.page,
             identifier: req.query.identifier,
-            name: req.query.name
+            name: req.query.name,
+            datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom)) ?
+                moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+            datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough)) ?
+                moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined
         });
         res.json({
             success: true,
@@ -168,31 +187,33 @@ export async function getList(req: Request, res: Response): Promise<void> {
  * 一覧
  */
 export async function index(__: Request, res: Response): Promise<void> {
-    res.render('creativeWorks/movie/index', {
-        filmModel: {}
-    });
+    res.render(
+        'creativeWorks/movie/index',
+        {}
+    );
 }
 /**
  * 作品マスタ新規登録画面検証
  */
 function validate(req: Request, checkType: string): void {
     let colName: string = '';
-    // 作品コード
     if (checkType === 'add') {
         colName = '作品コード';
         req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
         req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     }
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
-    // 作品名
+
     colName = '作品名';
     req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // 上映時間
+
     colName = '上映時間';
-    req.checkBody('duration', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_MINUTES))
-        .len({ max: NAME_MAX_LENGTH_NAME_EN });
-    // レイティング
-    colName = 'レイティング';
-    req.checkBody('contentRating', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    if (req.body.duration !== '') {
+        req.checkBody('duration', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_NAME_MINUTES)).optional()
+            .isNumeric().len({ max: NAME_MAX_LENGTH_NAME_MINUTES });
+    }
+
+    colName = 'サブタイトル';
+    req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
 }

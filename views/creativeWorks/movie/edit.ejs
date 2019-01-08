@@ -1,23 +1,18 @@
 <%- contentFor('title') %>
-映画作品マスタ編集
+作品編集
 <%- contentFor('displayId') %>
 Aa-9
 <%- contentFor('styles') %>
 
 <%- contentFor('scripts') %>
-<script src="/js/master/creativeWorks/movieForm.js"></script>
 
 <%- contentFor('body') %>
 <div class="col-sm-12 form-container">
     <% /* フォーム */ %>
     <form method="post" class="form-horizontal">
         <div class="menu-group">
-            <% /* メッセージ */ %>
-            <% if (message !== '') { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= message %>
-            </p>
-            <% } %>
+            <%- include('../../common/errorMessage') %>
+            <%- include('../../common/successMessage') %>
         </div>
 
         <% /* 作品コード */ %>
@@ -26,8 +21,8 @@ Aa-9
                 作品コード
             </label>
             <div class="col-sm-9">
-                <input readonly type="text" class="form-control" name="identifier" id="identifier" placeholder=""
-                    maxlength=64 value="<%= forms.identifier %>">
+                <input readonly style="width:auto;" type="text" class="form-control" name="identifier" id="identifier"
+                    placeholder="" maxlength=64 value="<%= forms.identifier %>">
             </div>
         </div>
 
@@ -50,10 +45,6 @@ Aa-9
         // datepickerセット
         $('.datepicker').datepicker({
             language: 'ja'
-        });
-        $('.datetimepicker').datetimepicker({
-            locale: 'ja',
-            format: 'YYYY-MM-DDTHH:mm:ss+09:00'
-        });
+        })
     });
 </script>
