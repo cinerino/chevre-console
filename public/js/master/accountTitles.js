@@ -43,6 +43,7 @@ $(function () {
     // 検索API呼び出し
     //--------------------------------
     function search(pageNumber) {
+        conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
         var url = '/accountTitles/getlist';
         //alert(JSON.stringify(conditions));

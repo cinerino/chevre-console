@@ -231,7 +231,7 @@
         <select class="form-control" name="accountTitle">
             <option value="" disabled selected>選択してください</option>
             <% for (let accountTitle of accountTitles) { %>
-            <option value="<%= accountTitle.identifier %>" <% if (forms.accountTitle==accountTitle.identifier) { %>
+            <option value="<%= accountTitle.codeValue %>" <% if (forms.accountTitle==accountTitle.codeValue) { %>
                 selected
                 <% } %> >
                 <%= accountTitle.name %>

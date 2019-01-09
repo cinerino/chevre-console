@@ -21,12 +21,44 @@ Aa-17
             </p>
             <% } %>
         </div>
+        <div class="form-group">
+            <label for="inCodeSet[inCodeSet][codeValue]" class="col-sm-3 control-label label-title">
+                科目分類
+            </label>
+            <div class="col-sm-9">
+                <select class="form-control" name="inCodeSet[inCodeSet][codeValue]">
+                    <option value="">選択してください</option>
+                    <% for (const accountTitleCategory of accountTitleCategories) { %>
+                    <option value="<%= accountTitleCategory.codeValue %>">
+                        <%= accountTitleCategory.codeValue %>
+                        <%= accountTitleCategory.name %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inCodeSet[codeValue]" class="col-sm-3 control-label label-title">
+                科目
+            </label>
+            <div class="col-sm-9">
+                <select class="form-control" name="inCodeSet[codeValue]">
+                    <option value="">選択してください</option>
+                    <% for (const accountTitleSet of accountTitleSets) { %>
+                    <option value="<%= accountTitleSet.codeValue %>">
+                        <%= accountTitleSet.codeValue %>
+                        <%= accountTitleSet.name %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
         <div class="form-group ">
-            <label for="identifier" class="col-sm-3 control-label label-title">
+            <label for="codeValue" class="col-sm-3 control-label label-title">
                 細目コード
             </label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
+                <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
                     value="">
             </div>
         </div>
@@ -54,24 +86,23 @@ Aa-17
                     <th>科目名称</th>
                     <th>細目コード</th>
                     <th>細目名称</th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr id="templateRow" identifier="$identifier$">
-                    <td name="category.category.identifier">$category.category.identifier$</td>
-                    <td name="category.category.name">$category.category.name$</td>
-                    <td name="category.identifier">$category.identifier$</td>
-                    <td name="category.name">$category.name$</td>
-                    <td name="identifier">$identifier$</td>
+                <tr id="templateRow" identifier="$codeValue$">
+                    <td name="inCodeSet.inCodeSet.codeValue">$inCodeSet.inCodeSet.codeValue$</td>
+                    <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
+                    <td name="inCodeSet.codeValue">$inCodeSet.codeValue$</td>
+                    <td name="inCodeSet.name">$inCodeSet.name$</td>
+                    <td name="codeValue">$codeValue$</td>
                     <td name="name">$name$</td>
-                    <td name="edit" class="center">
+                    <!-- <td name="edit" class="center">
                         <div class="btn-area">
                             <a class="btn btn-list edit">
                                 <span>編集</span>
                             </a>
                         </div>
-                    </td>
+                    </td> -->
                 </tr>
             </tbody>
         </table>

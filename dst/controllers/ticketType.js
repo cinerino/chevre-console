@@ -135,11 +135,11 @@ function update(req, res) {
             : '';
         const forms = Object.assign({ alternateName: {} }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined)
-                    ? ticketType.priceSpecification.accounting.operatingRevenue.identifier : undefined
+                    ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
                 : req.body.accountTitle, nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
                 ? (ticketType.priceSpecification.accounting !== undefined
                     && ticketType.priceSpecification.accounting.nonOperatingRevenue !== undefined)
-                    ? ticketType.priceSpecification.accounting.nonOperatingRevenue.identifier : undefined
+                    ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
                 : req.body.nonBoxOfficeSubject });
         res.render('ticketType/update', {
             message: message,
@@ -189,11 +189,13 @@ function createFromBody(body) {
                 typeOf: 'Accounting',
                 operatingRevenue: {
                     typeOf: 'AccountTitle',
+                    codeValue: body.accountTitle,
                     identifier: body.accountTitle,
                     name: ''
                 },
                 nonOperatingRevenue: {
                     typeOf: 'AccountTitle',
+                    codeValue: body.nonBoxOfficeSubject,
                     identifier: body.nonBoxOfficeSubject,
                     name: ''
                 },

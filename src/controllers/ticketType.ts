@@ -149,12 +149,12 @@ export async function update(req: Request, res: Response): Promise<void> {
         seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit,
         accountTitle: (_.isEmpty(req.body.accountTitle))
             ? (ticketType.priceSpecification.accounting !== undefined)
-                ? ticketType.priceSpecification.accounting.operatingRevenue.identifier : undefined
+                ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
             : req.body.accountTitle,
         nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
             ? (ticketType.priceSpecification.accounting !== undefined
                 && ticketType.priceSpecification.accounting.nonOperatingRevenue !== undefined)
-                ? ticketType.priceSpecification.accounting.nonOperatingRevenue.identifier : undefined
+                ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
             : req.body.nonBoxOfficeSubject
     };
     res.render('ticketType/update', {
@@ -204,13 +204,15 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
             appliesToMovieTicketType: appliesToMovieTicketType,
             accounting: {
                 typeOf: 'Accounting',
-                operatingRevenue: {
+                operatingRevenue: <any>{
                     typeOf: 'AccountTitle',
+                    codeValue: body.accountTitle,
                     identifier: body.accountTitle,
                     name: ''
                 },
                 nonOperatingRevenue: {
                     typeOf: 'AccountTitle',
+                    codeValue: body.nonBoxOfficeSubject,
                     identifier: body.nonBoxOfficeSubject,
                     name: ''
                 },
