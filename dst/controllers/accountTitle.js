@@ -37,7 +37,8 @@ function createAccountTitleCategory(req, res) {
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
-                        description: req.body.description
+                        description: req.body.description,
+                        hasCategoryCode: []
                     };
                     debug('saving account title...', accountTitle);
                     const accountTitleService = new chevre.service.AccountTitle({
@@ -56,7 +57,7 @@ function createAccountTitleCategory(req, res) {
         }
         const forms = Object.assign({}, req.body);
         // 作品マスタ画面遷移
-        res.render('accountTitles/add', {
+        res.render('accountTitles/accountTitleCategory/add', {
             message: message,
             errors: errors,
             forms: forms
@@ -210,22 +211,6 @@ function validateAccountTitleCategory(req) {
     req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // colName = '科目コード';
-    // req.checkBody('category.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    // req.checkBody('category.identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-    //     .len({ max: NAME_MAX_LENGTH_CODE });
-    // colName = '科目名称';
-    // req.checkBody('category.name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    // req.checkBody('category.name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-    //     .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // colName = '細目コード';
-    // req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    // req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-    //     .len({ max: NAME_MAX_LENGTH_CODE });
-    // colName = '細目名称';
-    // req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    // req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-    //     .len({ max: NAME_MAX_LENGTH_NAME_JA });
 }
 /**
  * 科目追加
@@ -252,6 +237,7 @@ function addAccountTitleSet(req, res) {
                         codeValue: req.body.codeValue,
                         name: req.body.name,
                         description: req.body.description,
+                        hasCategoryCode: [],
                         inCodeSet: {
                             typeOf: 'AccountTitle',
                             codeValue: req.body.inCodeSet.codeValue,
@@ -265,14 +251,13 @@ function addAccountTitleSet(req, res) {
                     return;
                 }
                 catch (error) {
-                    console.error(error);
                     message = error.message;
                 }
             }
         }
         const forms = Object.assign({ inCodeSet: {} }, req.body);
         // 作品マスタ画面遷移
-        res.render('accountTitles/hasCategoryCode/add', {
+        res.render('accountTitles/accountTitleSet/add', {
             message: message,
             errors: errors,
             forms: forms,
@@ -285,6 +270,130 @@ exports.addAccountTitleSet = addAccountTitleSet;
  * 科目バリデーション
  */
 function validateAccountTitleSet(req) {
+    let colName = '科目分類';
+    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    colName = '科目コード';
+    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
+    colName = '科目名称';
+    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+}
+/**
+ * 科目分類作成
+ */
+function createAccountTitle(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let message = '';
+        let errors = {};
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // 科目分類検索
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({ limit: 100 });
+        const accountTitleSets = searchAccountTitleSetsResult.data;
+        if (req.method === 'POST') {
+            // バリデーション
+            validateAccountTitle(req);
+            const validatorResult = yield req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                try {
+                    const accountTitleSet = accountTitleSets.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
+                    const accountTitle = {
+                        typeOf: 'AccountTitle',
+                        codeValue: req.body.codeValue,
+                        name: req.body.name,
+                        description: req.body.description,
+                        inCodeSet: accountTitleSet
+                    };
+                    debug('saving account title...', accountTitle);
+                    yield accountTitleService.create(accountTitle);
+                    req.flash('message', '登録しました');
+                    res.redirect(`/accountTitles`);
+                    return;
+                }
+                catch (error) {
+                    message = error.message;
+                }
+            }
+        }
+        const forms = Object.assign({ inCodeSet: {} }, req.body);
+        // 作品マスタ画面遷移
+        res.render('accountTitles/new', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            accountTitleSets: accountTitleSets
+        });
+    });
+}
+exports.createAccountTitle = createAccountTitle;
+/**
+ * 編集
+ */
+function updateAccountTitle(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let message = '';
+        let errors = {};
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchAccountTitlesResult = yield accountTitleService.search({
+            codeValue: req.params.codeValue
+        });
+        let accountTitle = searchAccountTitlesResult.data.shift();
+        if (accountTitle === undefined) {
+            throw new chevre.factory.errors.NotFound('AccounTitle');
+        }
+        // 科目分類検索
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({ limit: 100 });
+        const accountTitleSets = searchAccountTitleSetsResult.data;
+        if (req.method === 'POST') {
+            // バリデーション
+            validateAccountTitle(req);
+            const validatorResult = yield req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                // 作品DB登録
+                try {
+                    accountTitle = {
+                        typeOf: 'AccountTitle',
+                        codeValue: req.body.codeValue,
+                        name: req.body.name,
+                        description: req.body.description,
+                        inCodeSet: accountTitle.inCodeSet
+                    };
+                    debug('saving account title...', accountTitle);
+                    yield accountTitleService.update(accountTitle);
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
+                    return;
+                }
+                catch (error) {
+                    message = error.message;
+                }
+            }
+        }
+        const forms = Object.assign({}, accountTitle, req.body);
+        // 作品マスタ画面遷移
+        res.render('accountTitles/edit', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            accountTitleSets: accountTitleSets
+        });
+    });
+}
+exports.updateAccountTitle = updateAccountTitle;
+/**
+ * 細目バリデーション
+ */
+function validateAccountTitle(req) {
     let colName = '科目分類';
     req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '科目コード';

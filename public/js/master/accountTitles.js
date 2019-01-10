@@ -26,19 +26,32 @@ $(function () {
         search(1);
     });
 
-    // 編集ボタンイベント
-    $(document).on('click', 'a.edit', function () {
-        // イベント識別子取得&url編集
-        console.log($('td[name="identifier"]', $(this).closest('tr')));
-        var identifier = $('td[name="identifier"]', $(this).closest('tr')).html();
-        var url = '/accountTitles/' + identifier + '/update';
-        window.location.href = url;
+    // 細目編集ボタン
+    $(document).on('click', 'a.editAccountTitle', function () {
+        var codeValue = $(this).html();
+        var url = '/accountTitles/' + codeValue;
+        open(url);
+    });
+
+    // 科目編集ボタン
+    $(document).on('click', 'a.editAccountTitleSet', function () {
+        var codeValue = $(this).html();
+        var url = '/accountTitles/accountTitleSet/' + codeValue;
+        open(url);
+    });
+
+    // 科目分類編集ボタン
+    $(document).on('click', 'a.editAccountTitleCategory', function () {
+        var codeValue = $(this).html();
+        var url = '/accountTitles/accountTitleCategory/' + codeValue;
+        open(url);
     });
 
     // 検索条件クリア
     $(document).on('click', '.reset-condition', function () {
         $.fn.clearFormValue('form');
     });
+
     //--------------------------------
     // 検索API呼び出し
     //--------------------------------

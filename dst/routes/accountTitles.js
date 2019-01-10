@@ -14,4 +14,8 @@ accountTitlesRouter.get('/accountTitleSet/new', AccountTitleController.addAccoun
 accountTitlesRouter.post('/accountTitleSet/new', AccountTitleController.addAccountTitleSet);
 // accountTitlesRouter.get('/:identifier/update', AccountTitleController.update);
 // accountTitlesRouter.post('/:identifier/update', AccountTitleController.update);
+accountTitlesRouter.get('/new', AccountTitleController.createAccountTitle);
+accountTitlesRouter.post('/new', AccountTitleController.createAccountTitle);
+accountTitlesRouter.get('/:codeValue', AccountTitleController.updateAccountTitle);
+accountTitlesRouter.post('/:codeValue', AccountTitleController.updateAccountTitle);
 exports.default = accountTitlesRouter;

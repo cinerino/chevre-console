@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-細目編集
+細目登録
 <%- contentFor('displayId') %>
 AT-04
 <%- contentFor('styles') %>
@@ -16,12 +16,12 @@ AT-04
         </div>
 
         <% /* 登録・更新共通部 */ %>
-        <%- include('form', { forms: forms, isNew: false }) %>
+        <%- include('form', { forms: forms, isNew: true }) %>
 
-        <% /* 更新ボタン */ %>
+        <% /* 登録ボタン */ %>
         <div class="form-group">
             <div class="btn-area panel-body">
-                <a class="btn btn-ok btn-primary">更新する</a>
+                <a class="btn btn-ok btn-primary">登録する</a>
             </div>
         </div>
     </form>

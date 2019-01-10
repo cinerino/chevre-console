@@ -1,23 +1,16 @@
 <div class="form-group">
     <label for="inCodeSet[codeValue]" class="col-sm-3 control-label label-title">
-        科目<font color="red">＊</font>
+        科目分類<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <% if (!isNew) { %>
-        <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
-        <% } %>
-        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled
-            <% } %>>
+        <select class="form-control" name="inCodeSet[codeValue]">
             <option value="">選択してください</option>
-            <% for (const accountTitleSet of accountTitleSets) { %>
-            <option value="<%= accountTitleSet.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleSet.codeValue)
+            <% for (const accountTitleCategory of accountTitleCategories) { %>
+            <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
                 { %> selected
                 <% } %>>
-                <%= accountTitleSet.inCodeSet.codeValue %>
-                <%= accountTitleSet.inCodeSet.name %>
-                -
-                <%= accountTitleSet.codeValue %>
-                <%= accountTitleSet.name %>
+                <%= accountTitleCategory.codeValue %>
+                <%= accountTitleCategory.name %>
             </option>
             <% } %>
         </select>
@@ -28,15 +21,12 @@
         </p>
     </div>
 </div>
-
 <div class="form-group">
     <label for="codeValue" class="col-sm-3 control-label label-title">
         科目コード<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
-            <% if (!isNew) { %> readonly
-        <% } %>>
+        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>">
         <p class="message">半角64文字以内でご入力ください。</p>
         <p class="error message text-danger">
             <% if (errors && errors['codeValue']) { %>
@@ -45,7 +35,6 @@
         </p>
     </div>
 </div>
-
 <div class="form-group">
     <label for="name" class="col-sm-3 control-label label-title">
         科目名称<font color="red">＊</font>

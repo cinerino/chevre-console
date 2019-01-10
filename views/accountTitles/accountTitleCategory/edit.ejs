@@ -1,7 +1,7 @@
 <%- contentFor('title') %>
-細目編集
+科目分類編集
 <%- contentFor('displayId') %>
-AT-04
+AT-02
 <%- contentFor('styles') %>
 
 <%- contentFor('scripts') %>
@@ -11,12 +11,12 @@ AT-04
     <% /* フォーム */ %>
     <form method="post" class="form-horizontal">
         <div class="menu-group">
-            <%- include('../common/errorMessage') %>
-            <%- include('../common/successMessage') %>
+            <%- include('../../common/errorMessage') %>
+            <%- include('../../common/successMessage') %>
         </div>
 
         <% /* 登録・更新共通部 */ %>
-        <%- include('form', { forms: forms, isNew: false }) %>
+        <%- include('form', { forms: forms }) %>
 
         <% /* 更新ボタン */ %>
         <div class="form-group">

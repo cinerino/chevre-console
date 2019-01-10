@@ -1,7 +1,7 @@
 <%- contentFor('title') %>
-科目マスタ一覧
+細目マスタ一覧
 <%- contentFor('displayId') %>
-Aa-17
+AT-01
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
@@ -11,6 +11,7 @@ Aa-17
 <script src="/js/master/accountTitles.js"></script>
 
 <%- contentFor('body') %>
+
 <div class="col-sm-12 form-container search">
     <form method="post" class="form-horizontal">
         <%- include('../common/master/_hidden') %>
@@ -70,6 +71,7 @@ Aa-17
         </div>
     </form>
 </div>
+
 <div class="col-sm-12 form-container search">
     <div>
         <p id="searchedCount" style="display:none;">
@@ -89,24 +91,18 @@ Aa-17
                 </tr>
             </thead>
             <tbody>
-                <tr id="templateRow" identifier="$codeValue$">
-                    <td name="inCodeSet.inCodeSet.codeValue">$inCodeSet.inCodeSet.codeValue$</td>
+                <tr id="templateRow" codeValue="$codeValue$">
+                    <td name="inCodeSet.inCodeSet.codeValue"><a class="editAccountTitleCategory" href="#">$inCodeSet.inCodeSet.codeValue$</a></td>
                     <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
-                    <td name="inCodeSet.codeValue">$inCodeSet.codeValue$</td>
+                    <td name="inCodeSet.codeValue"><a class="editAccountTitleSet" href="#">$inCodeSet.codeValue$</a></td>
                     <td name="inCodeSet.name">$inCodeSet.name$</td>
-                    <td name="codeValue">$codeValue$</td>
+                    <td name="codeValue"><a class="editAccountTitle" href="#">$codeValue$</a></td>
                     <td name="name">$name$</td>
-                    <!-- <td name="edit" class="center">
-                        <div class="btn-area">
-                            <a class="btn btn-list edit">
-                                <span>編集</span>
-                            </a>
-                        </div>
-                    </td> -->
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
+
 <%- include('../common/master/_loading') %>
