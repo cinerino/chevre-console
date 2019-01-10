@@ -213,6 +213,7 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
 
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+    const accountTitleCategories = searchAccountTitleCategoriesResult.data;
 
     if (req.method === 'POST') {
         // バリデーション
@@ -221,11 +222,14 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
+                const accountTitleCategory = accountTitleCategories.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                 const accountTitle = {
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
-                    description: req.body.description
+                    description: req.body.description,
+                    hasCategoryCode: [],
+                    inCodeSet: accountTitleCategory
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.createAccounTitleSet(accountTitle);
@@ -248,7 +252,7 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
         message: message,
         errors: errors,
         forms: forms,
-        accountTitleCategories: searchAccountTitleCategoriesResult.data
+        accountTitleCategories: accountTitleCategories
     });
 }
 

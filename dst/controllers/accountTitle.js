@@ -209,6 +209,7 @@ function addAccountTitleSet(req, res) {
         });
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        const accountTitleCategories = searchAccountTitleCategoriesResult.data;
         if (req.method === 'POST') {
             // バリデーション
             validateAccountTitleSet(req);
@@ -216,11 +217,14 @@ function addAccountTitleSet(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
+                    const accountTitleCategory = accountTitleCategories.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                     const accountTitle = {
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
-                        description: req.body.description
+                        description: req.body.description,
+                        hasCategoryCode: [],
+                        inCodeSet: accountTitleCategory
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.createAccounTitleSet(accountTitle);
@@ -238,7 +242,7 @@ function addAccountTitleSet(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            accountTitleCategories: searchAccountTitleCategoriesResult.data
+            accountTitleCategories: accountTitleCategories
         });
     });
 }
