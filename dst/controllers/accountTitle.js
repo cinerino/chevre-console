@@ -47,7 +47,7 @@ function createAccountTitleCategory(req, res) {
                     });
                     yield accountTitleService.createAccounTitleCategory(accountTitle);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles`);
+                    res.redirect(`/accountTitles/accountTitleCategory/${accountTitle.codeValue}`);
                     return;
                 }
                 catch (error) {
@@ -229,7 +229,7 @@ function addAccountTitleSet(req, res) {
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.createAccounTitleSet(accountTitle);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles`);
+                    res.redirect(`/accountTitles/accountTitleSet/${accountTitle.codeValue}`);
                     return;
                 }
                 catch (error) {
@@ -350,7 +350,7 @@ function createAccountTitle(req, res) {
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.create(accountTitle);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles`);
+                    res.redirect(`/accountTitles/${accountTitle.codeValue}`);
                     return;
                 }
                 catch (error) {

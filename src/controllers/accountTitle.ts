@@ -42,7 +42,7 @@ export async function createAccountTitleCategory(req: Request, res: Response): P
                 });
                 await accountTitleService.createAccounTitleCategory(accountTitle);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles`);
+                res.redirect(`/accountTitles/accountTitleCategory/${accountTitle.codeValue}`);
 
                 return;
             } catch (error) {
@@ -234,7 +234,7 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
                 debug('saving account title...', accountTitle);
                 await accountTitleService.createAccounTitleSet(accountTitle);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles`);
+                res.redirect(`/accountTitles/accountTitleSet/${accountTitle.codeValue}`);
 
                 return;
             } catch (error) {
@@ -371,7 +371,7 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
                 debug('saving account title...', accountTitle);
                 await accountTitleService.create(accountTitle);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles`);
+                res.redirect(`/accountTitles/${accountTitle.codeValue}`);
 
                 return;
             } catch (error) {
