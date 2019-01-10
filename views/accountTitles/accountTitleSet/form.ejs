@@ -3,7 +3,11 @@
         科目分類<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <select class="form-control" name="inCodeSet[codeValue]">
+        <% if (!isNew) { %>
+        <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
+        <% } %>
+        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled
+            <% } %>>
             <option value="">選択してください</option>
             <% for (const accountTitleCategory of accountTitleCategories) { %>
             <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
@@ -26,7 +30,9 @@
         科目コード<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>">
+        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
+            <% if (!isNew) { %> readonly
+        <% } %>>
         <p class="message">半角64文字以内でご入力ください。</p>
         <p class="error message text-danger">
             <% if (errors && errors['codeValue']) { %>

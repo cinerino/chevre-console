@@ -4,7 +4,9 @@
         科目分類コード<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>">
+        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
+            <% if (!isNew) { %> readonly
+        <% } %>>
         <p class="message">半角64文字以内でご入力ください。</p>
         <p class="error message text-danger">
             <% if (errors && errors['codeValue']) { %>
