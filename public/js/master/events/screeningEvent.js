@@ -302,6 +302,7 @@ function regist() {
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
     var tableData = getTableData();
     var weekDayData = getWeekDayData();
+    var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
 
     if (theater === ''
         || screen === null
@@ -367,7 +368,8 @@ function regist() {
             onlineDisplayStartDate: onlineDisplayStartDate,
             maxSeatNumber: maxSeatNumber,
             saleStartDays: saleStartDays,
-            endSaleTimeAfterScreening: endSaleTimeAfterScreening
+            endSaleTimeAfterScreening: endSaleTimeAfterScreening,
+            reservedSeatsAvailable: reservedSeatsAvailable
         },
         beforeSend: function () {
             $('.regist-button').prop('disabled', true);
@@ -430,6 +432,7 @@ function update() {
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
     var maxSeatNumber = modal.find('input[name=maxSeatNumber]').val();
     var mvtkExcludeFlg = modal.find('input[name=mvtkExcludeFlg]:checked').val();
+    var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
 
     if (performance === ''
         || screen === ''
@@ -473,7 +476,8 @@ function update() {
                 saleStartTime: saleStartTime,
                 onlineDisplayStartDate: onlineDisplayStartDate,
                 maxSeatNumber: maxSeatNumber,
-                mvtkExcludeFlg: mvtkExcludeFlg
+                mvtkExcludeFlg: mvtkExcludeFlg,
+                reservedSeatsAvailable: reservedSeatsAvailable
             }
         }).done(function (data) {
             if (!data.error) {
@@ -661,6 +665,8 @@ function edit(target) {
     // var saleStartDate = target.attr('data-saleStartDate') ? target.attr('data-saleStartDate') : '';
     var onlineDisplayStartDate = target.attr('data-onlineDisplayStartDate') ? target.attr('data-onlineDisplayStartDate') : '';
     var maxSeatNumber = target.attr('data-maxSeatNumber');
+    var reservedSeatsAvailable = target.attr('data-reservedSeatsAvailable');
+
     var modal = $('#editModal');
     modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
     // チェックstartTime削除ボタン表示
@@ -675,6 +681,7 @@ function edit(target) {
     modal.find('input[name=day]').val(day);
     modal.find('input[name=screeningEventId]').val(film);
     modal.find('input[name=mvtkExcludeFlg]').prop('checked', (mvtkExcludeFlg === '1'));
+    modal.find('input[name=reservedSeatsAvailable]').prop('checked', (reservedSeatsAvailable === '1'));
 
     var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
     modal.find('select[name=doorTimeHour]').val(doorTime.slice(0, 2));
@@ -863,6 +870,10 @@ function createScreen(performances, ticketGroups) {
             }
         }
         var onlineDisplayStartDate = (performance.offers) ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';
+        var reservedSeatsAvailable = (performance.offers
+            && performance.offers.itemOffered.serviceOutput !== undefined
+            && performance.offers.itemOffered.serviceOutput.reservedTicket !== undefined
+            && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined) ? '0' : '1';
         var maxSeatNumber = (performance.offers) ? performance.offers.eligibleQuantity.maxValue : '';
         var mvtkExcludeFlg = '0';
         if (performance.offers !== undefined
@@ -889,6 +900,7 @@ function createScreen(performances, ticketGroups) {
             'data-onlineDisplayStartDate="' + onlineDisplayStartDate + '" ' +
             'data-maxSeatNumber="' + maxSeatNumber + '" ' +
             'data-mvtkExcludeFlg="' + mvtkExcludeFlg + '" ' +
+            'data-reservedSeatsAvailable="' + reservedSeatsAvailable + '" ' +
             'role="button" class="inner">' + performance.name.ja + '<br>' +
             performance.location.name.ja + '<br>' + ticketTypeGroupName + '</div>' +
             '</div>');

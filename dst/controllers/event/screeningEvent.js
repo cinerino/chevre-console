@@ -345,6 +345,19 @@ function createEventFromBody(body, user) {
                 }
             });
         }
+        // const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
+        //     ? {
+        //         typeOf: chevre.factory.reservationType.EventReservation,
+        //         reservedTicket: {
+        //             typeOf: 'Ticket',
+        //             ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+        //         }
+        //     } : {
+        //         typeOf: chevre.factory.reservationType.EventReservation,
+        //         reservedTicket: {
+        //             typeOf: 'Ticket'
+        //         }
+        //     };
         const offers = {
             id: ticketTypeGroup.id,
             name: ticketTypeGroup.name,
@@ -364,6 +377,7 @@ function createEventFromBody(body, user) {
                     id: serviceType.id,
                     name: serviceType.name
                 }
+                // serviceOutput: serviceOutput
             },
             validFrom: salesStartDate,
             validThrough: salesEndDate,
@@ -397,6 +411,7 @@ function createEventFromBody(body, user) {
 // tslint:disable-next-line:max-func-body-length
 function createMultipleEventFromBody(body, user) {
     return __awaiter(this, void 0, void 0, function* () {
+        debug('body:', body);
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
@@ -469,6 +484,19 @@ function createMultipleEventFromBody(body, user) {
                     if (serviceType === undefined) {
                         throw new chevre.factory.errors.NotFound('Service Type');
                     }
+                    // const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
+                    //     ? {
+                    //         typeOf: chevre.factory.reservationType.EventReservation,
+                    //         reservedTicket: {
+                    //             typeOf: 'Ticket',
+                    //             ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+                    //         }
+                    //     } : {
+                    //         typeOf: chevre.factory.reservationType.EventReservation,
+                    //         reservedTicket: {
+                    //             typeOf: 'Ticket'
+                    //         }
+                    //     };
                     const offers = {
                         id: ticketTypeGroup.id,
                         name: ticketTypeGroup.name,
@@ -488,6 +516,7 @@ function createMultipleEventFromBody(body, user) {
                                 id: serviceType.id,
                                 name: serviceType.name
                             }
+                            // serviceOutput: serviceOutput
                         },
                         validFrom: salesStartDate,
                         validThrough: salesEndDate,

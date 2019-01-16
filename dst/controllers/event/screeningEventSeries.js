@@ -66,9 +66,12 @@ function add(req, res) {
                     req.body.contentRating = movie.contentRating;
                     const attributes = createEventFromBody(req.body, movie, movieTheater);
                     debug('saving an event...', attributes);
-                    const event = yield eventService.create(attributes);
+                    const events = yield eventService.create(attributes);
+                    debug('event created', events[0]);
                     req.flash('message', '登録しました');
-                    res.redirect(`/events/screeningEventSeries/${event.id}/update`);
+                    const redirect = `/events/screeningEventSeries/${events[0].id}/update`;
+                    debug('redirecting...', redirect);
+                    res.redirect(redirect);
                     return;
                 }
                 catch (error) {

@@ -324,6 +324,20 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
         });
     }
 
+    // const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
+    //     ? {
+    //         typeOf: chevre.factory.reservationType.EventReservation,
+    //         reservedTicket: {
+    //             typeOf: 'Ticket',
+    //             ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+    //         }
+    //     } : {
+    //         typeOf: chevre.factory.reservationType.EventReservation,
+    //         reservedTicket: {
+    //             typeOf: 'Ticket'
+    //         }
+    //     };
+
     const offers: chevre.factory.event.screeningEvent.IOffer = {
         id: ticketTypeGroup.id,
         name: ticketTypeGroup.name,
@@ -343,6 +357,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
                 id: serviceType.id,
                 name: serviceType.name
             }
+            // serviceOutput: serviceOutput
         },
         validFrom: salesStartDate,
         validThrough: salesEndDate,
@@ -375,6 +390,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
  */
 // tslint:disable-next-line:max-func-body-length
 async function createMultipleEventFromBody(body: any, user: User): Promise<chevre.factory.event.screeningEvent.IAttributes[]> {
+    debug('body:', body);
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
@@ -454,6 +470,19 @@ async function createMultipleEventFromBody(body: any, user: User): Promise<chevr
                     throw new chevre.factory.errors.NotFound('Service Type');
                 }
 
+                // const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
+                //     ? {
+                //         typeOf: chevre.factory.reservationType.EventReservation,
+                //         reservedTicket: {
+                //             typeOf: 'Ticket',
+                //             ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+                //         }
+                //     } : {
+                //         typeOf: chevre.factory.reservationType.EventReservation,
+                //         reservedTicket: {
+                //             typeOf: 'Ticket'
+                //         }
+                //     };
                 const offers: chevre.factory.event.screeningEvent.IOffer = {
                     id: ticketTypeGroup.id,
                     name: ticketTypeGroup.name,
@@ -473,6 +502,7 @@ async function createMultipleEventFromBody(body: any, user: User): Promise<chevr
                             id: serviceType.id,
                             name: serviceType.name
                         }
+                        // serviceOutput: serviceOutput
                     },
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,
