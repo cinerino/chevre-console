@@ -19,6 +19,7 @@
 | `REDIS_PORT`                  | true     |                  | Redis Cache Connection |
 | `REDIS_HOST`                  | true     |                  | Redis Cache Connection |
 | `REDIS_KEY`                   | true     |                  | Redis Cache Connection |
+| `REDIS_TLS_SERVERNAME`        | false    |                  | Redis Cache Connection |
 | `API_ENDPOINT`                | true     |                  |                        |
 | `API_AUTHORIZE_SERVER_DOMAIN` | true     |                  |                        |
 | `API_CLIENT_ID`               | true     |                  |                        |
