@@ -1,15 +1,15 @@
-<header>
-    <nav class="navbar navbar-default">
-        <div class="container">
-            <div class="navbar-header">
-                <img class="img-circle logo" src="/images/ProjectIcon.png" alt="">
-                <h1 class="title">Chevre</h1>
-            </div>
-            <div class="navbar-text navbar-right">
-                <span><%= user.profile.family_name %></span>&nbsp;
-                <span><%= user.profile.given_name %></span>&nbsp;
-                <a class="btn btn-logout btn-default" href="<%= user.generateLogoutUrl() %>"><span>ログアウト</span></a>
+<header class="bg-light-gray shadow-sm border-bottom border-gray">
+    <hr class="bg-dark-gray m-0 border-0">
+    <div class="header contents-width mx-auto d-flex align-items-center justify-content-between p-3">
+        <div class="d-flex align-items-center">
+            <img class="logo mr-md-3" src="/images/ProjectIcon.png" alt="">
+            <h1 class="text-large d-none d-md-block">Chevre</h1>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="mr-3"><%= user.profile.family_name %> <%= user.profile.given_name %></div>
+            <div>
+                <a class="btn btn-logout btn-secondary" href="<%= user.generateLogoutUrl() %>">ログアウト</a>
             </div>
         </div>
-    </nav>
+    </div>
 </header>

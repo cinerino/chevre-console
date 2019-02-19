@@ -9,19 +9,19 @@ Aa-9
 
 
 <%- contentFor('body') %>
-<div class="col-sm-12 form-container">
+<div class="form-container p-3 bg-light-gray">
     <% /* フォーム */ %>
-    <form method="post" class="form-horizontal">
+    <form method="post">
         <div class="menu-group">
             <%- include('../../common/errorMessage') %>
             <%- include('../../common/successMessage') %>
         </div>
         <% /* 作品コード */ %>
-        <div class="form-group ">
-            <label for="identifier" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="identifier" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 作品コード<font color="red">＊</font>
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-9">
                 <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
                     value="<%= forms.identifier %>">
                 <p class="message">
@@ -40,10 +40,8 @@ Aa-9
         <%- include('form', { forms: forms, isNew: true }) %>
 
         <% /* 登録ボタン */ %>
-        <div class="form-group">
-            <div class="btn-area panel-body">
-                <a class="btn btn-ok btn-primary">登録する</a>
-            </div>
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">登録する</button>
         </div>
     </form>
 </div>

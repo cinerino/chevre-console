@@ -1,0 +1,37 @@
+@import './theme';
+
+.datepicker-days {
+    th,
+    td {
+        padding: 0.5rem;
+    }
+    
+    td.active {
+        background-image: none !important;
+        background-color: $primary !important;
+    }
+    
+    th.dow:first-child,
+    td:first-child {
+        color: #f00;
+    }
+    th.dow:last-child,
+    td:last-child {
+        color: #00f;
+    }
+}
+
+
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover {
+    background-color: #337ab7;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.bootstrap-datetimepicker-widget table td span.active,
+.bootstrap-datetimepicker-widget table td i.active {
+    background-color: #337ab7;
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}

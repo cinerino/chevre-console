@@ -20,6 +20,7 @@
     "@chevre/api-nodejs-client": "^1.0.0-alpha.44",
     "@movieticket/reserve-api-abstract-client": "^1.0.0",
     "body-parser": "^1.17.2",
+    "bootstrap": "^4.3.1",
     "connect-redis": "^3.4.0",
     "cookie-parser": "^1.4.1",
     "cors": "^2.8.5",

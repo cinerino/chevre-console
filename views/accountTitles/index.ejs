@@ -12,8 +12,8 @@ AT-01
 
 <%- contentFor('body') %>
 
-<div class="col-sm-12 form-container search">
-    <form method="post" class="form-horizontal">
+<div class="form-container search mb-3">
+    <form method="post" class="p-3 bg-light-gray">
         <%- include('../common/master/_hidden') %>
         <div class="menu-group">
             <% if (forms.message !== undefined) { %>
@@ -22,11 +22,11 @@ AT-01
             </p>
             <% } %>
         </div>
-        <div class="form-group">
-            <label for="inCodeSet[inCodeSet][codeValue]" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="inCodeSet[inCodeSet][codeValue]" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 科目分類
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-9">
                 <select class="form-control" name="inCodeSet[inCodeSet][codeValue]">
                     <option value="">選択してください</option>
                     <% for (const accountTitleCategory of accountTitleCategories) { %>
@@ -38,11 +38,11 @@ AT-01
                 </select>
             </div>
         </div>
-        <div class="form-group">
-            <label for="inCodeSet[codeValue]" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="inCodeSet[codeValue]" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 科目
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-9">
                 <select class="form-control" name="inCodeSet[codeValue]">
                     <option value="">選択してください</option>
                     <% for (const accountTitleSet of accountTitleSets) { %>
@@ -54,32 +54,28 @@ AT-01
                 </select>
             </div>
         </div>
-        <div class="form-group ">
-            <label for="codeValue" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="codeValue" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 細目コード
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-9">
                 <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
                     value="">
             </div>
         </div>
-        <div class="form-group">
-            <div class="panel-body">
-                <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
-                <a class="reset-condition btn btn-danger"><span>検索内容リセット</span></a>
-            </div>
+        <div class="panel-body">
+            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
+            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
         </div>
     </form>
 </div>
 
-<div class="col-sm-12 form-container search">
-    <div>
-        <p id="searchedCount" style="display:none;">
-            検索結果 $searched_count$件
-        </p>
-    </div>
-    <div id="list" class="table-responsive" style="display:none;">
-        <table class="table table-bordered table-striped">
+<div class="form-container search">
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果 $searched_count$件
+    </p>
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
                     <th>科目分類コード</th>
@@ -92,9 +88,11 @@ AT-01
             </thead>
             <tbody>
                 <tr id="templateRow" codeValue="$codeValue$">
-                    <td name="inCodeSet.inCodeSet.codeValue"><a class="editAccountTitleCategory" href="#">$inCodeSet.inCodeSet.codeValue$</a></td>
+                    <td name="inCodeSet.inCodeSet.codeValue"><a class="editAccountTitleCategory"
+                            href="#">$inCodeSet.inCodeSet.codeValue$</a></td>
                     <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
-                    <td name="inCodeSet.codeValue"><a class="editAccountTitleSet" href="#">$inCodeSet.codeValue$</a></td>
+                    <td name="inCodeSet.codeValue"><a class="editAccountTitleSet" href="#">$inCodeSet.codeValue$</a>
+                    </td>
                     <td name="inCodeSet.name">$inCodeSet.name$</td>
                     <td name="codeValue"><a class="editAccountTitle" href="#">$codeValue$</a></td>
                     <td name="name">$name$</td>

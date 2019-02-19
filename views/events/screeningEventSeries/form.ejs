@@ -1,8 +1,8 @@
-<div class="form-group">
-    <label for="locationBranchCode" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="locationBranchCode" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         劇場<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <select class="form-control" name="locationBranchCode">
             <option value="">選択してください</option>
             <% for (const movieTheater of movieTheaters) { %>
@@ -15,11 +15,11 @@
         </select>
     </div>
 </div>
-<div class="form-group">
-    <label for="locationBranchCode" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="locationBranchCode" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         作品<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <select class="form-control" name="workPerformed[identifier]" id="workPerformed[identifier]">
             <option value="">選択してください</option>
             <% for (const movie of movies) { %>
@@ -38,11 +38,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="nameJa" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="nameJa" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映作品名<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64 value="<%= forms.nameJa %>">
         <p class="message">
             全角64文字以内でご入力ください。
@@ -54,11 +54,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="kanaName" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="kanaName" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映作品名カナ
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64 value="<%= forms.kanaName %>">
         <p class="message">
             全角64文字以内でご入力ください。
@@ -70,11 +70,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="nameEn" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="nameEn" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映作品名英
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128 value="<%- forms.nameEn %>">
         <p class="message">
             半角128文字以内でご入力ください。
@@ -87,11 +87,11 @@
     </div>
 </div>
 
-<div class="form-group">
-    <label for="headline[ja]" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="headline[ja]" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映作品サブタイトル名
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="headline[ja]" id="headline[ja]" placeholder="" maxlength=64 value="<%- forms.headline.ja %>">
         <p class="message">
             全角64文字以内でご入力ください。
@@ -103,29 +103,29 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="signageDisplayName" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="signageDisplayName" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         サイネージ表示名
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="signageDisplayName" id="signageDisplayName" placeholder="" value="<%- forms.signageDisplayName %>">
     </div>
 </div>
-<div class="form-group">
-    <label for="signageDislaySubtitleName" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="signageDislaySubtitleName" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         サイネージ表示名サブタイトル
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="signageDislaySubtitleName" id="signageDislaySubtitleName" placeholder=""
             value="<%- forms.signageDislaySubtitleName %>">
     </div>
 </div>
 
-<div class="form-group">
-    <label for="startDate" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="startDate" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映開始日<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;" name="startDate"
             id="startDate" placeholder="" maxlength=10 value="<%= forms.startDate %>">
         <p class="error message text-danger">
@@ -135,11 +135,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="endDate" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="endDate" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映終了日<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;" name="endDate"
             id="endDate" placeholder="" maxlength=10 value="<%= forms.endDate %>">
         <p class="error message text-danger">
@@ -150,11 +150,11 @@
     </div>
 </div>
 
-<div class="form-group">
-    <label for="summaryStartDay" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="summaryStartDay" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         集計開始曜日<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <%
             let dayInWeeks = [
                 {code: '1', name: {ja: '月', en:'monday'}},
@@ -184,11 +184,11 @@
     </div>
 </div>
 
-<div class="form-group">
-    <label for="contentRating" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="contentRating" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         レイティング<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <%
             let ratings = [
                 {code: 'G', name: {ja: 'なし', en:'General Audience'}},
@@ -213,11 +213,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="translationType" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="translationType" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         字幕/吹替
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <%
             let subtitles = [
                 {code: '0', name: {ja: '字幕', en:'subtitle'}},
@@ -236,11 +236,11 @@
         </select>
     </div>
 </div>
-<div class="form-group">
-    <label for="videoFormat" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="videoFormat" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映形態<font color="red">＊</font>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <% Object.keys(VideoFormatType).forEach((key) => { %>
         <input type="checkbox" name="videoFormatType[]" value="<%= VideoFormatType[key] %>" <% if
             (forms.videoFormatType.indexOf(VideoFormatType[key])>= 0) { %>checked="checked"
@@ -255,20 +255,20 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="mvtkFlg" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="mvtkFlg" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         ムビチケ利用
     </label>
-    <div class="col-sm-9 form-inline">
+    <div class="col-md-9 form-inline">
         <input type="checkbox" <% if (forms.mvtkFlg==1) { %> checked
         <% } %> value="1" name="mvtkFlg">
     </div>
 </div>
-<div class="form-group">
-    <label for="description" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="description" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         補足説明
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-9">
         <input class="form-control" name="description" id="description" placeholder="" maxlength=30 value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
         <p class="message">
             全角30文字以内でご入力ください。

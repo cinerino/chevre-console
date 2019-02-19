@@ -27,7 +27,7 @@ $(function () {
     });
 
     // 編集ボタンイベント
-    $(document).on('click', 'a.edit', function () {
+    $(document).on('click', 'button.edit', function () {
         console.log($('td[name="identifier"]', $(this).closest('tr')));
         var identifier = $('td[name="identifier"]', $(this).closest('tr')).html();
         var url = '/creativeWorks/movie/' + identifier + '/update';
@@ -51,7 +51,7 @@ $(function () {
             type: 'GET',
             data: conditions,
             beforeSend: function () {
-                $('.loading').modal();
+                $('#loadingModal').modal({ backdrop: 'static' });
             }
         }).done(function (data) {
             if (data.success) {
@@ -68,8 +68,7 @@ $(function () {
         }).fail(function (jqxhr, textStatus, error) {
             alert("fail");
         }).always(function (data) {
-            $('.loading').modal('hide');
+            $('#loadingModal').modal('hide');
         });
     }
 });
-

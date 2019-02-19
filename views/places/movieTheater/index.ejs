@@ -10,35 +10,31 @@ Aa-12
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/places/movieTheaterList.js"></script>
 <%- contentFor('body') %>
-<div class="col-sm-12 form-container search">
-    <form method="post" class="form-horizontal">
+<div class="form-container search p-3 bg-light-gray mb-3">
+    <form method="post">
         <%- include('../../common/master/_hidden') %>
         <div class="menu-group">
         </div>
-        <div class="form-group">
-            <label for="name" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="name" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 名称
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-9">
                 <input class="form-control" name="name" id="name" placeholder="" maxlength=64>
             </div>
         </div>
-        <div class="form-group">
-            <div class="panel-body">
-                <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
-                <a class="reset-condition btn btn-danger"><span>検索内容リセット</span></a>
-            </div>
+        <div>
+            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
+            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
         </div>
     </form>
 </div>
-<div class="col-sm-12 form-container search">
-    <div>
-        <p id="searchedCount" style="display:none;">
-            検索結果 $searched_count$件
-        </p>
-    </div>
-    <div id="list" class="table-responsive" style="display:none;">
-        <table class="table table-bordered table-striped">
+<div class="form-container search">
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果 $searched_count$件
+    </p>
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
                     <th>コード</th>
@@ -66,7 +62,7 @@ Aa-12
                     <!-- <td name="edit" class="center">
                         <div class="btn-area">
                             <a class="btn btn-list edit" data-toggle="modal" data-target="#myModal">
-                                <span>編集</span>
+                                <i class="fas fa-edit"></i>
                             </a>
                         </div>
                     </td> -->
