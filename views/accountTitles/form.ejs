@@ -1,8 +1,8 @@
 <div class="form-group row">
-    <label for="inCodeSet[codeValue]" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        科目<font color="red">＊</font>
+    <label for="inCodeSet[codeValue]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        科目<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-9">
+    <div class="col-md-8">
         <% if (!isNew) { %>
         <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
         <% } %>
@@ -30,10 +30,10 @@
 </div>
 
 <div class="form-group row">
-    <label for="codeValue" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        細目コード<font color="red">＊</font>
+    <label for="codeValue" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        細目コード<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-9">
+    <div class="col-md-8">
         <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
             <% if (!isNew) { %> readonly
         <% } %>>
@@ -47,10 +47,10 @@
 </div>
 
 <div class="form-group row">
-    <label for="name" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        細目名称<font color="red">＊</font>
+    <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        細目名称<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-9">
+    <div class="col-md-8">
         <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
         <p class="message">64文字以内でご入力ください。</p>
         <p class="error message text-danger">

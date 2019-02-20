@@ -7144,7 +7144,7 @@ body {
   user-select: none;
   background-color: #FFF;
   background-attachment: fixed;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
   font-family: -apple-system, "Lucida Grande", "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", "メイリオ", Meiryo, Helvetica, Arial, sans-serif; }
 
@@ -7276,11 +7276,12 @@ button {
 header hr {
   height: 5px; }
 
+.table thead th, .table thead td, .table tbody th, .table tbody td {
+  vertical-align: middle;
+  line-height: 1.6; }
+
 .scroll-horizontal .table {
   min-width: 736px; }
-  .scroll-horizontal .table th, .scroll-horizontal .table td {
-    vertical-align: middle;
-    line-height: 1.6; }
 
 .simple-pagination ul li a, .simple-pagination ul li span {
   padding: 0.5rem;

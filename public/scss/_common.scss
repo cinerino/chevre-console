@@ -27,7 +27,7 @@ body {
     user-select: none;
     background-color: #FFF;
     background-attachment: fixed;
-    font-size: 16px;
+    font-size: 14px;
     color: #333;
     font-family: $font-family;
 }
@@ -186,12 +186,17 @@ header {
     }
 }
 
+.table {
+    thead, tbody {
+        th, td {
+            vertical-align: middle;
+            line-height: 1.6;
+        }
+    }
+}
+
 .scroll-horizontal .table {
     min-width: 736px;
-    th, td {
-        vertical-align: middle;
-        line-height: 1.6;
-    }
 }
 
 // simple-pagination

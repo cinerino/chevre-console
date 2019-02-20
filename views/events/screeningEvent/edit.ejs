@@ -1,21 +1,23 @@
-<div class="modal" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
                 <h4 class="modal-title">スケジュール編集</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <div class="panel-body">
                     <form class="p-3 bg-light-gray">
-                        <ul class="list-group">
+                        <ul class="list-group mb-3">
                             <li class="list-group-item film">作品 : <span></span></li>
                             <li class="list-group-item theater">劇場 : <span></span></li>
                             <li class="list-group-item day">上映日 : <span></span></li>
                         </ul>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="doorTime">開場時刻</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="doorTime">開場時刻</label>
+                            <div class="col-md-8 form-inline">
                                 <%- include('../../common/part/_timeSelector', {
                                     hourName: 'doorTimeHour',
                                     minuteName: 'doorTimeMinutes'
@@ -23,8 +25,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="startTime">開始時刻</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="startTime">開始時刻</label>
+                            <div class="col-md-8 form-inline">
                                 <%- include('../../common/part/_timeSelector', {
                                     hourName: 'startTimeHour',
                                     minuteName: 'startTimeMinutes'
@@ -32,23 +34,23 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="endTime">終了時刻</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="endTime">終了時刻</label>
+                            <div class="col-md-8 form-inline">
                                 <%- include('../../common/part/_timeSelector', {
                                     hourName: 'endTimeHour',
                                     minuteName: 'endTimeMinutes'
                                 }) %>
                             </div>
                         </div>
-                        <div class="form-group form-inline">
-                            <label class="col-md-3 control-label" for="screen">スクリーン</label>
-                            <div class="col-md-9">
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">スクリーン</label>
+                            <div class="col-md-8">
                                 <select class="form-control" name="screen"></select>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="control-label col-md-12" for="ticketTypeGroup">券種グループ</label>
-                            <div class="col-md-12">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="ticketTypeGroup">券種グループ</label>
+                            <div class="col-md-8">
                                 <select class="form-control" name="ticketTypeGroup">
                                     <option value="">選択してください</option>
                                     <% for (ticketType of ticketGroups) { %>
@@ -60,8 +62,8 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="saleStartDate">販売開始日</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="saleStartDate">販売開始日</label>
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control datepicker" name="saleStartDate" placeholder="YYYY/MM/DD"
                                     maxlength=10>
                                 日
@@ -72,22 +74,22 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="onlineDisplayStartDate">オンライン表示開始日</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="onlineDisplayStartDate">オンライン表示開始日</label>
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control datepicker" name="onlineDisplayStartDate" placeholder="YYYY/MM/DD"
                                     maxlength=10>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-md-3 control-label" for="maxSeatNumber">上限枚数</label>
-                            <div class="col-md-9 form-inline">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="maxSeatNumber">上限枚数</label>
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="name" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                            <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                             </label>
-                            <div class="col-md-9">
+                            <div class="col-md-8">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="mvtkExcludeFlg" value="1" id="mvtkExcludeFlg">
                                     <label class="form-check-label" for="mvtkExcludeFlg">
@@ -97,9 +99,9 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="name" class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                            <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                             </label>
-                            <div class="col-md-9">
+                            <div class="col-md-8">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="reservedSeatsAvailable" value="1"
                                         id="reservedSeatsAvailable">
@@ -118,10 +120,10 @@
             <input type="hidden" name="theater" value="">
             <input type="hidden" name="day" value="">
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
-                <button type="button" class="btn btn-primary update-button">パフォーマンスを更新</button>
-
+                
+                <button type="button" class="btn btn-primary update-button">更新</button>
                 <button type="button" class="btn btn-danger delete-button">削除</button>
+                <button type="button" class="btn bg-dark-gray text-white" data-dismiss="modal">閉じる</button>
 
             </div>
         </div>
