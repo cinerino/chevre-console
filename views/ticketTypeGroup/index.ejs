@@ -11,7 +11,7 @@ Aa-8
 <script src="/js/master/ticketTypeGroupsList.js"></script>
 <%- contentFor('body') %>
 <% /* フォーム */ %>
-<div class="form-container search">
+<div class="form-container search mb-3">
     <form method="post" class="p-3 bg-light-gray">
         <% /* 共通Hiddenコントロール */ %>
         <%- include('../common/master/_hidden') %>
@@ -50,11 +50,9 @@ Aa-8
 </div>
 <% /* 一覧 */ %>
 <div class="form-container search">
-    <div>
-        <p class="mb-3" id="searchedCount" style="display:none;">
-            検索結果$searched_count$件
-        </p>
-    </div>
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果$searched_count$件
+    </p>
     <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
         <table class="table table-bordered table-striped mb-0">
             <thead>

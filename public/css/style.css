@@ -7276,10 +7276,9 @@ button {
 header hr {
   height: 5px; }
 
-.table {
+.scroll-horizontal .table {
   min-width: 736px; }
-  .table th,
-  .table td {
+  .scroll-horizontal .table th, .scroll-horizontal .table td {
     vertical-align: middle;
     line-height: 1.6; }
 
