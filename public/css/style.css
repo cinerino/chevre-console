@@ -7221,6 +7221,9 @@ button {
 .buttons {
   max-width: 400px; }
 
+.bg-transparent {
+  background-color: transparent !important; }
+
 .bg-white {
   background-color: #FFF !important; }
 
@@ -7301,6 +7304,43 @@ header hr {
 .simple-pagination ul li.disabled a, .simple-pagination ul li.disabled span {
   background-color: #666;
   border-color: #666; }
+
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 90px;
+  height: 90px; }
+
+.loader {
+  margin: 60px auto;
+  position: relative;
+  text-indent: -9999em;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-left-color: #FFF;
+  transform: translateZ(0);
+  animation: load8 1.1s infinite linear; }
+
+.process {
+  opacity: 1;
+  z-index: 2000; }
+  .process .text {
+    margin-top: 120px; }
+
+@keyframes fadein {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+@keyframes loading {
+  30% {
+    transform: scaleY(2); } }
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
 
 .login .container {
   padding: 20px; }
