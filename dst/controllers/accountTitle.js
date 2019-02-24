@@ -208,15 +208,21 @@ function index(req, res) {
             auth: req.user.authClient
         });
         // 科目分類検索
-        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         debug(searchAccountTitleCategoriesResult);
         // 科目検索
-        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({ limit: 100 });
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         debug(searchAccountTitleSetsResult);
         res.render('accountTitles/index', {
             forms: {},
             accountTitleCategories: searchAccountTitleCategoriesResult.data,
-            accountTitleSets: searchAccountTitleSetsResult.data
+            accountTitleSets: searchAccountTitleSetsResult.data.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
         });
     });
 }
@@ -248,7 +254,10 @@ function addAccountTitleSet(req, res) {
             auth: req.user.authClient
         });
         // 科目分類検索
-        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         const accountTitleCategories = searchAccountTitleCategoriesResult.data;
         if (req.method === 'POST') {
             // バリデーション
@@ -326,7 +335,10 @@ function searchAccountTitleSet(req, res) {
         }
         else {
             // 科目分類検索
-            const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+            const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
+                limit: 100,
+                sort: { codeValue: chevre.factory.sortType.Ascending }
+            });
             debug(searchAccountTitleCategoriesResult);
             res.render('accountTitles/accountTitleSet/index', {
                 forms: {},
@@ -356,7 +368,10 @@ function updateAccountTitleSet(req, res) {
         }
         debug('accountTitle found', accountTitle);
         // 科目分類検索
-        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         const accountTitleCategories = searchAccountTitleCategoriesResult.data;
         if (req.method === 'POST') {
             // バリデーション
@@ -421,7 +436,10 @@ function createAccountTitle(req, res) {
             auth: req.user.authClient
         });
         // 科目分類検索
-        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({ limit: 100 });
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         const accountTitleSets = searchAccountTitleSetsResult.data;
         if (req.method === 'POST') {
             // バリデーション
@@ -460,7 +478,7 @@ function createAccountTitle(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            accountTitleSets: accountTitleSets
+            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
         });
     });
 }
@@ -484,7 +502,10 @@ function updateAccountTitle(req, res) {
             throw new chevre.factory.errors.NotFound('AccounTitle');
         }
         // 科目分類検索
-        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({ limit: 100 });
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         const accountTitleSets = searchAccountTitleSetsResult.data;
         if (req.method === 'POST') {
             // バリデーション
@@ -523,7 +544,7 @@ function updateAccountTitle(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            accountTitleSets: accountTitleSets
+            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
         });
     });
 }

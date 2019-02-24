@@ -207,17 +207,23 @@ export async function index(req: Request, res: Response): Promise<void> {
     });
 
     // 科目分類検索
-    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     debug(searchAccountTitleCategoriesResult);
 
     // 科目検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({ limit: 100 });
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     debug(searchAccountTitleSetsResult);
 
     res.render('accountTitles/index', {
         forms: {},
         accountTitleCategories: searchAccountTitleCategoriesResult.data,
-        accountTitleSets: searchAccountTitleSetsResult.data
+        accountTitleSets: searchAccountTitleSetsResult.data.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
     });
 }
 
@@ -250,7 +256,10 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
     });
 
     // 科目分類検索
-    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     const accountTitleCategories = searchAccountTitleCategoriesResult.data;
 
     if (req.method === 'POST') {
@@ -332,7 +341,10 @@ export async function searchAccountTitleSet(req: Request, res: Response): Promis
         }
     } else {
         // 科目分類検索
-        const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending }
+        });
         debug(searchAccountTitleCategoriesResult);
 
         res.render('accountTitles/accountTitleSet/index', {
@@ -365,7 +377,10 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     debug('accountTitle found', accountTitle);
 
     // 科目分類検索
-    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+    const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     const accountTitleCategories = searchAccountTitleCategoriesResult.data;
 
     if (req.method === 'POST') {
@@ -441,7 +456,10 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
     });
 
     // 科目分類検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({ limit: 100 });
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     const accountTitleSets = searchAccountTitleSetsResult.data;
 
     if (req.method === 'POST') {
@@ -487,7 +505,7 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
         message: message,
         errors: errors,
         forms: forms,
-        accountTitleSets: accountTitleSets
+        accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
     });
 }
 
@@ -512,7 +530,10 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
     }
 
     // 科目分類検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({ limit: 100 });
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending }
+    });
     const accountTitleSets = searchAccountTitleSetsResult.data;
 
     if (req.method === 'POST') {
@@ -558,7 +579,7 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
         message: message,
         errors: errors,
         forms: forms,
-        accountTitleSets: accountTitleSets
+        accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
     });
 }
 
