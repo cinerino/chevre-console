@@ -6,13 +6,11 @@
         <% if (!isNew) { %>
         <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
         <% } %>
-        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled
-            <% } %>>
+        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
             <option value="">選択してください</option>
             <% for (const accountTitleCategory of accountTitleCategories) { %>
             <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
-                { %> selected
-                <% } %>>
+                { %> selected <% } %>>
                 <%= accountTitleCategory.codeValue %>
                 <%= accountTitleCategory.name %>
             </option>
@@ -30,9 +28,8 @@
         科目コード<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
-            <% if (!isNew) { %> readonly
-        <% } %>>
+        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+            value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
         <p class="message">半角64文字以内でご入力ください。</p>
         <p class="error message text-danger">
             <% if (errors && errors['codeValue']) { %>
@@ -51,6 +48,36 @@
         <p class="error message text-danger">
             <% if (errors && errors['name']) { %>
             <%- errors['name'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inDefinedTermSet[termCode]" class="col-sm-3 control-label label-title">
+        科目区分コード<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="inDefinedTermSet[termCode]" id="inDefinedTermSet[termCode]" placeholder=""
+            maxlength=64 value="<%= forms.inDefinedTermSet.termCode %>">
+        <p class="message">半角64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['inDefinedTermSet.termCode']) { %>
+            <%- errors['inDefinedTermSet.termCode'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+<div class="form-group">
+    <label for="inDefinedTermSet[name]" class="col-sm-3 control-label label-title">
+        科目区分名<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <input class="form-control" name="inDefinedTermSet[name]" id="inDefinedTermSet[name]" placeholder=""
+            maxlength=64 value="<%= forms.inDefinedTermSet.name %>">
+        <p class="message">64文字以内でご入力ください。</p>
+        <p class="error message text-danger">
+            <% if (errors && errors['inDefinedTermSet.name']) { %>
+            <%- errors['inDefinedTermSet.name'].msg %>
             <% } %>
         </p>
     </div>

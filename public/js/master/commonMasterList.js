@@ -10,6 +10,11 @@ $(function () {
         _itemsOnPage: 10,
         _listNames: [],
         _listCols: {},
+        /**
+         * 現在表示中のデータリスト
+         */
+        _datas: [],
+
         onPageChanging: function (pageNumber) { },
         getTemplateRow: function () {
             return ($(this._templateRowSelector))
@@ -63,6 +68,9 @@ $(function () {
         // bind: データ分の表示行作成
         //----------------------
         bind: function (datas, countData, pageNumber) {
+            console.log('binding datas...', datas);
+            this._datas = datas;
+
             // pager取得
             var pager = this.getPager().hide();
             // 件数表示
@@ -123,6 +131,13 @@ $(function () {
         },
         dummy: function () {
             alert("dummy");
+        },
+
+        /**
+         * 現在表示中のデータリストを取得する
+         */
+        getDatas: function () {
+            return this._datas;
         }
     }
 });

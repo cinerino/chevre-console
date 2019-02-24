@@ -88,21 +88,49 @@ AT-01
                     <th>科目名称</th>
                     <th>細目コード</th>
                     <th>細目名称</th>
+                    <th>科目区分</th>
+                    <th>科目区分名</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr id="templateRow" codeValue="$codeValue$">
-                    <td name="inCodeSet.inCodeSet.codeValue"><a class="editAccountTitleCategory" href="#">$inCodeSet.inCodeSet.codeValue$</a></td>
+                <tr id="templateRow">
+                    <td name="inCodeSet.inCodeSet.codeValue"><a class="editAccountTitleCategory"
+                            href="#">$inCodeSet.inCodeSet.codeValue$</a></td>
                     <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
-                    <td name="inCodeSet.codeValue"><a class="editAccountTitleSet" href="#">$inCodeSet.codeValue$</a></td>
+                    <td name="inCodeSet.codeValue"><a class="editAccountTitleSet" href="#">$inCodeSet.codeValue$</a>
+                    </td>
                     <td name="inCodeSet.name">$inCodeSet.name$</td>
                     <td name="codeValue"><a class="editAccountTitle" href="#">$codeValue$</a></td>
                     <td name="name">$name$</td>
+                    <td name="inCodeSet.inDefinedTermSet.termCode">$inCodeSet.inDefinedTermSet.termCode$</td>
+                    <td name="inCodeSet.inDefinedTermSet.name">$inCodeSet.inDefinedTermSet.name$</td>
+                    <td name="" class="center">
+                        <a href="#" class="btn showAdditionalProperty" data-codeValue="$codeValue$">
+                            <span>追加項目を見る</span>
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="pager" class="div_pager_parent"></div>
+</div>
+
+<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">細目の追加項目</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <%- include('../common/master/_loading') %>

@@ -19,6 +19,7 @@ const debug = createDebug('chevre-backend:controllers');
 const NAME_MAX_LENGTH_CODE = 64;
 // 作品名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
+const NUM_ADDITIONAL_PROPERTY = 5;
 /**
  * 科目分類作成
  */
@@ -224,7 +225,8 @@ function addAccountTitleSet(req, res) {
                         name: req.body.name,
                         description: req.body.description,
                         hasCategoryCode: [],
-                        inCodeSet: accountTitleCategory
+                        inCodeSet: accountTitleCategory,
+                        inDefinedTermSet: req.body.inDefinedTermSet
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.createAccounTitleSet(accountTitle);
@@ -237,7 +239,7 @@ function addAccountTitleSet(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ inCodeSet: {} }, req.body);
+        const forms = Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, req.body);
         res.render('accountTitles/accountTitleSet/add', {
             message: message,
             errors: errors,
@@ -265,6 +267,7 @@ function updateAccountTitleSet(req, res) {
         if (accountTitle === undefined) {
             throw new chevre.factory.errors.NotFound('AccounTitle');
         }
+        debug('accountTitle found', accountTitle);
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
         const accountTitleCategories = searchAccountTitleCategoriesResult.data;
@@ -280,7 +283,8 @@ function updateAccountTitleSet(req, res) {
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
-                        description: req.body.description
+                        description: req.body.description,
+                        inDefinedTermSet: req.body.inDefinedTermSet
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.updateAccounTitleSet(accountTitle);
@@ -293,7 +297,7 @@ function updateAccountTitleSet(req, res) {
                 }
             }
         }
-        const forms = Object.assign({}, accountTitle, req.body);
+        const forms = Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitle, req.body);
         res.render('accountTitles/accountTitleSet/edit', {
             message: message,
             errors: errors,
@@ -345,7 +349,8 @@ function createAccountTitle(req, res) {
                         codeValue: req.body.codeValue,
                         name: req.body.name,
                         description: req.body.description,
-                        inCodeSet: accountTitleSet
+                        inCodeSet: accountTitleSet,
+                        additionalProperty: req.body.additionalProperty.filter((p) => p.name !== '' && p.name !== '')
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.create(accountTitle);
@@ -358,7 +363,12 @@ function createAccountTitle(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ inCodeSet: {} }, req.body);
+        const forms = Object.assign({ additionalProperty: [], inCodeSet: {} }, req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         res.render('accountTitles/new', {
             message: message,
             errors: errors,
@@ -402,7 +412,8 @@ function updateAccountTitle(req, res) {
                         codeValue: req.body.codeValue,
                         name: req.body.name,
                         description: req.body.description,
-                        inCodeSet: accountTitle.inCodeSet
+                        inCodeSet: accountTitle.inCodeSet,
+                        additionalProperty: req.body.additionalProperty.filter((p) => p.name !== '' && p.name !== '')
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.update(accountTitle);
@@ -415,7 +426,12 @@ function updateAccountTitle(req, res) {
                 }
             }
         }
-        const forms = Object.assign({}, accountTitle, req.body);
+        const forms = Object.assign({ additionalProperty: [] }, accountTitle, req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         res.render('accountTitles/edit', {
             message: message,
             errors: errors,

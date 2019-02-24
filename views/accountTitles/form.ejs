@@ -6,13 +6,11 @@
         <% if (!isNew) { %>
         <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
         <% } %>
-        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled
-            <% } %>>
+        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
             <option value="">選択してください</option>
             <% for (const accountTitleSet of accountTitleSets) { %>
             <option value="<%= accountTitleSet.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleSet.codeValue)
-                { %> selected
-                <% } %>>
+                { %> selected <% } %>>
                 <%= accountTitleSet.inCodeSet.codeValue %>
                 <%= accountTitleSet.inCodeSet.name %>
                 -
@@ -34,9 +32,8 @@
         細目コード<font color="red">＊</font>
     </label>
     <div class="col-sm-9">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
-            <% if (!isNew) { %> readonly
-        <% } %>>
+        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+            value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
         <p class="message">半角64文字以内でご入力ください。</p>
         <p class="error message text-danger">
             <% if (errors && errors['codeValue']) { %>
@@ -57,6 +54,29 @@
             <% if (errors && errors['name']) { %>
             <%- errors['name'].msg %>
             <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label for="name" class="col-sm-3 control-label label-title">
+        追加項目<font color="red">＊</font>
+    </label>
+    <div class="col-sm-9">
+        <% forms.additionalProperty.forEach(function (_, key) { %>
+        <div class="input-group">
+            <span class="input-group-addon">Name:Value</span>
+            <input class="form-control" name="additionalProperty[<%= key %>][name]"
+                id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
+                value="<%= (forms.additionalProperty[key] !== undefined) ? forms.additionalProperty[key].name : '' %>">
+
+            <input class="form-control" name="additionalProperty[<%= key %>][value]"
+                id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
+                value="<%= (forms.additionalProperty[key] !== undefined) ? forms.additionalProperty[key].value : '' %>">
+        </div>
+        <% }) %>
+        <p class="message"></p>
+        <p class="error message text-danger">
         </p>
     </div>
 </div>

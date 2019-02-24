@@ -88,5 +88,36 @@ $(function () {
             $('.loading').modal('hide');
         });
     }
-});
+
+    // 追加項目を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var codeValue = $('a.editAccountTitle', $(this).parent().parent()).html();
+        console.log('showing additionalProperty...codeValue:', codeValue);
+
+        showAdditionalProperty(codeValue);
+    });
+
+    /**
+     * 追加項目を見る
+     */
+    function showAdditionalProperty(codeValue) {
+        var accountTitle = $.CommonMasterList.getDatas().find(function (data) {
+            return data.codeValue === codeValue
+        });
+        if (accountTitle === undefined) {
+            alert('細目コード' + codeValue + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-additionalProperty');
+        var body = modal.find('.modal-body');
+        body.empty()
+        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+            + JSON.stringify(accountTitle.additionalProperty, null, '\t')
+            + '</textarea>'
+        body.append(html);
+        modal.modal();
+    }
+}); z
 

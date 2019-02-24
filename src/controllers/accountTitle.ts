@@ -15,6 +15,8 @@ const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
+const NUM_ADDITIONAL_PROPERTY = 5;
+
 /**
  * 科目分類作成
  */
@@ -229,7 +231,8 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
                     name: req.body.name,
                     description: req.body.description,
                     hasCategoryCode: [],
-                    inCodeSet: accountTitleCategory
+                    inCodeSet: accountTitleCategory,
+                    inDefinedTermSet: req.body.inDefinedTermSet
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.createAccounTitleSet(accountTitle);
@@ -245,6 +248,7 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
 
     const forms = {
         inCodeSet: {},
+        inDefinedTermSet: {},
         ...req.body
     };
 
@@ -275,6 +279,7 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     if (accountTitle === undefined) {
         throw new chevre.factory.errors.NotFound('AccounTitle');
     }
+    debug('accountTitle found', accountTitle);
 
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
@@ -292,7 +297,8 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
-                    description: req.body.description
+                    description: req.body.description,
+                    inDefinedTermSet: req.body.inDefinedTermSet
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.updateAccounTitleSet(accountTitle);
@@ -307,6 +313,8 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     }
 
     const forms = {
+        inCodeSet: {},
+        inDefinedTermSet: {},
         ...accountTitle,
         ...req.body
     };
@@ -366,7 +374,8 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
                     codeValue: req.body.codeValue,
                     name: req.body.name,
                     description: req.body.description,
-                    inCodeSet: accountTitleSet
+                    inCodeSet: accountTitleSet,
+                    additionalProperty: req.body.additionalProperty.filter((p: any) => p.name !== '' && p.name !== '')
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.create(accountTitle);
@@ -381,9 +390,15 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
     }
 
     const forms = {
+        additionalProperty: [],
         inCodeSet: {},
         ...req.body
     };
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
 
     res.render('accountTitles/new', {
         message: message,
@@ -430,7 +445,8 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
                     codeValue: req.body.codeValue,
                     name: req.body.name,
                     description: req.body.description,
-                    inCodeSet: accountTitle.inCodeSet
+                    inCodeSet: accountTitle.inCodeSet,
+                    additionalProperty: req.body.additionalProperty.filter((p: any) => p.name !== '' && p.name !== '')
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.update(accountTitle);
@@ -445,9 +461,15 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
     }
 
     const forms = {
+        additionalProperty: [],
         ...accountTitle,
         ...req.body
     };
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
 
     res.render('accountTitles/edit', {
         message: message,
