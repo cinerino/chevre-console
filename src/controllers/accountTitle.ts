@@ -65,6 +65,42 @@ export async function createAccountTitleCategory(req: Request, res: Response): P
 }
 
 /**
+ * 科目分類検索
+ */
+export async function searchAccountTitleCategory(req: Request, res: Response): Promise<void> {
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    if (req.xhr) {
+        try {
+            debug('searching accountTitleCategories...', req.query);
+            const result = await accountTitleService.searchAccountTitleCategories({
+                limit: Number(req.query.limit),
+                page: Number(req.query.page),
+                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
+            });
+            res.json({
+                success: true,
+                count: result.totalCount,
+                results: result.data
+            });
+        } catch (error) {
+            res.json({
+                success: false,
+                count: 0,
+                results: []
+            });
+        }
+    } else {
+        res.render('accountTitles/accountTitleCategory/index', {
+            forms: {}
+        });
+    }
+}
+
+/**
  * 科目分類編集
  */
 export async function updateAccountTitleCategory(req: Request, res: Response): Promise<void> {
@@ -258,6 +294,53 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
         forms: forms,
         accountTitleCategories: accountTitleCategories
     });
+}
+
+/**
+ * 科目検索
+ */
+export async function searchAccountTitleSet(req: Request, res: Response): Promise<void> {
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    if (req.xhr) {
+        try {
+            debug('searching accountTitleCategories...', req.query);
+            const result = await accountTitleService.searchAccountTitleSets({
+                limit: Number(req.query.limit),
+                page: Number(req.query.page),
+                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
+                inCodeSet: {
+                    codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                        ? `^${req.query.inCodeSet.codeValue}$`
+                        : undefined
+                }
+            });
+            res.json({
+                success: true,
+                count: result.totalCount,
+                results: result.data
+            });
+        } catch (error) {
+            res.json({
+                success: false,
+                count: 0,
+                results: []
+            });
+        }
+    } else {
+        // 科目分類検索
+        const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({ limit: 100 });
+        debug(searchAccountTitleCategoriesResult);
+
+        res.render('accountTitles/accountTitleSet/index', {
+            forms: {},
+            accountTitleCategories: searchAccountTitleCategoriesResult.data
+        });
+    }
+
 }
 
 /**

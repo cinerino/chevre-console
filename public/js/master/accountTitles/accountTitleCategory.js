@@ -17,9 +17,9 @@ $(function () {
         search(pageNumber);
     });
 
-    // 検索ボタンイベント
+    // 科目分類検索ボタンイベント
     var conditions = {};
-    $(document).on('click', '.btn-ok', function () {
+    $(document).on('click', '.search .btn-ok', function () {
         // 検索条件取得
         conditions = $.fn.getDataFromForm('form');
         // 検索API呼び出し
@@ -52,13 +52,10 @@ $(function () {
         $.fn.clearFormValue('form');
     });
 
-    //--------------------------------
-    // 検索API呼び出し
-    //--------------------------------
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/accountTitles/getlist';
+        var url = '/accountTitles/accountTitleCategory';
         //alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',
@@ -88,36 +85,4 @@ $(function () {
             $('.loading').modal('hide');
         });
     }
-
-    // 追加項目を見る
-    $(document).on('click', '.showAdditionalProperty', function (event) {
-        var codeValue = $('a.editAccountTitle', $(this).parent().parent()).html();
-        console.log('showing additionalProperty...codeValue:', codeValue);
-
-        showAdditionalProperty(codeValue);
-    });
-
-    /**
-     * 追加項目を見る
-     */
-    function showAdditionalProperty(codeValue) {
-        var accountTitle = $.CommonMasterList.getDatas().find(function (data) {
-            return data.codeValue === codeValue
-        });
-        if (accountTitle === undefined) {
-            alert('細目コード' + codeValue + 'が見つかりません');
-
-            return;
-        }
-
-        var modal = $('#modal-additionalProperty');
-        var body = modal.find('.modal-body');
-        body.empty()
-        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
-            + JSON.stringify(accountTitle.additionalProperty, null, '\t')
-            + '</textarea>'
-        body.append(html);
-        modal.modal();
-    }
-}); z
-
+});

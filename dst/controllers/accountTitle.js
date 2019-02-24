@@ -66,6 +66,45 @@ function createAccountTitleCategory(req, res) {
 }
 exports.createAccountTitleCategory = createAccountTitleCategory;
 /**
+ * 科目分類検索
+ */
+function searchAccountTitleCategory(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        if (req.xhr) {
+            try {
+                debug('searching accountTitleCategories...', req.query);
+                const result = yield accountTitleService.searchAccountTitleCategories({
+                    limit: Number(req.query.limit),
+                    page: Number(req.query.page),
+                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
+                });
+                res.json({
+                    success: true,
+                    count: result.totalCount,
+                    results: result.data
+                });
+            }
+            catch (error) {
+                res.json({
+                    success: false,
+                    count: 0,
+                    results: []
+                });
+            }
+        }
+        else {
+            res.render('accountTitles/accountTitleCategory/index', {
+                forms: {}
+            });
+        }
+    });
+}
+exports.searchAccountTitleCategory = searchAccountTitleCategory;
+/**
  * 科目分類編集
  */
 function updateAccountTitleCategory(req, res) {
@@ -249,6 +288,54 @@ function addAccountTitleSet(req, res) {
     });
 }
 exports.addAccountTitleSet = addAccountTitleSet;
+/**
+ * 科目検索
+ */
+function searchAccountTitleSet(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        if (req.xhr) {
+            try {
+                debug('searching accountTitleCategories...', req.query);
+                const result = yield accountTitleService.searchAccountTitleSets({
+                    limit: Number(req.query.limit),
+                    page: Number(req.query.page),
+                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
+                    inCodeSet: {
+                        codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                            ? `^${req.query.inCodeSet.codeValue}$`
+                            : undefined
+                    }
+                });
+                res.json({
+                    success: true,
+                    count: result.totalCount,
+                    results: result.data
+                });
+            }
+            catch (error) {
+                res.json({
+                    success: false,
+                    count: 0,
+                    results: []
+                });
+            }
+        }
+        else {
+            // 科目分類検索
+            const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({ limit: 100 });
+            debug(searchAccountTitleCategoriesResult);
+            res.render('accountTitles/accountTitleSet/index', {
+                forms: {},
+                accountTitleCategories: searchAccountTitleCategoriesResult.data
+            });
+        }
+    });
+}
+exports.searchAccountTitleSet = searchAccountTitleSet;
 /**
  * 科目編集
  */
