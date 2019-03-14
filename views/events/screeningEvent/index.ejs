@@ -14,13 +14,13 @@ Aa-4
             <div class="form-group">
                 <label>劇場</label>
                 <select class="form-control" name="theater">
-                    <% if (user.permission.movieTheaters.length === 0) { %>
+                    <% if (user.cognitoGroups.movieTheaters.length === 0) { %>
                         <option value="">選択してください</option>
                         <% for (const movieTheater of movieTheaters) { %>
                             <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
                         <% } %>
                     <% } else { %>
-                        <% for (const movieTheater of user.permission.movieTheaters) { %>
+                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
                             <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
                         <% } %>
                     <% } %>

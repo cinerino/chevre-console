@@ -28,7 +28,7 @@ export interface IProfile {
     email?: string;
 }
 
-export interface IPermission {
+export interface ICognitoGroups {
     movieTheaters?: any[]; // chevreapi.factory.place.movieTheater.IPlaceWithoutScreeningRoom[]
 }
 
@@ -48,7 +48,7 @@ export default class User {
      */
     // public cinerinoAuthClient: cinerinoapi.auth.OAuth2;
     public profile: IProfile;
-    public permission: IPermission;
+    public cognitoGroups: ICognitoGroups;
     constructor(configurations: IConfigurations) {
         this.host = configurations.host;
         this.session = configurations.session;
@@ -112,23 +112,23 @@ export default class User {
             this.profile = payload;
         }
 
-        if (this.permission === undefined) {
-            this.permission = {};
+        if (this.cognitoGroups === undefined) {
+            this.cognitoGroups = {};
         }
 
         if (this.profile['cognito:groups'] !== undefined
             && this.profile['cognito:groups'].length > 0
-            && this.permission.movieTheaters === undefined) {
+            && this.cognitoGroups.movieTheaters === undefined) {
             const cognitoGroups = this.profile['cognito:groups'];
             const placeService = new chevreapi.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: this.authClient
             });
             const { data } = await placeService.searchMovieTheaters({});
-            this.permission.movieTheaters = data.filter((d: any) => cognitoGroups.find((c) => d.id === c) !== undefined);
+            this.cognitoGroups.movieTheaters = data.filter((d: any) => cognitoGroups.find((c) => d.id === c) !== undefined);
         }
         // debug('profile', this.profile);
-        // debug('permission', this.permission);
+        // debug('cognitoGroups', this.cognitoGroups);
 
         return this;
     }
