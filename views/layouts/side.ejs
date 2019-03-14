@@ -1,75 +1,74 @@
 <div class="side-navi">
-        <div class="panel panel-default">
-                <div class="panel-heading">マスタ管理</div>
-                <ul class="nav nav-pills nav-stacked">
-                        <li class="<%= (displayId === 'Aa-12') ? 'active': ''; %>"><a href="/places/movieTheater">
-                                        <i class="glyphicon glyphicon-list"></i> 劇場検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-9') ? 'active': ''; %>"><a href="/creativeWorks/movie/add">
-                                        <i class="glyphicon glyphicon-plus"></i> 作品登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-10') ? 'active': ''; %>"><a href="/creativeWorks/movie">
-                                        <i class="glyphicon glyphicon-list"></i> 映画作品検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-2') ? 'active': ''; %>"><a
-                                        href="/events/screeningEventSeries/add">
-                                        <i class="glyphicon glyphicon-plus"></i> 劇場上映作品登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-3') ? 'active': ''; %>"><a
-                                        href="/events/screeningEventSeries">
-                                        <i class="glyphicon glyphicon-list"></i> 劇場上映作品検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-4') ? 'active': ''; %>"><a href="/events/screeningEvent">
-                                        <i class="glyphicon glyphicon-calendar"></i> スケジュール登録／検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-5') ? 'active': ''; %>"><a href="/ticketTypes/add">
-                                        <i class="glyphicon glyphicon-plus"></i> 券種登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-6') ? 'active': ''; %>"><a href="/ticketTypes">
-                                        <i class="glyphicon glyphicon-list"></i> 券種検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-7') ? 'active': ''; %>"><a href="/ticketTypeGroups/add">
-                                        <i class="glyphicon glyphicon-plus"></i> 券種グループ登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-8') ? 'active': ''; %>"><a href="/ticketTypeGroups">
-                                        <i class="glyphicon glyphicon-list"></i> 券種グループ検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-02') ? 'active': ''; %>"><a
-                                        href="/accountTitles/accountTitleCategory/new">
-                                        <i class="glyphicon glyphicon-plus"></i> 科目分類登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-05') ? 'active': ''; %>"><a
-                                        href="/accountTitles/accountTitleCategory">
-                                        <i class="glyphicon glyphicon-list"></i> 科目分類検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-03') ? 'active': ''; %>"><a
-                                        href="/accountTitles/accountTitleSet/new">
-                                        <i class="glyphicon glyphicon-plus"></i> 科目登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-06') ? 'active': ''; %>"><a
-                                        href="/accountTitles/accountTitleSet">
-                                        <i class="glyphicon glyphicon-list"></i> 科目検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-04') ? 'active': ''; %>"><a href="/accountTitles/new">
-                                        <i class="glyphicon glyphicon-plus"></i> 細目登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'AT-01') ? 'active': ''; %>"><a href="/accountTitles">
-                                        <i class="glyphicon glyphicon-list"></i> 細目検索</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-18') ? 'active': ''; %>"><a href="/serviceTypes/add">
-                                        <i class="glyphicon glyphicon-plus"></i> 興行区分登録</a>
-                        </li>
-                        <li class="<%= (displayId === 'Aa-19') ? 'active': ''; %>"><a href="/serviceTypes">
-                                        <i class="glyphicon glyphicon-list"></i> 興行区分検索</a>
-                        </li>
-                </ul>
-        </div>
-        <div class="panel panel-default">
-                <div class="panel-heading">予約管理</div>
-                <ul class="nav nav-pills nav-stacked">
-                        <li class="<%= (displayId === 'Aa-11') ? 'active': ''; %>"><a href="/reservations">
-                                        <i class="glyphicon glyphicon-list"></i> 予約検索</a>
-                        </li>
-                </ul>
-        </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">マスタ管理</div>
+        <ul class="nav nav-pills nav-stacked">
+            <li class="<%= (displayId === 'Aa-12') ? 'active': ''; %>"><a href="/places/movieTheater">
+                    <i class="glyphicon glyphicon-list"></i> 劇場検索</a>
+            </li>
+            <% if (user.permission.movieTheaters.length === 0) { %>
+            <li class="<%= (displayId === 'Aa-9') ? 'active': ''; %>"><a href="/creativeWorks/movie/add">
+                    <i class="glyphicon glyphicon-plus"></i> 作品登録</a>
+            </li>
+            <% } %>
+            <li class="<%= (displayId === 'Aa-10') ? 'active': ''; %>"><a href="/creativeWorks/movie">
+                    <i class="glyphicon glyphicon-list"></i> 映画作品検索</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-2') ? 'active': ''; %>"><a href="/events/screeningEventSeries/add">
+                    <i class="glyphicon glyphicon-plus"></i> 劇場上映作品登録</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-3') ? 'active': ''; %>"><a href="/events/screeningEventSeries">
+                    <i class="glyphicon glyphicon-list"></i> 劇場上映作品検索</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-4') ? 'active': ''; %>"><a href="/events/screeningEvent">
+                    <i class="glyphicon glyphicon-calendar"></i> スケジュール登録／検索</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-5') ? 'active': ''; %>"><a href="/ticketTypes/add">
+                    <i class="glyphicon glyphicon-plus"></i> 券種登録</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-6') ? 'active': ''; %>"><a href="/ticketTypes">
+                    <i class="glyphicon glyphicon-list"></i> 券種検索</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-7') ? 'active': ''; %>"><a href="/ticketTypeGroups/add">
+                    <i class="glyphicon glyphicon-plus"></i> 券種グループ登録</a>
+            </li>
+            <li class="<%= (displayId === 'Aa-8') ? 'active': ''; %>"><a href="/ticketTypeGroups">
+                    <i class="glyphicon glyphicon-list"></i> 券種グループ検索</a>
+            </li>
+            <li class="<%= (displayId === 'AT-02') ? 'active': ''; %>"><a
+                    href="/accountTitles/accountTitleCategory/new">
+                    <i class="glyphicon glyphicon-plus"></i> 科目分類登録</a>
+            </li>
+            <li class="<%= (displayId === 'AT-05') ? 'active': ''; %>"><a href="/accountTitles/accountTitleCategory">
+                    <i class="glyphicon glyphicon-list"></i> 科目分類検索</a>
+            </li>
+            <li class="<%= (displayId === 'AT-03') ? 'active': ''; %>"><a href="/accountTitles/accountTitleSet/new">
+                    <i class="glyphicon glyphicon-plus"></i> 科目登録</a>
+            </li>
+            <li class="<%= (displayId === 'AT-06') ? 'active': ''; %>"><a href="/accountTitles/accountTitleSet">
+                    <i class="glyphicon glyphicon-list"></i> 科目検索</a>
+            </li>
+            <li class="<%= (displayId === 'AT-04') ? 'active': ''; %>"><a href="/accountTitles/new">
+                    <i class="glyphicon glyphicon-plus"></i> 細目登録</a>
+            </li>
+            <li class="<%= (displayId === 'AT-01') ? 'active': ''; %>"><a href="/accountTitles">
+                    <i class="glyphicon glyphicon-list"></i> 細目検索</a>
+            </li>
+            <% if (user.permission.movieTheaters.length === 0) { %>
+            <li class="<%= (displayId === 'Aa-18') ? 'active': ''; %>"><a href="/serviceTypes/add">
+                    <i class="glyphicon glyphicon-plus"></i> 興行区分登録</a>
+            </li>
+            <% } %>
+            <li class="<%= (displayId === 'Aa-19') ? 'active': ''; %>"><a href="/serviceTypes">
+                    <i class="glyphicon glyphicon-list"></i> 興行区分検索</a>
+            </li>
+        </ul>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">予約管理</div>
+        <ul class="nav nav-pills nav-stacked">
+            <li class="<%= (displayId === 'Aa-11') ? 'active': ''; %>"><a href="/reservations">
+                    <i class="glyphicon glyphicon-list"></i> 予約検索</a>
+            </li>
+        </ul>
+    </div>
 </div>

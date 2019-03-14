@@ -85,6 +85,22 @@ class User {
             if (payload !== undefined) {
                 this.profile = payload;
             }
+            if (this.permission === undefined) {
+                this.permission = {};
+            }
+            if (this.profile['cognito:groups'] !== undefined
+                && this.profile['cognito:groups'].length > 0
+                && this.permission.movieTheaters === undefined) {
+                const cognitoGroups = this.profile['cognito:groups'];
+                const placeService = new chevreapi.service.Place({
+                    endpoint: process.env.API_ENDPOINT,
+                    auth: this.authClient
+                });
+                const { data } = yield placeService.searchMovieTheaters({});
+                this.permission.movieTheaters = data.filter((d) => cognitoGroups.find((c) => d.id === c) !== undefined);
+            }
+            // debug('profile', this.profile);
+            // debug('permission', this.permission);
             return this;
         });
     }
