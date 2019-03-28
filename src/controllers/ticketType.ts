@@ -109,6 +109,10 @@ export async function update(req: Request, res: Response): Promise<void> {
         }
     }
 
+    if (ticketType.priceSpecification === undefined) {
+        throw new Error('ticketType.priceSpecification undefined');
+    }
+
     let isBoxTicket = false;
     let isOnlineTicket = false;
     switch (ticketType.availability) {

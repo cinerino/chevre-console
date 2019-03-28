@@ -109,6 +109,9 @@ function update(req, res) {
                 }
             }
         }
+        if (ticketType.priceSpecification === undefined) {
+            throw new Error('ticketType.priceSpecification undefined');
+        }
         let isBoxTicket = false;
         let isOnlineTicket = false;
         switch (ticketType.availability) {

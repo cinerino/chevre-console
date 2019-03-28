@@ -158,6 +158,12 @@ function update(req, res) {
         }
         // 券種を発生金額(単価)でソート
         ticketTypes = ticketTypes.sort((a, b) => {
+            if (a.priceSpecification === undefined) {
+                throw new Error(`Price Specification undefined. Ticket Type:${a.id}`);
+            }
+            if (b.priceSpecification === undefined) {
+                throw new Error(`Price Specification undefined. Ticket Type:${b.id}`);
+            }
             const aUnitPrice = Math.floor(a.priceSpecification.price
                 / ((a.priceSpecification.referenceQuantity.value !== undefined) ? a.priceSpecification.referenceQuantity.value : 1));
             const bUnitPrice = Math.floor(b.priceSpecification.price

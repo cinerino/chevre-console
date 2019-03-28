@@ -28,8 +28,9 @@ $(function () {
         var date = $('.search input[name=date]').val();
         var days = $('.search input[name=days]:checked').val();
         var screen = $('.search select[name=screen]').val();
+        var onlyReservedSeatsAvailable = $('.search input[name=onlyReservedSeatsAvailable]:checked').val();
         screen = screen === '' ? undefined : screen;
-        search(theater, date, days, screen);
+        search(theater, date, days, screen, onlyReservedSeatsAvailable);
     });
     // 新規作成
     $(document).on('click', '.add-button', function (event) {
@@ -432,7 +433,7 @@ function update() {
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
     var maxSeatNumber = modal.find('input[name=maxSeatNumber]').val();
     var mvtkExcludeFlg = modal.find('input[name=mvtkExcludeFlg]:checked').val();
-    var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
+    var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]').val();
 
     if (performance === ''
         || screen === ''
@@ -506,7 +507,7 @@ function update() {
  * @param {string} screen
  * @returns {void}
  */
-function search(theater, date, days, screen) {
+function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
     if (!theater || !date) {
         alert('劇場、上映日を選択してください');
         return;
@@ -515,7 +516,8 @@ function search(theater, date, days, screen) {
     var query = {
         theater: theater,
         date: date,
-        days: days
+        days: days,
+        onlyReservedSeatsAvailable: onlyReservedSeatsAvailable
     };
     if (screen !== undefined && screen !== null) {
         query.screen = screen;
@@ -681,7 +683,8 @@ function edit(target) {
     modal.find('input[name=day]').val(day);
     modal.find('input[name=screeningEventId]').val(film);
     modal.find('input[name=mvtkExcludeFlg]').prop('checked', (mvtkExcludeFlg === '1'));
-    modal.find('input[name=reservedSeatsAvailable]').prop('checked', (reservedSeatsAvailable === '1'));
+    modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', (reservedSeatsAvailable === '1'));
+    modal.find('input[name=reservedSeatsAvailable]').val(reservedSeatsAvailable);
 
     var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
     modal.find('select[name=doorTimeHour]').val(doorTime.slice(0, 2));
@@ -884,6 +887,13 @@ function createScreen(performances, ticketGroups) {
 
         var ticketTypeGroup = performance.offers.id;
 
+        var performanceContens = performance.name.ja
+            + '<br>' + performance.location.name.ja
+            + '<br>' + ticketTypeGroupName;
+        if (reservedSeatsAvailable === '1') {
+            performanceContens += '<br><span class="badge badge-primary">座席指定</span>';
+        }
+
         var performanceDom = $('<div class="performance">' +
             '<div ' +
             'data-performance="' + performance._id + '" ' +
@@ -901,9 +911,10 @@ function createScreen(performances, ticketGroups) {
             'data-maxSeatNumber="' + maxSeatNumber + '" ' +
             'data-mvtkExcludeFlg="' + mvtkExcludeFlg + '" ' +
             'data-reservedSeatsAvailable="' + reservedSeatsAvailable + '" ' +
-            'role="button" class="inner">' + performance.name.ja + '<br>' +
-            performance.location.name.ja + '<br>' + ticketTypeGroupName + '</div>' +
-            '</div>');
+            'role="button" class="inner">'
+            + performanceContens
+            + '</div>'
+            + '</div>');
         if (top < prevBtm) performanceDom.addClass('overlap');
         prevBtm = top + height;
         if (i < sortedPerformance.length - 1) {
