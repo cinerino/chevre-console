@@ -88,11 +88,11 @@ $(function () {
                 },
                 type: 'GET',
                 beforeSend: function () {
-                    $('.loading').modal();
+                    $('#loadingModal').modal({ backdrop: 'static' });
                 }
             }).done(function (data) {
                 $('#contentRating').val(data.results);
-            });
+            }).always(function () { $('#loadingModal').modal('hide'); });;
         }
 
     });

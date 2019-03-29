@@ -7,9 +7,9 @@ AT-02
 <%- contentFor('scripts') %>
 
 <%- contentFor('body') %>
-<div class="col-sm-12 form-container">
+<div class="form-container">
     <% /* フォーム */ %>
-    <form method="post" class="form-horizontal">
+    <form method="post" class="p-3 bg-light-gray">
         <div class="menu-group">
             <%- include('../../common/errorMessage') %>
             <%- include('../../common/successMessage') %>
@@ -19,10 +19,8 @@ AT-02
         <%- include('form', { forms: forms, isNew: true }) %>
 
         <% /* 登録ボタン */ %>
-        <div class="form-group">
-            <div class="btn-area panel-body">
-                <a class="btn btn-ok btn-primary">登録する</a>
-            </div>
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">登録する</button>
         </div>
     </form>
 </div>

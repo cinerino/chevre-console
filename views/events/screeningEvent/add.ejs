@@ -1,17 +1,22 @@
 <div class="modal fade" id="newModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
+        <div class="modal-content" role="document">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
                 <h4 class="modal-title">スケジュール新規登録</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+
+
             <div class="modal-body">
-                <div class="panel-body">
-                    <form class="form-horizontal">
-                        <div class="form-group form-inline">
-                            <label class="col-sm-3 control-label text-right" for="theater">劇場<font color="red">＊</font>
+                <div class="panel-body form-container">
+                    <form class="p-3 bg-light-gray">
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="theater">劇場<font
+                                    color="red">＊</font>
                             </label>
-                            <div class="col-sm-9 form-inline">
+                            <div class="col-md-8">
                                 <select class="form-control" name="theater">
                                     <option value="" disabled selected>選択してください</option>
                                     <% for (const movieTheater of movieTheaters) { %>
@@ -25,137 +30,141 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group form-inline">
-                            <label class="col-sm-3 control-label text-right" for="screen">作品<font color="red">＊</font>
-                            </label>
-                            <div class="col-sm-9 form-inline">
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">作品 <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8 form-inline">
                                 <select class="form-control" name="screeningEventSeriesId">
                                     <option value="">劇場を選択してください</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group form-inline">
-                            <label class="col-sm-3 control-label text-right" for="screen">スクリーン<font color="red">＊
-                                </font></label>
-                            <div class="col-sm-9">
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">スクリーン <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8">
                                 <select class="form-control" name="screen">
                                     <option value="">劇場を選択してください</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label text-right">登録期間<font color="red">＊</font></label>
-                            <div class="col-sm-9 form-inline">
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（from） <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control datepicker" name="screeningDateStart"
                                     placeholder="YYYY/MM/DD" maxlength=10>
-                                〜
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（Through） <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control datepicker" name="screeningDateThrough"
                                     placeholder="YYYY/MM/DD" maxlength=10>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label text-right">曜日<font color="red">＊</font></label>
-                            <div class="col-sm-9 form-inline">
-                                <label class="checkbox-inline"><input type="checkbox" value="1" name="weekDay"
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 text-md-right mb-2 mb-md-0">曜日 <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8 form-inline">
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="1" name="weekDay"
                                         checked>月</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="2" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="2" name="weekDay"
                                         checked>火</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="3" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="3" name="weekDay"
                                         checked>水</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="4" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="4" name="weekDay"
                                         checked>木</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="5" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="5" name="weekDay"
                                         checked>金</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="6" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="6" name="weekDay"
                                         checked>土</label>
-                                <label class="checkbox-inline"><input type="checkbox" value="0" name="weekDay"
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="0" name="weekDay"
                                         checked>日</label>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label text-right"
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
                                 for="onlineDisplayStartDate">オンライン表示開始日</label>
-                            <div class="col-sm-9 form-inline">
+                            <div class="col-md-8 form-inline">
                                 <input class="form-control datepicker" name="onlineDisplayStartDate"
                                     placeholder="YYYY/MM/DD" maxlength=10>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-sm-3 control-label text-right">座席指定<font color="red">＊</font></label>
-                            <div class="col-sm-9 form-inline">
-                                <label class="checkbox-inline"><input type="checkbox" value="1"
+                        <div class="form-group row">
+                            <label class="col-md-4 pt-0 text-md-right mb-2 mb-md-0">座席指定 <span
+                                    class="text-danger">＊</span></label>
+                            <div class="col-md-8 form-inline">
+                                <label class="checkbox-inline mr-3"><input type="checkbox" value="1"
                                         name="reservedSeatsAvailable" checked>座席指定あり</label>
                             </div>
                         </div>
-                        <table class="table table-bordered">
-                            <thead>
-                                <th class="text-center">パフォマンス</th>
-                                <th class="text-center">開場時刻</th>
-                                <th class="text-center">開始時刻</th>
-                                <th class="text-center">終了時刻</th>
-                                <th class="text-center">券種グループ</th>
-                                <th class="text-center mvtk" style="max-width: 80px">ムビチケ対象外</th>
-                            </thead>
-                            <tbody>
-                                <% for (let i = 1; i <= 6; i++) { %>
-                                <tr>
-                                    <td class="text-center">
-                                        <%= i %>
-                                    </td>
-                                    <td class="form-inline">
-                                        <%- include('../../common/part/_timeSelector', {
+                        <div class="scroll-horizontal">
+                            <table class="table table-bordered text-small">
+                                <thead>
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">開場時刻<br>開始時刻<br>終了時刻</th>
+                                    <th class="text-center">券種グループ</th>
+                                    <th class="text-center mvtk" style="max-width: 80px">ムビチケ<br>対象外</th>
+                                </thead>
+                                <tbody>
+                                    <% for (let i = 1; i <= 6; i++) { %>
+                                    <tr>
+                                        <td class="text-center">
+                                            <%= i %>
+                                        </td>
+                                        <td class="d-flex justify-content-center align-items-center">
+                                            <%- include('../../common/part/_timeSelector', {
                                             hourName: 'doorTimeHour',
                                             minuteName: 'doorTimeMinute'
                                         }) %>
-                                    </td>
-                                    <td class="form-inline">
-                                        <div class="col-sm-12">
+                                        </td>
+                                        <td class="d-flex justify-content-center align-items-center">
                                             <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'startTimeHour',
-                                            minuteName: 'startTimeMinute'
-                                        }) %>
-                                        </div>
-                                    </td>
-                                    <td class="form-inline">
-                                        <div class="col-sm-12">
+                                                hourName: 'startTimeHour',
+                                                minuteName: 'startTimeMinute'
+                                            }) %>
+                                        </td>
+                                        <td class="d-flex justify-content-center align-items-center">
                                             <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'endTimeHour',
-                                            minuteName: 'endTimeMinute'
-                                        }) %>
-                                        </div>
-                                    </td>
-                                    <td class="form-inline">
-                                        <select class="form-control" name="ticketTypeGroup">
-                                            <option value="" disabled selected>選択してください</option>
-                                            <% for (ticketType of ticketGroups) { %>
-                                            <option value="<%= ticketType.id %>">
-                                                <%= ticketType.name.ja %>
-                                            </option>
-                                            <% } %>
-                                        </select>
-                                    </td>
-                                    <td class="form-inline text-center mvtk">
-                                        <input type="checkbox" name="mvtkExcludeFlg">
-                                    </td>
-                                </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                        <!-- <div class="form-group">
+                                                hourName: 'endTimeHour',
+                                                minuteName: 'endTimeMinute'
+                                            }) %>
+                                        </td>
+                                        <td>
+                                            <select class="form-control" name="ticketTypeGroup">
+                                                <option value="" disabled selected>選択してください</option>
+                                                <% for (ticketType of ticketGroups) { %>
+                                                <option value="<%= ticketType.id %>">
+                                                    <%= ticketType.name.ja %>
+                                                </option>
+                                                <% } %>
+                                            </select>
+                                        </td>
+                                        <td class="text-center mvtk">
+                                            <input type="checkbox" name="mvtkExcludeFlg">
+                                        </td>
+                                    </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- <div class="form-group row">
                             <%- include('../../common/part/_timeSelector', {
                                 label: '開場時刻',
                                 hourName: 'doorTimeHour',
                                 minuteName: 'doorTimeMinutes'
                             }) %>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group row">
                             <%- include('../../common/part/_timeSelector', {
                                 label: '開始時刻',
                                 hourName: 'startTimeHour',
                                 minuteName: 'startTimeMinutes'
                             }) %>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group row">
                             <%- include('../../common/part/_timeSelector', {
                                 label: '終了時刻',
                                 hourName: 'endTimeHour',
@@ -168,7 +177,7 @@
             <input type="hidden" name="maxSeatNumber" value="">
             <input type="hidden" name="saleStartDays" value="">
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                <button type="button" class="btn bg-dark-gray text-white" data-dismiss="modal">閉じる</button>
                 <button type="button" class="btn btn-primary regist-button">パフォーマンスを登録</button>
             </div>
         </div>

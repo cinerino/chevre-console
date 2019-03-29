@@ -10,8 +10,8 @@ Aa-11
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/reservationList.js"></script>
 <%- contentFor('body') %>
-<div class="col-sm-12 form-container search">
-    <form method="post" class="form-horizontal">
+<div class="form-container search mb-3">
+    <form method="post" class="p-3 bg-light-gray">
         <%- include('../common/master/_hidden') %>
         <div class="menu-group">
             <% if (message !== '') { %>
@@ -20,31 +20,36 @@ Aa-11
             </p>
             <% } %>
         </div>
-        <div class="form-group form-inline">
-            <label for="modifiedFrom" class="col-sm-3 control-label label-title">
-                更新日
+        <div class="form-group row">
+            <label for="modifiedFrom" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                更新日（From）
             </label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control datepicker" name="modifiedFrom" id="dateFrom" /> ～
+            <div class="col-md-8">
+                <input type="text" class="form-control datepicker" name="modifiedFrom" id="dateFrom" />
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="modifiedThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                更新日（Through）
+            </label>
+            <div class="col-md-8">
                 <input type="text" class="form-control datepicker" name="modifiedThrough" id="modifiedThrough" />
             </div>
         </div>
-        <div class="form-group">
-            <div class="panel-body">
-                <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
-                <a class="reset-condition btn btn-danger"><span>検索内容リセット</span></a>
-            </div>
+        <div class="panel-body">
+            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
+            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
         </div>
     </form>
 </div>
-<div class="col-sm-12 form-container search">
+<div class="form-container search">
     <div>
-        <p id="searchedCount" style="display:none;">
+        <p class="mb-3" id="searchedCount" style="display:none;">
             検索結果$searched_count$件
         </p>
     </div>
-    <div id="list" class="table-responsive" style="display:none;">
-        <table class="table table-bordered table-striped">
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
                     <th>ID<br>予約番号<br>ステータス<br>更新日時</th>
@@ -58,24 +63,26 @@ Aa-11
                 <tr id="templateRow" _id="$id$">
                     <td name="id__reservationNumber__reservationStatus__modifiedTime">
                         $id$<br> $reservationNumber$
-                        <br> <span class="badge">$reservationStatus$</span>
+                        <br> <span class="badge badge-success">$reservationStatus$</span>
                         <br> $modifiedTime$
                     </td>
-                    <td name="reservationFor.typeOf__reservationFor.id__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
-                        <span class="badge">$reservationFor.typeOf$</span><br> $reservationFor.id$
+                    <td
+                        name="reservationFor.typeOf__reservationFor.id__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
+                        <span class="badge badge-secondary">$reservationFor.typeOf$</span><br> $reservationFor.id$
                         <br> $reservationFor.name.ja$
                         <br> $reservationFor.startDate$
                         <br> $reservationFor.superEvent.location.name.ja$
                         <br> $reservationFor.location.name.ja$
                         <br>
                     </td>
-                    <td name="reservedTicket.ticketType.name.ja__reservedTicket.ticketType.price__reservedTicket.ticketedSeat.seatSection__reservedTicket.ticketedSeat.seatNumber">
+                    <td
+                        name="reservedTicket.ticketType.name.ja__reservedTicket.ticketType.price__reservedTicket.ticketedSeat.seatSection__reservedTicket.ticketedSeat.seatNumber">
                         $reservedTicket.ticketType.name.ja$<br> $reservedTicket.ticketType.price$ JPY<br>
                         $reservedTicket.ticketedSeat.seatSection$
                         <br> $reservedTicket.ticketedSeat.seatNumber$
                     </td>
                     <td name="underName.typeOf__underName.name">
-                        <span class="badge">$underName.typeOf$</span><br> $underName.name$
+                        <span class="badge badge-secondary">$underName.typeOf$</span><br> $underName.name$
                     </td>
                 </tr>
             </tbody>

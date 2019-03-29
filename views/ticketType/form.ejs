@@ -1,8 +1,8 @@
-<div class="form-group ">
-    <label for="name[ja]" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="name[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         券種の種別
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <%
             let noteTypes = [
                 {code: '1', name: '有料券'},
@@ -21,11 +21,11 @@
         </select>
     </div>
 </div>
-<div class="form-group ">
-    <label for="name[ja]" class="col-sm-3 control-label label-title">
-        サイト表示用券種名<font color="red">＊</font>
+<div class="form-group row">
+    <label for="name[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        サイト表示用券種名<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value=<%=forms.name.ja
             %>>
         <p class="message">
@@ -38,11 +38,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="name[en]" class="col-sm-3 control-label label-title">
-        サイト表示用券種名英<font color="red">＊</font>
+<div class="form-group row">
+    <label for="name[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        サイト表示用券種名英<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value=<%=forms.name.en
             %>>
         <p class="message">
@@ -55,11 +55,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="alternateName[ja]" class="col-sm-3 control-label label-title">
-        サイト管理用券種名<font color="red">＊</font>
+<div class="form-group row">
+    <label for="alternateName[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        サイト管理用券種名<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]" placeholder=""
             maxlength=64 value="<%= forms.alternateName.ja %>">
         <p class="message">
@@ -72,11 +72,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="nameForPrinting" class="col-sm-3 control-label label-title">
-        印刷用券種名<font color="red">＊</font>
+<div class="form-group row">
+    <label for="nameForPrinting" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        印刷用券種名<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="nameForPrinting" id="nameForPrinting" placeholder="" maxlength=30
             value="<%= forms.nameForPrinting %>">
         <p class="message">
@@ -89,11 +89,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="price" class="col-sm-3 control-label label-title">
-        発生金額<font color="red">＊</font>
+<div class="form-group row">
+    <label for="price" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        発生金額<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value=<%=forms.price
             %>>
         <p class="message">
@@ -106,11 +106,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="accountsReceivable" class="col-sm-3 control-label label-title">
-        売上金額<font color="red">＊</font>
+<div class="form-group row">
+    <label for="accountsReceivable" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        売上金額<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="accountsReceivable" id="accountsReceivable" placeholder=""
             maxlength=10 value=<%=forms.accountsReceivable %>>
         <p class="message">
@@ -123,29 +123,29 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="isBoxTicket" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="isBoxTicket" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         BOX利用
     </label>
-    <div class="col-sm-9 form-inline">
+    <div class="col-md-8 form-inline">
         <input type="checkbox" value="1" name="isBoxTicket" <% if (forms.isBoxTicket) { %> checked
         <% } %> >
     </div>
 </div>
-<div class="form-group ">
-    <label for="isOnlineTicket" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="isOnlineTicket" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         オンライン利用
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="checkbox" value="1" name="isOnlineTicket" <% if (forms.isOnlineTicket) { %> checked
         <% } %> >
     </div>
 </div>
-<div class="form-group ">
-    <label for="seatReservationUnit" class="col-sm-3 control-label label-title">
-        購入席単位<font color="red">＊</font>
+<div class="form-group row">
+    <label for="seatReservationUnit" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        購入席単位<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <select class="form-control" name="seatReservationUnit">
             <option value="" disabled selected>選択してください</option>
             <% for (let i = 1; i <= 4; i++) { %>
@@ -162,11 +162,11 @@
         </p>
     </div>
 </div>
-<div class="form-group">
-    <label for="description[ja]" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="description[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         補足説明
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="description[ja]" id="description[ja]" placeholder="" maxlength=64
             value=<%=forms.description.ja %>>
         <p class="message">
@@ -179,11 +179,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="description[en]" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="description[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         補足説明英
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="description[en]" id="description[en]" placeholder="" maxlength=64
             value=<%=forms.description.en %>>
         <p class="message">
@@ -196,21 +196,21 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="indicatorColor" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="indicatorColor" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         入場時表示カラー
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor" id="indicatorColor"
             value="<%= forms.indicatorColor %>" style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
         <input type="hidden" name="hiddenColor" id="hiddenColor">
     </div>
 </div>
-<div class="form-group ">
-    <label for="appliesToMovieTicketType" class="col-sm-3 control-label label-title">
+<div class="form-group row">
+    <label for="appliesToMovieTicketType" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         対応ムビチケ券種区分
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <input type="text" class="form-control" name="appliesToMovieTicketType" id="appliesToMovieTicketType"
             placeholder="" maxlength=10 value=<%=forms.priceSpecification.appliesToMovieTicketType %>>
         <p class="message">
@@ -223,11 +223,11 @@
         </p>
     </div>
 </div>
-<div class="form-group ">
-    <label for="accountTitle" class="col-sm-3 control-label label-title">
-        細目<font color="red">＊</font>
+<div class="form-group row">
+    <label for="accountTitle" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        細目<span class="text-danger">＊</span>
     </label>
-    <div class="col-sm-9">
+    <div class="col-md-8">
         <select class="form-control" name="accountTitle">
             <option value="" disabled selected>選択してください</option>
             <% for (let accountTitle of accountTitles) { %>

@@ -7,20 +7,20 @@ Aa-9
 <%- contentFor('scripts') %>
 
 <%- contentFor('body') %>
-<div class="col-sm-12 form-container">
+<div class="form-container">
     <% /* フォーム */ %>
-    <form method="post" class="form-horizontal">
+    <form method="post" class="p-3 bg-light-gray">
         <div class="menu-group">
             <%- include('../../common/errorMessage') %>
             <%- include('../../common/successMessage') %>
         </div>
 
         <% /* 作品コード */ %>
-        <div class="form-group ">
-            <label class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 作品コード
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-8">
                 <input readonly style="width:auto;" type="text" class="form-control" name="identifier" id="identifier"
                     placeholder="" maxlength=64 value="<%= forms.identifier %>">
             </div>
@@ -30,10 +30,8 @@ Aa-9
         <%- include('form', { forms: forms, isNew: true }) %>
 
         <% /* 更新ボタン */ %>
-        <div class="form-group">
-            <div class="btn-area panel-body">
-                <a class="btn btn-ok btn-primary">更新する</a>
-            </div>
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">更新する</button>
         </div>
     </form>
 </div>

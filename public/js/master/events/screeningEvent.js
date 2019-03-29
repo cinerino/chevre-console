@@ -512,7 +512,7 @@ function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
         alert('劇場、上映日を選択してください');
         return;
     }
-    $('.loading').modal();
+    $('#loadingModal').modal({ backdrop: 'static' });
     var query = {
         theater: theater,
         date: date,
@@ -551,7 +551,7 @@ function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
     }).fail(function (jqxhr, textStatus, error) {
         console.error(jqxhr, textStatus, error);
         alert('エラーが発生しました。');
-    }).always(function () { $('.loading').modal('hide'); });
+    }).always(function () { $('#loadingModal').modal('hide'); });
 }
 
 /**
@@ -891,7 +891,7 @@ function createScreen(performances, ticketGroups) {
             + '<br>' + performance.location.name.ja
             + '<br>' + ticketTypeGroupName;
         if (reservedSeatsAvailable === '1') {
-            performanceContens += '<br><span class="badge badge-primary">座席指定</span>';
+            performanceContens += '<br><span class="badge badge-success">座席指定</span>';
         }
 
         var performanceDom = $('<div class="performance">' +
@@ -934,7 +934,7 @@ function createScreen(performances, ticketGroups) {
 
 $(function () {
     //上映日
-    $('form.search input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
+    $('.search form input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
         .val(moment().tz('Asia/Tokyo').format('YYYY/MM/DD'));
 
     // datepickerセット

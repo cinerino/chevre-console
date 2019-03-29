@@ -11,8 +11,8 @@ Aa-6
 <script src="/js/master/ticketTypeList.js"></script>
 <%- contentFor('body') %>
 <% /* フォーム */ %>
-<div class="col-sm-12 form-container search">
-    <form method="post" class="form-horizontal">
+<div class="form-container search p-3 bg-light-gray mb-3">
+    <form method="post">
         <% /* 共通Hiddenコントロール */ %>
         <%- include('../common/master/_hidden') %>
         <div class="menu-group">
@@ -24,28 +24,28 @@ Aa-6
             <% } %>
         </div>
         <% /* 券種コード */ %>
-        <div class="form-group ">
-            <label for="id" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="id" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 券種コード
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-8">
                 <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
             </div>
         </div>
         <% /* 管理用券種名 */ %>
-        <div class="form-group ">
-            <label for="name" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 管理用券種名
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-8">
                 <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
             </div>
         </div>
-        <div class="form-group ">
-            <label for="ticketTypeGroups" class="col-sm-3 control-label label-title">
+        <div class="form-group row">
+            <label for="ticketTypeGroups" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 券種グループ
             </label>
-            <div class="col-sm-9">
+            <div class="col-md-8">
                 <select name="ticketTypeGroups" id="ticketTypeGroups" class="form-control">
                     <option value="">---</option>
                     <% for (let ticketTypeGroupList of ticketTypeGroupsList) { %>
@@ -57,23 +57,19 @@ Aa-6
             </div>
         </div>
         <% /* 検索ボタン */ %>
-        <div class="form-group">
-            <div class="panel-body">
-                <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
-                <a class="reset-condition btn btn-danger"><span>検索内容リセット</span></a>
-            </div>
+        <div class="panel-body">
+            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
+            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
         </div>
     </form>
 </div>
 <% /* 一覧 */ %>
-<div class="col-sm-12 form-container search">
-    <div>
-        <p id="searchedCount" style="display:none;">
-            検索結果$searched_count$件
-        </p>
-    </div>
-    <div id="list" class="table-responsive" style="display:none;">
-        <table class="table table-bordered table-striped">
+<div class="form-container search">
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果$searched_count$件
+    </p>
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
                     <th>券種コード</th>
@@ -89,20 +85,24 @@ Aa-6
                 <tr id="templateRow" _id="$id$">
                     <td name="ticketCode">$ticketCode$</td>
                     <td name="name.ja__alternateName.ja">$name.ja$<br>$alternateName.ja$</td>
-                    <td name="priceSpecification.price__priceSpecification.accounting.accountsReceivable" style="text-align:right;">$priceSpecification.price$<br>$priceSpecification.accounting.accountsReceivable$</td>
-                    <td name="priceSpecification.referenceQuantity.value">$priceSpecification.referenceQuantity.value$</td>
-                    <td name="priceSpecification.appliesToMovieTicketType">$priceSpecification.appliesToMovieTicketType$</td>
+                    <td name="priceSpecification.price__priceSpecification.accounting.accountsReceivable"
+                        style="text-align:right;">
+                        $priceSpecification.price$<br>$priceSpecification.accounting.accountsReceivable$</td>
+                    <td name="priceSpecification.referenceQuantity.value">$priceSpecification.referenceQuantity.value$
+                    </td>
+                    <td name="priceSpecification.appliesToMovieTicketType">$priceSpecification.appliesToMovieTicketType$
+                    </td>
                     <td name="edit" class="center">
-                        <div class="btn-area">
-                            <a class="btn btn-list edit" href="/ticketTypes/$id$/update">
-                                <span>編集</span>
+                        <div class="btn-area text-center">
+                            <a class="btn btn-primary btn-list edit" href="/ticketTypes/$id$/update">
+                                <i class="fas fa-edit"></i>
                             </a>
                         </div>
                     </td>
                     <td name="popup" class="center popupListTicketTypeGroup">
-                        <div class="btn-area">
-                            <a href="/ticketTypes/getTicketTypeGroupList/$id$" class="btn btn-list edit">
-                                <span>関連券種グループ</span>
+                        <div class="btn-area text-center">
+                            <a href="/ticketTypes/getTicketTypeGroupList/$id$" class="btn btn-sm btn-primary btn-list edit">
+                                関連券種<br>グループ
                             </a>
                         </div>
                     </td>

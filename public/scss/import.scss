@@ -1,5 +1,7 @@
-@import 'common';
-
+@import "theme";
+@import "node_modules/bootstrap/scss/bootstrap";
+@import "reset";
+@import "datepicker";
+@import "common";
 @import 'login';
-
 @import 'scheduler';

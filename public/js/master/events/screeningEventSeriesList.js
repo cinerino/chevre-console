@@ -27,7 +27,7 @@ $(function () {
     });
 
     // 編集ボタンイベント
-    $(document).on('click', 'a.edit', function () {
+    $(document).on('click', 'button.edit', function () {
         // イベント識別子取得&url編集
         var eventId = $(this).closest('tr').attr('eventid');
         var url = '/events/screeningEventSeries/' + eventId + '/update';
@@ -52,7 +52,7 @@ $(function () {
             type: 'GET',
             data: conditions,
             beforeSend: function () {
-                $('.loading').modal();
+                $('#loadingModal').modal({ backdrop: 'static' });
             }
         }).done(function (data) {
             if (data.success) {
@@ -73,7 +73,7 @@ $(function () {
         }).fail(function (jqxhr, textStatus, error) {
             alert("fail");
         }).always(function (data) {
-            $('.loading').modal('hide');
+            $('#loadingModal').modal('hide');
         });
     }
 });
