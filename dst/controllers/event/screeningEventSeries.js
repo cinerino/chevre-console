@@ -425,14 +425,11 @@ function getList(req, res) {
                 }
             });
             const results = data.map((event) => {
-                let translationType = '';
-                if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
-                    translationType = '字幕';
-                }
-                if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
-                    translationType = '吹替';
-                }
-                return Object.assign({}, event, { translationType: translationType, startDay: (event.startDate !== undefined) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '', endDay: (event.endDate !== undefined) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '', videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : '' });
+                return Object.assign({}, event, { subtitleLanguage: (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null)
+                        ? event.subtitleLanguage.name : '---', dubLanguage: (event.dubLanguage !== undefined && event.dubLanguage !== null)
+                        ? event.dubLanguage.name : '---', startDay: (event.startDate !== undefined) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '未指定', endDay: (event.endDate !== undefined) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '未指定', videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : '未指定', acceptedPaymentMethod: (event.offers !== undefined && event.offers.acceptedPaymentMethod !== undefined)
+                        ? event.offers.acceptedPaymentMethod.join('<br>')
+                        : '未指定' });
             });
             res.json({
                 success: true,

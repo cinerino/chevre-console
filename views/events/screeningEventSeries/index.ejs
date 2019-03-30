@@ -10,8 +10,8 @@ Aa-3
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/events/screeningEventSeriesList.js"></script>
 <%- contentFor('body') %>
-<div class="form-container search p-3 bg-light-gray">
-    <form method="post">
+<div class="form-container mb-3">
+    <form method="post" class="p-3 bg-light-gray">
         <%- include('../../common/master/_hidden') %>
         <div class="menu-group">
         </div>
@@ -67,36 +67,39 @@ Aa-3
     </form>
 </div>
 <div class="form-container search">
-    <div>
-        <p class="mb-3" id="searchedCount" style="display:none;">
-            検索結果 $searched_count$件
-        </p>
-    </div>
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果 $searched_count$件
+    </p>
     <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
                     <th>作品コード</th>
-                    <th class="text-left">作品名<br>サブタイトル</th>
+                    <th class="text-left">作品名<br>English Name<br>サブタイトル<br>カナ</th>
                     <th>上映開始日<br>上映終了日</th>
-                    <th>字幕</th>
+                    <th>字幕<br>吹替</th>
                     <th>上映形態</th>
+                    <th>対応決済方法</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr id="templateRow" eventId="$id$">
                     <td name="workPerformed.identifier">$workPerformed.identifier$</td>
-                    <td name="name.ja__headline.ja">
+                    <td name="name.ja__name.en__headline.ja__kanaName">
                         $name.ja$<br>
+                        $name.en$<br>
                         $headline.ja$<br>
+                        $kanaName$<br>
                     </td>
                     <td name="startDay__endDay">$startDay$<br>$endDay$</td>
-                    <td name="translationType">$translationType$</td>
+                    <td name="subtitleLanguage__dubLanguage">$subtitleLanguage$<br>$dubLanguage$</td>
                     <td name="videoFormat">$videoFormat$</td>
+                    <td name="acceptedPaymentMethod">$acceptedPaymentMethod$</td>
                     <td name="edit" class="center">
                         <div class="btn-area text-center">
-                            <button type="button" class="btn btn-primary btn-list edit" data-toggle="modal" data-target="#myModal">
+                            <button type="button" class="btn btn-primary btn-list edit" data-toggle="modal"
+                                data-target="#myModal">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </div>
