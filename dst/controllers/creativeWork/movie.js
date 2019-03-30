@@ -159,7 +159,7 @@ function getList(req, res) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const result = yield creativeWorkService.searchMovies({
+            const { data, totalCount } = yield creativeWorkService.searchMovies({
                 limit: req.query.limit,
                 page: req.query.page,
                 identifier: req.query.identifier,
@@ -167,12 +167,25 @@ function getList(req, res) {
                 datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom)) ?
                     moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
                 datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough)) ?
-                    moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined
+                    moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+                offers: {
+                    availableFrom: (!_.isEmpty(req.query.availableFrom)) ?
+                        moment(`${req.query.availableFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+                    availableThrough: (!_.isEmpty(req.query.availableThrough)) ?
+                        moment(`${req.query.availableThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined
+                }
+            });
+            const results = data.map((movie) => {
+                return Object.assign({}, movie, { dayPublished: (movie.datePublished !== undefined)
+                        ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
+                        : '未指定', dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
+                        ? moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
+                        : '未指定' });
             });
             res.json({
                 success: true,
-                count: result.totalCount,
-                results: result.data
+                count: totalCount,
+                results: results
             });
         }
         catch (error) {

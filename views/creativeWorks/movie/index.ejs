@@ -34,7 +34,7 @@ Aa-10
         </div>
         <div class="form-group row">
             <label for="datePublishedThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                公開日（From - To）
+                公開日(From - To)
             </label>
             <div class="col-md-8">
                 <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
@@ -44,6 +44,19 @@ Aa-10
                     maxlength=10 name="datePublishedThrough" id="datePublishedThrough" value="" />
             </div>
         </div>
+        <div class="form-group row">
+            <label for="availableThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                興行期間(From - To)
+            </label>
+            <div class="col-md-8">
+                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
+                    maxlength=10 name="availableFrom" id="availableFrom" value="" />
+                ～
+                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
+                    maxlength=10 name="availableThrough" id="availableThrough" value="" />
+            </div>
+        </div>
+
         <div class="panel-body">
             <button type="button" class="btn btn-ok search btn-primary">検索する</button>
             <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
@@ -62,6 +75,7 @@ Aa-10
                     <th class="text-left">作品名<br>サブタイトル</th>
                     <th>上映時間(分)</th>
                     <th>レイティング</th>
+                    <th>公開日<br>興行終了予定日</th>
                     <th></th>
                 </tr>
             </thead>
@@ -73,9 +87,12 @@ Aa-10
                     </td>
                     <td name="duration" class="text-right">$duration$</td>
                     <td name="contentRating" class="text-left">$contentRating$</td>
+                    <td name="dayPublished__dayAvailabilityEnds" class="text-left">
+                        $dayPublished$<br>$dayAvailabilityEnds$</td>
                     <td name="edit" class="center">
                         <div class="btn-area text-center">
-                            <button type="button" class="btn btn-primary btn-list edit btn-sm" data-toggle="modal" data-target="#myModal">
+                            <button type="button" class="btn btn-primary btn-list edit btn-sm" data-toggle="modal"
+                                data-target="#myModal">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </div>
