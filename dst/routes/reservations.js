@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment");
+const util_1 = require("util");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (_, res) => {
     res.render('reservations/index', {
@@ -26,9 +27,10 @@ reservationsRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { totalCount, data } = yield reservationService.searchScreeningEventReservations({
+        const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
+            sort: { modifiedTime: chevre.factory.sortType.Descending },
             modifiedFrom: (req.query.modifiedFrom !== '')
                 ? moment(`${req.query.modifiedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
                 : undefined,
@@ -36,12 +38,19 @@ reservationsRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
                 ? moment(`${req.query.modifiedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
                 : undefined
             // name: req.query.name
-        });
+        };
+        const { totalCount, data } = yield reservationService.searchScreeningEventReservations(searchConditions);
         res.json({
             success: true,
             count: totalCount,
             results: data.map((t) => {
-                return t;
+                const priceSpecification = t.price;
+                const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
+                return Object.assign({}, t, { unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket.ticketedSeat !== undefined)
+                        ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)
+                            ? t.reservedTicket.ticketedSeat.seatingType.typeOf
+                            : '', t.reservedTicket.ticketedSeat.seatNumber)
+                        : '非指定' });
             })
         });
     }
