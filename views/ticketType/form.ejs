@@ -3,24 +3,18 @@
         券種の種別
     </label>
     <div class="col-md-8">
-        <%
-            let noteTypes = [
-                {code: '1', name: '有料券'},
-                {code: '2', name: '前売券'},
-                {code: '3', name: '無料券'}
-            ];
-        %>
         <select class="form-control" name="category">
             <option value="" disabled selected>選択してください</option>
-            <% for (let noteType of noteTypes) { %>
-            <option value="<%= noteType.code %>" <% if (forms.category==noteType.code ) { %> selected
-                <% } %> >
-                <%= noteType.name %>
+            <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+            <option value="<%= ticketTypeCategory.id %>" <% if (forms.category === ticketTypeCategory.id ) { %> selected
+                <% } %>>
+                <%= ticketTypeCategory.name %>
             </option>
             <% } %>
         </select>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="name[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         サイト表示用券種名<span class="text-danger">＊</span>
@@ -38,6 +32,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="name[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         サイト表示用券種名英<span class="text-danger">＊</span>
@@ -55,6 +50,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="alternateName[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         サイト管理用券種名<span class="text-danger">＊</span>
@@ -72,6 +68,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="nameForPrinting" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         印刷用券種名<span class="text-danger">＊</span>
@@ -89,6 +86,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="price" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         発生金額<span class="text-danger">＊</span>
@@ -106,6 +104,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="accountsReceivable" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         売上金額<span class="text-danger">＊</span>
@@ -123,34 +122,34 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="isBoxTicket" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         BOX利用
     </label>
     <div class="col-md-8 form-inline">
-        <input type="checkbox" value="1" name="isBoxTicket" <% if (forms.isBoxTicket) { %> checked
-        <% } %> >
+        <input type="checkbox" value="1" name="isBoxTicket" <% if (forms.isBoxTicket) { %> checked <% } %>>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="isOnlineTicket" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         オンライン利用
     </label>
     <div class="col-md-8">
-        <input type="checkbox" value="1" name="isOnlineTicket" <% if (forms.isOnlineTicket) { %> checked
-        <% } %> >
+        <input type="checkbox" value="1" name="isOnlineTicket" <% if (forms.isOnlineTicket) { %> checked <% } %>>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="seatReservationUnit" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        購入席単位<span class="text-danger">＊</span>
+        適用単位<span class="text-danger">＊</span>
     </label>
     <div class="col-md-8">
         <select class="form-control" name="seatReservationUnit">
             <option value="" disabled selected>選択してください</option>
-            <% for (let i = 1; i <= 4; i++) { %>
-            <option value="<%= i %>" <% if (forms.seatReservationUnit==i) { %> selected
-                <% } %> >
+            <% for (let i = 1; i <= 10; i++) { %>
+            <option value="<%= i %>" <% if (forms.seatReservationUnit==i) { %> selected <% } %>>
                 <%= i %>
             </option>
             <% } %>
@@ -162,6 +161,47 @@
         </p>
     </div>
 </div>
+
+<div class="form-group row">
+    <label for="priceSpecification[referenceQuantity][minValue]"
+        class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        適用最小数
+    </label>
+    <div class="col-md-8">
+        <select class="form-control" name="priceSpecification[referenceQuantity][minValue]">
+            <option value="" selected>指定しない</option>
+            <% for (let i = 1; i <= 50; i++) { %>
+            <option value="<%= i %>" <% if (Number(forms.priceSpecification.referenceQuantity.minValue) === i) { %>
+                selected <% } %>>
+                <%= i %>
+            </option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="priceSpecification[referenceQuantity][maxValue]"
+        class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        適用最大数
+    </label>
+    <div class="col-md-8">
+        <select class="form-control" name="priceSpecification[referenceQuantity][maxValue]">
+            <option value="" selected>指定しない</option>
+            <% for (let i = 1; i <= 50; i++) { %>
+            <option value="<%= i %>" <% if (Number(forms.priceSpecification.referenceQuantity.maxValue) === i) { %>
+                selected <% } %>>
+                <%= i %>
+            </option>
+            <% } %>
+        </select>
+        <p class="error message text-danger">
+        </p>
+    </div>
+</div>
+
 <div class="form-group row">
     <label for="description[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         補足説明
@@ -179,6 +219,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="description[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         補足説明英
@@ -196,6 +237,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="indicatorColor" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         入場時表示カラー
@@ -206,6 +248,7 @@
         <input type="hidden" name="hiddenColor" id="hiddenColor">
     </div>
 </div>
+
 <div class="form-group row">
     <label for="appliesToMovieTicketType" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         対応ムビチケ券種区分
@@ -223,6 +266,7 @@
         </p>
     </div>
 </div>
+
 <div class="form-group row">
     <label for="accountTitle" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         細目<span class="text-danger">＊</span>
@@ -232,8 +276,7 @@
             <option value="" disabled selected>選択してください</option>
             <% for (let accountTitle of accountTitles) { %>
             <option value="<%= accountTitle.codeValue %>" <% if (forms.accountTitle==accountTitle.codeValue) { %>
-                selected
-                <% } %> >
+                selected <% } %>>
                 <%= accountTitle.name %>
             </option>
             <% } %>

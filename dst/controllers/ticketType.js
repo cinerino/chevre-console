@@ -24,6 +24,11 @@ const NAME_PRITING_MAX_LENGTH_NAME_JA = 30;
 const NAME_MAX_LENGTH_NAME_EN = 64;
 // 金額
 const CHAGE_MAX_LENGTH = 10;
+const ticketTypeCategories = [
+    { id: '1', name: '有料券' },
+    { id: '2', name: '前売券' },
+    { id: '3', name: '無料券' }
+];
 /**
  * 新規登録
  */
@@ -61,11 +66,19 @@ function add(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ name: {}, alternateName: {}, description: {}, priceSpecification: { accounting: {} }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
+        const forms = Object.assign({ name: {}, alternateName: {}, description: {}, priceSpecification: {
+                referenceQuantity: {
+                    value: 1,
+                    minValue: undefined,
+                    maxValue: undefined
+                },
+                accounting: {}
+            }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
         res.render('ticketType/add', {
             message: message,
             errors: errors,
             forms: forms,
+            ticketTypeCategories: ticketTypeCategories,
             accountTitles: searchAccountTitlesResult.data
         });
     });
@@ -148,13 +161,13 @@ function update(req, res) {
             message: message,
             errors: errors,
             forms: forms,
+            ticketTypeCategories: ticketTypeCategories,
             accountTitles: searchAccountTitlesResult.data
         });
     });
 }
 exports.update = update;
 function createFromBody(body) {
-    // availabilityをフォーム値によって作成
     let availability = chevre.factory.itemAvailability.OutOfStock;
     if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
         availability = chevre.factory.itemAvailability.InStock;
@@ -165,9 +178,24 @@ function createFromBody(body) {
     else if (body.isOnlineTicket === '1') {
         availability = chevre.factory.itemAvailability.OnlineOnly;
     }
+    const referenceQuantityValue = Number(body.seatReservationUnit);
+    const referenceQuantityMinValue = (body.priceSpecification !== undefined
+        && body.priceSpecification.referenceQuantity !== undefined
+        && body.priceSpecification.referenceQuantity.minValue !== undefined
+        && body.priceSpecification.referenceQuantity.minValue !== '')
+        ? Number(body.priceSpecification.referenceQuantity.minValue)
+        : undefined;
+    const referenceQuantityMaxValue = (body.priceSpecification !== undefined
+        && body.priceSpecification.referenceQuantity !== undefined
+        && body.priceSpecification.referenceQuantity.maxValue !== undefined
+        && body.priceSpecification.referenceQuantity.maxValue !== '')
+        ? Number(body.priceSpecification.referenceQuantity.maxValue)
+        : undefined;
     const referenceQuantity = {
         typeOf: 'QuantitativeValue',
-        value: Number(body.seatReservationUnit),
+        value: referenceQuantityValue,
+        minValue: referenceQuantityMinValue,
+        maxValue: referenceQuantityMaxValue,
         unitCode: chevre.factory.unitCode.C62
     };
     const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
@@ -183,7 +211,7 @@ function createFromBody(body) {
         availability: availability,
         priceSpecification: {
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-            price: Number(body.price) * referenceQuantity.value,
+            price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
             valueAddedTaxIncluded: true,
             referenceQuantity: referenceQuantity,
@@ -202,7 +230,7 @@ function createFromBody(body) {
                     identifier: body.nonBoxOfficeSubject,
                     name: ''
                 },
-                accountsReceivable: Number(body.accountsReceivable) * referenceQuantity.value
+                accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
             }
         },
         additionalProperty: [
@@ -217,9 +245,6 @@ function createFromBody(body) {
         color: body.indicatorColor
     };
 }
-/**
- * 一覧データ取得API
- */
 function getList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -263,13 +288,25 @@ function getList(req, res) {
                 success: true,
                 count: result.totalCount,
                 results: result.data.map((t) => {
-                    return Object.assign({}, t, { ticketCode: t.id });
+                    const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
+                    return Object.assign({}, t, { referenceQuantity: {
+                            value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
+                                ? t.priceSpecification.referenceQuantity.value
+                                : '---',
+                            minValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.minValue !== undefined)
+                                ? t.priceSpecification.referenceQuantity.minValue
+                                : '---',
+                            maxValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.maxValue !== undefined)
+                                ? t.priceSpecification.referenceQuantity.maxValue
+                                : '---'
+                        }, categoryName: (category !== undefined) ? category.name : '---' });
                 })
             });
         }
         catch (err) {
             res.json({
                 success: false,
+                message: err.message,
                 count: 0,
                 results: []
             });
@@ -277,24 +314,6 @@ function getList(req, res) {
     });
 }
 exports.getList = getList;
-/**
- * 一覧
- */
-function index(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const ticketTypeService = new chevre.service.TicketType({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const ticketTypeGroupsList = yield ticketTypeService.searchTicketTypeGroups({});
-        // 券種マスタ画面遷移
-        res.render('ticketType/index', {
-            message: '',
-            ticketTypeGroupsList: ticketTypeGroupsList.data
-        });
-    });
-}
-exports.index = index;
 /**
  * 関連券種グループリスト
  */
@@ -318,6 +337,7 @@ function getTicketTypeGroupList(req, res) {
         catch (err) {
             res.json({
                 success: false,
+                message: err.message,
                 count: 0,
                 results: []
             });

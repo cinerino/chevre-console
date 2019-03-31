@@ -1,8 +1,17 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 券種マスタ管理ルーター
  */
+const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const ticketTypeController = require("../controllers/ticketType");
 const ticketTypeMasterRouter = express_1.Router();
@@ -11,7 +20,18 @@ ticketTypeMasterRouter.all('/add', ticketTypeController.add);
 // 券種編集
 ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 // 券種一覧
-ticketTypeMasterRouter.get('', ticketTypeController.index);
+ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const ticketTypeService = new chevre.service.TicketType({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const ticketTypeGroupsList = yield ticketTypeService.searchTicketTypeGroups({});
+    // 券種マスタ画面遷移
+    res.render('ticketType/index', {
+        message: '',
+        ticketTypeGroupsList: ticketTypeGroupsList.data
+    });
+}));
 ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
 ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeController.getTicketTypeGroupList);
 exports.default = ticketTypeMasterRouter;
