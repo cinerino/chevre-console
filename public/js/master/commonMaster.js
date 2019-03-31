@@ -38,7 +38,7 @@ $.fn.setDataToForm = function (formSelector, conditions) {
 };
 // Form表示
 $.fn.clearFormValue = function (formSelector) {
-    $(formSelector).find('input, select').val('');
+    $(formSelector).find('input:not(:hidden), select').val('');
 }
 var flattenObject = function (ob) {
     var toReturn = {};
@@ -66,14 +66,14 @@ $.fn.clearFormError = function (formSelector) {
 // 必要なカラムを確認
 $.fn.checkRequired = function (formSelector) {
     var isError = false;
-    $('font[color=red]:contains("＊")').each(function() {
+    $('font[color=red]:contains("＊")').each(function () {
         var formGroup = $(this).closest('.form-group');
-        var fieldNameDisplay = $(formGroup).find('label.label-title').contents().filter(function() {
+        var fieldNameDisplay = $(formGroup).find('label.label-title').contents().filter(function () {
             return this.nodeType == Node.TEXT_NODE;
         }).text().trim();
 
         if (fieldName = $(formGroup).find('label.label-title').attr('for')) {
-            var control = $(formGroup).find('[name='+ fieldName +']');
+            var control = $(formGroup).find('[name=' + fieldName + ']');
             if (control.val() === '') {
                 $(formGroup).find('.error.message').text(fieldNameDisplay + 'が未入力です');
                 isError = true;

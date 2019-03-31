@@ -9,7 +9,9 @@ Aa-11
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/reservationList.js"></script>
+
 <%- contentFor('body') %>
+
 <div class="form-container search mb-3">
     <form method="post" class="p-3 bg-light-gray">
         <%- include('../common/master/_hidden') %>
@@ -20,22 +22,61 @@ Aa-11
             </p>
             <% } %>
         </div>
+
+        <div class="form-group row">
+            <label for="reservationNumber" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                予約番号
+            </label>
+            <div class="col-md-8">
+                <input type="text" class="form-control" name="reservationNumber" id="reservationNumber" />
+            </div>
+        </div>
+
         <div class="form-group row">
             <label for="modifiedFrom" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                更新日（From）
+                更新日(From - To)
             </label>
             <div class="col-md-8">
-                <input type="text" class="form-control datepicker" name="modifiedFrom" id="dateFrom" />
+                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
+                    maxlength=10 name="modifiedFrom" id="modifiedFrom" value="" />
+                ～
+                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
+                    maxlength=10 name="modifiedThrough" id="modifiedThrough" value="" />
             </div>
         </div>
+
         <div class="form-group row">
-            <label for="modifiedThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                更新日（Through）
+            <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                イベントID
             </label>
             <div class="col-md-8">
-                <input type="text" class="form-control datepicker" name="modifiedThrough" id="modifiedThrough" />
+                <input type="text" class="form-control" name="reservationFor[id]" id="reservationFor[id]" />
             </div>
         </div>
+
+        <!-- <div class="form-group row">
+            <label for="reservationFor[name]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                イベント名称
+            </label>
+            <div class="col-md-8">
+                <input type="text" class="form-control" name="reservationFor[name]" id="reservationFor[name]" />
+            </div>
+        </div> -->
+
+        <div class="form-group row">
+            <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                ステータス
+            </label>
+            <div class="col-md-8">
+                <select class="form-control" name="reservationStatus">
+                    <option value="">---</option>
+                    <% Object.keys(reservationStatusType).forEach(function(key) { %>
+                    <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %></option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
         <div class="panel-body">
             <button type="button" class="btn btn-ok search btn-primary">検索する</button>
             <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
@@ -53,37 +94,53 @@ Aa-11
             <thead>
                 <tr>
                     <th>ID<br>予約番号<br>ステータス<br>更新日時</th>
+                    <th>発券<br>入場</th>
                     <th>イベント</th>
                     <th>チケット</th>
-                    <th>予約者</th>
+                    <th>ホルダー</th>
                     <!-- <th></th> -->
                 </tr>
             </thead>
             <tbody>
                 <tr id="templateRow" _id="$id$">
-                    <td name="id__reservationNumber__reservationStatus__modifiedTime">
-                        $id$<br> $reservationNumber$
-                        <br> <span class="badge badge-success">$reservationStatus$</span>
-                        <br> $modifiedTime$
+                    <td name="typeOf__id__reservationNumber__reservationStatus__modifiedTime">
+                        <p class="badge badge-secondary">$typeOf$</p>
+                        <p>$id$</p>
+                        <p>$reservationNumber$</p>
+                        <p class="badge badge-success">$reservationStatus$</p>
+                        <p>$modifiedTime$</p>
+                    </td>
+                    <td name="checkedIn__attended">
+                        <p>$checkedIn$<br>$attended$</p>
                     </td>
                     <td
                         name="reservationFor.typeOf__reservationFor.id__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
-                        <span class="badge badge-secondary">$reservationFor.typeOf$</span><br> $reservationFor.id$
-                        <br> $reservationFor.name.ja$
-                        <br> $reservationFor.startDate$
-                        <br> $reservationFor.superEvent.location.name.ja$
-                        <br> $reservationFor.location.name.ja$
-                        <br>
+                        <p class="badge badge-secondary">$reservationFor.typeOf$</p>
+                        <p>$reservationFor.id$</p>
+                        <p class="font-weight-bold">$reservationFor.name.ja$</p>
+                        <p>$reservationFor.startDate$</p>
+                        <p class="font-italic">$reservationFor.superEvent.location.name.ja$</p>
+                        <p class="font-italic">$reservationFor.location.name.ja$</p>
                     </td>
                     <td
-                        name="reservedTicket.ticketType.name.ja__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
-                        $reservedTicket.ticketType.name.ja$<br>
-                        $unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$
-                        $unitPriceSpec.priceCurrency$<br>
-                        $ticketedSeat$
+                        name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
+                        <p class="badge badge-secondary">$reservedTicket.typeOf$</p>
+                        <p class="font-weight-bold"><a target="_blank"
+                                href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
+                                <br>$reservedTicket.ticketType.name.en$</a></p>
+                        <p class="font-italic">$unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$</p>
+                        <p>$unitPriceSpec.priceCurrency$</p>
+                        <p>$ticketedSeat$</p>
                     </td>
-                    <td name="underName.typeOf__underName.name">
-                        <span class="badge badge-secondary">$underName.typeOf$</span><br> $underName.name$
+                    <td
+                        name="underName.typeOf__underName.name__underName.email__underName.familyName__underName.givenName__underName.id__underName.telephone__underName.identifier">
+                        <p class="badge badge-secondary">$underName.typeOf$</p>
+                        <p>$underName.id$</p>
+                        <p>$underName.familyName$</p>
+                        <p>$underName.givenName$</p>
+                        <p>$underName.email$</p>
+                        <p>$underName.telephone$</p>
+                        <p>$underName.identifier$</p>
                     </td>
                 </tr>
             </tbody>

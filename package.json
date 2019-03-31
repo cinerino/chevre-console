@@ -17,12 +17,12 @@
     }
   ],
   "dependencies": {
-    "@chevre/api-nodejs-client": "1.0.0-alpha.51",
+    "@chevre/api-nodejs-client": "1.0.0-alpha.52",
     "@movieticket/reserve-api-abstract-client": "^1.0.0",
     "body-parser": "^1.17.2",
+    "bootstrap": "^4.3.1",
     "connect-redis": "^3.4.1",
     "cookie-parser": "^1.4.4",
-    "bootstrap": "^4.3.1",
     "cors": "^2.8.5",
     "debug": "^2.6.8",
     "ejs": "^2.5.2",
@@ -73,7 +73,7 @@
     "ts-node": "^7.0.1",
     "tslint": "^5.14.0",
     "tslint-microsoft-contrib": "^5.2.1",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.4.1"
   },
   "engines": {
     "node": ">=6.9.1",

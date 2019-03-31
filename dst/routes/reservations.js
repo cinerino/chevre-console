@@ -18,7 +18,8 @@ const util_1 = require("util");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (_, res) => {
     res.render('reservations/index', {
-        message: ''
+        message: '',
+        reservationStatusType: chevre.factory.reservationStatusType
     });
 });
 reservationsRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -31,15 +32,38 @@ reservationsRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
             limit: req.query.limit,
             page: req.query.page,
             sort: { modifiedTime: chevre.factory.sortType.Descending },
+            typeOf: chevre.factory.reservationType.EventReservation,
+            reservationNumbers: (req.query.reservationNumber !== undefined
+                && req.query.reservationNumber !== '')
+                ? [String(req.query.reservationNumber)]
+                : undefined,
+            reservationStatuses: (req.query.reservationStatus !== undefined && req.query.reservationStatus !== '')
+                ? [req.query.reservationStatus]
+                : undefined,
+            reservationFor: {
+                // typeOf: EventType;
+                // id: string;
+                ids: (req.query.reservationFor !== undefined
+                    && req.query.reservationFor.id !== undefined
+                    && req.query.reservationFor.id !== '')
+                    ? [String(req.query.reservationFor.id)]
+                    : undefined
+                // superEvent: {
+                //     id?: string;
+                //     ids?: string[];
+                // }
+                // startFrom?: Date;
+                // startThrough?: Date;
+            },
             modifiedFrom: (req.query.modifiedFrom !== '')
-                ? moment(`${req.query.modifiedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+                ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
                 : undefined,
             modifiedThrough: (req.query.modifiedThrough !== '')
-                ? moment(`${req.query.modifiedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
+                ? moment(`${String(req.query.modifiedThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
                 : undefined
             // name: req.query.name
         };
-        const { totalCount, data } = yield reservationService.searchScreeningEventReservations(searchConditions);
+        const { totalCount, data } = yield reservationService.search(searchConditions);
         res.json({
             success: true,
             count: totalCount,
