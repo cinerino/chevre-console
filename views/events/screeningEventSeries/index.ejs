@@ -9,12 +9,16 @@ Aa-3
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/events/screeningEventSeriesList.js"></script>
+
 <%- contentFor('body') %>
+
 <div class="form-container mb-3">
     <form method="post" class="p-3 bg-light-gray">
         <%- include('../../common/master/_hidden') %>
+
         <div class="menu-group">
         </div>
+
         <div class="form-group row">
             <label for="locationBranchCode" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 劇場
@@ -66,6 +70,7 @@ Aa-3
         </div>
     </form>
 </div>
+
 <div class="form-container search">
     <p class="mb-3" id="searchedCount" style="display:none;">
         検索結果 $searched_count$件
@@ -74,8 +79,9 @@ Aa-3
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
-                    <th>作品コード</th>
-                    <th class="text-left">作品名<br>English Name<br>サブタイトル<br>カナ</th>
+                    <th>劇場</th>
+                    <th>作品</th>
+                    <th class="text-left">名称<br>English Name<br>サブタイトル<br>カナ</th>
                     <th>上映開始日<br>上映終了日</th>
                     <th>字幕<br>吹替</th>
                     <th>上映形態</th>
@@ -85,7 +91,14 @@ Aa-3
             </thead>
             <tbody>
                 <tr id="templateRow" eventId="$id$">
-                    <td name="workPerformed.identifier">$workPerformed.identifier$</td>
+                    <td name="location.branchCode__location.branchCode__location.name.ja">
+                        <a target="_blank"
+                            href="/places/movieTheater/$location.branchCode$/update">$location.branchCode$<br>$location.name.ja$</a>
+                    </td>
+                    <td name="workPerformed.identifier__workPerformed.identifier__workPerformed.name">
+                        <a target="_blank"
+                            href="/creativeWorks/movie/$workPerformed.identifier$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
+                    </td>
                     <td name="name.ja__name.en__headline.ja__kanaName">
                         $name.ja$<br>
                         $name.en$<br>

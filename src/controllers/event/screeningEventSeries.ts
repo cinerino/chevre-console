@@ -447,6 +447,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const { totalCount, data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
             limit: req.query.limit,
             page: req.query.page,
+            sort: { startDate: chevre.factory.sortType.Ascending },
             name: req.query.name,
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
             endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),

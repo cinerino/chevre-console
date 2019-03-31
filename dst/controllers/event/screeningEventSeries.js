@@ -414,6 +414,7 @@ function getList(req, res) {
             const { totalCount, data } = yield eventService.search({
                 limit: req.query.limit,
                 page: req.query.page,
+                sort: { startDate: chevre.factory.sortType.Ascending },
                 name: req.query.name,
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
