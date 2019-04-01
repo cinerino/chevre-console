@@ -208,6 +208,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         VideoFormatType: chevre.factory.videoFormatType
     });
 }
+
 /**
  * 作品 - レイティング
  */
@@ -341,6 +342,7 @@ function createEventFromBody(
         }
     };
 }
+
 /**
  * 検索API
  */
@@ -350,9 +352,9 @@ export async function search(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const branchCode = req.query.branchCode;
-        const fromDate = req.query.fromDate;
-        const toDate = req.query.toDate;
+        const branchCode = <string | undefined>req.query.branchCode;
+        const fromDate = <string | undefined>req.query.fromDate;
+        const toDate = <string | undefined>req.query.toDate;
         if (branchCode === undefined) {
             throw new Error();
         }
@@ -362,7 +364,7 @@ export async function search(req: Request, res: Response): Promise<void> {
             inSessionFrom: (fromDate !== undefined) ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : new Date(),
             inSessionThrough: (toDate !== undefined) ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : undefined,
             location: {
-                branchCodes: branchCode
+                branchCodes: [branchCode]
             }
         });
         const results = data.map((event) => {
@@ -416,6 +418,7 @@ export async function search(req: Request, res: Response): Promise<void> {
         });
     }
 }
+
 /**
  * 劇場作品のスケジュール検索
  */
@@ -435,6 +438,7 @@ export async function searchScreeningEvents(req: Request, res: Response) {
         res.status(INTERNAL_SERVER_ERROR).json({ error: { message: error.message } });
     }
 }
+
 /**
  * 一覧データ取得API
  */
@@ -488,6 +492,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         });
     }
 }
+
 /**
  * 一覧
  */
@@ -501,6 +506,7 @@ export async function index(req: Request, res: Response): Promise<void> {
         movieTheaters: searchMovieTheatersResult.data
     });
 }
+
 /**
  * 作品マスタ新規登録画面検証
  */
