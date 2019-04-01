@@ -74,9 +74,9 @@ Aa-6
                 <tr>
                     <th>券種コード<br>種別<br>在庫</th>
                     <th>名称<br>English Name<br>管理用券種名</th>
-                    <th>発生金額<br>売上金額</th>
-                    <th>適用単位<br>適用最小数<br>適用最大数</th>
-                    <th>対応ムビチケ券種区分</th>
+                    <th>発生金額<br>売上金額<br>適用単位</th>
+                    <th>適用条件</th>
+                    <th>対応ムビチケ<br>券種区分</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -92,16 +92,38 @@ Aa-6
                         <p>$categoryName$</p>
                         <p class="badge badge-secondary">$availability$</p>
                     <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
-                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency"
+                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
                         style="text-align:right;">
-                        $priceSpecification.price$
-                        $priceSpecification.priceCurrency$<br>$priceSpecification.accounting.accountsReceivable$
-                        $priceSpecification.priceCurrency$
+                        <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
+                        <p>$priceSpecification.accounting.accountsReceivable$ $priceSpecification.priceCurrency$</p>
+                        <p>/ $referenceQuantity.value$ 枚</p>
                     </td>
-                    <td name="referenceQuantity.value__referenceQuantity.minValue__referenceQuantity.maxValue">
-                        <p>$referenceQuantity.value$
-                            <br>$referenceQuantity.minValue$
-                            <br>$referenceQuantity.maxValue$</p>
+                    <td
+                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency">
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <p>$eligibleQuantity.minValue$ 枚以上</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <p>$eligibleQuantity.maxValue$ 枚以下</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <p class="text-center"><i class="icon fa fa-dollar-sign"></i></p>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <p>$eligibleTransactionVolume.price$ $eligibleTransactionVolume.priceCurrency$ 以上</p>
+                            </div>
+                        </div>
                     </td>
                     <td name="priceSpecification.appliesToMovieTicketType">$priceSpecification.appliesToMovieTicketType$
                     </td>

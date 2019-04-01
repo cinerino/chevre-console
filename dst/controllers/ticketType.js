@@ -68,9 +68,7 @@ function add(req, res) {
         }
         const forms = Object.assign({ name: {}, alternateName: {}, description: {}, priceSpecification: {
                 referenceQuantity: {
-                    value: 1,
-                    minValue: undefined,
-                    maxValue: undefined
+                    value: 1
                 },
                 accounting: {}
             }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
@@ -149,7 +147,9 @@ function update(req, res) {
         const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
             ? ticketType.priceSpecification.accounting.accountsReceivable
             : '';
-        const forms = Object.assign({ alternateName: {} }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
+        const forms = Object.assign({ alternateName: {}, priceSpecification: {
+                referenceQuantity: {}
+            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined)
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
                 : req.body.accountTitle, nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
@@ -167,6 +167,7 @@ function update(req, res) {
     });
 }
 exports.update = update;
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(body) {
     let availability = chevre.factory.itemAvailability.OutOfStock;
     if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
@@ -179,25 +180,46 @@ function createFromBody(body) {
         availability = chevre.factory.itemAvailability.OnlineOnly;
     }
     const referenceQuantityValue = Number(body.seatReservationUnit);
-    const referenceQuantityMinValue = (body.priceSpecification !== undefined
-        && body.priceSpecification.referenceQuantity !== undefined
-        && body.priceSpecification.referenceQuantity.minValue !== undefined
-        && body.priceSpecification.referenceQuantity.minValue !== '')
-        ? Number(body.priceSpecification.referenceQuantity.minValue)
-        : undefined;
-    const referenceQuantityMaxValue = (body.priceSpecification !== undefined
-        && body.priceSpecification.referenceQuantity !== undefined
-        && body.priceSpecification.referenceQuantity.maxValue !== undefined
-        && body.priceSpecification.referenceQuantity.maxValue !== '')
-        ? Number(body.priceSpecification.referenceQuantity.maxValue)
-        : undefined;
     const referenceQuantity = {
         typeOf: 'QuantitativeValue',
         value: referenceQuantityValue,
-        minValue: referenceQuantityMinValue,
-        maxValue: referenceQuantityMaxValue,
         unitCode: chevre.factory.unitCode.C62
     };
+    const eligibleQuantityMinValue = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleQuantity !== undefined
+        && body.priceSpecification.eligibleQuantity.minValue !== undefined
+        && body.priceSpecification.eligibleQuantity.minValue !== '')
+        ? Number(body.priceSpecification.eligibleQuantity.minValue)
+        : undefined;
+    const eligibleQuantityMaxValue = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleQuantity !== undefined
+        && body.priceSpecification.eligibleQuantity.maxValue !== undefined
+        && body.priceSpecification.eligibleQuantity.maxValue !== '')
+        ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+        : undefined;
+    const eligibleQuantity = (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
+        ? {
+            typeOf: 'QuantitativeValue',
+            minValue: eligibleQuantityMinValue,
+            maxValue: eligibleQuantityMaxValue,
+            unitCode: chevre.factory.unitCode.C62
+        }
+        : undefined;
+    const eligibleTransactionVolumePrice = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleTransactionVolume !== undefined
+        && body.priceSpecification.eligibleTransactionVolume.price !== undefined
+        && body.priceSpecification.eligibleTransactionVolume.price !== '')
+        ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+        : undefined;
+    // tslint:disable-next-line:max-line-length
+    const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
+        ? {
+            typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
+            price: eligibleTransactionVolumePrice,
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            valueAddedTaxIncluded: true
+        }
+        : undefined;
     const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
         ? body.appliesToMovieTicketType
         : undefined;
@@ -214,6 +236,8 @@ function createFromBody(body) {
             price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
             valueAddedTaxIncluded: true,
+            eligibleQuantity: eligibleQuantity,
+            eligibleTransactionVolume: eligibleTransactionVolume,
             referenceQuantity: referenceQuantity,
             appliesToMovieTicketType: appliesToMovieTicketType,
             accounting: {
@@ -289,17 +313,32 @@ function getList(req, res) {
                 count: result.totalCount,
                 results: result.data.map((t) => {
                     const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
-                    return Object.assign({}, t, { referenceQuantity: {
+                    return Object.assign({}, t, { eligibleQuantity: {
+                            minValue: (t.priceSpecification !== undefined
+                                && t.priceSpecification.eligibleQuantity !== undefined
+                                && t.priceSpecification.eligibleQuantity.minValue !== undefined)
+                                ? t.priceSpecification.eligibleQuantity.minValue
+                                : '--',
+                            maxValue: (t.priceSpecification !== undefined
+                                && t.priceSpecification.eligibleQuantity !== undefined
+                                && t.priceSpecification.eligibleQuantity.maxValue !== undefined)
+                                ? t.priceSpecification.eligibleQuantity.maxValue
+                                : '--'
+                        }, eligibleTransactionVolume: {
+                            price: (t.priceSpecification !== undefined
+                                && t.priceSpecification.eligibleTransactionVolume !== undefined
+                                && t.priceSpecification.eligibleTransactionVolume.price !== undefined)
+                                ? t.priceSpecification.eligibleTransactionVolume.price
+                                : '--',
+                            priceCurrency: (t.priceSpecification !== undefined
+                                && t.priceSpecification.eligibleTransactionVolume !== undefined)
+                                ? t.priceSpecification.eligibleTransactionVolume.priceCurrency
+                                : '--'
+                        }, referenceQuantity: {
                             value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
                                 ? t.priceSpecification.referenceQuantity.value
-                                : '---',
-                            minValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.minValue !== undefined)
-                                ? t.priceSpecification.referenceQuantity.minValue
-                                : '---',
-                            maxValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.maxValue !== undefined)
-                                ? t.priceSpecification.referenceQuantity.maxValue
-                                : '---'
-                        }, categoryName: (category !== undefined) ? category.name : '---' });
+                                : '--'
+                        }, categoryName: (category !== undefined) ? category.name : '--' });
                 })
             });
         }

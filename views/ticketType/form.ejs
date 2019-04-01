@@ -163,42 +163,66 @@
 </div>
 
 <div class="form-group row">
-    <label for="priceSpecification[referenceQuantity][minValue]"
+    <label for="priceSpecification[eligibleQuantity][minValue]"
         class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        適用最小数
+        適用アイテム数
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="priceSpecification[referenceQuantity][minValue]">
-            <option value="" selected>指定しない</option>
-            <% for (let i = 1; i <= 50; i++) { %>
-            <option value="<%= i %>" <% if (Number(forms.priceSpecification.referenceQuantity.minValue) === i) { %>
-                selected <% } %>>
-                <%= i %>
-            </option>
-            <% } %>
-        </select>
-        <p class="error message text-danger">
-        </p>
+    <div class="col-md-4">
+        <div class="input-group mb-3">
+            <select class="form-control" name="priceSpecification[eligibleQuantity][minValue]">
+                <option value="" selected>指定しない</option>
+                <% for (let i = 1; i <= 50; i++) { %>
+                <option value="<%= i %>"
+                    <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.minValue) === i) { %>
+                    selected <% } %>>
+                    <%= i %>
+                </option>
+                <% } %>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">枚以上</span>
+            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="input-group mb-3">
+            <select class="form-control" name="priceSpecification[eligibleQuantity][maxValue]">
+                <option value="" selected>指定しない</option>
+                <% for (let i = 1; i <= 50; i++) { %>
+                <option value="<%= i %>"
+                    <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.maxValue) === i) { %>
+                    selected <% } %>>
+                    <%= i %>
+                </option>
+                <% } %>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">枚以下</span>
+            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
     </div>
 </div>
 
 <div class="form-group row">
-    <label for="priceSpecification[referenceQuantity][maxValue]"
+    <label for="priceSpecification[eligibleTransactionVolume][price]"
         class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        適用最大数
+        適用金額
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="priceSpecification[referenceQuantity][maxValue]">
-            <option value="" selected>指定しない</option>
-            <% for (let i = 1; i <= 50; i++) { %>
-            <option value="<%= i %>" <% if (Number(forms.priceSpecification.referenceQuantity.maxValue) === i) { %>
-                selected <% } %>>
-                <%= i %>
-            </option>
-            <% } %>
-        </select>
-        <p class="error message text-danger">
-        </p>
+    <div class="col-md-4">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" name="priceSpecification[eligibleTransactionVolume][price]"
+                id="priceSpecification[eligibleTransactionVolume][price]" placeholder=""
+                value="<%= (forms.priceSpecification.eligibleTransactionVolume !== undefined) ? Number(forms.priceSpecification.eligibleTransactionVolume.price) : '' %>">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">円以上</span>
+            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
     </div>
 </div>
 

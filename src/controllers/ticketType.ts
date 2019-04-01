@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Response } from 'express';
 import * as _ from 'underscore';
+
 import * as Message from '../common/Const/Message';
 
 // 券種コード 半角64
@@ -66,9 +67,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         description: {},
         priceSpecification: {
             referenceQuantity: {
-                value: 1,
-                minValue: undefined,
-                maxValue: undefined
+                value: 1
             },
             accounting: {}
         },
@@ -158,6 +157,9 @@ export async function update(req: Request, res: Response): Promise<void> {
 
     const forms = {
         alternateName: {},
+        priceSpecification: {
+            referenceQuantity: {}
+        },
         ...ticketType,
         category: (ticketType.category !== undefined) ? ticketType.category.id : '',
         nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '',
@@ -187,6 +189,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
     let availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.OutOfStock;
     if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
@@ -198,25 +201,50 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
     }
 
     const referenceQuantityValue: number = Number(body.seatReservationUnit);
-    const referenceQuantityMinValue: number | undefined = (body.priceSpecification !== undefined
-        && body.priceSpecification.referenceQuantity !== undefined
-        && body.priceSpecification.referenceQuantity.minValue !== undefined
-        && body.priceSpecification.referenceQuantity.minValue !== '')
-        ? Number(body.priceSpecification.referenceQuantity.minValue)
-        : undefined;
-    const referenceQuantityMaxValue: number | undefined = (body.priceSpecification !== undefined
-        && body.priceSpecification.referenceQuantity !== undefined
-        && body.priceSpecification.referenceQuantity.maxValue !== undefined
-        && body.priceSpecification.referenceQuantity.maxValue !== '')
-        ? Number(body.priceSpecification.referenceQuantity.maxValue)
-        : undefined;
     const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
         value: referenceQuantityValue,
-        minValue: referenceQuantityMinValue,
-        maxValue: referenceQuantityMaxValue,
         unitCode: chevre.factory.unitCode.C62
     };
+
+    const eligibleQuantityMinValue: number | undefined = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleQuantity !== undefined
+        && body.priceSpecification.eligibleQuantity.minValue !== undefined
+        && body.priceSpecification.eligibleQuantity.minValue !== '')
+        ? Number(body.priceSpecification.eligibleQuantity.minValue)
+        : undefined;
+    const eligibleQuantityMaxValue: number | undefined = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleQuantity !== undefined
+        && body.priceSpecification.eligibleQuantity.maxValue !== undefined
+        && body.priceSpecification.eligibleQuantity.maxValue !== '')
+        ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+        : undefined;
+    const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> | undefined =
+        (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
+            ? {
+                typeOf: <'QuantitativeValue'>'QuantitativeValue',
+                minValue: eligibleQuantityMinValue,
+                maxValue: eligibleQuantityMaxValue,
+                unitCode: chevre.factory.unitCode.C62
+            }
+            : undefined;
+
+    const eligibleTransactionVolumePrice: number | undefined = (body.priceSpecification !== undefined
+        && body.priceSpecification.eligibleTransactionVolume !== undefined
+        && body.priceSpecification.eligibleTransactionVolume.price !== undefined
+        && body.priceSpecification.eligibleTransactionVolume.price !== '')
+        ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+        : undefined;
+    // tslint:disable-next-line:max-line-length
+    const eligibleTransactionVolume: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType> | undefined =
+        (eligibleTransactionVolumePrice !== undefined)
+            ? {
+                typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
+                price: eligibleTransactionVolumePrice,
+                priceCurrency: chevre.factory.priceCurrency.JPY,
+                valueAddedTaxIncluded: true
+            }
+            : undefined;
 
     const appliesToMovieTicketType =
         (typeof body.appliesToMovieTicketType === 'string' && (<string>body.appliesToMovieTicketType).length > 0)
@@ -236,6 +264,8 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
             price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
             valueAddedTaxIncluded: true,
+            eligibleQuantity: eligibleQuantity,
+            eligibleTransactionVolume: eligibleTransactionVolume,
             referenceQuantity: referenceQuantity,
             appliesToMovieTicketType: appliesToMovieTicketType,
             accounting: {
@@ -315,18 +345,35 @@ export async function getList(req: Request, res: Response): Promise<void> {
 
                 return {
                     ...t,
+                    eligibleQuantity: {
+                        minValue: (t.priceSpecification !== undefined
+                            && t.priceSpecification.eligibleQuantity !== undefined
+                            && t.priceSpecification.eligibleQuantity.minValue !== undefined)
+                            ? t.priceSpecification.eligibleQuantity.minValue
+                            : '--',
+                        maxValue: (t.priceSpecification !== undefined
+                            && t.priceSpecification.eligibleQuantity !== undefined
+                            && t.priceSpecification.eligibleQuantity.maxValue !== undefined)
+                            ? t.priceSpecification.eligibleQuantity.maxValue
+                            : '--'
+                    },
+                    eligibleTransactionVolume: {
+                        price: (t.priceSpecification !== undefined
+                            && t.priceSpecification.eligibleTransactionVolume !== undefined
+                            && t.priceSpecification.eligibleTransactionVolume.price !== undefined)
+                            ? t.priceSpecification.eligibleTransactionVolume.price
+                            : '--',
+                        priceCurrency: (t.priceSpecification !== undefined
+                            && t.priceSpecification.eligibleTransactionVolume !== undefined)
+                            ? t.priceSpecification.eligibleTransactionVolume.priceCurrency
+                            : '--'
+                    },
                     referenceQuantity: {
                         value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
                             ? t.priceSpecification.referenceQuantity.value
-                            : '---',
-                        minValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.minValue !== undefined)
-                            ? t.priceSpecification.referenceQuantity.minValue
-                            : '---',
-                        maxValue: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.maxValue !== undefined)
-                            ? t.priceSpecification.referenceQuantity.maxValue
-                            : '---'
+                            : '--'
                     },
-                    categoryName: (category !== undefined) ? category.name : '---'
+                    categoryName: (category !== undefined) ? category.name : '--'
                 };
             })
         });
