@@ -32,16 +32,20 @@ $(function () {
         screen = screen === '' ? undefined : screen;
         search(theater, date, days, screen, onlyReservedSeatsAvailable);
     });
+
     // 新規作成
     $(document).on('click', '.add-button', function (event) {
         event.preventDefault();
         add();
     });
+
     // 編集
     $(document).on('click', '.performance', function (event) {
-        event.preventDefault();
-        var target = $(this).find('.inner');
-        edit(target);
+        if (event.target.href === undefined) {
+            event.preventDefault();
+            var target = $(this).find('.inner');
+            edit(target);
+        }
     });
 
     // 新規登録（確定）
@@ -62,8 +66,10 @@ $(function () {
         deletePerformance();
     });
 
-    $(document).on('change', 'form.search select[name="theater"]', _.debounce(function () {
+    // 劇場検索条件変更イベント
+    $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
+        console.log(theater, 'selecetd');
         var date = $('.search input[name=date]').val();
         getScreens(theater, 'none');
     }, 500));
@@ -84,7 +90,7 @@ $(function () {
         getEventSeries(theater);
     }, 500));
 
-    $(document).on('change', 'form.search input[name="date"]', _.debounce(function () {
+    $(document).on('change', '.search input[name="date"]', _.debounce(function () {
         var theater = $('.search select[name=theater]').val();
         var date = $(this).val();
         getEventSeries(theater, date);
@@ -155,6 +161,7 @@ function getEventSeries(theater) {
  * @returns {void}
  */
 function getScreens(theater, modal = 'none') {
+    console.log('searching screens...');
     var selectScreen = $('select[name="screen"]');
     if (modal.indexOf('none') >= 0) {
         selectScreen = $('.search select[name="screen"]');
@@ -534,8 +541,8 @@ function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
             for (var i = 0; i < days; i++) {
                 dates.push(moment(date).add(i, 'days').format('MM/DD'));
             }
-            create(data.screens, data.performances, dates, data.ticketGroups);
-            modalInit(theater, date, data.screens, data.ticketGroups);
+            create(data.screens, data.performances, dates);
+            modalInit(theater, date, data.ticketGroups);
             // スケジューラーのスクロール位置を変更
             var scheduler = $('.scheduler');
             var top;
@@ -561,7 +568,7 @@ function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
  */
 function deletePerformance() {
     var modal = $('#editModal');
-    var theater = $('form.search select[name="theater"]').val();
+    var theater = $('.search select[name="theater"]').val();
     var performance = modal.find('input[name=performance]').val();
     if (performance === '') {
         alert('情報が足りません');
@@ -591,7 +598,7 @@ function deletePerformance() {
 /**
  * モーダル初期化
  */
-function modalInit(theater, date, screens, ticketGroups) {
+function modalInit(theater, date, ticketGroups) {
     var ticketGroupDom = [];
     ticketGroupDom.push('<option value="">選択してください</option>');
     for (var i = 0; i < ticketGroups.length; i++) {
@@ -660,7 +667,7 @@ function edit(target) {
     var screen = target.attr('data-screen');
     var film = target.attr('data-film');
     var mvtkExcludeFlg = target.attr('data-mvtkExcludeFlg');
-    var filmName = target.text();
+    var filmName = target.attr('data-filmName');
     var ticketTypeGroup = target.attr('data-ticketTypeGroup');
     var saleStartDate = target.attr('data-saleStartDate') ? target.attr('data-saleStartDate') : '';
     var saleStartTime = target.attr('data-saleStartTime') ? target.attr('data-saleStartTime') : '';
@@ -729,14 +736,14 @@ function edit(target) {
  * @param {*} performances
  * @returns {void} 
  */
-function create(screens, performances, dates, ticketGroups) {
+function create(screens, performances, dates) {
     var scheduler = $('.scheduler');
     scheduler.html('');
     var header = $('<div>').addClass('fixed-header').append(
         $('<table>').append(createHeader(screens, dates))
     );
     var body = $('<div>').addClass('scrollable-body').append(
-        $('<table>').css({ borderTop: 0 }).append(createBody(screens, performances, dates, ticketGroups))
+        $('<table>').css({ borderTop: 0 }).append(createBody(screens, performances, dates))
     );
     scheduler.append(header).append(body);
 }
@@ -760,7 +767,7 @@ function createHeader(screens, dates) {
 
         return 0;
     });
-    console.log(sortedScreens);
+    // console.log(sortedScreens);
     var dom = $('<thead class="header"></thead>');
     var tr1 = $('<tr></tr>');
     tr1.css({ borderBottom: '1px solid #ccc' })
@@ -787,7 +794,7 @@ function createHeader(screens, dates) {
  * @param {*} performances 
  * @returns {JQuery} 
  */
-function createBody(screens, performances, dates, ticketGroups) {
+function createBody(screens, performances, dates) {
     var dom = $('<tbody><tr></tr></tbody>');
     dom.find('tr').append(createTime());
     for (var j = 0; j < dates.length; j++) {
@@ -799,7 +806,7 @@ function createBody(screens, performances, dates, ticketGroups) {
                     moment(performance.doorTime).tz('Asia/Tokyo').format('MM/DD') === dates[j]
                 );
             });
-            dom.find('tr').append(createScreen(target, ticketGroups));
+            dom.find('tr').append(createScreen(target));
         }
     }
     return dom;
@@ -821,12 +828,8 @@ function createTime() {
 
 /**
  * スクリーン作成
- * @function createScreen 
- * @param {*} performances 
- * @returns {JQuery} 
  */
-function createScreen(performances, ticketGroups) {
-    console.log(ticketGroups);
+function createScreen(performances) {
     var dom = $('<td class="screen"></td>').css({ minWidth: SCREEN_WIDTH });
     var sortedPerformance = performances.sort((p1, p2) => {
         if (p1.doorTime > p2.doorTime) return 1;
@@ -865,13 +868,7 @@ function createScreen(performances, ticketGroups) {
             var saleStartDate = '';
             var saleStartTime = '';
         }
-        var ticketTypeGroupName = '';
-        for (var j = 0; j < ticketGroups.length; j++) {
-            if (ticketGroups[j]['id'] == performance.ticketTypeGroup) {
-                ticketTypeGroupName = ticketGroups[j]['name'].ja;
-                boxOfficeTypeId = ticketGroups[j]['boxOfficeType'];
-            }
-        }
+
         var onlineDisplayStartDate = (performance.offers) ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';
         var reservedSeatsAvailable = (performance.offers
             && performance.offers.itemOffered.serviceOutput !== undefined
@@ -885,37 +882,49 @@ function createScreen(performances, ticketGroups) {
             mvtkExcludeFlg = '1';
         }
 
-        var ticketTypeGroup = performance.offers.id;
-
-        var performanceContens = performance.name.ja
-            + '<br>' + performance.location.name.ja
-            + '<br>' + ticketTypeGroupName;
-        if (reservedSeatsAvailable === '1') {
-            performanceContens += '<br><span class="badge badge-success">座席指定</span>';
+        var serviceTypeName = '';
+        if (performance.offers.itemOffered !== undefined && performance.offers.itemOffered.serviceType !== undefined) {
+            serviceTypeName = performance.offers.itemOffered.serviceType.name;
         }
 
-        var performanceDom = $('<div class="performance">' +
-            '<div ' +
-            'data-performance="' + performance._id + '" ' +
-            'data-day="' + moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD') + '" ' +
-            'data-doorTime="' + moment(performance.doorTime).tz('Asia/Tokyo').format('HHmm') + '" ' +
-            'data-startTime="' + moment(performance.startDate).tz('Asia/Tokyo').format('HHmm') + '" ' +
-            'data-endTime="' + moment(performance.endDate).tz('Asia/Tokyo').format('HHmm') + '" ' +
-            'data-screen="' + performance.location.branchCode + '" ' +
-            'data-theater="' + performance.superEvent.location.branchCode + '" ' +
-            'data-film="' + performance.superEvent.id + '" ' +
-            'data-ticketTypeGroup="' + ticketTypeGroup + '" ' +
-            'data-saleStartDate="' + saleStartDate + '" ' +
-            'data-saleStartTime="' + saleStartTime + '" ' +
-            'data-onlineDisplayStartDate="' + onlineDisplayStartDate + '" ' +
-            'data-maxSeatNumber="' + maxSeatNumber + '" ' +
-            'data-mvtkExcludeFlg="' + mvtkExcludeFlg + '" ' +
-            'data-reservedSeatsAvailable="' + reservedSeatsAvailable + '" ' +
-            'role="button" class="inner">'
-            + performanceContens
-            + '</div>'
-            + '</div>');
-        if (top < prevBtm) performanceDom.addClass('overlap');
+        // イベントDOM内コンテンツ
+        var performanceContens = [
+            performance.name.ja,
+            '<span class="font-italic">' + performance.location.name.ja + '</span>',
+            '<a target="_blank" href="/ticketTypeGroups/' + performance.offers.id + '/update">' + performance.offers.name.ja + '</a>',
+            serviceTypeName
+        ];
+        if (reservedSeatsAvailable === '1') {
+            performanceContens.push('<span class="badge badge-success">座席指定</span>');
+        }
+
+        // イベントDOM作成
+        var performanceInnerDom = $('<div role="button" class="inner">' + performanceContens.join('<br>') + '</div>')
+            .attr({
+                'data-performance': performance.id,
+                'data-day': moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD'),
+                'data-doorTime': moment(performance.doorTime).tz('Asia/Tokyo').format('HHmm'),
+                'data-startTime': moment(performance.startDate).tz('Asia/Tokyo').format('HHmm'),
+                'data-endTime': moment(performance.endDate).tz('Asia/Tokyo').format('HHmm'),
+                'data-screen': performance.location.branchCode,
+                'data-theater': performance.superEvent.location.branchCode,
+                'data-film': performance.superEvent.id,
+                'data-filmName': performance.superEvent.workPerformed.name,
+                'data-ticketTypeGroup': performance.offers.id,
+                'data-saleStartDate': saleStartDate,
+                'data-saleStartTime': saleStartTime,
+                'data-onlineDisplayStartDate': onlineDisplayStartDate,
+                'data-maxSeatNumber': maxSeatNumber,
+                'data-mvtkExcludeFlg': mvtkExcludeFlg,
+                'data-reservedSeatsAvailable': reservedSeatsAvailable
+            });
+
+        var performanceDom = $('<div class="performance"></div>');
+        performanceDom.append(performanceInnerDom);
+
+        if (top < prevBtm) {
+            performanceDom.addClass('overlap')
+        };
         prevBtm = top + height;
         if (i < sortedPerformance.length - 1) {
             var next = sortedPerformance[i + 1];
@@ -929,6 +938,7 @@ function createScreen(performances, ticketGroups) {
         performanceDom.css(style);
         dom.append(performanceDom);
     }
+
     return dom;
 }
 
