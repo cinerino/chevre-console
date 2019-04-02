@@ -1,0 +1,90 @@
+<div class="form-group row">
+    <label for="name[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        名称<span class="text-danger">＊</span>
+    </label>
+    <div class="col-md-8">
+        <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
+            value="<%= forms.name.ja %>">
+        <p class="message">
+            全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['name.ja']) { %>
+            <%- errors['name.ja'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="name[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        英語名称
+    </label>
+    <div class="col-md-8">
+        <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
+            value="<%= forms.name.en %>">
+        <p class="message">
+            全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors['name.en']) { %>
+            <%- errors['name.en'].msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="kanaName" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        カナ名称
+    </label>
+    <div class="col-md-8">
+        <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64
+            value="<%= forms.kanaName %>">
+        <p class="message">
+            全角64文字以内でご入力ください。
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors.kanaName) { %>
+            <%- errors.kanaName.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        電話番号
+    </label>
+    <div class="col-md-8">
+        <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
+            value="<%= forms.telephone %>">
+        <p class="message">
+        </p>
+        <p class="error message text-danger">
+            <% if (errors && errors.telephone) { %>
+            <%- errors.telephone.msg %>
+            <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        スクリーン
+    </label>
+    <div class="col-md-8">
+        <textarea rows="10" class="form-control" name="containsPlace" <% if (!isNew) { %>
+            readonly<% } %>><%- JSON.stringify(forms.containsPlace, null, '\t') %></textarea>'
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        オファー
+    </label>
+    <div class="col-md-8">
+        <textarea rows="10" class="form-control" name="offers" <% if (!isNew) { %>
+            readonly<% } %>><%- JSON.stringify(forms.offers, null, '\t') %></textarea>'
+    </div>
+</div>

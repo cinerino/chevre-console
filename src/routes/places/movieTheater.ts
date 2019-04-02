@@ -2,9 +2,62 @@
  * 劇場ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as createDebug from 'debug';
 import { Router } from 'express';
 
+const debug = createDebug('chevre-backend:router');
+
 const movieTheaterRouter = Router();
+
+movieTheaterRouter.all(
+    '/new',
+    async (req, res) => {
+        let message = '';
+        let errors: any = {};
+        if (req.method === 'POST') {
+            // バリデーション
+            // validate(req, 'add');
+            const validatorResult = await req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                try {
+                    const movieTheater = createMovieTheaterFromBody(req.body);
+                    const placeService = new chevre.service.Place({
+                        endpoint: <string>process.env.API_ENDPOINT,
+                        auth: req.user.authClient
+                    });
+
+                    const { data } = await placeService.searchMovieTheaters({});
+                    const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
+                    if (existingMovieTheater !== undefined) {
+                        throw new Error('枝番号が重複しています');
+                    }
+
+                    debug('existingMovieTheater:', existingMovieTheater);
+
+                    await placeService.createMovieTheater(movieTheater);
+                    req.flash('message', '登録しました');
+                    res.redirect(`/places/movieTheater/${movieTheater.branchCode}/update`);
+
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
+            }
+        }
+
+        const forms = {
+            name: {},
+            ...req.body
+        };
+
+        res.render('places/movieTheater/new', {
+            message: message,
+            errors: errors,
+            forms: forms
+        });
+    }
+);
 
 movieTheaterRouter.get(
     '',
@@ -40,6 +93,7 @@ movieTheaterRouter.get(
 
                 return {
                     ...movieTheater,
+                    screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--',
                     availabilityStartsGraceTimeInDays:
                         (movieTheater.offers !== undefined
                             && movieTheater.offers.availabilityStartsGraceTime !== undefined
@@ -71,25 +125,51 @@ movieTheaterRouter.get(
     }
 );
 
-movieTheaterRouter.get(
+movieTheaterRouter.all(
     '/:branchCode/update',
-    async (req, res, next) => {
-        try {
-            const placeService = new chevre.service.Place({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const movieTheater = await placeService.findMovieTheaterByBranchCode({
-                branchCode: req.params.branchCode
-            });
+    async (req, res) => {
+        let message = '';
+        let errors: any = {};
 
-            res.render('places/movieTheater/edit', {
-                message: '',
-                movieTheater: movieTheater
-            });
-        } catch (err) {
-            next(err);
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        let movieTheater = await placeService.findMovieTheaterByBranchCode({
+            branchCode: req.params.branchCode
+        });
+
+        if (req.method === 'POST') {
+            // バリデーション
+            // validate(req, 'update');
+            const validatorResult = await req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                try {
+                    movieTheater = createMovieTheaterFromBody(req.body);
+                    debug('saving an movie theater...', movieTheater);
+                    await placeService.updateMovieTheater(movieTheater);
+
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
+
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
+            }
         }
+
+        const forms = {
+            ...movieTheater,
+            ...req.body
+        };
+
+        res.render('places/movieTheater/update', {
+            message: message,
+            errors: errors,
+            forms: forms
+        });
     }
 );
 
@@ -131,5 +211,22 @@ movieTheaterRouter.get(
         }
     }
 );
+
+function createMovieTheaterFromBody(body: any): chevre.factory.place.movieTheater.IPlace {
+    // tslint:disable-next-line:no-unnecessary-local-variable
+    const movieTheater: chevre.factory.place.movieTheater.IPlace = {
+        id: '',
+        typeOf: chevre.factory.placeType.MovieTheater,
+        branchCode: body.branchCode,
+        name: body.name,
+        kanaName: body.kanaName,
+        offers: JSON.parse(body.offers),
+        containsPlace: JSON.parse(body.containsPlace),
+        telephone: body.telephone,
+        screenCount: 0
+    };
+
+    return movieTheater;
+}
 
 export default movieTheaterRouter;

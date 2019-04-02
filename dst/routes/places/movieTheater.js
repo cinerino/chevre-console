@@ -12,8 +12,48 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 劇場ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const createDebug = require("debug");
 const express_1 = require("express");
+const debug = createDebug('chevre-backend:router');
 const movieTheaterRouter = express_1.Router();
+movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    let message = '';
+    let errors = {};
+    if (req.method === 'POST') {
+        // バリデーション
+        // validate(req, 'add');
+        const validatorResult = yield req.getValidationResult();
+        errors = req.validationErrors(true);
+        if (validatorResult.isEmpty()) {
+            try {
+                const movieTheater = createMovieTheaterFromBody(req.body);
+                const placeService = new chevre.service.Place({
+                    endpoint: process.env.API_ENDPOINT,
+                    auth: req.user.authClient
+                });
+                const { data } = yield placeService.searchMovieTheaters({});
+                const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
+                if (existingMovieTheater !== undefined) {
+                    throw new Error('枝番号が重複しています');
+                }
+                debug('existingMovieTheater:', existingMovieTheater);
+                yield placeService.createMovieTheater(movieTheater);
+                req.flash('message', '登録しました');
+                res.redirect(`/places/movieTheater/${movieTheater.branchCode}/update`);
+                return;
+            }
+            catch (error) {
+                message = error.message;
+            }
+        }
+    }
+    const forms = Object.assign({ name: {} }, req.body);
+    res.render('places/movieTheater/new', {
+        message: message,
+        errors: errors,
+        forms: forms
+    });
+}));
 movieTheaterRouter.get('', (_, res) => {
     res.render('places/movieTheater/index', {
         message: ''
@@ -37,7 +77,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
                 // tslint:disable-next-line:no-magic-numbers
                 ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                 : undefined;
-            return Object.assign({}, movieTheater, { availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
+            return Object.assign({}, movieTheater, { screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--', availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
                     // tslint:disable-next-line:no-magic-numbers
@@ -62,23 +102,41 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
         });
     }
 }));
-movieTheaterRouter.get('/:branchCode/update', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const placeService = new chevre.service.Place({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const movieTheater = yield placeService.findMovieTheaterByBranchCode({
-            branchCode: req.params.branchCode
-        });
-        res.render('places/movieTheater/edit', {
-            message: '',
-            movieTheater: movieTheater
-        });
+movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    let message = '';
+    let errors = {};
+    const placeService = new chevre.service.Place({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    let movieTheater = yield placeService.findMovieTheaterByBranchCode({
+        branchCode: req.params.branchCode
+    });
+    if (req.method === 'POST') {
+        // バリデーション
+        // validate(req, 'update');
+        const validatorResult = yield req.getValidationResult();
+        errors = req.validationErrors(true);
+        if (validatorResult.isEmpty()) {
+            try {
+                movieTheater = createMovieTheaterFromBody(req.body);
+                debug('saving an movie theater...', movieTheater);
+                yield placeService.updateMovieTheater(movieTheater);
+                req.flash('message', '更新しました');
+                res.redirect(req.originalUrl);
+                return;
+            }
+            catch (error) {
+                message = error.message;
+            }
+        }
     }
-    catch (err) {
-        next(err);
-    }
+    const forms = Object.assign({}, movieTheater, req.body);
+    res.render('places/movieTheater/update', {
+        message: message,
+        errors: errors,
+        forms: forms
+    });
 }));
 movieTheaterRouter.get('/getScreenListByTheaterBranchCode', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
@@ -115,4 +173,19 @@ movieTheaterRouter.get('/getScreenListByTheaterBranchCode', (req, res) => __awai
         });
     }
 }));
+function createMovieTheaterFromBody(body) {
+    // tslint:disable-next-line:no-unnecessary-local-variable
+    const movieTheater = {
+        id: '',
+        typeOf: chevre.factory.placeType.MovieTheater,
+        branchCode: body.branchCode,
+        name: body.name,
+        kanaName: body.kanaName,
+        offers: JSON.parse(body.offers),
+        containsPlace: JSON.parse(body.containsPlace),
+        telephone: body.telephone,
+        screenCount: 0
+    };
+    return movieTheater;
+}
 exports.default = movieTheaterRouter;

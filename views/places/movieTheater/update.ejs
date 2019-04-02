@@ -1,0 +1,46 @@
+<%- contentFor('title') %>
+劇場編集
+<%- contentFor('displayId') %>
+Aa-18
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+
+<%- contentFor('body') %>
+<div class="form-container">
+    <% /* フォーム */ %>
+    <form method="post" class="p-3 bg-light-gray">
+        <div class="menu-group">
+            <%- include('../../common/errorMessage') %>
+            <%- include('../../common/successMessage') %>
+        </div>
+
+        <div class="form-group row">
+            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                枝番号
+            </label>
+            <div class="col-md-8">
+                <input readonly style="width:auto;" type="text" class="form-control" name="branchCode" id="branchCode"
+                    placeholder="" maxlength=64 value="<%= forms.branchCode %>">
+            </div>
+        </div>
+
+        <%- include('form', { forms: forms, isNew: false }) %>
+
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">更新する</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(function () {
+        $('.btn-ok').on('click', function () {
+            $('form').submit();
+        });
+        // datepickerセット
+        $('.datepicker').datepicker({
+            language: 'ja'
+        })
+    });
+</script>
