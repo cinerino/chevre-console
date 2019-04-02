@@ -88,7 +88,7 @@ $(function () {
 
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
-        var codeValue = $('a.editAccountTitle', $(this).parent().parent()).html();
+        var codeValue = $(this).attr('data-codeValue');
         console.log('showing additionalProperty...codeValue:', codeValue);
 
         showAdditionalProperty(codeValue);

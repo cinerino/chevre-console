@@ -104,4 +104,35 @@ $(function () {
             $('#loadingModal').modal('hide');
         });
     }
+
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing additionalProperty...id:', id);
+
+        showAdditionalProperty(id);
+    });
+
+    /**
+     * 追加特性を見る
+     */
+    function showAdditionalProperty(id) {
+        var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (movieTheater === undefined) {
+            alert('券種' + branchCode + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-additionalProperty');
+        var body = modal.find('.modal-body');
+        body.empty()
+        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+            + JSON.stringify(movieTheater.additionalProperty, null, '\t')
+            + '</textarea>'
+        body.append(html);
+        modal.modal();
+    }
 });
