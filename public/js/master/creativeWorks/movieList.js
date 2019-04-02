@@ -26,15 +26,6 @@ $(function () {
         search(1);
     });
 
-    // 編集ボタンイベント
-    $(document).on('click', 'button.edit', function () {
-        // イベント識別子取得&url編集
-        console.log($('td[name="identifier"]', $(this).closest('tr')));
-        var identifier = $('td[name="identifier"]', $(this).closest('tr')).html();
-        var url = '/creativeWorks/movie/' + identifier + '/update';
-        window.location.href = url;
-    });
-
     // 検索条件クリア
     $(document).on('click', '.reset-condition', function () {
         $.fn.clearFormValue('form');

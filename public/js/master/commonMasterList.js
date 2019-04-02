@@ -108,10 +108,6 @@ $(function () {
                             value = $.fn.getStringValue(data, fieldId, '');
                         }
                         temp = temp.replace("\$" + fieldId + "\$", value);
-                        if (fieldId === 'edit') {
-                            var id = $.fn.getStringValue(data, "id", "");
-                            temp = temp.replace("\$id\$", id);
-                        }
                     });
                     tempRow[cntCol++] = temp;
                 });
