@@ -78,9 +78,9 @@ Aa-6
                     <th>発生金額<br>売上金額<br>適用単位</th>
                     <th>適用条件</th>
                     <th></th>
-                    <th></th>
                 </tr>
             </thead>
+
             <tbody>
                 <tr id="templateRow" _id="$id$">
                     <td
@@ -132,18 +132,23 @@ Aa-6
                             ムビチケ: $priceSpecification.appliesToMovieTicketType$
                         </p>
                     </td>
-                    <td name="edit" class="center">
-                        <div class="btn-area text-center">
-                            <a target="_blank" class="btn btn-primary btn-list edit" href="/ticketTypes/$id$/update">
+                    <td name="id__id__id" class="center">
+                        <div class="text-center">
+                            <a target="_blank" class="btn btn-primary" href="/ticketTypes/$id$/update">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </div>
-                    </td>
-                    <td name="popup" class="center popupListTicketTypeGroup">
-                        <div class="btn-area text-center">
-                            <a href="/ticketTypes/getTicketTypeGroupList/$id$"
-                                class="btn btn-sm btn-primary btn-list edit">
+
+                        <div class="text-center mt-2">
+                            <a href="#" data-id="$id$" class="btn btn-sm btn-primary popupListTicketTypeGroup">
                                 関連券種<br>グループ
+                            </a>
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                data-id="$id$">
+                                <span>追加特性</span>
                             </a>
                         </div>
                     </td>
@@ -153,7 +158,23 @@ Aa-6
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
-<% /* 共通Loading */ %>
+
+<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">券種の追加特性</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <%- include('../common/master/_loading') %>
 <%# popup %>
 <%- include('./_listTicketTypeGroup') %>

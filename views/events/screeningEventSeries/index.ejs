@@ -83,9 +83,7 @@ Aa-3
                     <th>作品</th>
                     <th class="text-left">名称<br>English Name<br>サブタイトル<br>カナ</th>
                     <th>上映開始日<br>上映終了日</th>
-                    <th>字幕<br>吹替</th>
-                    <th>上映形態</th>
-                    <th>対応決済方法</th>
+                    <th>字幕<br>吹替<br>上映形態</th>
                     <th></th>
                 </tr>
             </thead>
@@ -106,15 +104,24 @@ Aa-3
                         $kanaName$<br>
                     </td>
                     <td name="startDay__endDay">$startDay$<br>$endDay$</td>
-                    <td name="subtitleLanguage__dubLanguage">$subtitleLanguage$<br>$dubLanguage$</td>
-                    <td name="videoFormat">$videoFormat$</td>
-                    <td name="acceptedPaymentMethod">$acceptedPaymentMethod$</td>
-                    <td name="edit" class="center">
+                    <td name="subtitleLanguage__dubLanguage__videoFormat">
+                        $subtitleLanguage$
+                        <br>$dubLanguage$
+                        <br>$videoFormat$
+                    </td>
+                    <td name="id__edit" class="center">
                         <div class="btn-area text-center">
                             <button type="button" class="btn btn-primary btn-list edit" data-toggle="modal"
                                 data-target="#myModal">
                                 <i class="fas fa-edit"></i>
                             </button>
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                data-id="$id$">
+                                <span>追加特性</span>
+                            </a>
                         </div>
                     </td>
                 </tr>
@@ -123,4 +130,21 @@ Aa-3
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
+
+<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">イベントの追加特性</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <%- include('../../common/master/_loading') %>
