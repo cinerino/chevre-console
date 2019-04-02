@@ -16,6 +16,7 @@ const createDebug = require("debug");
 const express_1 = require("express");
 const Message = require("../common/Const/Message");
 const debug = createDebug('chevre-backend:router');
+const NUM_ADDITIONAL_PROPERTY = 10;
 const serviceTypesRouter = express_1.Router();
 serviceTypesRouter.all('/add', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
@@ -43,7 +44,12 @@ serviceTypesRouter.all('/add', (req, res) => __awaiter(this, void 0, void 0, fun
             }
         }
     }
-    const forms = req.body;
+    const forms = Object.assign({ additionalProperty: [] }, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     res.render('serviceTypes/add', {
         message: message,
         errors: errors,
@@ -112,7 +118,12 @@ serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
             }
         }
     }
-    const forms = Object.assign({}, serviceType, req.body);
+    const forms = Object.assign({ additionalProperty: [] }, serviceType, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     res.render('serviceTypes/edit', {
         message: message,
         errors: errors,
@@ -124,7 +135,16 @@ function createMovieFromBody(body) {
     return {
         typeOf: 'ServiceType',
         id: body.id,
-        name: body.name
+        name: body.name,
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined
     };
 }
 const NAME_MAX_LENGTH_CODE = 64;

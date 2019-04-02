@@ -9,6 +9,8 @@ import * as Message from '../common/Const/Message';
 
 const debug = createDebug('chevre-backend:router');
 
+const NUM_ADDITIONAL_PROPERTY = 10;
+
 const serviceTypesRouter = Router();
 
 serviceTypesRouter.all(
@@ -42,7 +44,15 @@ serviceTypesRouter.all(
             }
         }
 
-        const forms = req.body;
+        const forms = {
+            additionalProperty: [],
+            ...req.body
+        };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         res.render('serviceTypes/add', {
             message: message,
@@ -128,9 +138,15 @@ serviceTypesRouter.all(
         }
 
         const forms = {
+            additionalProperty: [],
             ...serviceType,
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         res.render('serviceTypes/edit', {
             message: message,
@@ -146,7 +162,16 @@ function createMovieFromBody(body: any): chevre.factory.serviceType.IServiceType
     return {
         typeOf: 'ServiceType',
         id: body.id,
-        name: body.name
+        name: body.name,
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined
     };
 }
 
