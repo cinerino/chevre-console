@@ -32,15 +32,16 @@ Aa-6
                 <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
             </div>
         </div>
-        <% /* 管理用券種名 */ %>
+
         <div class="form-group row">
             <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                管理用券種名
+                名称
             </label>
             <div class="col-md-8">
                 <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
             </div>
         </div>
+
         <div class="form-group row">
             <label for="ticketTypeGroups" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 券種グループ
@@ -72,24 +73,27 @@ Aa-6
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
-                    <th>券種コード<br>種別<br>在庫</th>
-                    <th>名称<br>English Name<br>管理用券種名</th>
+                    <th>券種コード<br>種別<br>細目コード<br>在庫</th>
+                    <th>名称<br>English Name<br>代替名称</th>
                     <th>発生金額<br>売上金額<br>適用単位</th>
                     <th>適用条件</th>
-                    <th>対応ムビチケ<br>券種区分</th>
                     <th></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr id="templateRow" _id="$id$">
-                    <td name="id__id__categoryName__availability">
+                    <td
+                        name="id__id__categoryName__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability">
                         <p>
                             <a target="_blank" href="/ticketTypes/$id$/update">
                                 $id$
                             </a>
                         </p>
                         <p>$categoryName$</p>
+                        <p><a target="_blank"
+                                href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
+                        </p>
                         <p class="badge badge-secondary">$availability$</p>
                     <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
                     <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
@@ -99,7 +103,7 @@ Aa-6
                         <p>/ $referenceQuantity.value$ 枚</p>
                     </td>
                     <td
-                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency">
+                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType">
                         <div class="row">
                             <div class="col-md-3 pr-1">
                                 <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
@@ -124,8 +128,9 @@ Aa-6
                                 <p>$eligibleTransactionVolume.price$ $eligibleTransactionVolume.priceCurrency$ 以上</p>
                             </div>
                         </div>
-                    </td>
-                    <td name="priceSpecification.appliesToMovieTicketType">$priceSpecification.appliesToMovieTicketType$
+                        <p>
+                            ムビチケ: $priceSpecification.appliesToMovieTicketType$
+                        </p>
                     </td>
                     <td name="edit" class="center">
                         <div class="btn-area text-center">

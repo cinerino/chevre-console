@@ -433,11 +433,12 @@ function validateFormAdd(req: Request): void {
     colName = 'サイト表示用券種名英';
     req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
-    // サイト管理用券種名
-    colName = 'サイト管理用券種名';
+
+    colName = '代替名称';
     req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
+
     // 印刷用券種名
     colName = '印刷用券種名';
     req.checkBody('nameForPrinting', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
