@@ -86,7 +86,7 @@ $(function () {
         });
     }
 
-    // 追加項目を見る
+    // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
         var codeValue = $('a.editAccountTitle', $(this).parent().parent()).html();
         console.log('showing additionalProperty...codeValue:', codeValue);
@@ -95,7 +95,7 @@ $(function () {
     });
 
     /**
-     * 追加項目を見る
+     * 追加特性を見る
      */
     function showAdditionalProperty(codeValue) {
         var accountTitle = $.CommonMasterList.getDatas().find(function (data) {

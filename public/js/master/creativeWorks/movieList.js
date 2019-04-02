@@ -80,6 +80,35 @@ $(function () {
         });
     }
 
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var identifier = $(this).attr('data-identifier');
+        console.log('showing additionalProperty...identifier:', identifier);
 
+        showAdditionalProperty(identifier);
+    });
+
+    /**
+     * 追加特性を見る
+     */
+    function showAdditionalProperty(identifier) {
+        var movie = $.CommonMasterList.getDatas().find(function (data) {
+            return data.identifier === identifier
+        });
+        if (movie === undefined) {
+            alert('作品' + identifier + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-additionalProperty');
+        var body = modal.find('.modal-body');
+        body.empty()
+        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+            + JSON.stringify(movie.additionalProperty, null, '\t')
+            + '</textarea>'
+        body.append(html);
+        modal.modal();
+    }
 });
 

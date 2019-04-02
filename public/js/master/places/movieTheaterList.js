@@ -64,4 +64,35 @@ $(function () {
             $('#loadingModal').modal('hide');
         });
     }
+
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var branchCode = $(this).attr('data-branchCode');
+        console.log('showing additionalProperty...branchCode:', branchCode);
+
+        showAdditionalProperty(branchCode);
+    });
+
+    /**
+     * 追加特性を見る
+     */
+    function showAdditionalProperty(branchCode) {
+        var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
+            return data.branchCode === branchCode
+        });
+        if (movieTheater === undefined) {
+            alert('劇場' + branchCode + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-additionalProperty');
+        var body = modal.find('.modal-body');
+        body.empty()
+        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+            + JSON.stringify(movieTheater.additionalProperty, null, '\t')
+            + '</textarea>'
+        body.append(html);
+        modal.modal();
+    }
 });

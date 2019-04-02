@@ -45,9 +45,8 @@ Aa-12
                     <th>コード</th>
                     <th>名称<br>英語名称<br>カナ</th>
                     <th>属性</th>
-                    <th>座席購入上限数</th>
-                    <th>販売開始日</th>
-                    <th>上映後販売終了時間</th>
+                    <th>座席購入上限数<br>販売開始日<br>上映後販売終了時間</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -63,20 +62,41 @@ Aa-12
                     <td name="telephone">
                         <p>$telephone$</p>
                     </td>
-                    <td name="offers.eligibleQuantity.maxValue">$offers.eligibleQuantity.maxValue$枚</td>
-                    <td name="availabilityStartsGraceTimeInDays">$availabilityStartsGraceTimeInDays$日前</td>
-                    <td name="availabilityEndsGraceTimeInMinutes">$availabilityEndsGraceTimeInMinutes$</td>
-                    <!-- <td name="edit" class="center">
-                        <div class="btn-area">
-                            <a class="btn btn-list edit" data-toggle="modal" data-target="#myModal">
-                                <i class="fas fa-edit"></i>
+                    <td
+                        name="offers.eligibleQuantity.maxValue__availabilityStartsGraceTimeInDays__availabilityEndsGraceTimeInMinutes">
+                        $offers.eligibleQuantity.maxValue$枚
+                        <br>$availabilityStartsGraceTimeInDays$日前
+                        <br>$availabilityEndsGraceTimeInMinutes$
+                    </td>
+                    <td name="branchCode" class="">
+                        <div class="text-center">
+                            <a href="#" class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                data-branchCode="$branchCode$">
+                                <span>追加特性</span>
                             </a>
                         </div>
-                    </td> -->
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
+
+<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">細目の追加特性</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <%- include('../../common/master/_loading') %>
