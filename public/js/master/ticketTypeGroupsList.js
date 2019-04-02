@@ -67,17 +67,17 @@ $(function () {
     // 関連券種グループ button
     $(document).on('click', '.popupListTicketType', function (event) {
         event.preventDefault();
-        var target = $(this).find('a:first').attr('href');
-        list(target);
+        var id = $(this).attr('data-id');
+        list(id);
     });
 
     /**
      * 関連券種グループのpopupを表示
      */
-    function list(url) {
+    function list(id) {
         $.ajax({
             dataType: 'json',
-            url: url,
+            url: '/ticketTypeGroups/ticketTypeList?id=' + id,
             cache: false,
             type: 'GET',
             // data: conditions,
