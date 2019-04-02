@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 映画作品コントローラー
+ * 作品コントローラー
  */
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
@@ -17,6 +17,7 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const debug = createDebug('chevre-backend:controllers');
+const NUM_ADDITIONAL_PROPERTY = 5;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 作品名・日本語 全角64
@@ -59,8 +60,12 @@ function add(req, res) {
                 }
             }
         }
-        const forms = req.body;
-        // 作品マスタ画面遷移
+        const forms = Object.assign({ additionalProperty: [] }, req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         res.render('creativeWorks/movie/add', {
             message: message,
             errors: errors,
@@ -103,7 +108,7 @@ function update(req, res) {
                 }
             }
         }
-        const forms = Object.assign({}, movie, { distribution: (movie.distributor !== undefined) ? movie.distributor.id : '' }, req.body, { duration: (_.isEmpty(req.body.duration))
+        const forms = Object.assign({ additionalProperty: [] }, movie, { distribution: (movie.distributor !== undefined) ? movie.distributor.id : '' }, req.body, { duration: (_.isEmpty(req.body.duration))
                 ? (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : ''
                 : req.body.duration, datePublished: (_.isEmpty(req.body.datePublished)) ?
                 (movie.datePublished !== undefined) ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
@@ -114,7 +119,11 @@ function update(req, res) {
                     }
                     : undefined
                 : req.body.offers });
-        // 作品マスタ画面遷移
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         debug('errors:', errors);
         res.render('creativeWorks/movie/edit', {
             message: message,
@@ -139,7 +148,16 @@ function createMovieFromBody(body) {
             priceCurrency: chevre.factory.priceCurrency.JPY,
             availabilityEnds: (!_.isEmpty(body.offers) && !_.isEmpty(body.offers.availabilityEnds)) ?
                 moment(`${body.offers.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate() : undefined
-        }
+        },
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined
     };
     if (movie.offers !== undefined
         && movie.offers.availabilityEnds !== undefined

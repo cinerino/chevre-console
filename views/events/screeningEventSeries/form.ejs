@@ -7,8 +7,7 @@
             <option value="">選択してください</option>
             <% for (const movieTheater of movieTheaters) { %>
             <option value="<%= movieTheater.branchCode %>" <% if (forms.locationBranchCode===movieTheater.branchCode) {
-                %> selected
-                <% } %>>
+                %> selected <% } %>>
                 <%= movieTheater.name.ja %>
             </option>
             <% } %>
@@ -25,8 +24,7 @@
             <% for (const movie of movies) { %>
             <option value="<%= movie.identifier %>" data-name="<%= movie.name %>" data-headline="<%= movie.headline %>"
                 data-availabilityEnds="<%= movie.offers.availabilityEnds %>" <% if (forms.workPerformed.identifier===movie.identifier)
-                { %> selected
-                <% } %>>
+                { %> selected <% } %>>
                 <%= movie.name %>
             </option>
             <% } %>
@@ -59,7 +57,8 @@
         上映作品名カナ
     </label>
     <div class="col-md-8">
-        <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64 value="<%= forms.kanaName %>">
+        <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64
+            value="<%= forms.kanaName %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
@@ -92,7 +91,8 @@
         上映作品サブタイトル名
     </label>
     <div class="col-md-8">
-        <input class="form-control" name="headline[ja]" id="headline[ja]" placeholder="" maxlength=64 value="<%- forms.headline.ja %>">
+        <input class="form-control" name="headline[ja]" id="headline[ja]" placeholder="" maxlength=64
+            value="<%- forms.headline.ja %>">
         <p class="message">
             全角64文字以内でご入力ください。
         </p>
@@ -103,31 +103,14 @@
         </p>
     </div>
 </div>
-<div class="form-group row">
-    <label for="signageDisplayName" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        サイネージ表示名
-    </label>
-    <div class="col-md-8">
-        <input class="form-control" name="signageDisplayName" id="signageDisplayName" placeholder="" value="<%- forms.signageDisplayName %>">
-    </div>
-</div>
-<div class="form-group row">
-    <label for="signageDislaySubtitleName" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        サイネージ表示名サブタイトル
-    </label>
-    <div class="col-md-8">
-        <input class="form-control" name="signageDislaySubtitleName" id="signageDislaySubtitleName" placeholder=""
-            value="<%- forms.signageDislaySubtitleName %>">
-    </div>
-</div>
 
 <div class="form-group row">
     <label for="startDate" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         上映開始日<span class="text-danger">＊</span>
     </label>
     <div class="col-md-8">
-        <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;" name="startDate"
-            id="startDate" placeholder="" maxlength=10 value="<%= forms.startDate %>">
+        <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;"
+            name="startDate" id="startDate" placeholder="" maxlength=10 value="<%= forms.startDate %>">
         <p class="error message text-danger">
             <% if (errors && errors.startDate) { %>
             <%- errors.startDate.msg %>
@@ -151,40 +134,6 @@
 </div>
 
 <div class="form-group row">
-    <label for="summaryStartDay" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-        集計開始曜日<span class="text-danger">＊</span>
-    </label>
-    <div class="col-md-8">
-        <%
-            let dayInWeeks = [
-                {code: '1', name: {ja: '月', en:'monday'}},
-                {code: '2', name: {ja: '火', en:'PG-12'}},
-                {code: '3', name: {ja: '水', en:'R-15'}},
-                {code: '4', name: {ja: '木', en:'R-18'}},
-                {code: '5', name: {ja: '金', en:'monday'}},
-                {code: '6', name: {ja: '土', en:'monday'}},
-                {code: '7', name: {ja: '日', en:'monday'}}
-            ];
-        %>
-        <select name="summaryStartDay" id="summaryStartDay" class="form-control">
-            <option value="">---</option>
-            <% for (let dayInWeek of dayInWeeks) { %>
-            <option value="<%= dayInWeek.code %>" <% if (forms.summaryStartDay===dayInWeek.code) { %>
-                selected="selected"
-                <% } %>>
-                <%- dayInWeek.name.ja %>
-            </option>
-            <% } %>
-        </select>
-        <p class="error message text-danger">
-            <% if (errors && errors.summaryStartDay) { %>
-            <%- errors.summaryStartDay.msg %>
-            <% } %>
-        </p>
-    </div>
-</div>
-
-<div class="form-group row">
     <label for="contentRating" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         レイティング<span class="text-danger">＊</span>
     </label>
@@ -200,8 +149,7 @@
         <select name="contentRating" id="contentRating" class="form-control" disabled>
             <% for (let rating of ratings) { %>
             <option value="<%= rating.code %>" <% if (forms.workPerformed.contentRating===rating.code) { %>
-                selected="selected"
-                <% } %>>
+                selected="selected" <% } %>>
                 <%- rating.name.ja %>
             </option>
             <% } %>
@@ -227,8 +175,7 @@
         <select name="translationType" id="translationType" class="form-control">
             <option value="">---</option>
             <% for (let subtitle of subtitles) { %>
-            <option value="<%= subtitle.code %>" <% if (forms.translationType===subtitle.code) { %>
-                selected="selected"
+            <option value="<%= subtitle.code %>" <% if (forms.translationType===subtitle.code) { %> selected="selected"
                 <% } %>>
                 <%- subtitle.name.ja %>
             </option>
@@ -243,8 +190,7 @@
     <div class="col-md-8">
         <% Object.keys(VideoFormatType).forEach((key) => { %>
         <input type="checkbox" name="videoFormatType[]" value="<%= VideoFormatType[key] %>" <% if
-            (forms.videoFormatType.indexOf(VideoFormatType[key])>= 0) { %>checked="checked"
-        <% } %>>
+            (forms.videoFormatType.indexOf(VideoFormatType[key])>= 0) { %>checked="checked" <% } %>>
         <%= VideoFormatType[key] %>
         <% }) %>
 
@@ -260,8 +206,7 @@
         ムビチケ利用
     </label>
     <div class="col-md-8 form-inline">
-        <input type="checkbox" <% if (forms.mvtkFlg==1) { %> checked
-        <% } %> value="1" name="mvtkFlg">
+        <input type="checkbox" <% if (forms.mvtkFlg==1) { %> checked <% } %> value="1" name="mvtkFlg">
     </div>
 </div>
 <div class="form-group row">
@@ -269,7 +214,8 @@
         補足説明
     </label>
     <div class="col-md-8">
-        <input class="form-control" name="description" id="description" placeholder="" maxlength=30 value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
+        <input class="form-control" name="description" id="description" placeholder="" maxlength=30
+            value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
         <p class="message">
             全角30文字以内でご入力ください。
         </p>
@@ -277,6 +223,29 @@
             <% if (errors && errors.description) { %>
             <%- errors.description.msg %>
             <% } %>
+        </p>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        追加特性
+    </label>
+    <div class="col-sm-8">
+        <% forms.additionalProperty.forEach((_, key) => { %>
+        <div class="input-group mb-1">
+            <!-- <span class="input-group-addon">Name:Value</span> -->
+            <input class="form-control" name="additionalProperty[<%= key %>][name]"
+                id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
+                value="<%= forms.additionalProperty[key].name %>">
+
+            <input class="form-control" name="additionalProperty[<%= key %>][value]"
+                id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
+                value="<%= forms.additionalProperty[key].value %>">
+        </div>
+        <% }) %>
+        <p class="message"></p>
+        <p class="error message text-danger">
         </p>
     </div>
 </div>

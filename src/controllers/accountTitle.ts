@@ -476,7 +476,15 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
                     name: req.body.name,
                     description: req.body.description,
                     inCodeSet: accountTitleSet,
-                    additionalProperty: req.body.additionalProperty.filter((p: any) => p.name !== '' && p.name !== '')
+                    additionalProperty: (Array.isArray(req.body.additionalProperty))
+                        ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                            .map((p: any) => {
+                                return {
+                                    name: String(p.name),
+                                    value: String(p.value)
+                                };
+                            })
+                        : undefined
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.create(accountTitle);
@@ -550,7 +558,15 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
                     name: req.body.name,
                     description: req.body.description,
                     inCodeSet: accountTitle.inCodeSet,
-                    additionalProperty: req.body.additionalProperty.filter((p: any) => p.name !== '' && p.name !== '')
+                    additionalProperty: (Array.isArray(req.body.additionalProperty))
+                        ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                            .map((p: any) => {
+                                return {
+                                    name: String(p.name),
+                                    value: String(p.value)
+                                };
+                            })
+                        : undefined
                 };
                 debug('saving account title...', accountTitle);
                 await accountTitleService.update(accountTitle);

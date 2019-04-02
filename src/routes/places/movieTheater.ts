@@ -7,6 +7,8 @@ import { Router } from 'express';
 
 const debug = createDebug('chevre-backend:router');
 
+const NUM_ADDITIONAL_PROPERTY = 5;
+
 const movieTheaterRouter = Router();
 
 movieTheaterRouter.all(
@@ -21,6 +23,7 @@ movieTheaterRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
+                    debug(req.body);
                     const movieTheater = createMovieTheaterFromBody(req.body);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
@@ -47,9 +50,15 @@ movieTheaterRouter.all(
         }
 
         const forms = {
+            additionalProperty: [],
             name: {},
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         res.render('places/movieTheater/new', {
             message: message,
@@ -161,9 +170,17 @@ movieTheaterRouter.all(
         }
 
         const forms = {
+            additionalProperty: [],
+            offersStr: JSON.stringify(movieTheater.offers, null, '\t'),
+            containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
             ...movieTheater,
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         res.render('places/movieTheater/update', {
             message: message,
@@ -220,10 +237,19 @@ function createMovieTheaterFromBody(body: any): chevre.factory.place.movieTheate
         branchCode: body.branchCode,
         name: body.name,
         kanaName: body.kanaName,
-        offers: JSON.parse(body.offers),
-        containsPlace: JSON.parse(body.containsPlace),
+        offers: JSON.parse(body.offersStr),
+        containsPlace: JSON.parse(body.containsPlaceStr),
         telephone: body.telephone,
-        screenCount: 0
+        screenCount: 0,
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined
     };
 
     return movieTheater;

@@ -1,5 +1,5 @@
 /**
- * 映画作品コントローラー
+ * 作品コントローラー
  */
 import { Router } from 'express';
 

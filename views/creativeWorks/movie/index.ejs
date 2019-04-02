@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-映画作品マスタ一覧
+作品マスタ一覧
 <%- contentFor('displayId') %>
 Aa-10
 <%- contentFor('styles') %>
@@ -9,12 +9,15 @@ Aa-10
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
 <script src="/js/master/creativeWorks/movieList.js"></script>
+
 <%- contentFor('body') %>
+
 <div class="form-container search mb-3">
     <form method="post" class="p-3 bg-light-gray">
         <%- include('../../common/master/_hidden') %>
         <div class="menu-group">
         </div>
+
         <div class="form-group row">
             <label for="identifier" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 作品コード
@@ -24,6 +27,7 @@ Aa-10
                     value="">
             </div>
         </div>
+
         <div class="form-group row">
             <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 作品名
@@ -32,6 +36,7 @@ Aa-10
                 <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
             </div>
         </div>
+
         <div class="form-group row">
             <label for="datePublishedThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 公開日(From - To)
@@ -44,6 +49,7 @@ Aa-10
                     maxlength=10 name="datePublishedThrough" id="datePublishedThrough" value="" />
             </div>
         </div>
+
         <div class="form-group row">
             <label for="availableThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 興行期間(From - To)
@@ -63,6 +69,7 @@ Aa-10
         </div>
     </form>
 </div>
+
 <div class="form-container search">
     <p class="mb-3" id="searchedCount" style="display:none;">
         検索結果 $searched_count$件

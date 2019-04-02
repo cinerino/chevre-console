@@ -1,5 +1,5 @@
 /**
- * 映画作品コントローラー
+ * 作品コントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
@@ -10,6 +10,8 @@ import * as _ from 'underscore';
 import * as Message from '../../common/Const/Message';
 
 const debug = createDebug('chevre-backend:controllers');
+
+const NUM_ADDITIONAL_PROPERTY = 5;
 
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
@@ -56,8 +58,16 @@ export async function add(req: Request, res: Response): Promise<void> {
         }
     }
 
-    const forms = req.body;
-    // 作品マスタ画面遷移
+    const forms = {
+        additionalProperty: [],
+        ...req.body
+    };
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
+
     res.render('creativeWorks/movie/add', {
         message: message,
         errors: errors,
@@ -99,6 +109,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     }
 
     const forms = {
+        additionalProperty: [],
         ...movie,
         distribution: (movie.distributor !== undefined) ? movie.distributor.id : '',
         ...req.body,
@@ -116,7 +127,12 @@ export async function update(req: Request, res: Response): Promise<void> {
                 : undefined
             : req.body.offers
     };
-    // 作品マスタ画面遷移
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
+
     debug('errors:', errors);
     res.render('creativeWorks/movie/edit', {
         message: message,
@@ -139,7 +155,16 @@ function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICrea
             priceCurrency: chevre.factory.priceCurrency.JPY,
             availabilityEnds: (!_.isEmpty(body.offers) && !_.isEmpty(body.offers.availabilityEnds)) ?
                 moment(`${body.offers.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate() : undefined
-        }
+        },
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined
     };
 
     if (movie.offers !== undefined

@@ -15,6 +15,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const debug = createDebug('chevre-backend:router');
+const NUM_ADDITIONAL_PROPERTY = 5;
 const movieTheaterRouter = express_1.Router();
 movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
@@ -26,6 +27,7 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fun
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
+                debug(req.body);
                 const movieTheater = createMovieTheaterFromBody(req.body);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
@@ -47,7 +49,12 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fun
             }
         }
     }
-    const forms = Object.assign({ name: {} }, req.body);
+    const forms = Object.assign({ additionalProperty: [], name: {} }, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     res.render('places/movieTheater/new', {
         message: message,
         errors: errors,
@@ -131,7 +138,12 @@ movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void
             }
         }
     }
-    const forms = Object.assign({}, movieTheater, req.body);
+    const forms = Object.assign({ additionalProperty: [], offersStr: JSON.stringify(movieTheater.offers, null, '\t'), containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     res.render('places/movieTheater/update', {
         message: message,
         errors: errors,
@@ -181,10 +193,19 @@ function createMovieTheaterFromBody(body) {
         branchCode: body.branchCode,
         name: body.name,
         kanaName: body.kanaName,
-        offers: JSON.parse(body.offers),
-        containsPlace: JSON.parse(body.containsPlace),
+        offers: JSON.parse(body.offersStr),
+        containsPlace: JSON.parse(body.containsPlaceStr),
         telephone: body.telephone,
-        screenCount: 0
+        screenCount: 0,
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined
     };
     return movieTheater;
 }

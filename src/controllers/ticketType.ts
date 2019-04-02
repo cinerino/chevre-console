@@ -7,12 +7,12 @@ import * as _ from 'underscore';
 
 import * as Message from '../common/Const/Message';
 
+const NUM_ADDITIONAL_PROPERTY = 10;
+
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
-// 印刷用券種名・日本語 全角64
-const NAME_PRITING_MAX_LENGTH_NAME_JA = 30;
 // 券種名・英語 半角128
 const NAME_MAX_LENGTH_NAME_EN = 64;
 // 金額
@@ -62,6 +62,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     }
 
     const forms = {
+        additionalProperty: [],
         name: {},
         alternateName: {},
         description: {},
@@ -76,6 +77,11 @@ export async function add(req: Request, res: Response): Promise<void> {
         seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit,
         ...req.body
     };
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
 
     res.render('ticketType/add', {
         message: message,
@@ -149,20 +155,18 @@ export async function update(req: Request, res: Response): Promise<void> {
         seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
     }
 
-    const additionalProperty = (ticketType.additionalProperty !== undefined) ? ticketType.additionalProperty : [];
-    const nameForPrinting = additionalProperty.find((p) => p.name === 'nameForPrinting');
     const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
         ? ticketType.priceSpecification.accounting.accountsReceivable
         : '';
 
     const forms = {
+        additionalProperty: [],
         alternateName: {},
         priceSpecification: {
             referenceQuantity: {}
         },
         ...ticketType,
         category: (ticketType.category !== undefined) ? ticketType.category.id : '',
-        nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '',
         price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit),
         accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit),
         ...req.body,
@@ -179,6 +183,11 @@ export async function update(req: Request, res: Response): Promise<void> {
                 ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
             : req.body.nonBoxOfficeSubject
     };
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
 
     res.render('ticketType/update', {
         message: message,
@@ -285,12 +294,15 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
                 accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
             }
         },
-        additionalProperty: [
-            {
-                name: 'nameForPrinting',
-                value: <string>body.nameForPrinting
-            }
-        ],
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined,
         category: {
             id: <string>body.category
         },
@@ -439,11 +451,6 @@ function validateFormAdd(req: Request): void {
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
-    // 印刷用券種名
-    colName = '印刷用券種名';
-    req.checkBody('nameForPrinting', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('nameForPrinting', Message.Common.getMaxLength(colName, NAME_PRITING_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_PRITING_MAX_LENGTH_NAME_JA });
     // 購入席単位追加
     colName = '購入席単位追加';
     req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();

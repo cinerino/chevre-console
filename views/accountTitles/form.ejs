@@ -68,11 +68,11 @@
             <!-- <span class="input-group-addon">Name:Value</span> -->
             <input class="form-control" name="additionalProperty[<%= key %>][name]"
                 id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
-                value="<%= (forms.additionalProperty[key] !== undefined) ? forms.additionalProperty[key].name : '' %>">
+                value="<%= forms.additionalProperty[key].name %>">
 
             <input class="form-control" name="additionalProperty[<%= key %>][value]"
                 id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
-                value="<%= (forms.additionalProperty[key] !== undefined) ? forms.additionalProperty[key].value : '' %>">
+                value="<%= forms.additionalProperty[key].value %>">
         </div>
         <% }) %>
         <p class="message"></p>

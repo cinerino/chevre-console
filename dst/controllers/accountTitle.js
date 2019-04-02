@@ -455,7 +455,15 @@ function createAccountTitle(req, res) {
                         name: req.body.name,
                         description: req.body.description,
                         inCodeSet: accountTitleSet,
-                        additionalProperty: req.body.additionalProperty.filter((p) => p.name !== '' && p.name !== '')
+                        additionalProperty: (Array.isArray(req.body.additionalProperty))
+                            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                                .map((p) => {
+                                return {
+                                    name: String(p.name),
+                                    value: String(p.value)
+                                };
+                            })
+                            : undefined
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.create(accountTitle);
@@ -521,7 +529,15 @@ function updateAccountTitle(req, res) {
                         name: req.body.name,
                         description: req.body.description,
                         inCodeSet: accountTitle.inCodeSet,
-                        additionalProperty: req.body.additionalProperty.filter((p) => p.name !== '' && p.name !== '')
+                        additionalProperty: (Array.isArray(req.body.additionalProperty))
+                            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                                .map((p) => {
+                                return {
+                                    name: String(p.name),
+                                    value: String(p.value)
+                                };
+                            })
+                            : undefined
                     };
                     debug('saving account title...', accountTitle);
                     yield accountTitleService.update(accountTitle);

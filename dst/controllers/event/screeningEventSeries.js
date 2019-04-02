@@ -18,6 +18,7 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const debug = createDebug('chevre-backend:controllers');
+const NUM_ADDITIONAL_PROPERTY = 10;
 // 1ページに表示するデータ数
 // const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
@@ -82,7 +83,12 @@ function add(req, res) {
                 message = '入力に誤りがあります';
             }
         }
-        const forms = Object.assign({ headline: {}, workPerformed: {}, videoFormatType: [] }, req.body);
+        const forms = Object.assign({ additionalProperty: [], headline: {}, workPerformed: {}, videoFormatType: [] }, req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         // 作品マスタ画面遷移
         debug('errors:', errors);
         res.render('events/screeningEventSeries/add', {
@@ -171,15 +177,16 @@ function update(req, res) {
         if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
             translationType = '1';
         }
-        const additionalProperty = (event.additionalProperty !== undefined) ? event.additionalProperty : [];
-        const signageDisplayName = additionalProperty.find((p) => p.name === 'signageDisplayName');
-        const signageDislaySubtitleName = additionalProperty.find((p) => p.name === 'signageDislaySubtitleName');
-        const summaryStartDay = additionalProperty.find((p) => p.name === 'summaryStartDay');
-        const forms = Object.assign({ headline: {} }, event, { signageDisplayName: (signageDisplayName !== undefined) ? signageDisplayName.value : '', signageDislaySubtitleName: (signageDislaySubtitleName !== undefined) ? signageDislaySubtitleName.value : '', summaryStartDay: (summaryStartDay !== undefined) ? summaryStartDay.value : '' }, req.body, { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration, locationBranchCode: event.location.branchCode, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
+        const forms = Object.assign({ additionalProperty: [], headline: {} }, event, req.body, { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration, locationBranchCode: event.location.branchCode, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
                 (event.startDate !== null) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
                 req.body.startDate, endDate: (_.isEmpty(req.body.endDate)) ?
                 (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '' :
                 req.body.endDate, mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg });
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         // 作品マスタ画面遷移
         debug('errors:', errors);
         res.render('events/screeningEventSeries/edit', {
@@ -295,20 +302,15 @@ function createEventFromBody(body, movie, movieTheater) {
             ja: body.headline.ja,
             en: ''
         },
-        additionalProperty: [
-            {
-                name: 'signageDisplayName',
-                value: body.signageDisplayName
-            },
-            {
-                name: 'signageDislaySubtitleName',
-                value: body.signageDislaySubtitleName
-            },
-            {
-                name: 'summaryStartDay',
-                value: body.summaryStartDay
-            }
-        ],
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined,
         offers: offers,
         description: {
             ja: body.description,
@@ -488,8 +490,6 @@ function validate(req) {
     colName = '上映作品サブタイトル名';
     req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '集計開始曜日';
-    req.checkBody('summaryStartDay', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '上映形態';
     req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

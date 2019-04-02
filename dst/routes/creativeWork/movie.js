@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 映画作品コントローラー
+ * 作品コントローラー
  */
 const express_1 = require("express");
 const MovieController = require("../../controllers/creativeWork/movie");

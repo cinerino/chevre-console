@@ -70,21 +70,44 @@
 </div>
 
 <div class="form-group row">
-    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+    <label for="containsPlaceStr" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         スクリーン
     </label>
     <div class="col-md-8">
-        <textarea rows="10" class="form-control" name="containsPlace" <% if (!isNew) { %>
-            readonly<% } %>><%- JSON.stringify(forms.containsPlace, null, '\t') %></textarea>'
+        <textarea rows="10" class="form-control" name="containsPlaceStr" <% if (!isNew) { %>
+            readonly<% } %>><%- forms.containsPlaceStr %></textarea>'
     </div>
 </div>
 
 <div class="form-group row">
-    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+    <label for="offersStr" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
         オファー
     </label>
     <div class="col-md-8">
-        <textarea rows="10" class="form-control" name="offers" <% if (!isNew) { %>
-            readonly<% } %>><%- JSON.stringify(forms.offers, null, '\t') %></textarea>'
+        <textarea rows="10" class="form-control" name="offersStr" <% if (!isNew) { %>
+            readonly<% } %>><%- forms.offersStr %></textarea>'
+    </div>
+</div>
+
+<div class="form-group row">
+    <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        追加特性
+    </label>
+    <div class="col-sm-8">
+        <% forms.additionalProperty.forEach((_, key) => { %>
+        <div class="input-group mb-1">
+            <!-- <span class="input-group-addon">Name:Value</span> -->
+            <input class="form-control" name="additionalProperty[<%= key %>][name]"
+                id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
+                value="<%= forms.additionalProperty[key].name %>">
+
+            <input class="form-control" name="additionalProperty[<%= key %>][value]"
+                id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
+                value="<%= forms.additionalProperty[key].value %>">
+        </div>
+        <% }) %>
+        <p class="message"></p>
+        <p class="error message text-danger">
+        </p>
     </div>
 </div>

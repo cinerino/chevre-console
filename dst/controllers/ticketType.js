@@ -14,12 +14,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
+const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
 // 券種名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
-// 印刷用券種名・日本語 全角64
-const NAME_PRITING_MAX_LENGTH_NAME_JA = 30;
 // 券種名・英語 半角128
 const NAME_MAX_LENGTH_NAME_EN = 64;
 // 金額
@@ -66,12 +65,17 @@ function add(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ name: {}, alternateName: {}, description: {}, priceSpecification: {
+        const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {}, description: {}, priceSpecification: {
                 referenceQuantity: {
                     value: 1
                 },
                 accounting: {}
             }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         res.render('ticketType/add', {
             message: message,
             errors: errors,
@@ -142,14 +146,12 @@ function update(req, res) {
         if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
             seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
         }
-        const additionalProperty = (ticketType.additionalProperty !== undefined) ? ticketType.additionalProperty : [];
-        const nameForPrinting = additionalProperty.find((p) => p.name === 'nameForPrinting');
         const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
             ? ticketType.priceSpecification.accounting.accountsReceivable
             : '';
-        const forms = Object.assign({ alternateName: {}, priceSpecification: {
+        const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
-            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', nameForPrinting: (nameForPrinting !== undefined) ? nameForPrinting.value : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
+            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined)
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
                 : req.body.accountTitle, nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
@@ -157,6 +159,11 @@ function update(req, res) {
                     && ticketType.priceSpecification.accounting.nonOperatingRevenue !== undefined)
                     ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
                 : req.body.nonBoxOfficeSubject });
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
         res.render('ticketType/update', {
             message: message,
             errors: errors,
@@ -257,12 +264,15 @@ function createFromBody(body) {
                 accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
             }
         },
-        additionalProperty: [
-            {
-                name: 'nameForPrinting',
-                value: body.nameForPrinting
-            }
-        ],
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined,
         category: {
             id: body.category
         },
@@ -405,11 +415,6 @@ function validateFormAdd(req) {
     req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // 印刷用券種名
-    colName = '印刷用券種名';
-    req.checkBody('nameForPrinting', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('nameForPrinting', Message.Common.getMaxLength(colName, NAME_PRITING_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_PRITING_MAX_LENGTH_NAME_JA });
     // 購入席単位追加
     colName = '購入席単位追加';
     req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
