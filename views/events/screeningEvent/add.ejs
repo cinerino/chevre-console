@@ -18,7 +18,9 @@
                             </label>
                             <div class="col-md-8">
                                 <select class="form-control" name="theater">
-                                    <option value="" disabled selected>選択してください</option>
+                                    <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+                                    <option value="0" disabled selected>
+                                        選択してください</option>
                                     <% for (const movieTheater of movieTheaters) { %>
                                     <option value="<%= movieTheater.branchCode %>"
                                         data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
@@ -26,6 +28,16 @@
                                         data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
                                         <%= movieTheater.name.ja %>
                                     </option>
+                                    <% } %>
+                                    <% } else { %>
+                                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                                    <option value="<%= movieTheater.branchCode %>"
+                                        data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
+                                        data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
+                                        data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
+                                        <%= movieTheater.name.ja %>
+                                    </option>
+                                    <% } %>
                                     <% } %>
                                 </select>
                             </div>
