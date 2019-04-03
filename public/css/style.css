@@ -7180,7 +7180,7 @@ button {
   height: 2.8rem; }
 
 .contents-width {
-  max-width: 1040px; }
+  max-width: 1240px; }
 
 .select-text {
   -webkit-touch-callout: default;
@@ -7261,13 +7261,13 @@ button {
   border-color: #AAA !important; }
 
 .bg-light-gray {
-  background-color: #EEE !important; }
+  background-color: #f6f7fb !important; }
 
 .text-light-gray {
-  color: #EEE !important; }
+  color: #f6f7fb !important; }
 
 .border-light-gray {
-  border-color: #EEE !important; }
+  border-color: #f6f7fb !important; }
 
 .page-item.active .page-link {
   background-color: #007bff;
@@ -7277,7 +7277,10 @@ button {
   color: #007bff; }
 
 header hr {
-  height: 5px; }
+  height: 3px; }
+
+header .logo {
+  height: 31px; }
 
 .table thead th, .table thead td, .table tbody th, .table tbody td {
   vertical-align: middle;
@@ -7290,7 +7293,7 @@ header hr {
   padding: 0.5rem;
   line-height: 1;
   background-image: none;
-  background-color: #EEE;
+  background-color: #f6f7fb;
   border-color: #AAA;
   box-shadow: none; }
   .simple-pagination ul li a:hover, .simple-pagination ul li span:hover {

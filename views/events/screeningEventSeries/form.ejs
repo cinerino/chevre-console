@@ -4,12 +4,18 @@
     </label>
     <div class="col-md-8">
         <select class="form-control" name="locationBranchCode">
+            <% if (user.cognitoGroups.movieTheaters === undefined) { %>
             <option value="">選択してください</option>
             <% for (const movieTheater of movieTheaters) { %>
             <option value="<%= movieTheater.branchCode %>" <% if (forms.locationBranchCode===movieTheater.branchCode) {
                 %> selected <% } %>>
                 <%= movieTheater.name.ja %>
             </option>
+            <% } %>
+            <% } else { %>
+            <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+            <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+            <% } %>
             <% } %>
         </select>
     </div>
@@ -184,10 +190,10 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="videoFormat" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+    <label for="videoFormat" class="col-md-4 py-3 text-md-right mb-2 mb-md-0">
         上映形態<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-8">
+    <div class="col-md-8 py-3">
         <% Object.keys(VideoFormatType).forEach((key) => { %>
         <input type="checkbox" name="videoFormatType[]" value="<%= VideoFormatType[key] %>" <% if
             (forms.videoFormatType.indexOf(VideoFormatType[key])>= 0) { %>checked="checked" <% } %>>
@@ -202,10 +208,10 @@
     </div>
 </div>
 <div class="form-group row">
-    <label for="mvtkFlg" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+    <label for="mvtkFlg" class="col-md-4 py-3 text-md-right mb-2 mb-md-0">
         ムビチケ利用
     </label>
-    <div class="col-md-8 form-inline">
+    <div class="col-md-8 form-inline py-3">
         <input type="checkbox" <% if (forms.mvtkFlg==1) { %> checked <% } %> value="1" name="mvtkFlg">
     </div>
 </div>

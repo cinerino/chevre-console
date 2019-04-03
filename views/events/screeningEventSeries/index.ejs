@@ -25,11 +25,17 @@ Aa-3
             </label>
             <div class="col-md-8">
                 <select class="form-control" name="locationBranchCode">
+                    <% if (user.cognitoGroups.movieTheaters === undefined) { %>
                     <option value="">選択してください</option>
                     <% for (const movieTheater of movieTheaters) { %>
                     <option value="<%= movieTheater.branchCode %>">
                         <%= movieTheater.name.ja %>
                     </option>
+                    <% } %>
+                    <% } else { %>
+                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                    <% } %>
                     <% } %>
                 </select>
             </div>
