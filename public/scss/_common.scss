@@ -23,8 +23,6 @@ html, body {
 }
 body {
     text-size-adjust: 100%;
-    -webkit-touch-callout: none;
-    user-select: none;
     background-color: #FFF;
     background-attachment: fixed;
     font-size: 14px;
@@ -64,6 +62,10 @@ div {
 button {
     cursor: pointer;
     white-space: normal !important;
+}
+
+::placeholder {
+    color: $gray !important;
 }
 
 .form-control {

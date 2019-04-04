@@ -7140,8 +7140,6 @@ html, body {
 
 body {
   text-size-adjust: 100%;
-  -webkit-touch-callout: none;
-  user-select: none;
   background-color: #FFF;
   background-attachment: fixed;
   font-size: 14px;
@@ -7175,6 +7173,9 @@ div {
 button {
   cursor: pointer;
   white-space: normal !important; }
+
+::placeholder {
+  color: #AAA !important; }
 
 .form-control {
   height: 2.8rem; }
@@ -7261,13 +7262,13 @@ button {
   border-color: #AAA !important; }
 
 .bg-light-gray {
-  background-color: #f6f7fb !important; }
+  background-color: #EEE !important; }
 
 .text-light-gray {
-  color: #f6f7fb !important; }
+  color: #EEE !important; }
 
 .border-light-gray {
-  border-color: #f6f7fb !important; }
+  border-color: #EEE !important; }
 
 .page-item.active .page-link {
   background-color: #007bff;
@@ -7293,7 +7294,7 @@ header .logo {
   padding: 0.5rem;
   line-height: 1;
   background-image: none;
-  background-color: #f6f7fb;
+  background-color: #EEE;
   border-color: #AAA;
   box-shadow: none; }
   .simple-pagination ul li a:hover, .simple-pagination ul li span:hover {
