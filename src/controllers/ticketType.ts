@@ -19,9 +19,9 @@ const NAME_MAX_LENGTH_NAME_EN = 64;
 const CHAGE_MAX_LENGTH = 10;
 
 const ticketTypeCategories = [
-    { id: '1', name: '有料券' },
-    { id: '2', name: '前売券' },
-    { id: '3', name: '無料券' }
+    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
+    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
+    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
 ];
 
 /**
@@ -304,12 +304,13 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
                 })
             : undefined,
         category: {
-            id: <string>body.category
+            id: <chevre.factory.ticketTypeCategory>body.category
         },
         color: <string>body.indicatorColor
     };
 }
 
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 export async function getList(req: Request, res: Response): Promise<void> {
     try {
         const ticketTypeService = new chevre.service.TicketType({
@@ -342,12 +343,44 @@ export async function getList(req: Request, res: Response): Promise<void> {
             }
         }
 
-        const result = await ticketTypeService.searchTicketTypes({
+        const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
+            // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             ids: ticketTypeIds,
-            name: req.query.name
-        });
+            name: (req.query.name !== undefined
+                && req.query.name !== '')
+                ? req.query.name
+                : undefined,
+            priceSpecification: {
+                minPrice: (req.query.priceSpecification !== undefined
+                    && req.query.priceSpecification.minPrice !== undefined
+                    && req.query.priceSpecification.minPrice !== '')
+                    ? Number(req.query.priceSpecification.minPrice)
+                    : undefined,
+                maxPrice: (req.query.priceSpecification !== undefined
+                    && req.query.priceSpecification.maxPrice !== undefined
+                    && req.query.priceSpecification.maxPrice !== '')
+                    ? Number(req.query.priceSpecification.maxPrice)
+                    : undefined,
+                referenceQuantity: {
+                    value: (req.query.priceSpecification !== undefined
+                        && req.query.priceSpecification.referenceQuantity !== undefined
+                        && req.query.priceSpecification.referenceQuantity.value !== undefined
+                        && req.query.priceSpecification.referenceQuantity.value !== '')
+                        ? Number(req.query.priceSpecification.referenceQuantity.value)
+                        : undefined
+                }
+            },
+            category: {
+                ids: (req.query.category !== undefined
+                    && req.query.category.id !== undefined
+                    && req.query.category.id !== '')
+                    ? [req.query.category.id]
+                    : undefined
+            }
+        };
+        const result = await ticketTypeService.searchTicketTypes(searchConditions);
 
         res.json({
             success: true,
