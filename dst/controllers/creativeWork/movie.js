@@ -86,7 +86,7 @@ function update(req, res) {
         let message = '';
         let errors = {};
         let movie = yield creativeWorkService.findMovieByIdentifier({
-            identifier: req.params.identifier
+            identifier: encodeURIComponent(req.params.identifier)
         });
         if (req.method === 'POST') {
             // バリデーション

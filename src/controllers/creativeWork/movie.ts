@@ -85,7 +85,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     let message = '';
     let errors: any = {};
     let movie = await creativeWorkService.findMovieByIdentifier({
-        identifier: req.params.identifier
+        identifier: encodeURIComponent(req.params.identifier)
     });
     if (req.method === 'POST') {
         // バリデーション
