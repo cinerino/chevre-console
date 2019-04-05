@@ -74,6 +74,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms
     });
 }
+
 /**
  * 編集
  */
@@ -85,7 +86,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     let message = '';
     let errors: any = {};
     let movie = await creativeWorkService.findMovieByIdentifier({
-        identifier: encodeURIComponent(req.params.identifier)
+        identifier: req.params.identifier
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -140,6 +141,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms
     });
 }
+
 function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICreativeWork {
     const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
         typeOf: chevre.factory.creativeWorkType.Movie,
@@ -176,66 +178,7 @@ function createMovieFromBody(body: any): chevre.factory.creativeWork.movie.ICrea
 
     return movie;
 }
-/**
- * 一覧データ取得API
- */
-export async function getList(req: Request, res: Response): Promise<void> {
-    try {
-        const creativeWorkService = new chevre.service.CreativeWork({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const { data, totalCount } = await creativeWorkService.searchMovies({
-            limit: req.query.limit,
-            page: req.query.page,
-            identifier: req.query.identifier,
-            name: req.query.name,
-            datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom)) ?
-                moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-            datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough)) ?
-                moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-            offers: {
-                availableFrom: (!_.isEmpty(req.query.availableFrom)) ?
-                    moment(`${req.query.availableFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-                availableThrough: (!_.isEmpty(req.query.availableThrough)) ?
-                    moment(`${req.query.availableThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined
-            }
-        });
 
-        const results = data.map((movie) => {
-            return {
-                ...movie,
-                dayPublished: (movie.datePublished !== undefined)
-                    ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
-                    : '未指定',
-                dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
-                    ? moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
-                    : '未指定'
-            };
-        });
-
-        res.json({
-            success: true,
-            count: totalCount,
-            results: results
-        });
-    } catch (error) {
-        res.json({
-            success: false,
-            count: 0,
-            results: []
-        });
-    }
-}
-/**
- * 一覧
- */
-export async function index(__: Request, res: Response): Promise<void> {
-    res.render(
-        'creativeWorks/movie/index',
-        {}
-    );
-}
 /**
  * 作品マスタ新規登録画面検証
  */
