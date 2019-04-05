@@ -1,98 +1,125 @@
 <%- contentFor('title') %>
-予約管理
+価格仕様検索
 <%- contentFor('displayId') %>
-Aa-13
+PS-02
 <%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/priceSpecification/index.js"></script>
+
 <%- contentFor('body') %>
 
-<div class="col-md-12">
-    <h2>単価仕様</h2>
-    <h2>上映方式チャージ仕様</h2>
-    <div class="table-responsive">
+<div class="form-container search mb-3 searchPriceSpecification">
+    <form method="post" class="p-3 bg-light-gray">
+        <%- include('../common/master/_hidden') %>
+        <div class="menu-group">
+        </div>
+
+        <div class="form-group row">
+            <label for="typeOf" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                価格仕様タイプ
+            </label>
+            <div class="col-md-8">
+                <select class="form-control" name="typeOf">
+                    <option value="" selected>選択してください</option>
+                    <% Object.values(PriceSpecificationType).forEach((type) => { %>
+                    <option value="<%= type %>">
+                        <%= type %>
+                    </option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="appliesToMovieTicketType" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                適用ムビチケ券種区分
+            </label>
+            <div class="col-md-8">
+                <select class="form-control" name="appliesToMovieTicketType">
+                    <option value="" selected>選択してください</option>
+                    <% Object.values(MovieTicketType).forEach((type) => { %>
+                    <option value="<%= type.code %>">
+                        <%= type.code %> <%= type.name %>
+                    </option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="appliesToVideoFormat" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                適用上映方式
+            </label>
+            <div class="col-md-8">
+                <select class="form-control" name="appliesToVideoFormat">
+                    <option value="" selected>選択してください</option>
+                    <% Object.values(VideoFormatType).forEach((type) => { %>
+                    <option value="<%= type %>">
+                        <%= type %>
+                    </option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="appliesToSoundFormat" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                適用音響方式
+            </label>
+            <div class="col-md-8">
+                <select class="form-control" name="appliesToSoundFormat">
+                    <option value="" selected>選択してください</option>
+                    <% Object.values(SoundFormatType).forEach((type) => { %>
+                    <option value="<%= type %>">
+                        <%= type %>
+                    </option>
+                    <% }) %>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
+            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
+        </div>
+    </form>
+</div>
+
+<div class="form-container search">
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果 $searched_count$件
+    </p>
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
-                    <% videoFormaChargeSpecifications.forEach((specification) => { %>
-                    <th>
-                        <%= specification.appliesToVideoFormat %>
-                    </th>
-                    <% }) %>
+                    <th>価格仕様タイプ</th>
+                    <th>適用上映方式</th>
+                    <th>適用音響方式</th>
+                    <th>適用ムビチケ券種区分</th>
+                    <th>金額</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <% videoFormaChargeSpecifications.forEach((specification) => { %>
-                    <td>
-                        <input type="text" class="form-control" value="<%= specification.price %> <%= specification.priceCurrency %>">
+                <tr id="templateRow">
+                    <td name="id__typeOf">
+                        <a target="_blank" href="/priceSpecifications/$id$/update">$typeOf$</a>
                     </td>
-                    <% }) %>
+                    <td name="appliesToVideoFormat">$appliesToVideoFormat$</td>
+                    <td name="appliesToSoundFormat">$appliesToSoundFormat$</td>
+                    <td name="appliesToMovieTicketType">
+                        $appliesToMovieTicketType$
+                    </td>
+                    <td name="price__priceCurrency">$price$ $priceCurrency$</td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <div id="pager" class="div_pager_parent"></div>
 </div>
 
-<div class="col-md-12">
-    <h2>音響方式チャージ仕様</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <% soundFormaChargeSpecifications.forEach((specification) => { %>
-                    <th>
-                        <%= specification.appliesToSoundFormat %>
-                    </th>
-                    <% }) %>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <% soundFormaChargeSpecifications.forEach((specification) => { %>
-                    <td>
-                        <input type="text" class="form-control" value="<%= specification.price %> <%= specification.priceCurrency %>">
-                    </td>
-                    <% }) %>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="col-md-12">
-    <h2>ムビチケ券種区分チャージ仕様</h2>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>
-                    </th>
-
-                    <% Object.keys(videoFormatType).forEach((key) => { %>
-                    <th>
-                        <%= videoFormatType[key] %>
-                    </th>
-                    <% }) %>
-                </tr>
-            </thead>
-            <tbody>
-                <% movieTicketTypeCodes.forEach((movieTicketTypeCode) => { %>
-                <tr>
-                    <td>
-                        <% const movieTicketType = movieTicketTypes.find((type)=>type.code===movieTicketTypeCode) %>
-                        <%= (movieTicketType !== undefined) ? movieTicketType.name : 'Unknown' %>
-                    </td>
-                    <% const specifications = movieTicketTypeChargeSpecifications.filter((s) => s.appliesToMovieTicketType === movieTicketTypeCode) %>
-                    <% Object.keys(videoFormatType).forEach((key) => { %>
-                    <td>
-                        <% const specification = specifications.find((s) => s.appliesToVideoFormat === videoFormatType[key]) %>
-                        <input type="text" class="form-control" value="<%= (specification !== undefined) ? specification.price : '' %>">
-                    </td>
-                    <% }) %>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
-</div>
 <%- include('../common/master/_loading') %>
