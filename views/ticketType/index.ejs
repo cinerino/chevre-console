@@ -156,7 +156,7 @@ Aa-6
                         <p>/ $referenceQuantity.value$ 枚</p>
                     </td>
                     <td
-                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType">
+                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
                         <div class="row">
                             <div class="col-md-3 pr-1">
                                 <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
@@ -181,9 +181,14 @@ Aa-6
                                 <p>$eligibleTransactionVolume.price$ $eligibleTransactionVolume.priceCurrency$ 以上</p>
                             </div>
                         </div>
-                        <p>
-                            ムビチケ: $priceSpecification.appliesToMovieTicketType$
-                        </p>
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <p class="text-center">ムビ</p>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <p>$priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$</p>
+                            </div>
+                        </div>
                     </td>
                     <td name="id__id__id" class="center">
                         <div class="text-center">

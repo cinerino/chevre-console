@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 券種マスタコントローラー
  */
 const chevre = require("@chevre/api-nodejs-client");
+const reserve_api_abstract_client_1 = require("@movieticket/reserve-api-abstract-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -80,6 +81,7 @@ function add(req, res) {
             message: message,
             errors: errors,
             forms: forms,
+            MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
             ticketTypeCategories: ticketTypeCategories,
             accountTitles: searchAccountTitlesResult.data
         });
@@ -168,6 +170,7 @@ function update(req, res) {
             message: message,
             errors: errors,
             forms: forms,
+            MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
             ticketTypeCategories: ticketTypeCategories,
             accountTitles: searchAccountTitlesResult.data
         });
@@ -356,7 +359,14 @@ function getList(req, res) {
                 count: result.totalCount,
                 results: result.data.map((t) => {
                     const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
-                    return Object.assign({}, t, { eligibleQuantity: {
+                    const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType);
+                    return Object.assign({ appliesToMovieTicket: {
+                            name: (t.priceSpecification !== undefined
+                                && t.priceSpecification.appliesToMovieTicketType !== undefined
+                                && mvtkType !== undefined)
+                                ? mvtkType.name
+                                : undefined
+                        } }, t, { eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined
                                 && t.priceSpecification.eligibleQuantity !== undefined
                                 && t.priceSpecification.eligibleQuantity.minValue !== undefined)

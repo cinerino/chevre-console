@@ -2,6 +2,7 @@
  * 券種マスタコントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import { mvtk } from '@movieticket/reserve-api-abstract-client';
 import { Request, Response } from 'express';
 import * as _ from 'underscore';
 
@@ -87,6 +88,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
+        MovieTicketType: mvtk.util.constants.TICKET_TYPE,
         ticketTypeCategories: ticketTypeCategories,
         accountTitles: searchAccountTitlesResult.data
     });
@@ -193,6 +195,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
+        MovieTicketType: mvtk.util.constants.TICKET_TYPE,
         ticketTypeCategories: ticketTypeCategories,
         accountTitles: searchAccountTitlesResult.data
     });
@@ -388,7 +391,18 @@ export async function getList(req: Request, res: Response): Promise<void> {
             results: result.data.map((t) => {
                 const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
 
+                const mvtkType = mvtk.util.constants.TICKET_TYPE.find(
+                    (ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType
+                );
+
                 return {
+                    appliesToMovieTicket: {
+                        name: (t.priceSpecification !== undefined
+                            && t.priceSpecification.appliesToMovieTicketType !== undefined
+                            && mvtkType !== undefined)
+                            ? mvtkType.name
+                            : undefined
+                    },
                     ...t,
                     eligibleQuantity: {
                         minValue: (t.priceSpecification !== undefined

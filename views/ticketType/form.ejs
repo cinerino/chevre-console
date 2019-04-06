@@ -260,11 +260,19 @@
         対応ムビチケ券種区分
     </label>
     <div class="col-md-8">
-        <input type="text" class="form-control" name="appliesToMovieTicketType" id="appliesToMovieTicketType"
+        <select class="form-control" name="appliesToMovieTicketType">
+            <option value="" disabled selected>選択してください</option>
+            <% Object.values(MovieTicketType).forEach((type) => { %>
+            <option value="<%= type.code %>"
+                <% if (type.code === forms.priceSpecification.appliesToMovieTicketType) { %> selected<% } %>>
+                <%= type.code %> <%= type.name %>
+            </option>
+            <% }) %>
+        </select>
+        <!-- <input type="text" class="form-control" name="appliesToMovieTicketType" id="appliesToMovieTicketType"
             placeholder="" maxlength=10 value=<%=forms.priceSpecification.appliesToMovieTicketType %>>
         <p class="message">
-            半角10文字以内でご入力ください。
-        </p>
+        </p> -->
         <p class="error message text-danger">
             <% if (errors && errors.appliesToMovieTicketType) { %>
             <%- errors.appliesToMovieTicketType.msg %>
