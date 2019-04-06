@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "@chevre/api-nodejs-client": "1.0.0-alpha.60",
-    "@movieticket/reserve-api-abstract-client": "^1.0.0",
+    "@movieticket/reserve-api-abstract-client": "^1.0.1",
     "body-parser": "^1.17.2",
     "bootstrap": "^4.3.1",
     "connect-redis": "^3.4.1",

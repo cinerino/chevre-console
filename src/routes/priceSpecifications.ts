@@ -45,7 +45,18 @@ priceSpecificationsRouter.get(
             res.json({
                 success: true,
                 count: result.totalCount,
-                results: result.data
+                results: result.data.map((d) => {
+                    const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
+
+                    return {
+                        ...d,
+                        appliesToMovieTicket: {
+                            name: ((<any>d).appliesToMovieTicketType !== undefined && mvtkType !== undefined)
+                                ? mvtkType.name
+                                : undefined
+                        }
+                    };
+                })
             });
         } catch (error) {
             res.json({
