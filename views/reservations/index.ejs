@@ -25,10 +25,24 @@ Aa-11
 
         <div class="form-group row">
             <label for="reservationNumber" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                予約番号
+                予約
             </label>
             <div class="col-md-8">
-                <input type="text" class="form-control" name="reservationNumber" id="reservationNumber" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="reservationNumber" id="reservationNumber"
+                            placeholder="予約番号" />
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-control" name="reservationStatus">
+                            <option value="">ステータス選択</option>
+                            <% Object.keys(reservationStatusType).forEach(function(key) { %>
+                            <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %>
+                            </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -47,24 +61,19 @@ Aa-11
 
         <div class="form-group row">
             <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                イベントID
+                イベント
             </label>
             <div class="col-md-8">
-                <input type="text" class="form-control" name="reservationFor[id]" id="reservationFor[id]" />
-            </div>
-        </div>
-
-        <div class="form-group row">
-            <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                ステータス
-            </label>
-            <div class="col-md-8">
-                <select class="form-control" name="reservationStatus">
-                    <option value="">---</option>
-                    <% Object.keys(reservationStatusType).forEach(function(key) { %>
-                    <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %></option>
-                    <% }) %>
-                </select>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="reservationFor[id]" id="reservationFor[id]"
+                            placeholder="スケジュールID" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" name="reservationFor[superEvent][id]"
+                            id="reservationFor[superEvent][id]" placeholder="劇場上映作品ID" />
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -74,7 +83,6 @@ Aa-11
                 チケット
             </label>
             <div class="col-md-8">
-
                 <div class="row">
                     <div class="col-md-4">
                         <input class="form-control" placeholder="座席コード" name="reservedTicket[ticketedSeat][seatNumber]"
@@ -183,9 +191,12 @@ Aa-11
                         <p>$modifiedTime$</p>
                     </td>
                     <td
-                        name="reservationFor.typeOf__reservationFor.id__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
+                        name="reservationFor.typeOf__reservationFor.id__reservationFor.superEvent.id__reservationFor.superEvent.name.ja__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
                         <p class="badge badge-secondary">$reservationFor.typeOf$</p>
                         <p>$reservationFor.id$</p>
+                        <p><a target="_blank"
+                                href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$</a>
+                        </p>
                         <p class="font-weight-bold">$reservationFor.name.ja$</p>
                         <p>$reservationFor.startDate$</p>
                         <p class="font-italic">$reservationFor.superEvent.location.name.ja$</p>

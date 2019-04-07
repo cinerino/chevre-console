@@ -49,19 +49,19 @@ reservationsRouter.get('/search',
                 ? [req.query.reservationStatus]
                 : undefined,
             reservationFor: {
-                // typeOf: EventType;
-                // id: string;
                 ids: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.id !== undefined
                     && req.query.reservationFor.id !== '')
                     ? [String(req.query.reservationFor.id)]
-                    : undefined
-                // superEvent: {
-                //     id?: string;
-                //     ids?: string[];
-                // }
-                // startFrom?: Date;
-                // startThrough?: Date;
+                    : undefined,
+                superEvent: {
+                    ids: (req.query.reservationFor !== undefined
+                        && req.query.reservationFor.superEvent !== undefined
+                        && req.query.reservationFor.superEvent.id !== undefined
+                        && req.query.reservationFor.superEvent.id !== '')
+                        ? [String(req.query.reservationFor.superEvent.id)]
+                        : undefined
+                }
             },
             modifiedFrom: (req.query.modifiedFrom !== '')
                 ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
