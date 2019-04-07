@@ -118,7 +118,9 @@ reservationsRouter.get(
                         && req.query.underName.telephone !== '')
                         ? req.query.underName.telephone
                         : undefined
-                }
+                },
+                attended: (req.query.attended === '1') ? true : undefined,
+                checkedIn: (req.query.checkedIn === '1') ? true : undefined
             };
             const { totalCount, data } = await reservationService.search(searchConditions);
 

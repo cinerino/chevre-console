@@ -38,7 +38,8 @@ $.fn.setDataToForm = function (formSelector, conditions) {
 };
 // Form表示
 $.fn.clearFormValue = function (formSelector) {
-    $(formSelector).find('input:not(:hidden), select').val('');
+    $(formSelector).find('input:not(:hidden,:checkbox), select').val('');
+    $(formSelector).find('input[type="checkbox"]').prop('checked', false);
 }
 var flattenObject = function (ob) {
     var toReturn = {};
