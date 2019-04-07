@@ -54,15 +54,6 @@ Aa-11
             </div>
         </div>
 
-        <!-- <div class="form-group row">
-            <label for="reservationFor[name]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                イベント名称
-            </label>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="reservationFor[name]" id="reservationFor[name]" />
-            </div>
-        </div> -->
-
         <div class="form-group row">
             <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
                 ステータス
@@ -74,6 +65,62 @@ Aa-11
                     <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %></option>
                     <% }) %>
                 </select>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="reservedTicket[ticketedSeat][seatNumber]"
+                class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                チケット
+            </label>
+            <div class="col-md-8">
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="座席コード" name="reservedTicket[ticketedSeat][seatNumber]"
+                            id="reservedTicket[ticketedSeat][seatNumber]" />
+                    </div>
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="券種コード" name="reservedTicket[ticketType][id]"
+                            id="reservedTicket[ticketType][id]" />
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-control" name="reservedTicket[ticketType][category][id]">
+                            <option value="">券種区分選択</option>
+                            <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+                            <option value="<%= ticketTypeCategory.id %>">
+                                <%= ticketTypeCategory.name %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group row">
+            <label for="underName[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+                チケットホルダー
+            </label>
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="ID" name="underName[id]" id="underName[id]" />
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Name" name="underName[name]" id="underName[name]" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Email" name="underName[email]" id="underName[email]" />
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" placeholder="Telephone" name="underName[telephone]"
+                            id="underName[telephone]" />
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -94,10 +141,10 @@ Aa-11
             <thead>
                 <tr>
                     <th>ID<br>予約番号<br>ステータス<br>更新日時</th>
-                    <th>発券<br>入場</th>
                     <th>イベント</th>
                     <th>チケット</th>
                     <th>チケット<br>ホルダー</th>
+                    <th>発券<br>入場</th>
                 </tr>
             </thead>
             <tbody>
@@ -106,11 +153,8 @@ Aa-11
                         <p class="badge badge-secondary">$typeOf$</p>
                         <p>$id$</p>
                         <p>$reservationNumber$</p>
-                        <p class="badge badge-success">$reservationStatus$</p>
+                        <p><span class="badge badge-success">$reservationStatus$</span></p>
                         <p>$modifiedTime$</p>
-                    </td>
-                    <td name="checkedIn__attended">
-                        <p>$checkedIn$<br>$attended$</p>
                     </td>
                     <td
                         name="reservationFor.typeOf__reservationFor.id__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
@@ -122,24 +166,27 @@ Aa-11
                         <p class="font-italic">$reservationFor.location.name.ja$</p>
                     </td>
                     <td
-                        name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
+                        name="reservedTicket.typeOf__ticketType.name__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
                         <p class="badge badge-secondary">$reservedTicket.typeOf$</p>
                         <p class="font-weight-bold"><a target="_blank"
                                 href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
                                 <br>$reservedTicket.ticketType.name.en$</a></p>
-                        <p class="font-italic">$unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$</p>
-                        <p>$unitPriceSpec.priceCurrency$</p>
+                        <p class="badge badge-info">$ticketType.name$</p>
+                        <p>$unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$
+                            $unitPriceSpec.priceCurrency$</p>
                         <p>$ticketedSeat$</p>
                     </td>
                     <td
-                        name="underName.typeOf__underName.name__underName.email__underName.familyName__underName.givenName__underName.id__underName.telephone__underName.identifier">
+                        name="underName.typeOf__underName.name__underName.email__underName.name__underName.id__underName.telephone__underName.identifier">
                         <p class="badge badge-secondary">$underName.typeOf$</p>
                         <p>$underName.id$</p>
-                        <p>$underName.familyName$</p>
-                        <p>$underName.givenName$</p>
+                        <p>$underName.name$</p>
                         <p>$underName.email$</p>
                         <p>$underName.telephone$</p>
                         <p>$underName.identifier$</p>
+                    </td>
+                    <td name="checkedIn__attended">
+                        <p>$checkedIn$<br>$attended$</p>
                     </td>
                 </tr>
             </tbody>
