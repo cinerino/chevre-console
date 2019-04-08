@@ -72,8 +72,10 @@ Aa-10
         </div>
 
         <div class="panel-body">
+            <% if (user.cognitoGroups.movieTheaters === undefined) { %>
             <a class="btn btn-primary" role="button" href="/creativeWorks/movie/add">
                 <i class=" fa fa-plus"></i> 登録</a>
+            <% } %>
 
             <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
             <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
