@@ -1,13 +1,25 @@
-<footer class="bg-light-gray shadow-sm border-bottom border-gray">
-    <div class="header contents-width mx-auto d-flex align-items-center justify-content-between p-3">
-        <div class="d-flex align-items-center">
-            <strong>Copyright &copy; 2017-2019 <a href="https://motionpicture.jp">motionpicture.jp</a>.&nbsp;</strong>
-            All rights reserved.
-        </div>
-        <div class="d-flex align-items-center">
-            <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> <%= version %>
-            </div>
+<footer class="footer">
+    <div class="container-fluid">
+        <nav class="float-left">
+            <ul>
+                <!-- <li>
+                    <a href="#">
+                        About Us
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        Licenses
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+        <div class="copyright float-right">
+            &copy;
+            <script>
+                document.write(new Date().getFullYear())
+            </script>, made with <i class="material-icons">favorite</i> by
+            <a href="https://motionpicture.jp" target="_blank">Motionpicture</a>. <b>Version</b> <%= version %>
         </div>
     </div>
 </footer>

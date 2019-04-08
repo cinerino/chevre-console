@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-券種マスタ一覧
+券種検索
 <%- contentFor('displayId') %>
 Aa-6
 <%- contentFor('styles') %>
@@ -24,96 +24,88 @@ Aa-6
             <% } %>
         </div>
 
-        <div class="form-group row">
-            <label for="id" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="id" class="">
                 券種コード
             </label>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
-            </div>
+            <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
         </div>
 
-        <div class="form-group row">
-            <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="name" class="">
                 名称
             </label>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
-            </div>
+            <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
         </div>
 
-        <div class="form-group row">
-            <label for="ticketTypeGroups" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="ticketTypeGroups" class="">
                 券種グループ
             </label>
-            <div class="col-md-8">
-                <select name="ticketTypeGroups" id="ticketTypeGroups" class="form-control">
+            <select name="ticketTypeGroups" id="ticketTypeGroups" class="form-control">
+                <option value="">---</option>
+                <% for (let ticketTypeGroupList of ticketTypeGroupsList) { %>
+                <option value="<%- ticketTypeGroupList.id %>">
+                    <%- ticketTypeGroupList.name.ja %>
+                </option>
+                <% } %>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="">
+                単価
+            </label>
+            <div class="input-group">
+                <select class="form-control" name="priceSpecification[referenceQuantity][value]">
                     <option value="">---</option>
-                    <% for (let ticketTypeGroupList of ticketTypeGroupsList) { %>
-                    <option value="<%- ticketTypeGroupList.id %>">
-                        <%- ticketTypeGroupList.name.ja %>
+                    <% for (let i = 1; i <= 10; i++) { %>
+                    <option value="<%= i %>">
+                        <%= i %>
                     </option>
                     <% } %>
                 </select>
-            </div>
-        </div>
 
-        <div class="form-group row">
-            <label for="" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                単価
-            </label>
-            <div class="col-md-8">
-                <div class="input-group">
-                    <select class="form-control" name="priceSpecification[referenceQuantity][value]">
-                        <option value="">---</option>
-                        <% for (let i = 1; i <= 10; i++) { %>
-                        <option value="<%= i %>">
-                            <%= i %>
-                        </option>
-                        <% } %>
-                    </select>
+                <div class="input-group-append">
+                    <span class="input-group-text">枚あたり</span>
+                </div>
 
-                    <div class="input-group-append">
-                        <span class="input-group-text">枚あたり</span>
-                    </div>
+                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
+                    id="priceSpecification[minPrice]" value="" />
 
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
-                        id="priceSpecification[minPrice]" value="" />
+                <div class="input-group-append">
+                    <span class="input-group-text">円以上</span>
+                </div>
 
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以上</span>
-                    </div>
+                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
+                    id="priceSpecification[maxPrice]" value="" />
 
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
-                        id="priceSpecification[maxPrice]" value="" />
-
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以下</span>
-                    </div>
+                <div class="input-group-append">
+                    <span class="input-group-text">円以下</span>
                 </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="category[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="category[id]" class="">
                 券種区分
             </label>
-            <div class="col-md-8">
-                <select class="form-control" name="category[id]">
-                    <option value="">---</option>
-                    <% ticketTypeCategories.forEach((category) => { %>
-                    <option value="<%= category.id %>">
-                        <%= category.name %>
-                    </option>
-                    <% }) %>
-                </select>
-            </div>
+            <select class="form-control" name="category[id]">
+                <option value="">---</option>
+                <% ticketTypeCategories.forEach((category) => { %>
+                <option value="<%= category.id %>">
+                    <%= category.name %>
+                </option>
+                <% }) %>
+            </select>
         </div>
 
-        <% /* 検索ボタン */ %>
         <div class="panel-body">
-            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
-            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
+            <a class="btn btn-primary" role="button" href="/ticketTypes/add">
+                <i class=" fa fa-plus"></i> 登録</a>
+
+            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
         </div>
     </form>
 </div>

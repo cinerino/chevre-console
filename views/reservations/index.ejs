@@ -23,34 +23,32 @@ Aa-11
             <% } %>
         </div>
 
-        <div class="form-group row">
-            <label for="reservationNumber" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="reservationNumber" class="">
                 予約
             </label>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" name="reservationNumber" id="reservationNumber"
-                            placeholder="予約番号" />
-                    </div>
-                    <div class="col-md-6">
-                        <select class="form-control" name="reservationStatus">
-                            <option value="">ステータス選択</option>
-                            <% Object.keys(reservationStatusType).forEach(function(key) { %>
-                            <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %>
-                            </option>
-                            <% }) %>
-                        </select>
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="reservationNumber" id="reservationNumber"
+                        placeholder="予約番号" />
+                </div>
+                <div class="col-md-6">
+                    <select class="form-control" name="reservationStatus">
+                        <option value="">ステータス選択</option>
+                        <% Object.keys(reservationStatusType).forEach(function(key) { %>
+                        <option value="<%= reservationStatusType[key] %>"><%= reservationStatusType[key] %>
+                        </option>
+                        <% }) %>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="modifiedFrom" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="modifiedFrom" class="">
                 更新日(From - To)
             </label>
-            <div class="col-md-8">
+            <div class="">
                 <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
                     maxlength=10 name="modifiedFrom" id="modifiedFrom" value="" />
                 ～
@@ -59,100 +57,97 @@ Aa-11
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="reservationFor[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="reservationFor[id]" class="">
                 イベント
             </label>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" name="reservationFor[id]" id="reservationFor[id]"
-                            placeholder="スケジュールID" />
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" class="form-control" name="reservationFor[superEvent][id]"
-                            id="reservationFor[superEvent][id]" placeholder="劇場上映作品ID" />
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="reservationFor[id]" id="reservationFor[id]"
+                        placeholder="スケジュールID" />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" name="reservationFor[superEvent][id]"
+                        id="reservationFor[superEvent][id]" placeholder="劇場上映作品ID" />
                 </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="reservedTicket[ticketedSeat][seatNumber]"
-                class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="reservedTicket[ticketedSeat][seatNumber]" class="">
                 チケット
             </label>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="座席コード" name="reservedTicket[ticketedSeat][seatNumber]"
-                            id="reservedTicket[ticketedSeat][seatNumber]" />
-                    </div>
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="券種コード" name="reservedTicket[ticketType][id]"
-                            id="reservedTicket[ticketType][id]" />
-                    </div>
-                    <div class="col-md-4">
-                        <select class="form-control" name="reservedTicket[ticketType][category][id]">
-                            <option value="">券種区分選択</option>
-                            <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-                            <option value="<%= ticketTypeCategory.id %>">
-                                <%= ticketTypeCategory.name %>
-                            </option>
-                            <% } %>
-                        </select>
-                    </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="座席コード" name="reservedTicket[ticketedSeat][seatNumber]"
+                        id="reservedTicket[ticketedSeat][seatNumber]" />
+                </div>
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="券種コード" name="reservedTicket[ticketType][id]"
+                        id="reservedTicket[ticketType][id]" />
+                </div>
+                <div class="col-md-4">
+                    <select class="form-control" name="reservedTicket[ticketType][category][id]">
+                        <option value="">券種区分選択</option>
+                        <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+                        <option value="<%= ticketTypeCategory.id %>">
+                            <%= ticketTypeCategory.name %>
+                        </option>
+                        <% } %>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="underName[id]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="underName[id]" class="">
                 チケットホルダー
             </label>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input class="form-control" placeholder="ID" name="underName[id]" id="underName[id]" />
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" placeholder="Name" name="underName[name]" id="underName[name]" />
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input class="form-control" placeholder="ID" name="underName[id]" id="underName[id]" />
                 </div>
+                <div class="col-md-6">
+                    <input class="form-control" placeholder="Name" name="underName[name]" id="underName[name]" />
+                </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <input class="form-control" placeholder="Email" name="underName[email]" id="underName[email]" />
-                    </div>
-                    <div class="col-md-6">
-                        <input class="form-control" placeholder="Telephone" name="underName[telephone]"
-                            id="underName[telephone]" />
-                    </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <input class="form-control" placeholder="Email" name="underName[email]" id="underName[email]" />
+                </div>
+                <div class="col-md-6">
+                    <input class="form-control" placeholder="Telephone" name="underName[telephone]"
+                        id="underName[telephone]" />
                 </div>
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="checkedIn" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="checkedIn" class="">
             </label>
-            <div class="col-md-8">
-                <div class="row">
-                    <div class="col-md-2">
-                        <div class="form-check">
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" name="checkedIn" value="1" id="checkedIn">
-                            <label class="form-check-label" for="checkedIn">
-                                発券済
-                            </label>
-                        </div>
+                            発券済
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                            </span>
+                        </label>
                     </div>
+                </div>
 
-                    <div class="col-md-2">
-                        <div class="form-check">
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <label class="form-check-label">
                             <input class="form-check-input" type="checkbox" name="attended" value="1" id="attended">
-                            <label class="form-check-label" for="attended">
-                                入場済
-                            </label>
-                        </div>
+                            入場済
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                            </span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -172,7 +167,7 @@ Aa-11
     </div>
     <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
         <table class="table table-bordered table-striped mb-0">
-            <thead>
+            <thead class="text-primary">
                 <tr>
                     <th>ID<br>予約番号<br>ステータス<br>更新日時</th>
                     <th>イベント</th>

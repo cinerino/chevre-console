@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-細目マスタ一覧
+細目検索
 <%- contentFor('displayId') %>
 AT-01
 <%- contentFor('styles') %>
@@ -22,50 +22,54 @@ AT-01
             </p>
             <% } %>
         </div>
-        <div class="form-group row">
-            <label for="inCodeSet[inCodeSet][codeValue]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="inCodeSet[inCodeSet][codeValue]" class="">
                 科目分類
             </label>
-            <div class="col-md-8">
-                <select class="form-control" name="inCodeSet[inCodeSet][codeValue]">
-                    <option value="">選択してください</option>
-                    <% for (const accountTitleCategory of accountTitleCategories) { %>
-                    <option value="<%= accountTitleCategory.codeValue %>">
-                        <%= accountTitleCategory.codeValue %>
-                        <%= accountTitleCategory.name %>
-                    </option>
-                    <% } %>
-                </select>
-            </div>
+            <select class="form-control" name="inCodeSet[inCodeSet][codeValue]">
+                <option value="">選択してください</option>
+                <% for (const accountTitleCategory of accountTitleCategories) { %>
+                <option value="<%= accountTitleCategory.codeValue %>">
+                    <%= accountTitleCategory.codeValue %>
+                    <%= accountTitleCategory.name %>
+                </option>
+                <% } %>
+            </select>
         </div>
-        <div class="form-group row">
-            <label for="inCodeSet[codeValue]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="inCodeSet[codeValue]" class="">
                 科目
             </label>
-            <div class="col-md-8">
-                <select class="form-control" name="inCodeSet[codeValue]">
-                    <option value="">選択してください</option>
-                    <% for (const accountTitleSet of accountTitleSets) { %>
-                    <option value="<%= accountTitleSet.codeValue %>">
-                        <%= accountTitleSet.codeValue %>
-                        <%= accountTitleSet.name %>
-                    </option>
-                    <% } %>
-                </select>
-            </div>
+            <select class="form-control" name="inCodeSet[codeValue]">
+                <option value="">選択してください</option>
+                <% for (const accountTitleSet of accountTitleSets) { %>
+                <option value="<%= accountTitleSet.codeValue %>">
+                    <%= accountTitleSet.codeValue %>
+                    <%= accountTitleSet.name %>
+                </option>
+                <% } %>
+            </select>
         </div>
-        <div class="form-group row">
-            <label for="codeValue" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="codeValue" class="">
                 細目コード
             </label>
-            <div class="col-md-8">
+            <div class="">
                 <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
                     value="">
             </div>
         </div>
+
         <div class="panel-body">
-            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
-            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
+            <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleCategory/new">
+                <i class=" fa fa-plus"></i> 科目分類登録</a>
+            <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleSet/new">
+                <i class=" fa fa-plus"></i> 科目登録</a>
+            <a class="btn btn-primary" role="button" href="/accountTitles/new">
+                <i class=" fa fa-plus"></i> 細目登録</a>
+
+            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
         </div>
     </form>
 </div>

@@ -52,6 +52,7 @@ const storage = multer.memoryStorage();
 app.use(multer({ storage: storage }).any());
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
+app.use('/node_modules', express.static(`${__dirname}/../node_modules`));
 app.use(expressValidator()); // バリデーション
 app.use(router_1.default);
 // 404

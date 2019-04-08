@@ -1,0 +1,69 @@
+<div class="side-navi mb-4">
+    <div class="list-group mb-4">
+        <div class="list-group-item bg-light-gray">マスタ管理</div>
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-12') ? 'active': ''; %>"
+            href="/places/movieTheater">劇場検索</a>
+
+        <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-9') ? 'active': ''; %>"
+            href="/creativeWorks/movie/add">作品登録</a>
+        <% } %>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-10') ? 'active': ''; %>"
+            href="/creativeWorks/movie">作品検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-2') ? 'active': ''; %>"
+            href="/events/screeningEventSeries/add">劇場上映作品登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-3') ? 'active': ''; %>"
+            href="/events/screeningEventSeries">劇場上映作品検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-4') ? 'active': ''; %>"
+            href="/events/screeningEvent">スケジュール登録／検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-5') ? 'active': ''; %>"
+            href="/ticketTypes/add">券種登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-6') ? 'active': ''; %>"
+            href="/ticketTypes">券種検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-7') ? 'active': ''; %>"
+            href="/ticketTypeGroups/add">券種グループ登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-8') ? 'active': ''; %>"
+            href="/ticketTypeGroups">券種グループ検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'AT-02') ? 'active': ''; %>"
+            href="/accountTitles/accountTitleCategory/new">科目分類登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'AT-03') ? 'active': ''; %>"
+            href="/accountTitles/accountTitleSet/new">科目登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'AT-04') ? 'active': ''; %>"
+            href="/accountTitles/new">細目登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'AT-01') ? 'active': ''; %>"
+            href="/accountTitles">細目検索</a>
+
+        <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-16') ? 'active': ''; %>"
+            href="/serviceTypes/add">興行区分登録</a>
+        <% } %>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-17') ? 'active': ''; %>"
+            href="/serviceTypes">興行区分検索</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'PS-01') ? 'active': ''; %>"
+            href="/priceSpecifications/new">価格仕様登録</a>
+
+        <a class="list-group-item list-group-item-action <%= (displayId === 'PS-02') ? 'active': ''; %>"
+            href="/priceSpecifications">価格仕様検索</a>
+    </div>
+
+    <div class="list-group">
+        <div class="list-group-item bg-light-gray">予約管理</div>
+        <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-11') ? 'active': ''; %>"
+            href="/reservations">予約検索</a>
+
+    </div>
+</div>

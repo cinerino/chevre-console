@@ -3,27 +3,33 @@
 <%- include('./head') %>
 
 <body>
-    <!--Header-->
-    <%- include('./header') %>
-
-    <div class="contents-width mx-auto px-3 py-5">
-        <!-- content -->
-        <div class="row">
-            <!-- left -->
-            <div class="col-md-3">
-                <%- include('./side') %>
+    <div class="wrapper ">
+        <div class="sidebar" data-color="orange" data-background-color="white" data-image="/images/sidebar-1.jpg">
+            <!--
+              Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+      
+              Tip 2: you can also add an image using data-image tag
+          -->
+            <div class="logo">
+                <a href="/" class="simple-text logo-normal">
+                    CHEVRE Console
+                </a>
             </div>
 
-            <div class="col-md-9">
-                <%- body %>
+            <%- include('./side') %>
+        </div>
+        <div class="main-panel">
+            <%- include('./navbar') %>
+
+            <div class="content">
+                <div class="container-fluid">
+                    <%- body %>
+                </div>
             </div>
+
+            <%- include('./footer') %>
         </div>
     </div>
-
-    <!-- /.content-wrapper -->
-
-    <%- include('./footer') %>
-
     <script>
         $(function () {
             var disp_id = "#<%= displayId %>";

@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-作品マスタ一覧
+作品検索
 <%- contentFor('displayId') %>
 Aa-10
 <%- contentFor('styles') %>
@@ -18,30 +18,26 @@ Aa-10
         <div class="menu-group">
         </div>
 
-        <div class="form-group row">
-            <label for="identifier" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="identifier" class="">
                 作品コード
             </label>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                    value="">
-            </div>
+            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
+                value="">
         </div>
 
-        <div class="form-group row">
-            <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="name" class="">
                 作品名
             </label>
-            <div class="col-md-8">
-                <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
-            </div>
+            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
         </div>
 
-        <div class="form-group row">
-            <label for="datePublishedThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="datePublishedThrough" class="">
                 公開日(From - To)
             </label>
-            <div class="col-md-8">
+            <div class="">
                 <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
                     maxlength=10 name="datePublishedFrom" id="datePublishedFrom" value="" />
                 ～
@@ -50,11 +46,11 @@ Aa-10
             </div>
         </div>
 
-        <div class="form-group row">
-            <label for="availableThrough" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label for="availableThrough" class="">
                 興行期間(From - To)
             </label>
-            <div class="col-md-8">
+            <div class="">
                 <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
                     maxlength=10 name="availableFrom" id="availableFrom" value="" />
                 ～
@@ -64,8 +60,11 @@ Aa-10
         </div>
 
         <div class="panel-body">
-            <button type="button" class="btn btn-ok search btn-primary">検索する</button>
-            <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
+            <a class="btn btn-primary" role="button" href="/creativeWorks/movie/add">
+                <i class=" fa fa-plus"></i> 登録</a>
+
+            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
         </div>
     </form>
 </div>
