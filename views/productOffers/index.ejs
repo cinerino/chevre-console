@@ -1,0 +1,151 @@
+<%- contentFor('title') %>
+プロダクトオファー検索
+<%- contentFor('displayId') %>
+PO-01
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/productOffers/index.js"></script>
+<%- contentFor('body') %>
+
+<div class="form-container search p-3 bg-light-gray mb-3">
+    <form method="post">
+        <%- include('../common/master/_hidden') %>
+
+        <div class="menu-group">
+            <% if (message !== '') { %>
+            <p class="error message text-danger panel-body bg-danger">
+                <%= message %>
+            </p>
+            <% } %>
+        </div>
+
+        <div class="form-group">
+            <label for="id" class="">
+                オファーID
+            </label>
+            <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
+        </div>
+
+        <div class="form-group">
+            <label for="name" class="">
+                名称
+            </label>
+            <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
+        </div>
+
+        <div class="form-group">
+            <label for="" class="">
+                単価
+            </label>
+            <div class="input-group">
+                <select class="form-control" name="priceSpecification[referenceQuantity][value]">
+                    <option value="">---</option>
+                    <% for (let i = 1; i <= 1; i++) { %>
+                    <option value="<%= i %>">
+                        <%= i %>
+                    </option>
+                    <% } %>
+                </select>
+
+                <div class="input-group-append">
+                    <span class="input-group-text">枚あたり</span>
+                </div>
+
+                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
+                    id="priceSpecification[minPrice]" value="" />
+
+                <div class="input-group-append">
+                    <span class="input-group-text">円以上</span>
+                </div>
+
+                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
+                    id="priceSpecification[maxPrice]" value="" />
+
+                <div class="input-group-append">
+                    <span class="input-group-text">円以下</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <a class="btn btn-primary" role="button" href="/productOffers/new">
+                <i class=" fa fa-plus"></i> 登録</a>
+
+            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+        </div>
+    </form>
+</div>
+
+<div class="form-container search">
+    <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果$searched_count$件
+    </p>
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称<br>English Name<br>代替名称</th>
+                    <th>発生金額<br>売上金額<br>適用単位</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr id="templateRow">
+                    <td name="id__id">
+                        <p>
+                            <a target="_blank" href="/productOffers/$id$/update">
+                                $id$
+                            </a>
+                        </p>
+                    <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
+                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
+                        style="text-align:right;">
+                        <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
+                        <p>$priceSpecification.accounting.accountsReceivable$ $priceSpecification.priceCurrency$</p>
+                        <p>/ $referenceQuantity.value$ 枚</p>
+                    </td>
+                    <td name="id__id__id" class="center">
+                        <div class="text-center">
+                            <a target="_blank" class="btn btn-sm btn-primary" href="/productOffers/$id$/update">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </div>
+
+                        <div class="text-center mt-2">
+                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                data-id="$id$">
+                                <span>追加特性</span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="pager" class="div_pager_parent"></div>
+</div>
+
+<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
+                <h4 class="modal-title">券種の追加特性</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../common/master/_loading') %>

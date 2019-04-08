@@ -1,0 +1,41 @@
+<%- contentFor('title') %>
+プロダクトオファー登録
+<%- contentFor('displayId') %>
+PO-02
+<%- contentFor('styles') %>
+<link href="/css/bootstrap.colorpickersliders.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/tinycolor-min.js"></script>
+<script src="/js/bootstrap.colorpickersliders.js"></script>
+<script src="/js/master/ticketTypeAdd.js"></script>
+<%- contentFor('body') %>
+<div class="form-container p-3 bg-light-gray">
+    <form method="post">
+        <div class="menu-group">
+            <%- include('../common/errorMessage') %>
+            <%- include('../common/successMessage') %>
+        </div>
+
+        <div class="form-group">
+            <label for="id" class="">
+                オファーID<span class="text-danger">＊</span>
+            </label>
+            <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64 value=<%=forms.id
+                    %>>
+            <p class="message">
+                半角64文字以内でご入力ください。
+            </p>
+            <p class="error message text-danger">
+                <% if (errors && errors.id) { %>
+                <%- errors.id.msg %>
+                <% } %>
+            </p>
+        </div>
+
+        <%- include('form', { forms: forms }) %>
+
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">登録する</button>
+        </div>
+    </form>
+</div>

@@ -22,11 +22,11 @@ ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 ticketTypeMasterRouter.get(
     '',
     async (req, res) => {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const ticketTypeGroupsList = await ticketTypeService.searchTicketTypeGroups({});
+        const ticketTypeGroupsList = await offerService.searchTicketTypeGroups({});
 
         // 券種マスタ画面遷移
         res.render('ticketType/index', {

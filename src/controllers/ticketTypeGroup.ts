@@ -30,7 +30,7 @@ export async function index(__: Request, res: Response): Promise<void> {
  * 新規登録
  */
 export async function add(req: Request, res: Response): Promise<void> {
-    const ticketTypeService = new chevre.service.TicketType({
+    const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -48,7 +48,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             try {
                 const ticketTypeGroup = createFromBody(req.body);
-                await ticketTypeService.createTicketTypeGroup(ticketTypeGroup);
+                await offerService.createTicketTypeGroup(ticketTypeGroup);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
 
@@ -85,7 +85,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     // 券種マスタから取得
     let ticketTypes: chevre.factory.ticketType.ITicketType[] = [];
     if (forms.ticketTypes.length > 0) {
-        const searchTicketTypesResult = await ticketTypeService.searchTicketTypes({
+        const searchTicketTypesResult = await offerService.searchTicketTypes({
             sort: {
                 'priceSpecification.price': chevre.factory.sortType.Descending
             },
@@ -106,7 +106,7 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 export async function update(req: Request, res: Response): Promise<void> {
-    const ticketTypeService = new chevre.service.TicketType({
+    const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -128,7 +128,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 // 券種グループDB登録
                 req.body.id = req.params.id;
                 const ticketTypeGroup = createFromBody(req.body);
-                await ticketTypeService.updateTicketTypeGroup(ticketTypeGroup);
+                await offerService.updateTicketTypeGroup(ticketTypeGroup);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
@@ -139,7 +139,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         }
     }
     // 券種グループ取得
-    const ticketGroup = await ticketTypeService.findTicketTypeGroupById({ id: req.params.id });
+    const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.params.id });
     const forms = {
         additionalProperty: [],
         ...ticketGroup,
@@ -156,7 +156,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     // 券種マスタから取得
     let ticketTypes: chevre.factory.ticketType.ITicketType[] = [];
     if (forms.ticketTypes.length > 0) {
-        const searchTicketTypesResult = await ticketTypeService.searchTicketTypes({
+        const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
             // sort: {
             //     'priceSpecification.price': chevre.factory.sortType.Descending
@@ -225,11 +225,11 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketTypeGroup {
  */
 export async function getList(req: Request, res: Response): Promise<void> {
     try {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { totalCount, data } = await ticketTypeService.searchTicketTypeGroups({
+        const { totalCount, data } = await offerService.searchTicketTypeGroups({
             limit: req.query.limit,
             page: req.query.page,
             id: req.query.id,
@@ -258,13 +258,13 @@ export async function getList(req: Request, res: Response): Promise<void> {
  */
 export async function getTicketTypeList(req: Request, res: Response): Promise<void> {
     try {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         // 券種グループ取得
-        const ticketGroup = await ticketTypeService.findTicketTypeGroupById({ id: req.query.id });
-        const searchTicketTypesResult = await ticketTypeService.searchTicketTypes({
+        const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.query.id });
+        const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
             ids: ticketGroup.ticketTypes
         });
@@ -285,12 +285,12 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
  */
 export async function getTicketTypePriceList(req: Request, res: Response): Promise<void> {
     try {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         // 指定価格の券種検索
-        const searchTicketTypesResult = await ticketTypeService.searchTicketTypes({
+        const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
             sort: {
                 'priceSpecification.price': chevre.factory.sortType.Descending
@@ -324,7 +324,7 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -346,7 +346,7 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
             }
         }
 
-        await ticketTypeService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
+        await offerService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
         res.status(NO_CONTENT).end();
     } catch (error) {
         res.status(BAD_REQUEST).json({ error: { message: error.message } });

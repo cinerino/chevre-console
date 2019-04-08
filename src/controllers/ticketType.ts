@@ -30,7 +30,7 @@ const ticketTypeCategories = [
  */
 // tslint:disable-next-line:cyclomatic-complexity
 export async function add(req: Request, res: Response): Promise<void> {
-    const ticketTypeService = new chevre.service.TicketType({
+    const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -51,7 +51,7 @@ export async function add(req: Request, res: Response): Promise<void> {
             // 券種DB登録プロセス
             try {
                 const ticketType = createFromBody(req.body);
-                await ticketTypeService.createTicketType(ticketType);
+                await offerService.createTicketType(ticketType);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypes/${ticketType.id}/update`);
 
@@ -99,7 +99,7 @@ export async function add(req: Request, res: Response): Promise<void> {
  */
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 export async function update(req: Request, res: Response): Promise<void> {
-    const ticketTypeService = new chevre.service.TicketType({
+    const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -110,7 +110,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     const searchAccountTitlesResult = await accountTitleService.search({});
     let message = '';
     let errors: any = {};
-    let ticketType = await ticketTypeService.findTicketTypeById({ id: req.params.id });
+    let ticketType = await offerService.findTicketTypeById({ id: req.params.id });
     if (req.method === 'POST') {
         // 検証
         validateFormAdd(req);
@@ -121,7 +121,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             // 券種DB更新プロセス
             try {
                 ticketType = createFromBody(req.body);
-                await ticketTypeService.updateTicketType(ticketType);
+                await offerService.updateTicketType(ticketType);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
@@ -316,7 +316,7 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 export async function getList(req: Request, res: Response): Promise<void> {
     try {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -324,7 +324,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         // 券種グループ取得
         let ticketTypeIds: string[] = [];
         if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
-            const ticketTypeGroup = await ticketTypeService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
+            const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
             if (ticketTypeGroup.ticketTypes !== null) {
                 ticketTypeIds = ticketTypeGroup.ticketTypes;
             } else {
@@ -383,7 +383,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     : undefined
             }
         };
-        const result = await ticketTypeService.searchTicketTypes(searchConditions);
+        const result = await offerService.searchTicketTypes(searchConditions);
 
         res.json({
             success: true,
@@ -451,11 +451,11 @@ export async function getList(req: Request, res: Response): Promise<void> {
  */
 export async function getTicketTypeGroupList(req: Request, res: Response): Promise<void> {
     try {
-        const ticketTypeService = new chevre.service.TicketType({
+        const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { totalCount, data } = await ticketTypeService.searchTicketTypeGroups({
+        const { totalCount, data } = await offerService.searchTicketTypeGroups({
             limit: 100,
             ticketTypes: [req.params.ticketTypeId]
         });
