@@ -6,8 +6,6 @@ Aa-9
 
 <%- contentFor('scripts') %>
 
-
-
 <%- contentFor('body') %>
 <div class="form-container p-3 bg-light-gray">
     <% /* フォーム */ %>
@@ -18,28 +16,23 @@ Aa-9
         </div>
         <% /* 作品コード */ %>
         <div class="form-group row">
-            <label for="identifier" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+            <label for="identifier" class="">
                 作品コード<span class="text-danger">＊</span>
             </label>
-            <div class="col-md-8">
-                <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                    value="<%= forms.identifier %>">
-                <p class="message">
-                    <% /*半角64文字以内でご入力ください。*/ %>
-                    半角64文字以内でご入力ください。
-                </p>
-                <p class="error message text-danger">
-                    <% if (errors && errors.identifier) { %>
-                    <%- errors.identifier.msg %>
-                    <% } %>
-                </p>
-            </div>
+            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
+                value="<%= forms.identifier %>">
+            <p class="message">
+                半角64文字以内でご入力ください。
+            </p>
+            <p class="error message text-danger">
+                <% if (errors && errors.identifier) { %>
+                <%- errors.identifier.msg %>
+                <% } %>
+            </p>
         </div>
 
-        <% /* 登録・更新共通部 */ %>
         <%- include('form', { forms: forms, isNew: true }) %>
 
-        <% /* 登録ボタン */ %>
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">登録する</button>
         </div>

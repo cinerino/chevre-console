@@ -16,14 +16,12 @@ Aa-16
             <%- include('../common/successMessage') %>
         </div>
 
-        <div class="form-group row">
-            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label class="">
                 興行区分コード
             </label>
-            <div class="col-md-8">
-                <input readonly type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64
-                    value="<%= forms.id %>">
-            </div>
+            <input readonly type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64
+                value="<%= forms.id %>">
         </div>
 
         <% /* 登録・更新共通部 */ %>

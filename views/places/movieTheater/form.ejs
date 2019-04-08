@@ -1,113 +1,96 @@
-<div class="form-group row">
-    <label for="name[ja]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="name[ja]" class="">
         名称<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-8">
-        <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
-            value="<%= forms.name.ja %>">
-        <p class="message">
-            全角64文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors['name.ja']) { %>
-            <%- errors['name.ja'].msg %>
-            <% } %>
-        </p>
-    </div>
+    <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%= forms.name.ja %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['name.ja']) { %>
+        <%- errors['name.ja'].msg %>
+        <% } %>
+    </p>
 </div>
 
-<div class="form-group row">
-    <label for="name[en]" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="name[en]" class="">
         英語名称
     </label>
-    <div class="col-md-8">
-        <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
-            value="<%= forms.name.en %>">
-        <p class="message">
-            全角64文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors['name.en']) { %>
-            <%- errors['name.en'].msg %>
-            <% } %>
-        </p>
-    </div>
+    <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%= forms.name.en %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['name.en']) { %>
+        <%- errors['name.en'].msg %>
+        <% } %>
+    </p>
 </div>
 
-<div class="form-group row">
-    <label for="kanaName" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="kanaName" class="">
         カナ名称
     </label>
-    <div class="col-md-8">
-        <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64
-            value="<%= forms.kanaName %>">
-        <p class="message">
-            全角64文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors.kanaName) { %>
-            <%- errors.kanaName.msg %>
-            <% } %>
-        </p>
-    </div>
+    <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64 value="<%= forms.kanaName %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors.kanaName) { %>
+        <%- errors.kanaName.msg %>
+        <% } %>
+    </p>
 </div>
 
-<div class="form-group row">
-    <label for="telephone" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="telephone" class="">
         電話番号
     </label>
-    <div class="col-md-8">
-        <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
-            value="<%= forms.telephone %>">
-        <p class="message">
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors.telephone) { %>
-            <%- errors.telephone.msg %>
-            <% } %>
-        </p>
-    </div>
+    <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
+        value="<%= forms.telephone %>">
+    <p class="message">
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors.telephone) { %>
+        <%- errors.telephone.msg %>
+        <% } %>
+    </p>
 </div>
 
-<div class="form-group row">
-    <label for="containsPlaceStr" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="containsPlaceStr" class="">
         スクリーン
     </label>
-    <div class="col-md-8">
-        <textarea rows="10" class="form-control" name="containsPlaceStr" <% if (!isNew) { %>
-            readonly<% } %>><%- forms.containsPlaceStr %></textarea>'
-    </div>
+    <textarea rows="10" class="form-control" name="containsPlaceStr" <% if (!isNew) { %>
+        readonly<% } %>><%- forms.containsPlaceStr %></textarea>'
 </div>
 
-<div class="form-group row">
-    <label for="offersStr" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="offersStr" class="">
         オファー
     </label>
-    <div class="col-md-8">
-        <textarea rows="10" class="form-control" name="offersStr" <% if (!isNew) { %>
-            readonly<% } %>><%- forms.offersStr %></textarea>'
-    </div>
+    <textarea rows="10" class="form-control" name="offersStr" <% if (!isNew) { %>
+        readonly<% } %>><%- forms.offersStr %></textarea>'
 </div>
 
-<div class="form-group row">
-    <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="name" class="">
         追加特性
     </label>
-    <div class="col-sm-8">
-        <% forms.additionalProperty.forEach((_, key) => { %>
-        <div class="input-group mb-1">
-            <!-- <span class="input-group-addon">Name:Value</span> -->
-            <input class="form-control" name="additionalProperty[<%= key %>][name]"
-                id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
-                value="<%= forms.additionalProperty[key].name %>">
+    <% forms.additionalProperty.forEach((_, key) => { %>
+    <div class="input-group mb-1">
+        <!-- <span class="input-group-addon">Name:Value</span> -->
+        <input class="form-control" name="additionalProperty[<%= key %>][name]"
+            id="additionalProperty[<%= key %>][name]" placeholder="Name" maxlength=64
+            value="<%= forms.additionalProperty[key].name %>">
 
-            <input class="form-control" name="additionalProperty[<%= key %>][value]"
-                id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
-                value="<%= forms.additionalProperty[key].value %>">
-        </div>
-        <% }) %>
-        <p class="message"></p>
-        <p class="error message text-danger">
-        </p>
+        <input class="form-control" name="additionalProperty[<%= key %>][value]"
+            id="additionalProperty[<%= key %>][value]" placeholder="Value" maxlength=64
+            value="<%= forms.additionalProperty[key].value %>">
     </div>
+    <% }) %>
+    <p class="message"></p>
+    <p class="error message text-danger">
+    </p>
 </div>

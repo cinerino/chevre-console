@@ -15,14 +15,12 @@ Aa-18
             <%- include('../../common/successMessage') %>
         </div>
 
-        <div class="form-group row">
-            <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+        <div class="form-group">
+            <label class="">
                 枝番号
             </label>
-            <div class="col-md-8">
-                <input readonly style="width:auto;" type="text" class="form-control" name="branchCode" id="branchCode"
-                    placeholder="" maxlength=64 value="<%= forms.branchCode %>">
-            </div>
+            <input readonly style="width:auto;" type="text" class="form-control" name="branchCode" id="branchCode"
+                placeholder="" maxlength=64 value="<%= forms.branchCode %>">
         </div>
 
         <%- include('form', { forms: forms, isNew: false }) %>

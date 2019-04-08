@@ -37,12 +37,18 @@ Aa-10
             <label for="datePublishedThrough" class="">
                 公開日(From - To)
             </label>
-            <div class="">
-                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
-                    maxlength=10 name="datePublishedFrom" id="datePublishedFrom" value="" />
-                ～
-                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
-                    maxlength=10 name="datePublishedThrough" id="datePublishedThrough" value="" />
+
+            <div class="input-group">
+                <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedFrom"
+                    id="datePublishedFrom" value="" />
+                <div class="input-group-append">
+                    <span class="input-group-text">から</span>
+                </div>
+                <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedThrough"
+                    id="datePublishedThrough" value="" />
+                <div class="input-group-append">
+                    <span class="input-group-text">まで</span>
+                </div>
             </div>
         </div>
 
@@ -50,12 +56,18 @@ Aa-10
             <label for="availableThrough" class="">
                 興行期間(From - To)
             </label>
-            <div class="">
-                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
-                    maxlength=10 name="availableFrom" id="availableFrom" value="" />
-                ～
-                <input class="form-control datepicker" style="width:30%;display:inline-block;" placeholder=""
-                    maxlength=10 name="availableThrough" id="availableThrough" value="" />
+
+            <div class="input-group">
+                <input class="form-control datepicker" placeholder="" maxlength=10 name="availableFrom"
+                    id="availableFrom" value="" />
+                <div class="input-group-append">
+                    <span class="input-group-text">から</span>
+                </div>
+                <input class="form-control datepicker" placeholder="" maxlength=10 name="availableThrough"
+                    id="availableThrough" value="" />
+                <div class="input-group-append">
+                    <span class="input-group-text">まで</span>
+                </div>
             </div>
         </div>
 

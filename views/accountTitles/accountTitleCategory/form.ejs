@@ -1,31 +1,27 @@
 <% /* 科目分類コード */ %>
-<div class="form-group row">
-    <label for="codeValue" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="codeValue" class="">
         科目分類コード<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-8">
-        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64 value="<%= forms.codeValue %>"
-            <% if (!isNew) { %> readonly
-        <% } %>>
-        <p class="message">半角64文字以内でご入力ください。</p>
-        <p class="error message text-danger">
-            <% if (errors && errors['codeValue']) { %>
-            <%- errors['codeValue'].msg %>
-            <% } %>
-        </p>
-    </div>
+    <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+        value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
+    <p class="message">半角64文字以内でご入力ください。</p>
+    <p class="error message text-danger">
+        <% if (errors && errors['codeValue']) { %>
+        <%- errors['codeValue'].msg %>
+        <% } %>
+    </p>
 </div>
-<div class="form-group row">
-    <label for="name" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+
+<div class="form-group">
+    <label for="name" class="">
         科目分類名称<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-8">
-        <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
-        <p class="message">64文字以内でご入力ください。</p>
-        <p class="error message text-danger">
-            <% if (errors && errors['name']) { %>
-            <%- errors['name'].msg %>
-            <% } %>
-        </p>
-    </div>
+    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
+    <p class="message">64文字以内でご入力ください。</p>
+    <p class="error message text-danger">
+        <% if (errors && errors['name']) { %>
+        <%- errors['name'].msg %>
+        <% } %>
+    </p>
 </div>

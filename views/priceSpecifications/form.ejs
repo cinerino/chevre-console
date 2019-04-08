@@ -1,81 +1,70 @@
-<div class="form-group row">
-    <label for="typeOf" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="typeOf" class="">
         価格仕様タイプ
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="typeOf">
-            <option value="" disabled selected>選択してください</option>
-            <% Object.values(PriceSpecificationType).forEach((type) => { %>
-            <option value="<%= type %>" <% if (type === forms.typeOf) { %> selected<% } %>>
-                <%= type %>
-            </option>
-            <% }) %>
-        </select>
-    </div>
+    <select class="form-control" name="typeOf">
+        <option value="" disabled selected>選択してください</option>
+        <% Object.values(PriceSpecificationType).forEach((type) => { %>
+        <option value="<%= type %>" <% if (type === forms.typeOf) { %> selected<% } %>>
+            <%= type %>
+        </option>
+        <% }) %>
+    </select>
 </div>
 
-<div class="form-group row">
-    <label for="price" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="price" class="">
         金額<span class="text-danger">＊</span>
     </label>
-    <div class="col-md-8">
-        <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
-            value=<%=forms.price %>>
-        <p class="message">
-            半角10文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors.price) { %>
-            <%- errors.price.msg %>
-            <% } %>
-        </p>
-    </div>
+    <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value=<%=forms.price %>>
+    <p class="message">
+        半角10文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors.price) { %>
+        <%- errors.price.msg %>
+        <% } %>
+    </p>
 </div>
 
-<div class="form-group row">
-    <label for="appliesToMovieTicketType" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="appliesToMovieTicketType" class="">
         適用ムビチケ券種区分
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="appliesToMovieTicketType">
-            <option value="" disabled selected>選択してください</option>
-            <% Object.values(MovieTicketType).forEach((type) => { %>
-            <option value="<%= type.code %>" <% if (type.code === forms.appliesToMovieTicketType) { %> selected<% } %>>
-                <%= type.code %> <%= type.name %>
-            </option>
-            <% }) %>
-        </select>
-    </div>
+    <select class="form-control" name="appliesToMovieTicketType">
+        <option value="" disabled selected>選択してください</option>
+        <% Object.values(MovieTicketType).forEach((type) => { %>
+        <option value="<%= type.code %>" <% if (type.code === forms.appliesToMovieTicketType) { %> selected<% } %>>
+            <%= type.code %> <%= type.name %>
+        </option>
+        <% }) %>
+    </select>
 </div>
 
-<div class="form-group row">
-    <label for="appliesToVideoFormat" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="appliesToVideoFormat" class="">
         適用上映方式
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="appliesToVideoFormat">
-            <option value="" disabled selected>選択してください</option>
-            <% Object.values(VideoFormatType).forEach((type) => { %>
-            <option value="<%= type %>" <% if (type === forms.appliesToVideoFormat) { %> selected<% } %>>
-                <%= type %>
-            </option>
-            <% }) %>
-        </select>
-    </div>
+    <select class="form-control" name="appliesToVideoFormat">
+        <option value="" disabled selected>選択してください</option>
+        <% Object.values(VideoFormatType).forEach((type) => { %>
+        <option value="<%= type %>" <% if (type === forms.appliesToVideoFormat) { %> selected<% } %>>
+            <%= type %>
+        </option>
+        <% }) %>
+    </select>
 </div>
 
-<div class="form-group row">
-    <label for="appliesToSoundFormat" class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
+<div class="form-group">
+    <label for="appliesToSoundFormat" class="">
         適用音響方式
     </label>
-    <div class="col-md-8">
-        <select class="form-control" name="appliesToSoundFormat">
-            <option value="" disabled selected>選択してください</option>
-            <% Object.values(SoundFormatType).forEach((type) => { %>
-            <option value="<%= type %>" <% if (type === forms.appliesToSoundFormat) { %> selected<% } %>>
-                <%= type %>
-            </option>
-            <% }) %>
-        </select>
-    </div>
+    <select class="form-control" name="appliesToSoundFormat">
+        <option value="" disabled selected>選択してください</option>
+        <% Object.values(SoundFormatType).forEach((type) => { %>
+        <option value="<%= type %>" <% if (type === forms.appliesToSoundFormat) { %> selected<% } %>>
+            <%= type %>
+        </option>
+        <% }) %>
+    </select>
 </div>
