@@ -8,101 +8,140 @@
                 </button>
             </div>
 
-
             <div class="modal-body">
                 <div class="panel-body form-container">
                     <form class="p-3 bg-light-gray">
                         <div class="form-group">
-                            <label class="" for="theater">劇場<font color="red">＊</font>
-                            </label>
-                            <select class="form-control" name="theater">
-                                <% if (user.cognitoGroups.movieTheaters === undefined) { %>
-                                <option value="0" disabled selected>
-                                    選択してください</option>
-                                <% for (const movieTheater of movieTheaters) { %>
-                                <option value="<%= movieTheater.branchCode %>"
-                                    data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
-                                    data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
-                                    data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
-                                    <%= movieTheater.name.ja %>
-                                </option>
-                                <% } %>
-                                <% } else { %>
-                                <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                                <option value="<%= movieTheater.branchCode %>"
-                                    data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
-                                    data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
-                                    data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
-                                    <%= movieTheater.name.ja %>
-                                </option>
-                                <% } %>
-                                <% } %>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="" for="screen">作品 <span class="text-danger">＊</span></label>
-                            <select class="form-control" name="screeningEventSeriesId">
-                                <option value="">劇場を選択してください</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="" for="screen">スクリーン <span class="text-danger">＊</span></label>
-                            <select class="form-control" name="screen">
-                                <option value="">劇場を選択してください</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="">登録期間（from） <span class="text-danger">＊</span></label>
-                            <div class="form-inline">
-                                <input class="form-control datepicker" name="screeningDateStart"
-                                    placeholder="YYYY/MM/DD" maxlength=10>
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="theater">劇場<font
+                                        color="red">＊</font>
+                                </label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="theater">
+                                        <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+                                        <option value="0" disabled selected>
+                                            選択してください</option>
+                                        <% for (const movieTheater of movieTheaters) { %>
+                                        <option value="<%= movieTheater.branchCode %>"
+                                            data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
+                                            data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
+                                            data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
+                                            <%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                        <% } else { %>
+                                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                                        <option value="<%= movieTheater.branchCode %>"
+                                            data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
+                                            data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
+                                            data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>">
+                                            <%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                        <% } %>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="">登録期間（Through） <span class="text-danger">＊</span></label>
-                            <div class="form-inline">
-                                <input class="form-control datepicker" name="screeningDateThrough"
-                                    placeholder="YYYY/MM/DD" maxlength=10>
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">作品 <span
+                                        class="text-danger">＊</span></label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="screeningEventSeriesId">
+                                        <option value="">劇場を選択してください</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="">曜日 <span class="text-danger">＊</span></label>
-                            <div class="form-inline">
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="1" name="weekDay"
-                                        checked>月</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="2" name="weekDay"
-                                        checked>火</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="3" name="weekDay"
-                                        checked>水</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="4" name="weekDay"
-                                        checked>木</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="5" name="weekDay"
-                                        checked>金</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="6" name="weekDay"
-                                        checked>土</label>
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="0" name="weekDay"
-                                        checked>日</label>
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">スクリーン <span
+                                        class="text-danger">＊</span></label>
+                                <div class="col-md-8">
+                                    <select class="form-control" name="screen">
+                                        <option value="">劇場を選択してください</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="" for="onlineDisplayStartDate">オンライン表示開始日</label>
-                            <div class="form-inline">
-                                <input class="form-control datepicker" name="onlineDisplayStartDate"
-                                    placeholder="YYYY/MM/DD" maxlength=10>
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（from） <span
+                                        class="text-danger">＊</span></label>
+                                <div class="col-md-8">
+                                    <div class="form-inline">
+                                        <input class="form-control datepicker" name="screeningDateStart"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label class="">座席指定 <span class="text-danger">＊</span></label>
-                            <div class="form-inline">
-                                <label class="checkbox-inline mr-3"><input type="checkbox" value="1"
-                                        name="reservedSeatsAvailable" checked>座席指定あり</label>
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（Through） <span
+                                        class="text-danger">＊</span></label>
+                                <div class="col-md-8">
+                                    <div class="form-inline">
+                                        <input class="form-control datepicker" name="screeningDateThrough"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">曜日 <span
+                                        class="text-danger">＊</span></label>
+                                <div class="col-md-8">
+
+                                    <div class="form-inline">
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="1"
+                                                name="weekDay" checked>月</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="2"
+                                                name="weekDay" checked>火</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="3"
+                                                name="weekDay" checked>水</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="4"
+                                                name="weekDay" checked>木</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="5"
+                                                name="weekDay" checked>金</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="6"
+                                                name="weekDay" checked>土</label>
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="0"
+                                                name="weekDay" checked>日</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
+                                    for="onlineDisplayStartDate">オンライン表示開始日</label>
+                                <div class="col-md-8">
+                                    <div class="form-inline">
+                                        <input class="form-control datepicker" name="onlineDisplayStartDate"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"></label>
+                                <div class="col-md-8">
+                                    <div class="form-inline">
+                                        <label class="checkbox-inline mr-3"><input type="checkbox" value="1"
+                                                name="reservedSeatsAvailable" checked>座席指定あり</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

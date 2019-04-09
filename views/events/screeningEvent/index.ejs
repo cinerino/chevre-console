@@ -13,34 +13,59 @@ Aa-4
     <form>
         <div class="form-group">
             <label class="">劇場 <span class="text-danger">＊</span></label>
-            <select class="form-control" name="theater">
-                <% if (user.cognitoGroups.movieTheaters === undefined) { %>
-                <option value="">選択してください</option>
-                <% for (const movieTheater of movieTheaters) { %>
-                <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                <% } %>
-                <% } else { %>
-                <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                <% } %>
-                <% } %>
-            </select>
+
+            <div class="input-group">
+                <select class="form-control" name="theater">
+                    <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+                    <option value="">選択してください</option>
+                    <% for (const movieTheater of movieTheaters) { %>
+                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                    <% } %>
+                    <% } else { %>
+                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                    <% } %>
+                    <% } %>
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
             <label class="">上映日 <span class="text-danger">＊</span></label>
-            <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください" maxlength="10">
-        </div>
 
-        <div class="form-group">
-            <label class="">日付 <span class="text-danger">＊</span></label>
-            <div class="d-flex align-items-center">
-                <input class="d-block" type="radio" name="days" id="radio-days-1" value="1" checked>
-                <label class="d-block mr-3" for="radio-days-1">1日</label>
-                <input class="d-block" type="radio" name="days" id="radio-days-3" value="3">
-                <label class="d-block mr-3" for="radio-days-3">3日</label>
-                <input class="d-block" type="radio" name="days" id="radio-days-7" value="7">
-                <label class="d-block" for="radio-days-7">7日</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
+                        maxlength="10">
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
+                                checked> 1日
+                            <span class="circle">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-radio form-check-inline">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="days" id="radio-days-3" value="3"> 3日
+                            <span class="circle">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                    </div>
+                    <div class="form-check form-check-radio form-check-inline disabled">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="days" id="radio-days-7" value="7"> 7日
+                            <span class="circle">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -67,7 +92,7 @@ Aa-4
         <div class="panel-body">
             <button type="button" class="btn btn-primary add-button"><i class=" fa fa-plus"></i> 登録</button>
 
-            <button type="button" class="btn search btn-ok btn-success search-button pull-right">検索</button>
+            <button type="button" class="btn search btn-ok btn-success search-button float-right">検索</button>
         </div>
     </form>
 </div>
