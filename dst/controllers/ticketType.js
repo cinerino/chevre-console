@@ -259,7 +259,13 @@ function createFromBody(req) {
         const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
             ? body.appliesToMovieTicketType
             : undefined;
+        // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
+        //     ? [body.eligibleCustomerType]
+        //     : undefined;
         return {
+            // ...{
+            //     $unset: { eligibleCustomerType: 1 }
+            // },
             typeOf: 'Offer',
             priceCurrency: chevre.factory.priceCurrency.JPY,
             id: body.id,
@@ -267,6 +273,7 @@ function createFromBody(req) {
             description: body.description,
             alternateName: { ja: body.alternateName.ja, en: '' },
             availability: availability,
+            // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
                 price: Number(body.price) * referenceQuantityValue,

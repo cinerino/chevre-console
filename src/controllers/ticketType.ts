@@ -295,7 +295,14 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
             ? <string>body.appliesToMovieTicketType
             : undefined;
 
+    // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
+    //     ? [body.eligibleCustomerType]
+    //     : undefined;
+
     return {
+        // ...{
+        //     $unset: { eligibleCustomerType: 1 }
+        // },
         typeOf: <chevre.factory.offerType>'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
@@ -303,6 +310,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         availability: availability,
+        // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: {
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             price: Number(body.price) * referenceQuantityValue,

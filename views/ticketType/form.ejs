@@ -164,6 +164,35 @@
 </div>
 
 <div class="form-group">
+    <label for="eligibleCustomerTypeｓ" class="">
+        適用カスタマータイプ
+    </label>
+    <%
+    const availableCustomerTypes = [
+        {typeOf:'Member',name:'会員'}
+    ];
+    %>
+    <div class="input-group">
+        <select class="form-control" name="eligibleCustomerType">
+            <option value="" selected>指定しない</option>
+            <% availableCustomerTypes.forEach((customerType) => { %>
+            <option value="<%= customerType.typeOf %>"
+                <% if (Array.isArray(forms.eligibleCustomerType) && forms.eligibleCustomerType.indexOf(customerType.typeOf) >= 0) { %>
+                selected <% } %>>
+                <%= customerType.name %>
+            </option>
+            <% }) %>
+        </select>
+        <div class="input-group-append">
+            <span class="input-group-text" id="basic-addon2">のみ使用可能</span>
+        </div>
+
+        <p class="error message text-danger">
+        </p>
+    </div>
+</div>
+
+<div class="form-group">
     <label for="priceSpecification[eligibleTransactionVolume][price]" class="">
         適用金額
     </label>
