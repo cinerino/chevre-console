@@ -48,7 +48,7 @@ productOffersRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fu
                 value: 1
             },
             accounting: {}
-        }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
+        }, itemOffered: { name: {} }, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
@@ -101,7 +101,7 @@ productOffersRouter.all('/:id/update',
     }
     const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
             referenceQuantity: {}
-        } }, offer, { price: Math.floor(Number(offer.priceSpecification.price) / seatReservationUnit) }, req.body, { seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit });
+        }, itemOffered: { name: {} } }, offer, { price: Math.floor(Number(offer.priceSpecification.price) / seatReservationUnit) }, req.body, { seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit });
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
@@ -225,7 +225,8 @@ function createFromBody(body) {
         description: body.description,
         alternateName: { ja: body.alternateName.ja, en: '' },
         itemOffered: {
-            typeOf: 'Product'
+            typeOf: 'Product',
+            name: body.itemOffered.name
         },
         priceSpecification: {
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
@@ -276,6 +277,10 @@ function validate(req) {
     req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = 'アイテム名称';
+    req.checkBody('itemOffered.name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    colName = 'アイテム英語名称';
+    req.checkBody('itemOffered.name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '適用単位';
     req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     colName = '発生金額';

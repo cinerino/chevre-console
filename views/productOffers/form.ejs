@@ -47,6 +47,41 @@
 </div>
 
 <div class="form-group">
+    <label for="itemOffered[name][ja]" class="">
+        アイテム名称<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="itemOffered[name][ja]" id="itemOffered[name][ja]" placeholder=""
+        maxlength=64 value="<%=forms.itemOffered.name.ja
+                %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['itemOffered.name.ja']) { %>
+        <%- errors['itemOffered.name.ja'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="itemOffered[name][en]" class="">
+        アイテム英語名称<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="itemOffered[name][en]" id="itemOffered[name][en]" placeholder=""
+        maxlength=64 value="<%=forms.itemOffered.name.en
+                    %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['itemOffered.name.en']) { %>
+        <%- errors['itemOffered.name.en'].msg %>
+        <% } %>
+    </p>
+    </p>
+</div>
+
+<div class="form-group">
     <label for="price" class="">
         発生金額<span class="text-danger">＊</span>
     </label>

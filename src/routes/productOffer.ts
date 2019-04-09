@@ -53,8 +53,7 @@ productOffersRouter.all(
                 },
                 accounting: {}
             },
-            isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket,
-            isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket,
+            itemOffered: { name: {} },
             seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit,
             ...req.body
         };
@@ -123,6 +122,7 @@ productOffersRouter.all(
             priceSpecification: {
                 referenceQuantity: {}
             },
+            itemOffered: { name: {} },
             ...offer,
             price: Math.floor(Number(offer.priceSpecification.price) / seatReservationUnit),
             ...req.body,
@@ -269,7 +269,8 @@ function createFromBody(body: any): chevre.factory.offer.product.IOffer {
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         itemOffered: {
-            typeOf: 'Product'
+            typeOf: 'Product',
+            name: body.itemOffered.name
         },
         priceSpecification: {
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
@@ -325,6 +326,12 @@ function validate(req: Request): void {
     req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
+
+    colName = 'アイテム名称';
+    req.checkBody('itemOffered.name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+
+    colName = 'アイテム英語名称';
+    req.checkBody('itemOffered.name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 
     colName = '適用単位';
     req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
