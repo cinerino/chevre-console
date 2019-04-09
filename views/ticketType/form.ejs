@@ -265,6 +265,24 @@
 </div>
 
 <div class="form-group">
+    <label for="availableAddOn" class="">
+        アドオン<span class="text-danger">＊</span>
+    </label>
+    <select class="form-control" name="availableAddOn">
+        <option value="" selected>選択してください</option>
+        <% for (let productOffer of productOffers) { %>
+        <option value="<%= productOffer.id %>"
+            <% if (Array.isArray(forms.availableAddOn) && forms.availableAddOn[0] !== undefined && forms.availableAddOn[0].id === productOffer.id) { %>
+            selected <% } %>>
+            <%= productOffer.id %> <%= productOffer.name.ja %>
+        </option>
+        <% } %>
+    </select>
+    <p class="error message text-danger">
+    </p>
+</div>
+
+<div class="form-group">
     <label for="name" class="">
         追加特性
     </label>

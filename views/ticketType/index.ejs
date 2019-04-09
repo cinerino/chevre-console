@@ -122,6 +122,7 @@ Aa-6
                     <th>名称<br>English Name<br>代替名称</th>
                     <th>発生金額<br>売上金額<br>適用単位</th>
                     <th>適用条件</th>
+                    <th>アドオン</th>
                     <th></th>
                 </tr>
             </thead>
@@ -135,7 +136,7 @@ Aa-6
                                 $id$
                             </a>
                         </p>
-                        <p>$categoryName$</p>
+                        <p class="badge badge-info">$categoryName$</p>
                         <p><a target="_blank"
                                 href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
                         </p>
@@ -182,6 +183,7 @@ Aa-6
                             </div>
                         </div>
                     </td>
+                    <td name="availableAddOnNames">$availableAddOnNames$</td>
                     <td name="id__id__id" class="center">
                         <div class="text-center">
                             <a target="_blank" class="btn btn-sm btn-primary" href="/ticketTypes/$id$/update">

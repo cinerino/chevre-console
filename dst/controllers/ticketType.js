@@ -35,6 +35,8 @@ const ticketTypeCategories = [
 // tslint:disable-next-line:cyclomatic-complexity
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        let message = '';
+        let errors = {};
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -44,8 +46,7 @@ function add(req, res) {
             auth: req.user.authClient
         });
         const searchAccountTitlesResult = yield accountTitleService.search({});
-        let message = '';
-        let errors = {};
+        const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 100 });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
@@ -55,7 +56,7 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const ticketType = createFromBody(req.body);
+                    const ticketType = yield createFromBody(req);
                     yield offerService.createTicketType(ticketType);
                     req.flash('message', '登録しました');
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
@@ -83,7 +84,8 @@ function add(req, res) {
             forms: forms,
             MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
             ticketTypeCategories: ticketTypeCategories,
-            accountTitles: searchAccountTitlesResult.data
+            accountTitles: searchAccountTitlesResult.data,
+            productOffers: searchProductOffersResult.data
         });
     });
 }
@@ -94,6 +96,8 @@ exports.add = add;
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function update(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
+        let message = '';
+        let errors = {};
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -103,8 +107,7 @@ function update(req, res) {
             auth: req.user.authClient
         });
         const searchAccountTitlesResult = yield accountTitleService.search({});
-        let message = '';
-        let errors = {};
+        const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 100 });
         let ticketType = yield offerService.findTicketTypeById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
@@ -115,7 +118,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
-                    ticketType = createFromBody(req.body);
+                    ticketType = yield createFromBody(req);
                     yield offerService.updateTicketType(ticketType);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -172,115 +175,140 @@ function update(req, res) {
             forms: forms,
             MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
             ticketTypeCategories: ticketTypeCategories,
-            accountTitles: searchAccountTitlesResult.data
+            accountTitles: searchAccountTitlesResult.data,
+            productOffers: searchProductOffersResult.data
         });
     });
 }
 exports.update = update;
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-function createFromBody(body) {
-    let availability = chevre.factory.itemAvailability.OutOfStock;
-    if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
-        availability = chevre.factory.itemAvailability.InStock;
-    }
-    else if (body.isBoxTicket === '1') {
-        availability = chevre.factory.itemAvailability.InStoreOnly;
-    }
-    else if (body.isOnlineTicket === '1') {
-        availability = chevre.factory.itemAvailability.OnlineOnly;
-    }
-    const referenceQuantityValue = Number(body.seatReservationUnit);
-    const referenceQuantity = {
-        typeOf: 'QuantitativeValue',
-        value: referenceQuantityValue,
-        unitCode: chevre.factory.unitCode.C62
-    };
-    const eligibleQuantityMinValue = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleQuantity !== undefined
-        && body.priceSpecification.eligibleQuantity.minValue !== undefined
-        && body.priceSpecification.eligibleQuantity.minValue !== '')
-        ? Number(body.priceSpecification.eligibleQuantity.minValue)
-        : undefined;
-    const eligibleQuantityMaxValue = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleQuantity !== undefined
-        && body.priceSpecification.eligibleQuantity.maxValue !== undefined
-        && body.priceSpecification.eligibleQuantity.maxValue !== '')
-        ? Number(body.priceSpecification.eligibleQuantity.maxValue)
-        : undefined;
-    const eligibleQuantity = (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
-        ? {
-            typeOf: 'QuantitativeValue',
-            minValue: eligibleQuantityMinValue,
-            maxValue: eligibleQuantityMaxValue,
-            unitCode: chevre.factory.unitCode.C62
-        }
-        : undefined;
-    const eligibleTransactionVolumePrice = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleTransactionVolume !== undefined
-        && body.priceSpecification.eligibleTransactionVolume.price !== undefined
-        && body.priceSpecification.eligibleTransactionVolume.price !== '')
-        ? Number(body.priceSpecification.eligibleTransactionVolume.price)
-        : undefined;
-    // tslint:disable-next-line:max-line-length
-    const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
-        ? {
-            typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
-            price: eligibleTransactionVolumePrice,
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            valueAddedTaxIncluded: true
-        }
-        : undefined;
-    const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
-        ? body.appliesToMovieTicketType
-        : undefined;
-    return {
-        typeOf: 'Offer',
-        priceCurrency: chevre.factory.priceCurrency.JPY,
-        id: body.id,
-        name: body.name,
-        description: body.description,
-        alternateName: { ja: body.alternateName.ja, en: '' },
-        availability: availability,
-        priceSpecification: {
-            typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-            price: Number(body.price) * referenceQuantityValue,
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            valueAddedTaxIncluded: true,
-            eligibleQuantity: eligibleQuantity,
-            eligibleTransactionVolume: eligibleTransactionVolume,
-            referenceQuantity: referenceQuantity,
-            appliesToMovieTicketType: appliesToMovieTicketType,
-            accounting: {
-                typeOf: 'Accounting',
-                operatingRevenue: {
-                    typeOf: 'AccountTitle',
-                    codeValue: body.accountTitle,
-                    identifier: body.accountTitle,
-                    name: ''
-                },
-                nonOperatingRevenue: {
-                    typeOf: 'AccountTitle',
-                    codeValue: body.nonBoxOfficeSubject,
-                    identifier: body.nonBoxOfficeSubject,
-                    name: ''
-                },
-                accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+function createFromBody(req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const body = req.body;
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const availableAddOn = [];
+        if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
+            const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 1, ids: [req.body.availableAddOn] });
+            const productOffer = searchProductOffersResult.data.shift();
+            if (productOffer === undefined) {
+                throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
             }
-        },
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
-                .map((p) => {
-                return {
-                    name: String(p.name),
-                    value: String(p.value)
-                };
-            })
-            : undefined,
-        category: {
-            id: body.category
-        },
-        color: body.indicatorColor
-    };
+            availableAddOn.push({
+                typeOf: productOffer.typeOf,
+                id: productOffer.id,
+                name: productOffer.name,
+                itemOffered: productOffer.itemOffered,
+                priceCurrency: productOffer.priceCurrency,
+                priceSpecification: productOffer.priceSpecification
+            });
+        }
+        let availability = chevre.factory.itemAvailability.OutOfStock;
+        if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
+            availability = chevre.factory.itemAvailability.InStock;
+        }
+        else if (body.isBoxTicket === '1') {
+            availability = chevre.factory.itemAvailability.InStoreOnly;
+        }
+        else if (body.isOnlineTicket === '1') {
+            availability = chevre.factory.itemAvailability.OnlineOnly;
+        }
+        const referenceQuantityValue = Number(body.seatReservationUnit);
+        const referenceQuantity = {
+            typeOf: 'QuantitativeValue',
+            value: referenceQuantityValue,
+            unitCode: chevre.factory.unitCode.C62
+        };
+        const eligibleQuantityMinValue = (body.priceSpecification !== undefined
+            && body.priceSpecification.eligibleQuantity !== undefined
+            && body.priceSpecification.eligibleQuantity.minValue !== undefined
+            && body.priceSpecification.eligibleQuantity.minValue !== '')
+            ? Number(body.priceSpecification.eligibleQuantity.minValue)
+            : undefined;
+        const eligibleQuantityMaxValue = (body.priceSpecification !== undefined
+            && body.priceSpecification.eligibleQuantity !== undefined
+            && body.priceSpecification.eligibleQuantity.maxValue !== undefined
+            && body.priceSpecification.eligibleQuantity.maxValue !== '')
+            ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+            : undefined;
+        const eligibleQuantity = (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
+            ? {
+                typeOf: 'QuantitativeValue',
+                minValue: eligibleQuantityMinValue,
+                maxValue: eligibleQuantityMaxValue,
+                unitCode: chevre.factory.unitCode.C62
+            }
+            : undefined;
+        const eligibleTransactionVolumePrice = (body.priceSpecification !== undefined
+            && body.priceSpecification.eligibleTransactionVolume !== undefined
+            && body.priceSpecification.eligibleTransactionVolume.price !== undefined
+            && body.priceSpecification.eligibleTransactionVolume.price !== '')
+            ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+            : undefined;
+        // tslint:disable-next-line:max-line-length
+        const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
+            ? {
+                typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
+                price: eligibleTransactionVolumePrice,
+                priceCurrency: chevre.factory.priceCurrency.JPY,
+                valueAddedTaxIncluded: true
+            }
+            : undefined;
+        const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
+            ? body.appliesToMovieTicketType
+            : undefined;
+        return {
+            typeOf: 'Offer',
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            id: body.id,
+            name: body.name,
+            description: body.description,
+            alternateName: { ja: body.alternateName.ja, en: '' },
+            availability: availability,
+            priceSpecification: {
+                typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
+                price: Number(body.price) * referenceQuantityValue,
+                priceCurrency: chevre.factory.priceCurrency.JPY,
+                valueAddedTaxIncluded: true,
+                eligibleQuantity: eligibleQuantity,
+                eligibleTransactionVolume: eligibleTransactionVolume,
+                referenceQuantity: referenceQuantity,
+                appliesToMovieTicketType: appliesToMovieTicketType,
+                accounting: {
+                    typeOf: 'Accounting',
+                    operatingRevenue: {
+                        typeOf: 'AccountTitle',
+                        codeValue: body.accountTitle,
+                        identifier: body.accountTitle,
+                        name: ''
+                    },
+                    nonOperatingRevenue: {
+                        typeOf: 'AccountTitle',
+                        codeValue: body.nonBoxOfficeSubject,
+                        identifier: body.nonBoxOfficeSubject,
+                        name: ''
+                    },
+                    accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+                }
+            },
+            availableAddOn: availableAddOn,
+            additionalProperty: (Array.isArray(body.additionalProperty))
+                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined,
+            category: {
+                id: body.category
+            },
+            color: body.indicatorColor
+        };
+    });
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function getList(req, res) {
@@ -391,7 +419,11 @@ function getList(req, res) {
                             value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
                                 ? t.priceSpecification.referenceQuantity.value
                                 : '--'
-                        }, categoryName: (category !== undefined) ? category.name : '--' });
+                        }, categoryName: (category !== undefined) ? category.name : '--', availableAddOnNames: (Array.isArray(t.availableAddOn))
+                            ? t.availableAddOn.map((a) => {
+                                return (a.name !== undefined) ? a.name.ja : a.id;
+                            }).join('\n')
+                            : '' });
                 })
             });
         }

@@ -30,6 +30,9 @@ const ticketTypeCategories = [
  */
 // tslint:disable-next-line:cyclomatic-complexity
 export async function add(req: Request, res: Response): Promise<void> {
+    let message = '';
+    let errors: any = {};
+
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -39,8 +42,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
     const searchAccountTitlesResult = await accountTitleService.search({});
-    let message = '';
-    let errors: any = {};
+    const searchProductOffersResult = await offerService.searchProductOffers({ limit: 100 });
+
     if (req.method === 'POST') {
         // 検証
         validateFormAdd(req);
@@ -50,7 +53,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB登録プロセス
             try {
-                const ticketType = createFromBody(req.body);
+                const ticketType = await createFromBody(req);
                 await offerService.createTicketType(ticketType);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypes/${ticketType.id}/update`);
@@ -90,7 +93,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         MovieTicketType: mvtk.util.constants.TICKET_TYPE,
         ticketTypeCategories: ticketTypeCategories,
-        accountTitles: searchAccountTitlesResult.data
+        accountTitles: searchAccountTitlesResult.data,
+        productOffers: searchProductOffersResult.data
     });
 }
 
@@ -99,6 +103,9 @@ export async function add(req: Request, res: Response): Promise<void> {
  */
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 export async function update(req: Request, res: Response): Promise<void> {
+    let message = '';
+    let errors: any = {};
+
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -108,9 +115,9 @@ export async function update(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
     const searchAccountTitlesResult = await accountTitleService.search({});
-    let message = '';
-    let errors: any = {};
+    const searchProductOffersResult = await offerService.searchProductOffers({ limit: 100 });
     let ticketType = await offerService.findTicketTypeById({ id: req.params.id });
+
     if (req.method === 'POST') {
         // 検証
         validateFormAdd(req);
@@ -120,7 +127,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB更新プロセス
             try {
-                ticketType = createFromBody(req.body);
+                ticketType = await createFromBody(req);
                 await offerService.updateTicketType(ticketType);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -197,12 +204,37 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         MovieTicketType: mvtk.util.constants.TICKET_TYPE,
         ticketTypeCategories: ticketTypeCategories,
-        accountTitles: searchAccountTitlesResult.data
+        accountTitles: searchAccountTitlesResult.data,
+        productOffers: searchProductOffersResult.data
     });
 }
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
+async function createFromBody(req: Request): Promise<chevre.factory.ticketType.ITicketType> {
+    const body = req.body;
+    const offerService = new chevre.service.Offer({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const availableAddOn: chevre.factory.offer.IOffer[] = [];
+    if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
+        const searchProductOffersResult = await offerService.searchProductOffers({ limit: 1, ids: [req.body.availableAddOn] });
+        const productOffer = searchProductOffersResult.data.shift();
+        if (productOffer === undefined) {
+            throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
+        }
+
+        availableAddOn.push({
+            typeOf: productOffer.typeOf,
+            id: productOffer.id,
+            name: productOffer.name,
+            itemOffered: productOffer.itemOffered,
+            priceCurrency: productOffer.priceCurrency,
+            priceSpecification: productOffer.priceSpecification
+        });
+    }
+
     let availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.OutOfStock;
     if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
         availability = chevre.factory.itemAvailability.InStock;
@@ -297,6 +329,7 @@ function createFromBody(body: any): chevre.factory.ticketType.ITicketType {
                 accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
             }
         },
+        availableAddOn: availableAddOn,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
@@ -432,7 +465,12 @@ export async function getList(req: Request, res: Response): Promise<void> {
                             ? t.priceSpecification.referenceQuantity.value
                             : '--'
                     },
-                    categoryName: (category !== undefined) ? category.name : '--'
+                    categoryName: (category !== undefined) ? category.name : '--',
+                    availableAddOnNames: (Array.isArray(t.availableAddOn))
+                        ? t.availableAddOn.map((a) => {
+                            return (a.name !== undefined) ? (<any>a.name).ja : a.id;
+                        }).join('\n')
+                        : ''
                 };
             })
         });
