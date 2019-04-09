@@ -22,12 +22,6 @@
     td {
         border-right: 1px solid #ccc;
         border-left: 1px solid #ccc;
-        &:first-child {
-            border-left: 0px;
-        }
-        &:last-child {
-            border-right: 0px;
-        }
     }
     .header {
         text-align: center;
@@ -38,7 +32,7 @@
         width: auto;
         .time {
             font-size: 12px;
-            padding: 0 10px;
+            text-align: center;
         }
     }
     .screen {
@@ -87,8 +81,4 @@
             width: auto;
         }
     }
-}
-
-.search {
-    
 }

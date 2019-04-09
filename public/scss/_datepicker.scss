@@ -1,5 +1,12 @@
 @import './theme';
 
+.datepicker {
+    &.dropdown-menu {
+        opacity: 1; 
+        transform: scale(1);
+    }
+}
+
 .datepicker-days {
     th,
     td {

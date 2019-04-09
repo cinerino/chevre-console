@@ -7,13 +7,13 @@
  * 1時間の高さ
  * @const HOUR_HEIGHT
  */
-var HOUR_HEIGHT = 64;
+var HOUR_HEIGHT = 40;
 
 /**
  * スクリーンの幅
  * @const SCREEN_WIDTH
  */
-var SCREEN_WIDTH = 107;
+var SCREEN_WIDTH = 80;
 
 /**
  * スケジュール作成中かどうか
