@@ -137,4 +137,32 @@ $(function () {
         body.append(html);
         modal.modal();
     }
+
+    // COA券種インポート
+    $('a.importFromCOA').click(function () {
+        var selectedSellerNames = [];
+        $('select[name="seller[ids][]"] option:selected').each(function () {
+            selectedSellerNames.push($(this).text());
+        });
+        var message = '[販売者]\n' + selectedSellerNames.join('\n')
+            + '\n\n[開催日]\n' + $('input[name="startRange"]').val()
+            + '\n\nの販売イベントをインポートしようとしています。'
+            + '\nよろしいですか？';
+        if (window.confirm(message)) {
+            $.ajax({
+                url: '/ticketTypes/importFromCOA',
+                type: 'POST',
+                dataType: 'json',
+                data: $('form').serialize()
+            }).done(function (tasks) {
+                console.log(tasks);
+                alert('インポートを開始しました');
+            }).fail(function (xhr) {
+                var res = $.parseJSON(xhr.responseText);
+                alert(res.error.message);
+            }).always(function () {
+            });
+        } else {
+        }
+    });
 });

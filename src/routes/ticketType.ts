@@ -1,9 +1,13 @@
 /**
- * 券種マスタ管理ルーター
+ * 券種管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Router } from 'express';
+import { CREATED } from 'http-status';
+
 import * as ticketTypeController from '../controllers/ticketType';
+
+const COA_THEATER_CODES: string[] = (process.env.COA_THEATER_CODES !== undefined) ? JSON.parse(process.env.COA_THEATER_CODES) : [];
 
 const ticketTypeCategories = [
     { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
@@ -39,5 +43,42 @@ ticketTypeMasterRouter.get(
 
 ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
 ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeController.getTicketTypeGroupList);
+
+/**
+ * COA券種インポート
+ */
+ticketTypeMasterRouter.post(
+    '/importFromCOA',
+    async (req, res, next) => {
+        try {
+            const taskService = new chevre.service.Task({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const taskAttributes = COA_THEATER_CODES.map((theaterCode) => {
+                return {
+                    name: <chevre.factory.taskName.ImportOffersFromCOA>chevre.factory.taskName.ImportOffersFromCOA,
+                    status: chevre.factory.taskStatus.Ready,
+                    runsAt: new Date(),
+                    remainingNumberOfTries: 1,
+                    numberOfTried: 0,
+                    executionResults: [],
+                    data: {
+                        theaterCode: theaterCode
+                    }
+                };
+            });
+            const tasks = await Promise.all(taskAttributes.map(async (a) => {
+                return taskService.create(a);
+            }));
+
+            res.status(CREATED)
+                .json(tasks);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
 
 export default ticketTypeMasterRouter;

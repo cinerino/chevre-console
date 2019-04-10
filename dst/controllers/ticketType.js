@@ -262,6 +262,18 @@ function createFromBody(req) {
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
         //     : undefined;
+        const accounting = (body.accountTitle !== undefined && body.accountTitle !== '')
+            ? {
+                typeOf: 'Accounting',
+                operatingRevenue: {
+                    typeOf: 'AccountTitle',
+                    codeValue: body.accountTitle,
+                    identifier: body.accountTitle,
+                    name: ''
+                },
+                accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+            }
+            : undefined;
         return {
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
@@ -283,22 +295,7 @@ function createFromBody(req) {
                 eligibleTransactionVolume: eligibleTransactionVolume,
                 referenceQuantity: referenceQuantity,
                 appliesToMovieTicketType: appliesToMovieTicketType,
-                accounting: {
-                    typeOf: 'Accounting',
-                    operatingRevenue: {
-                        typeOf: 'AccountTitle',
-                        codeValue: body.accountTitle,
-                        identifier: body.accountTitle,
-                        name: ''
-                    },
-                    nonOperatingRevenue: {
-                        typeOf: 'AccountTitle',
-                        codeValue: body.nonBoxOfficeSubject,
-                        identifier: body.nonBoxOfficeSubject,
-                        name: ''
-                    },
-                    accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
-                }
+                accounting: accounting
             },
             availableAddOn: availableAddOn,
             additionalProperty: (Array.isArray(body.additionalProperty))
@@ -340,21 +337,12 @@ function getList(req, res) {
                         results: []
                     });
                 }
-                if (req.query.id !== '' && req.query.id !== undefined) {
-                    if (ticketTypeIds.indexOf(req.query.id) >= 0) {
-                        ticketTypeIds.push(req.query.id);
-                    }
-                }
-            }
-            else {
-                if (req.query.id !== '' && req.query.id !== undefined) {
-                    ticketTypeIds.push(req.query.id);
-                }
             }
             const searchConditions = {
                 limit: req.query.limit,
                 page: req.query.page,
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+                id: (req.query.id !== '' && req.query.id !== undefined) ? req.query.id : undefined,
                 ids: ticketTypeIds,
                 name: (req.query.name !== undefined
                     && req.query.name !== '')
@@ -483,8 +471,7 @@ function validateFormAdd(req) {
     // 券種コード
     let colName = '券種コード';
     req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('id', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .isAlphanumeric().len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('id', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     // サイト表示用券種名
     colName = 'サイト表示用券種名';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
@@ -508,6 +495,6 @@ function validateFormAdd(req) {
     req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
         .isNumeric().len({ max: CHAGE_MAX_LENGTH });
-    colName = '細目';
-    req.checkBody('accountTitle', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    // colName = '細目';
+    // req.checkBody('accountTitle', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }
