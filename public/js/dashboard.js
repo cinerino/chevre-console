@@ -40,6 +40,9 @@ function updateCharts() {
     updateReservationCount(function () {
     });
 
+    updateQueueCount(function () {
+    });
+
     updateLatestReservations(function () {
     });
 
@@ -53,11 +56,12 @@ function updateReservationCount(cb) {
         {}
     ).done(function (data) {
         console.log('reservationCount:', data);
-        $('.reservationCount').text(data.totalCount);
+        $('.reservationCount').removeClass('text-danger').text(data.totalCount);
 
         cb();
-    }).fail(function () {
-        console.error('本日の予約数を検索できませんでした')
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('本日の予約数を検索できませんでした', jqXHR);
+        $('.reservationCount').addClass('text-danger').text(textStatus);
     });
 }
 
@@ -67,12 +71,13 @@ function updateHealth(cb) {
         {}
     ).done(function (data) {
         console.log('health:', data);
-        $('.health').text(data.status);
+        $('.health').removeClass('text-danger').text(data.status);
         $('.version').text(data.version);
 
         cb();
-    }).fail(function () {
-        console.error('ヘルス情報を検索できませんでした')
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('ヘルス情報を検索できませんでした', jqXHR);
+        $('.health').addClass('text-danger').text(textStatus);
     });
 }
 
@@ -88,12 +93,28 @@ function updateDbStats(cb) {
             + Math.floor(Number(data.fsTotalSize) / GB);
         var dbText = data.db + ' has ' + data.objects + ' objects';
 
-        $('.usedSpace').text(usedSpaceStr);
+        $('.usedSpace').removeClass('text-danger').text(usedSpaceStr);
         $('.dbText').text(dbText);
 
         cb();
-    }).fail(function () {
-        console.error('DB統計を検索できませんでした')
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('DB統計を検索できませんでした', jqXHR);
+        $('.usedSpace').addClass('text-danger').text(textStatus);
+    });
+}
+
+function updateQueueCount(cb) {
+    $.getJSON(
+        '/dashboard/queueCount',
+        {}
+    ).done(function (data) {
+        console.log('QueueCount:', data);
+        $('.queueCount').removeClass('text-danger').text(data.totalCount);
+
+        cb();
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('キューを検索できませんでした', jqXHR);
+        $('.queueCount').addClass('text-danger').text(textStatus);
     });
 }
 
@@ -117,12 +138,16 @@ function updateLatestReservations(cb) {
                 + '<td>' + moment(reservation.modifiedTime).format('MM/DD HH:mm') + '</td>'
                 + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>'
                 + '<td><span class="badge badge-secondary">' + reservation.reservationStatus + '</span></td>';
-            $('<tr>').html(html).appendTo('#latestReservations tbody');
+            $('<tr>').html(html)
+                .appendTo('#latestReservations tbody');
         });
 
         cb();
-    }).fail(function () {
-        console.error('予約を検索できませんでした')
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('予約を検索できませんでした', jqXHR);
+        $('<p>').addClass('display-4 text-danger')
+            .text(textStatus)
+            .appendTo('#latestReservations tbody');
     });
 }
 
@@ -155,7 +180,10 @@ function updateEventsWithAggregation(cb) {
         });
 
         cb();
-    }).fail(function () {
-        console.error('イベント集計を検索できませんでした')
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('イベント集計を検索できませんでした', jqXHR);
+        $('<p>').addClass('display-4 text-danger')
+            .text(textStatus)
+            .appendTo('.eventsWithAggregation tbody');
     });
 }

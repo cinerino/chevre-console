@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const dashboardRouter = express_1.Router();
 dashboardRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
@@ -23,85 +24,140 @@ dashboardRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, fun
     res.render('index', {});
 }));
 dashboardRouter.get('/dashboard/reservationCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const reservationService = new chevre.service.Reservation({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchConditions = {
-        limit: 1,
-        typeOf: chevre.factory.reservationType.EventReservation,
-        reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
-        bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
-        bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
-    };
-    const result = yield reservationService.search(searchConditions);
-    res.json(result);
+    try {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchConditions = {
+            limit: 1,
+            typeOf: chevre.factory.reservationType.EventReservation,
+            reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
+            bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
+            bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+        };
+        const result = yield reservationService.search(searchConditions);
+        res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
 }));
 dashboardRouter.get('/dashboard/dbStats', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const stats = yield eventService.fetch({
-        uri: '/stats/dbStats',
-        method: 'GET',
-        // tslint:disable-next-line:no-magic-numbers
-        expectedStatusCodes: [200]
-    }).then((response) => __awaiter(this, void 0, void 0, function* () {
-        return response.json();
-    }));
-    res.json(stats);
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const stats = yield eventService.fetch({
+            uri: '/stats/dbStats',
+            method: 'GET',
+            // tslint:disable-next-line:no-magic-numbers
+            expectedStatusCodes: [200]
+        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+            return response.json();
+        }));
+        res.json(stats);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
 }));
 dashboardRouter.get('/dashboard/health', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const stats = yield eventService.fetch({
-        uri: '/health',
-        method: 'GET',
-        // tslint:disable-next-line:no-magic-numbers
-        expectedStatusCodes: [200]
-    }).then((response) => __awaiter(this, void 0, void 0, function* () {
-        const version = response.headers.get('X-API-Version');
-        return {
-            version: version,
-            status: yield response.text()
-        };
-    }));
-    res.json(stats);
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const stats = yield eventService.fetch({
+            uri: '/health',
+            method: 'GET',
+            // tslint:disable-next-line:no-magic-numbers
+            expectedStatusCodes: [200]
+        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+            const version = response.headers.get('X-API-Version');
+            return {
+                version: version,
+                status: yield response.text()
+            };
+        }));
+        res.json(stats);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
+}));
+dashboardRouter.get('/dashboard/queueCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    try {
+        const taskService = new chevre.service.Task({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const result = yield taskService.search({
+            limit: 1,
+            runsFrom: moment().add(-1, 'day').toDate(),
+            runsThrough: moment().toDate(),
+            statuses: [chevre.factory.taskStatus.Ready]
+        });
+        res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
 }));
 dashboardRouter.get('/dashboard/latestReservations', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const reservationService = new chevre.service.Reservation({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const result = yield reservationService.search({
-        typeOf: chevre.factory.reservationType.EventReservation,
-        limit: 10,
-        page: 1,
-        sort: { modifiedTime: chevre.factory.sortType.Descending },
-        reservationStatuses: [
-            chevre.factory.reservationStatusType.ReservationConfirmed,
-            chevre.factory.reservationStatusType.ReservationPending
-        ],
-        modifiedFrom: moment().add(-1, 'day').toDate()
-    });
-    res.json(result);
+    try {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const result = yield reservationService.search({
+            typeOf: chevre.factory.reservationType.EventReservation,
+            limit: 10,
+            page: 1,
+            sort: { modifiedTime: chevre.factory.sortType.Descending },
+            reservationStatuses: [
+                chevre.factory.reservationStatusType.ReservationConfirmed,
+                chevre.factory.reservationStatusType.ReservationPending
+            ],
+            modifiedFrom: moment().add(-1, 'day').toDate()
+        });
+        res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
 }));
 dashboardRouter.get('/dashboard/eventsWithAggregations', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const result = yield eventService.searchWithAggregateReservation({
-        typeOf: chevre.factory.eventType.ScreeningEvent,
-        limit: 10,
-        page: 1,
-        sort: { startDate: chevre.factory.sortType.Ascending },
-        inSessionFrom: moment().add().toDate(),
-        inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
-    });
-    res.json(result);
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const result = yield eventService.searchWithAggregateReservation({
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            limit: 10,
+            page: 1,
+            sort: { startDate: chevre.factory.sortType.Ascending },
+            inSessionFrom: moment().add().toDate(),
+            inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+        });
+        res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+            error: { message: error.message }
+        });
+    }
 }));
 exports.default = dashboardRouter;
