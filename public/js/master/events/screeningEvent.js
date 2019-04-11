@@ -739,7 +739,7 @@ function createScheduler() {
                 console.log(performance);
                 var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
                 var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
-                               
+
 
                 var modal = $('#editModal');
                 modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
@@ -755,8 +755,8 @@ function createScheduler() {
                 modal.find('input[name=day]').val(day);
                 modal.find('input[name=screeningEventId]').val(performance.superEvent.id);
                 modal.find('input[name=mvtkExcludeFlg]').prop('checked', this.isSupportMovieTicket(performance));
-                modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', !this.isReservedSeatsAvailable(performance));
-                modal.find('input[name=reservedSeatsAvailable]').val((!this.isReservedSeatsAvailable(performance)) ? '1' : '0');
+                modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', this.isReservedSeatsAvailable(performance));
+                modal.find('input[name=reservedSeatsAvailable]').val((this.isReservedSeatsAvailable(performance)) ? '1' : '0');
                 modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
                 modal.find('.film span').text(performance.name.ja);
 
@@ -795,7 +795,7 @@ function createScheduler() {
                 } else {
                     modal.find('input[name=onlineDisplayStartDate]').val('');
                 }
-                
+
                 modal.modal();
             }
         }

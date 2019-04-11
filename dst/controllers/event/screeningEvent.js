@@ -191,8 +191,8 @@ function regist(req, res) {
             }
             debug('saving screening event...', req.body);
             const attributes = yield createMultipleEventFromBody(req.body, req.user);
-            debug(attributes.length);
-            yield eventService.create(attributes);
+            const events = yield eventService.create(attributes);
+            debug(events.length, 'events created', events.map((e) => e.id));
             res.json({
                 validation: null,
                 error: null

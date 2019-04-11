@@ -179,8 +179,8 @@ export async function regist(req: Request, res: Response): Promise<void> {
 
         debug('saving screening event...', req.body);
         const attributes = await createMultipleEventFromBody(req.body, req.user);
-        debug(attributes.length);
-        await eventService.create(attributes);
+        const events = await eventService.create(attributes);
+        debug(events.length, 'events created', events.map((e) => e.id));
         res.json({
             validation: null,
             error: null
