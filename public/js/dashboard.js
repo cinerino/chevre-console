@@ -31,15 +31,98 @@ $(function () {
 });
 
 function updateCharts() {
-    // countNewOrder(function () {
-    // });
-    // aggregateExitRate(function () {
-    // });
-    // countNewUser(function () {
-    // });
-    // countNewTransaction(function () {
-    // });
+    updateHealth(function () {
+    });
+
+    updateDbStats(function () {
+    });
+
+    updateReservationCount(function () {
+    });
+
+    updateLatestReservations(function () {
+    });
+
     updateEventsWithAggregation(function () {
+    });
+}
+
+function updateReservationCount(cb) {
+    $.getJSON(
+        '/dashboard/reservationCount',
+        {}
+    ).done(function (data) {
+        console.log('reservationCount:', data);
+        $('.reservationCount').text(data.totalCount);
+
+        cb();
+    }).fail(function () {
+        console.error('本日の予約数を検索できませんでした')
+    });
+}
+
+function updateHealth(cb) {
+    $.getJSON(
+        '/dashboard/health',
+        {}
+    ).done(function (data) {
+        console.log('health:', data);
+        $('.health').text(data.status);
+        $('.version').text(data.version);
+
+        cb();
+    }).fail(function () {
+        console.error('ヘルス情報を検索できませんでした')
+    });
+}
+
+function updateDbStats(cb) {
+    var GB = 1000000000;
+    $.getJSON(
+        '/dashboard/dbStats',
+        {}
+    ).done(function (data) {
+        console.log('stats:', data);
+        var usedSpaceStr = Math.floor(Number(data.fsUsedSize) / GB)
+            + '/'
+            + Math.floor(Number(data.fsTotalSize) / GB);
+        var dbText = data.db + ' has ' + data.objects + ' objects';
+
+        $('.usedSpace').text(usedSpaceStr);
+        $('.dbText').text(dbText);
+
+        cb();
+    }).fail(function () {
+        console.error('DB統計を検索できませんでした')
+    });
+}
+
+function updateLatestReservations(cb) {
+    $.getJSON(
+        '/dashboard/latestReservations',
+        {
+            limit: 10,
+            page: 1,
+            // sort: { orderDate: -1 },
+            // orderDateFrom: moment().add(-1, 'day').toISOString(),
+            // orderDateThrough: moment().toISOString()
+        }
+    ).done(function (data) {
+        $('#latestReservations tbody').empty();
+
+        // $('.eventsCount').text(data.totalCount);
+
+        $.each(data.data, function (_, reservation) {
+            var html = '<td>' + reservation.reservationNumber + '</td>'
+                + '<td>' + moment(reservation.modifiedTime).format('MM/DD HH:mm') + '</td>'
+                + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>'
+                + '<td><span class="badge badge-secondary">' + reservation.reservationStatus + '</span></td>';
+            $('<tr>').html(html).appendTo('#latestReservations tbody');
+        });
+
+        cb();
+    }).fail(function () {
+        console.error('予約を検索できませんでした')
     });
 }
 
@@ -60,7 +143,8 @@ function updateEventsWithAggregation(cb) {
 
         $.each(data.data, function (_, event) {
             var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'
-                + '<td>' + event.name.ja + '</td>'
+                + '<td>' + event.name.ja.slice(0, 5) + '...</td>'
+                + '<td>' + event.superEvent.location.name.ja + '</td>'
                 // + '<td>' + event.startDate + '</td>'
                 + '<td>' + event.saleTicketCount + '</td>'
                 + '<td>' + event.preSaleTicketCount + '</td>'

@@ -140,14 +140,9 @@ $(function () {
 
     // COA券種インポート
     $('a.importFromCOA').click(function () {
-        var selectedSellerNames = [];
-        $('select[name="seller[ids][]"] option:selected').each(function () {
-            selectedSellerNames.push($(this).text());
-        });
-        var message = '[販売者]\n' + selectedSellerNames.join('\n')
-            + '\n\n[開催日]\n' + $('input[name="startRange"]').val()
-            + '\n\nの販売イベントをインポートしようとしています。'
+        var message = 'COA券種をインポートしようとしています。'
             + '\nよろしいですか？';
+
         if (window.confirm(message)) {
             $.ajax({
                 url: '/ticketTypes/importFromCOA',
