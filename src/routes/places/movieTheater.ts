@@ -171,7 +171,7 @@ movieTheaterRouter.all(
 
         const forms = {
             additionalProperty: [],
-            offersStr: JSON.stringify(movieTheater.offers, null, '\t'),
+            offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
             containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
             ...movieTheater,
             ...req.body

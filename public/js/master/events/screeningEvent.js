@@ -112,6 +112,36 @@ $(function () {
             $(this).parents('tr').attr('data-dirty', true);
         }
     );
+
+    // COAイベントインポート
+    $('a.importFromCOA').click(function () {
+        var theater = $('.search select[name=theater]').val();
+        if (!theater) {
+            alert('劇場を選択してください');
+
+            return;
+        }
+
+        var message = '劇場:' + theater + 'のCOAイベントをインポートしようとしています。'
+            + '\nよろしいですか？';
+
+        if (window.confirm(message)) {
+            $.ajax({
+                url: '/events/screeningEvent/importFromCOA',
+                type: 'POST',
+                dataType: 'json',
+                data: $('.search form').serialize()
+            }).done(function (tasks) {
+                console.log(tasks);
+                alert('インポートを開始しました');
+            }).fail(function (xhr) {
+                var res = $.parseJSON(xhr.responseText);
+                alert(res.error.message);
+            }).always(function () {
+            });
+        } else {
+        }
+    });
 });
 
 /**

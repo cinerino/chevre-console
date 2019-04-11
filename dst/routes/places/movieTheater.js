@@ -138,7 +138,7 @@ movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], offersStr: JSON.stringify(movieTheater.offers, null, '\t'), containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater, req.body);
+    const forms = Object.assign({ additionalProperty: [], offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};

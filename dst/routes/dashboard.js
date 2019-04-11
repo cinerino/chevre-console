@@ -27,11 +27,13 @@ dashboardRouter.get('/dashboard/eventsWithAggregations', (req, res) => __awaiter
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const result = yield eventService.countTicketTypePerEvent({
+    const result = yield eventService.searchWithAggregateReservation({
+        typeOf: chevre.factory.eventType.ScreeningEvent,
         limit: 10,
         page: 1,
-        startFrom: moment().toDate(),
-        startThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+        sort: { startDate: chevre.factory.sortType.Ascending },
+        inSessionFrom: moment().add().toDate(),
+        inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
     });
     res.json(result);
 }));
