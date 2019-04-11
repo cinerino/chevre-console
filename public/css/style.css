@@ -53,6 +53,78 @@ body {
   font-size: 14px;
   color: #333; }
 
+.pointer {
+  cursor: pointer; }
+
+.nowrap {
+  white-space: nowrap; }
+
+.overflow-hidden {
+  overflow: hidden; }
+
+.text-x-small {
+  font-size: 10px; }
+
+.text-small {
+  font-size: 0.8rem; }
+
+.text-large {
+  font-size: 1.4rem; }
+
+.text-x-large {
+  font-size: 2rem; }
+
+.text-xx-large {
+  font-size: 2.5rem; }
+
+.bg-transparent {
+  background-color: transparent !important; }
+
+.bg-white {
+  background-color: #FFF !important; }
+
+.text-white {
+  color: #FFF !important; }
+
+.border-white {
+  border-color: #FFF !important; }
+
+.bg-black {
+  background-color: #000 !important; }
+
+.text-black {
+  color: #000 !important; }
+
+.border-black {
+  border-color: #000 !important; }
+
+.bg-dark-gray {
+  background-color: #666 !important; }
+
+.text-dark-gray {
+  color: #666 !important; }
+
+.border-dark-gray {
+  border-color: #666 !important; }
+
+.bg-gray {
+  background-color: #AAA !important; }
+
+.text-gray {
+  color: #AAA !important; }
+
+.border-gray {
+  border-color: #AAA !important; }
+
+.bg-light-gray {
+  background-color: #EEE !important; }
+
+.text-light-gray {
+  color: #EEE !important; }
+
+.border-light-gray {
+  border-color: #EEE !important; }
+
 .table thead th, .table thead td, .table tbody th, .table tbody td {
   vertical-align: middle;
   line-height: 1.6; }
@@ -79,11 +151,15 @@ body {
   background-color: #666;
   border-color: #666; }
 
+#loadingModal .modal-content {
+  box-shadow: none; }
+
 .loader,
 .loader:after {
   border-radius: 50%;
   width: 90px;
-  height: 90px; }
+  height: 90px;
+  overflow: hidden; }
 
 .loader {
   margin: 60px auto;
@@ -124,51 +200,26 @@ body {
   overflow: auto;
   width: 100%;
   overflow-x: auto;
-  border: 2px solid #ccc; }
+  background-color: #FFF; }
+  .scheduler table {
+    min-width: 100%; }
+  .scheduler .table-header {
+    overflow-y: scroll;
+    width: max-content;
+    min-width: 100%; }
   .scheduler .scrollable-body {
+    margin-top: -2px;
     height: 480px;
     overflow: auto;
     width: max-content;
     min-width: 100%; }
-  .scheduler table {
-    min-width: 100%;
-    border-collapse: collapse; }
-  .scheduler td {
-    border-right: 1px solid #ccc;
-    border-left: 1px solid #ccc; }
-  .scheduler .header {
-    text-align: center;
-    font-size: 12px;
-    border-bottom: 1px solid #ccc; }
-  .scheduler .times {
-    width: auto; }
-    .scheduler .times .time {
-      font-size: 12px;
-      text-align: center; }
   .scheduler .screen {
     position: relative; }
   .scheduler .performance {
     position: absolute;
     padding: 0px 2px; }
-    .scheduler .performance .inner {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 5px;
-      border: 1px solid #a7dbff;
-      background-color: #d5eeff;
-      height: 100%;
-      word-wrap: break-word;
-      font-size: 11px;
-      overflow: hidden; }
-      .scheduler .performance .inner:hover {
-        transition: all 0.2s;
-        background-color: #a7dbff; }
-    .scheduler .performance.overlap .inner {
-      border: 1px solid #ffa7a7;
-      background-color: #ffd5d5; }
-      .scheduler .performance.overlap .inner:hover {
-        transition: all 0.2s;
-        background-color: #ffa7a7; }
+    .scheduler .performance:hover {
+      z-index: 10; }
 
 .performance-edit-modal td {
   padding: 10px; }

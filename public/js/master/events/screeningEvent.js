@@ -1,70 +1,34 @@
-// moment.tz.add([
-//     'Asia/Tokyo',
-//     'America/New_York|EST EDT|50 40|0101|1Lz50 1zb0 Op0'
-// ]);
-
-/**
- * 1時間の高さ
- * @const HOUR_HEIGHT
- */
-var HOUR_HEIGHT = 40;
-
-/**
- * スクリーンの幅
- * @const SCREEN_WIDTH
- */
-var SCREEN_WIDTH = 80;
-
 /**
  * スケジュール作成中かどうか
  */
 var creatingSchedules = false;
 
+var scheduler;
+
 $(function () {
+    //上映日
+    $('.search form input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
+        .val(moment().tz('Asia/Tokyo').format('YYYY/MM/DD'));
+    // datepickerセット
+    $('.datepicker').datepicker({
+        language: 'ja'
+    });
+    //スケジューラー初期化
+    scheduler = createScheduler();
+    $('#scheduler').removeClass('d-none');
     // 検索
-    $(document).on('click', '.search-button', function (event) {
-        event.preventDefault();
-        var theater = $('.search select[name=theater]').val();
-        var date = $('.search input[name=date]').val();
-        var days = $('.search input[name=days]:checked').val();
-        var screen = $('.search select[name=screen]').val();
-        var onlyReservedSeatsAvailable = $('.search input[name=onlyReservedSeatsAvailable]:checked').val();
-        screen = screen === '' ? undefined : screen;
-        search(theater, date, days, screen, onlyReservedSeatsAvailable);
-    });
-
+    $(document).on('click', '.search-button', searchSchedule);
     // 新規作成
-    $(document).on('click', '.add-button', function (event) {
-        event.preventDefault();
-        add();
-    });
-
-    // 編集
-    $(document).on('click', '.performance', function (event) {
-        if (event.target.href === undefined) {
-            event.preventDefault();
-            var target = $(this).find('.inner');
-            edit(target);
-        }
-    });
+    $(document).on('click', '.add-button', add);
 
     // 新規登録（確定）
-    $(document).on('click', '.regist-button', function (event) {
-        event.preventDefault();
-        regist();
-    });
+    $(document).on('click', '.regist-button', regist);
 
     // 更新（確定）
-    $(document).on('click', '.update-button', function (event) {
-        event.preventDefault();
-        update();
-    });
+    $(document).on('click', '.update-button', update);
 
     // 削除ボタンの処理
-    $(document).on('click', '.delete-button', function (event) {
-        event.preventDefault();
-        deletePerformance();
-    });
+    $(document).on('click', '.delete-button', deletePerformance);
 
     // 劇場検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
@@ -390,11 +354,7 @@ function regist() {
                 getScreens(theater, 'none');
                 $('.search select[name=theater]').val(theater);
             }
-            search(
-                theater,
-                $('.search input[name=date]').val(),
-                $('.search input[name=days]:checked').val()
-            );
+            searchSchedule();
 
             creatingSchedules = false;
             return;
@@ -490,11 +450,7 @@ function update() {
         }).done(function (data) {
             if (!data.error) {
                 modal.modal('hide');
-                search(
-                    theater,
-                    $('.search input[name=date]').val(),
-                    $('.search input[name=days]').val()
-                );
+                searchSchedule();
                 return;
             }
             alert('更新に失敗しました');
@@ -507,58 +463,11 @@ function update() {
 
 /**
  * 検索
- * @function search
- * @param {string} theater
- * @param {string} date
- * @param {number} date
- * @param {string} screen
- * @returns {void}
  */
-function search(theater, date, days, screen, onlyReservedSeatsAvailable) {
-    if (!theater || !date) {
-        alert('劇場、上映日を選択してください');
-        return;
-    }
-    $('#loadingModal').modal({ backdrop: 'static' });
-    var query = {
-        theater: theater,
-        date: date,
-        days: days,
-        onlyReservedSeatsAvailable: onlyReservedSeatsAvailable
-    };
-    if (screen !== undefined && screen !== null) {
-        query.screen = screen;
-    }
+function searchSchedule() {
+    var theater = $('.search select[name=theater]').val();
     getScreens(theater, 'edit');
-    $.ajax({
-        dataType: 'json',
-        url: '/events/screeningEvent/search',
-        type: 'GET',
-        data: query
-    }).done(function (data) {
-        if (data) {
-            var dates = [];
-            for (var i = 0; i < days; i++) {
-                dates.push(moment(date).add(i, 'days').format('MM/DD'));
-            }
-            create(data.screens, data.performances, dates);
-            modalInit(theater, date, data.ticketGroups);
-            // スケジューラーのスクロール位置を変更
-            var scheduler = $('.scheduler');
-            var top;
-            scheduler.find('.performance').each(function (index, elem) {
-                var radix = 10;
-                var tmp = parseInt($(elem).css('top'), radix);
-                if (top === undefined) top = tmp;
-                if (top > tmp) top = tmp;
-            });
-            scheduler.show();
-            scheduler.scrollTop(top);
-        }
-    }).fail(function (jqxhr, textStatus, error) {
-        console.error(jqxhr, textStatus, error);
-        alert('エラーが発生しました。');
-    }).always(function () { $('#loadingModal').modal('hide'); });
+    scheduler.create();
 }
 
 /**
@@ -581,11 +490,7 @@ function deletePerformance() {
     }).done(function (data) {
         if (!data.error) {
             modal.modal('hide');
-            search(
-                theater,
-                $('.search input[name=date]').val(),
-                $('.search input[name=days]').val()
-            );
+            searchSchedule();
             return;
         }
         alert('削除に失敗しました');
@@ -652,303 +557,217 @@ function add() {
 }
 
 /**
- * 編集
- * @function edit
- * @param {JQuery} target 
- * @returns {void}
+ * スケジューラー生成
  */
-function edit(target) {
-    var performance = target.attr('data-performance');
-    var theater = target.attr('data-theater');
-    var day = target.attr('data-day');
-    var doorTime = target.attr('data-doorTime');
-    var startTime = target.attr('data-startTime');
-    var endTime = target.attr('data-endTime');
-    var screen = target.attr('data-screen');
-    var film = target.attr('data-film');
-    var mvtkExcludeFlg = target.attr('data-mvtkExcludeFlg');
-    var filmName = target.attr('data-filmName');
-    var ticketTypeGroup = target.attr('data-ticketTypeGroup');
-    var saleStartDate = target.attr('data-saleStartDate') ? target.attr('data-saleStartDate') : '';
-    var saleStartTime = target.attr('data-saleStartTime') ? target.attr('data-saleStartTime') : '';
-    // var saleStartDate = target.attr('data-saleStartDate') ? target.attr('data-saleStartDate') : '';
-    var onlineDisplayStartDate = target.attr('data-onlineDisplayStartDate') ? target.attr('data-onlineDisplayStartDate') : '';
-    var maxSeatNumber = target.attr('data-maxSeatNumber');
-    var reservedSeatsAvailable = target.attr('data-reservedSeatsAvailable');
+function createScheduler() {
+    return new Vue({
+        el: '#scheduler',
+        data: {
+            HOUR_HEIGHT: 40,
+            SCREEN_WIDTH: 60,
+            TIME_WIDTH: 50,
+            moment: moment,
+            searchCondition: {},
+            scheduleData: {
+                dates: []
+            },
+            times: []
+        },
+        methods: {
+            /**
+             * 座席指定判定
+             */
+            isReservedSeatsAvailable: function (performance) {
+                return (performance.offers
+                    && performance.offers.itemOffered.serviceOutput !== undefined
+                    && performance.offers.itemOffered.serviceOutput.reservedTicket !== undefined
+                    && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat !== undefined);
+            },
+            /**
+             * ムビチケ対応判定
+             */
+            isSupportMovieTicket: function (performance) {
+                return (performance.offers !== undefined
+                    && Array.isArray(performance.offers.acceptedPaymentMethod)
+                    && performance.offers.acceptedPaymentMethod.indexOf('MovieTicket') < 0);
+            },
+            /**
+             * スケジューラー生成
+             */
+            create: function () {
+                this.createTimes();
+                this.searchCondition = this.getSearchCondition();
+                if (this.searchCondition.theater === ''
+                    || this.searchCondition.date === '') {
+                    alert('劇場、上映日を選択してください');
+                    return;
+                }
+                var _this = this;
+                $('#loadingModal').modal({ backdrop: 'static' });
+                this.searchScreeningEvent().then(function (data) {
+                    $('#loadingModal').modal({ backdrop: 'static' });
+                    _this.createScheduleData(data);
+                    $('#loadingModal').modal('hide');
+                }).catch(function (error) {
+                    alert('エラーが発生しました。');
+                    $('#loadingModal').modal('hide');
+                });
+            },
+            /**
+             * 検索条件取得
+             */
+            getSearchCondition: function () {
+                return {
+                    theater: $('.search select[name=theater]').val(),
+                    date: $('.search input[name=date]').val(),
+                    days: $('.search input[name=days]:checked').val(),
+                    screen: ($('.search select[name=screen]').val() === '') ? undefined : $('.search select[name=screen]').val(),
+                    onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val()
+                };
+            },
+            /**
+             * スケジュール情報検索API
+             */
+            searchScreeningEvent: function () {
+                var options = {
+                    dataType: 'json',
+                    url: '/events/screeningEvent/search',
+                    type: 'GET',
+                    data: this.searchCondition
+                };
+                return $.ajax(options);
+            },
+            /**
+             * スケジュールデータ作成
+             */
+            createScheduleData: function (data) {
+                this.scheduleData.dates = [];
+                for (var i = 0; i < this.searchCondition.days; i++) {
+                    var date = moment(this.searchCondition.date).add(i, 'days').toISOString();
+                    this.scheduleData.dates.push({
+                        data: date,
+                        screens: data.screens.map(function (s) {
+                            return {
+                                data: s,
+                                performances: data.performances.filter(function (p) {
+                                    return (p.location.branchCode === s.branchCode
+                                        && moment(p.startDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD'));
+                                })
+                            };
+                        })
+                    });
+                }
+                console.log(JSON.parse(JSON.stringify(this.scheduleData)));
+            },
+            /**
+             * 時間データ生成
+             */
+            createTimes: function () {
+                this.times = [];
+                for (var i = 0; i < 24; i++) {
+                    this.times.push(`0${i}`.slice(-2) + ':00');
+                }
+            },
+            /**
+             * パフォーマンスの表示位置取得
+             */
+            getPerformanceStyle: function (performance) {
+                var start = {
+                    hour: moment(performance.doorTime).tz('Asia/Tokyo').format('HH'),
+                    minutes: moment(performance.doorTime).tz('Asia/Tokyo').format('mm')
+                };
+                var end = {
+                    hour: moment(performance.endDate).tz('Asia/Tokyo').format('HH'),
+                    minutes: moment(performance.endDate).tz('Asia/Tokyo').format('mm')
+                };
+                var hour = 60;
+                var top = (start.hour * this.HOUR_HEIGHT) + (start.minutes * this.HOUR_HEIGHT / hour);
+                var left = 0;
+                var height = ((end.hour - start.hour) * this.HOUR_HEIGHT) + ((end.minutes - start.minutes) * this.HOUR_HEIGHT / hour);
+                return {
+                    top: top + 'px',
+                    left: left + 'px',
+                    height: height + 'px'
+                };
+            },
+            /**
+             * 時間重複数取得
+             */
+            getOverlapPerformanceCount: function (targetPerformance, performances) {
+                var doorTime = moment(targetPerformance.doorTime).unix();
+                var endDate = moment(targetPerformance.endDate).unix();
+                var filterResult = performances.filter(function (p) {
+                    return ((moment(p.doorTime).unix() < doorTime && moment(p.endDate).unix() > doorTime)
+                        || (moment(p.doorTime).unix() < endDate && moment(p.endDate).unix() > endDate));
+                });
+                return filterResult.length;
+            },
+            /**
+             * パフォーマンス編集
+             */
+            editPerformance: function (performance) {
+                console.log(performance);
+                var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
+                var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
+                               
 
-    var modal = $('#editModal');
-    modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
-    // チェックstartTime削除ボタン表示
-    if (moment(day).isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
-        modal.find('.delete-button').show();
-    } else {
-        modal.find('.delete-button').hide();
-    }
+                var modal = $('#editModal');
+                modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
+                // チェックstartTime削除ボタン表示
+                if (moment(day).isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
+                    modal.find('.delete-button').show();
+                } else {
+                    modal.find('.delete-button').hide();
+                }
 
-    modal.find('input[name=performance]').val(performance);
-    modal.find('input[name=theater]').val(theater);
-    modal.find('input[name=day]').val(day);
-    modal.find('input[name=screeningEventId]').val(film);
-    modal.find('input[name=mvtkExcludeFlg]').prop('checked', (mvtkExcludeFlg === '1'));
-    modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', (reservedSeatsAvailable === '1'));
-    modal.find('input[name=reservedSeatsAvailable]').val(reservedSeatsAvailable);
+                modal.find('input[name=performance]').val(performance.id);
+                modal.find('input[name=theater]').val(performance.superEvent.location.branchCode);
+                modal.find('input[name=day]').val(day);
+                modal.find('input[name=screeningEventId]').val(performance.superEvent.id);
+                modal.find('input[name=mvtkExcludeFlg]').prop('checked', this.isSupportMovieTicket(performance));
+                modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', !this.isReservedSeatsAvailable(performance));
+                modal.find('input[name=reservedSeatsAvailable]').val((!this.isReservedSeatsAvailable(performance)) ? '1' : '0');
+                modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
+                modal.find('.film span').text(performance.name.ja);
 
-    var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
-    modal.find('select[name=doorTimeHour]').val(doorTime.slice(0, 2));
-    modal.find('select[name=doorTimeMinutes]').val(fix(doorTime.slice(2, 4)));
-    modal.find('select[name=startTimeHour]').val(startTime.slice(0, 2));
-    modal.find('select[name=startTimeMinutes]').val(fix(startTime.slice(2, 4)));
-    modal.find('select[name=endTimeHour]').val(endTime.slice(0, 2));
-    modal.find('select[name=endTimeMinutes]').val(fix(endTime.slice(2, 4)));
-    modal.find('select[name=screen]').val(screen);
-    modal.find('select[name=ticketTypeGroup]').val(ticketTypeGroup);
+                // 上映時間
+                var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HHmm');
+                var startTime = moment(performance.startTime).tz('Asia/Tokyo').format('HHmm');
+                var endTime = moment(performance.endTime).tz('Asia/Tokyo').format('HHmm');
+                modal.find('select[name=doorTimeHour]').val(doorTime.slice(0, 2));
+                modal.find('select[name=doorTimeMinutes]').val(fix(doorTime.slice(2, 4)));
+                modal.find('select[name=startTimeHour]').val(startTime.slice(0, 2));
+                modal.find('select[name=startTimeMinutes]').val(fix(startTime.slice(2, 4)));
+                modal.find('select[name=endTimeHour]').val(endTime.slice(0, 2));
+                modal.find('select[name=endTimeMinutes]').val(fix(endTime.slice(2, 4)));
+                modal.find('select[name=screen]').val(performance.location.branchCode);
+                modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
 
-    // 販売開始日
-    if (saleStartDate) {
-        modal.find('input[name=saleStartDate]').val(saleStartDate);
-        modal.find('select[name=saleStartDateHour]').val(saleStartTime.slice(0, 2));
-        modal.find('select[name=saleStartDateMinutes]').val(fix(saleStartTime.slice(2, 4)));
-    } else {
-        modal.find('input[name=saleStartDate]').val('');
-        modal.find('select[name=saleStartDateHour]').val('');
-        modal.find('select[name=saleStartDateMinutes]').val('');
-    }
-    // if (saleStartDate) {
-    //     modal.find('input[name=saleStartDate]').datepicker('update', saleStartDate);
-    // } else {
-    //     modal.find('input[name=saleStartDate]').val('');
-    // }
-    if (onlineDisplayStartDate) {
-        modal.find('input[name=onlineDisplayStartDate]').datepicker('update', onlineDisplayStartDate);
-    } else {
-        modal.find('input[name=onlineDisplayStartDate]').val('');
-    }
-    modal.find('input[name=maxSeatNumber]').val(maxSeatNumber);
-
-    modal.find('.film span').text(filmName);
-    modal.modal();
-}
-
-/**
- * 作成
- * @function create
- * @param {*} screens 
- * @param {*} performances
- * @returns {void} 
- */
-function create(screens, performances, dates) {
-    var scheduler = $('.scheduler');
-    scheduler.html('');
-    var header = $('<div>').addClass('fixed-header').append(
-        $('<table>').append(createHeader(screens, dates))
-    );
-    var body = $('<div>').addClass('scrollable-body').append(
-        $('<table>').css({ borderTop: 0 }).append(createBody(screens, performances, dates))
-    );
-    scheduler.append(header).append(body);
-}
-
-/**
- * ヘッダー作成
- * @function createHeader
- * @param {*} screens 
- * @param {*} dates 
- * @returns {JQuery} 
- */
-function createHeader(screens, dates) {
-    // スクリーンをコード順に
-    var sortedScreens = screens.sort(function (a, b) {
-        if (a.branchCode < b.branchCode) {
-            return -1;
+                // 販売開始日
+                var saleStartDate = (performance.offers === undefined)
+                    ? '' : moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD');
+                var saleStartTime = (performance.offers === undefined)
+                    ? '' : moment(performance.offers.validFrom).tz('Asia/Tokyo').format('HHmm');
+                if (saleStartDate !== '' && saleStartTime !== '') {
+                    modal.find('input[name=saleStartDate]').val(saleStartDate);
+                    modal.find('select[name=saleStartDateHour]').val(saleStartTime.slice(0, 2));
+                    modal.find('select[name=saleStartDateMinutes]').val(fix(saleStartTime.slice(2, 4)));
+                } else {
+                    modal.find('input[name=saleStartDate]').val('');
+                    modal.find('select[name=saleStartDateHour]').val('');
+                    modal.find('select[name=saleStartDateMinutes]').val('');
+                }
+                // オンライン表示
+                var onlineDisplayStartDate = (performance.offers)
+                    ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';
+                if (onlineDisplayStartDate !== '') {
+                    modal.find('input[name=onlineDisplayStartDate]').datepicker('update', onlineDisplayStartDate);
+                } else {
+                    modal.find('input[name=onlineDisplayStartDate]').val('');
+                }
+                
+                modal.modal();
+            }
         }
-        if (a.branchCode > b.branchCode) {
-            return 1;
-        }
-
-        return 0;
     });
-    // console.log(sortedScreens);
-    var dom = $('<thead class="header"></thead>');
-    var tr1 = $('<tr></tr>');
-    tr1.css({ borderBottom: '1px solid #ccc' })
-    var tr2 = $('<tr></tr>');
-    tr1.append('<td style="min-width: ' + HOUR_HEIGHT + 'px;" rowspan="2">時間</td>');
-    for (var j = 0; j < dates.length; j++) {
-        var td = $('<td></td>');
-        td.html(dates[j]);
-        td.attr('colspan', sortedScreens.length);
-        tr1.append(td);
-        for (var i = 0; i < sortedScreens.length; i++) {
-            var screen = sortedScreens[i];
-            tr2.append('<td style="min-width: ' + SCREEN_WIDTH + 'px;">' + screen.name.ja + '</td>');
-        }
-    }
-    dom.append(tr1).append(tr2);
-    return dom;
 }
-
-/**
- * 中身作成
- * @function createBody
- * @param {*} screens 
- * @param {*} performances 
- * @returns {JQuery} 
- */
-function createBody(screens, performances, dates) {
-    var dom = $('<tbody><tr></tr></tbody>');
-    dom.find('tr').append(createTime());
-    for (var j = 0; j < dates.length; j++) {
-        for (var i = 0; i < screens.length; i++) {
-            var screen = screens[i];
-            var target = performances.filter(function (performance) {
-                return (
-                    performance.location.branchCode === screen.branchCode &&
-                    moment(performance.doorTime).tz('Asia/Tokyo').format('MM/DD') === dates[j]
-                );
-            });
-            dom.find('tr').append(createScreen(target));
-        }
-    }
-    return dom;
-}
-
-/**
- * 時間作成
- * @function createTime
- * @returns {JQuery} 
- */
-function createTime() {
-    var dom = $('<td class="times"></td>').css({ minWidth: HOUR_HEIGHT + 'px' });
-    for (var i = 0; i < 24; i++) {
-        var time = ('00' + String(i)).slice(-2) + ':00';
-        dom.append('<div class="time" style="height: ' + HOUR_HEIGHT + 'px">' + time + '</div>');
-    }
-    return dom;
-}
-
-/**
- * スクリーン作成
- */
-function createScreen(performances) {
-    var dom = $('<td class="screen"></td>').css({ minWidth: SCREEN_WIDTH });
-    var sortedPerformance = performances.sort((p1, p2) => {
-        if (p1.doorTime > p2.doorTime) return 1;
-        if (p1.doorTime < p2.doorTime) return -1;
-        return 0;
-    })
-    // オーバーラップをチェックするため
-    var prevBtm = 0;
-    for (var i = 0; i < sortedPerformance.length; i++) {
-        var performance = sortedPerformance[i];
-        var start = {
-            hour: moment(performance.doorTime).tz('Asia/Tokyo').format('HH'),
-            minutes: moment(performance.doorTime).tz('Asia/Tokyo').format('mm')
-        };
-        var end = {
-            hour: moment(performance.endDate).tz('Asia/Tokyo').format('HH'),
-            minutes: moment(performance.endDate).tz('Asia/Tokyo').format('mm')
-        };
-        var hour = 60;
-        var top = (start.hour * HOUR_HEIGHT) + (start.minutes * HOUR_HEIGHT / hour);
-        var left = 0;
-        // 上映時間から判断するべき
-        var height = ((end.hour - start.hour) * HOUR_HEIGHT) + ((end.minutes - start.minutes) * HOUR_HEIGHT / hour);
-        var width = 100;
-        var style = {
-            top: top + 'px',
-            left: left + 'px',
-            height: height + 'px',
-            width: width + '%'
-        };
-        // 販売開始日
-        if (performance.offers) {
-            var saleStartDate = moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD');
-            var saleStartTime = moment(performance.offers.validFrom).tz('Asia/Tokyo').format('HHmm');
-        } else {
-            var saleStartDate = '';
-            var saleStartTime = '';
-        }
-
-        var onlineDisplayStartDate = (performance.offers) ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';
-        var reservedSeatsAvailable = (performance.offers
-            && performance.offers.itemOffered.serviceOutput !== undefined
-            && performance.offers.itemOffered.serviceOutput.reservedTicket !== undefined
-            && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined) ? '0' : '1';
-        var maxSeatNumber = (performance.offers) ? performance.offers.eligibleQuantity.maxValue : '';
-        var mvtkExcludeFlg = '0';
-        if (performance.offers !== undefined
-            && Array.isArray(performance.offers.acceptedPaymentMethod)
-            && performance.offers.acceptedPaymentMethod.indexOf('MovieTicket') < 0) {
-            mvtkExcludeFlg = '1';
-        }
-
-        var serviceTypeName = '';
-        if (performance.offers.itemOffered !== undefined && performance.offers.itemOffered.serviceType !== undefined) {
-            serviceTypeName = performance.offers.itemOffered.serviceType.name;
-        }
-
-        // イベントDOM内コンテンツ
-        var performanceContens = [
-            performance.name.ja,
-            '<span class="font-italic">' + performance.location.name.ja + '</span>',
-            '<a target="_blank" href="/ticketTypeGroups/' + performance.offers.id + '/update">' + performance.offers.name.ja + '</a>',
-            serviceTypeName
-        ];
-        if (reservedSeatsAvailable === '1') {
-            performanceContens.push('<span class="badge badge-success">座席指定</span>');
-        }
-
-        // イベントDOM作成
-        var performanceInnerDom = $('<div role="button" class="inner">' + performanceContens.join('<br>') + '</div>')
-            .attr({
-                'data-performance': performance.id,
-                'data-day': moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD'),
-                'data-doorTime': moment(performance.doorTime).tz('Asia/Tokyo').format('HHmm'),
-                'data-startTime': moment(performance.startDate).tz('Asia/Tokyo').format('HHmm'),
-                'data-endTime': moment(performance.endDate).tz('Asia/Tokyo').format('HHmm'),
-                'data-screen': performance.location.branchCode,
-                'data-theater': performance.superEvent.location.branchCode,
-                'data-film': performance.superEvent.id,
-                'data-filmName': performance.superEvent.workPerformed.name,
-                'data-ticketTypeGroup': performance.offers.id,
-                'data-saleStartDate': saleStartDate,
-                'data-saleStartTime': saleStartTime,
-                'data-onlineDisplayStartDate': onlineDisplayStartDate,
-                'data-maxSeatNumber': maxSeatNumber,
-                'data-mvtkExcludeFlg': mvtkExcludeFlg,
-                'data-reservedSeatsAvailable': reservedSeatsAvailable
-            });
-
-        var performanceDom = $('<div class="performance"></div>');
-        performanceDom.append(performanceInnerDom);
-
-        if (top < prevBtm) {
-            performanceDom.addClass('overlap')
-        };
-        prevBtm = top + height;
-        if (i < sortedPerformance.length - 1) {
-            var next = sortedPerformance[i + 1];
-            var nextStart = {
-                hour: moment(next.doorTime).tz('Asia/Tokyo').format('HH'),
-                minutes: moment(next.doorTime).tz('Asia/Tokyo').format('mm')
-            };
-            var nextTop = (nextStart.hour * HOUR_HEIGHT) + (nextStart.minutes * HOUR_HEIGHT / hour);
-            if (prevBtm > nextTop) performanceDom.addClass('overlap');
-        }
-        performanceDom.css(style);
-        dom.append(performanceDom);
-    }
-
-    return dom;
-}
-
-$(function () {
-    //上映日
-    $('.search form input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
-        .val(moment().tz('Asia/Tokyo').format('YYYY/MM/DD'));
-
-    // datepickerセット
-    $('.datepicker').datepicker({
-        language: 'ja'
-    });
-});

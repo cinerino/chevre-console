@@ -28,6 +28,83 @@ body {
     color: #333;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.text-x-small {
+    font-size: 10px;
+}
+.text-small {
+    font-size: 0.8rem;
+}
+.text-large {
+    font-size: 1.4rem;
+}
+.text-x-large {
+    font-size: 2rem;
+}
+.text-xx-large {
+    font-size: 2.5rem;
+}
+
+// color
+.bg-transparent {
+    background-color: transparent !important;
+}
+.bg-white {
+    background-color: #FFF !important;
+}
+.text-white {
+    color: #FFF !important;
+}
+.border-white {
+    border-color: #FFF !important;
+}
+.bg-black {
+    background-color: #000 !important;
+}
+.text-black {
+    color: #000 !important;
+}
+.border-black {
+    border-color: #000 !important;
+}
+.bg-dark-gray {
+    background-color: $dark-gray !important;
+}
+.text-dark-gray {
+    color: $dark-gray !important;
+}
+.border-dark-gray {
+    border-color: $dark-gray !important;
+}
+.bg-gray {
+    background-color: $gray !important;
+}
+.text-gray {
+    color: $gray !important;
+}
+.border-gray {
+    border-color: $gray !important;
+}
+.bg-light-gray {
+    background-color: $light-gray !important;
+}
+.text-light-gray {
+    color: $light-gray !important;
+}
+.border-light-gray {
+    border-color: $light-gray !important;
+}
 
 .table {
     thead, tbody {
@@ -76,11 +153,17 @@ body {
 
 
 // loading
+#loadingModal {
+    .modal-content {
+        box-shadow: none;
+    }
+}
 .loader,
 .loader:after {
     border-radius: 50%;
     width: 90px;
     height: 90px;
+    overflow: hidden;
 }
 .loader {
     margin: 60px auto;

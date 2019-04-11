@@ -7,34 +7,23 @@
     overflow: auto;
     width: 100%;
     overflow-x: auto;
-    border: 2px solid #ccc;
+    background-color: #FFF;
+    table {
+        min-width: 100%;
+    }
+    .table-header {
+        overflow-y: scroll;
+        width: max-content;
+        min-width: 100%;
+    }
     .scrollable-body {
+        margin-top: -2px;
         height: 480px;
         overflow: auto;
         width: max-content;
         min-width: 100%;
     }
-    table {
-        min-width: 100%;
-        border-collapse: collapse;
-        // border: 2px solid #ccc;
-    }
-    td {
-        border-right: 1px solid #ccc;
-        border-left: 1px solid #ccc;
-    }
-    .header {
-        text-align: center;
-        font-size: 12px;
-        border-bottom: 1px solid #ccc;
-    }
-    .times {
-        width: auto;
-        .time {
-            font-size: 12px;
-            text-align: center;
-        }
-    }
+    
     .screen {
         position: relative;
     }
@@ -42,30 +31,10 @@
     .performance {
         position: absolute;
         padding: 0px 2px;
-        .inner {
-            cursor: pointer;
-            border-radius: 3px;
-            padding: 5px;
-            border: 1px solid #a7dbff;
-            background-color: #d5eeff;
-            height: 100%;
-            word-wrap: break-word;
-            font-size: 11px;
-            overflow: hidden;
-            &:hover {
-                transition: all 0.2s;
-                background-color: #a7dbff;
-            }
+        &:hover {
+            z-index: 10;
         }
-        &.overlap {
-            .inner {
-                border: 1px solid #ffa7a7;
-                background-color: #ffd5d5;
-                &:hover {
-                    transition: all 0.2s;
-                    background-color: #ffa7a7;
-                }
-            }
+        .inner {
         }
     }
 }
