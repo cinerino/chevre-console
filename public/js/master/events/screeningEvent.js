@@ -608,10 +608,10 @@ function createScheduler() {
              * 座席指定判定
              */
             isReservedSeatsAvailable: function (performance) {
-                return (performance.offers
+                return !(performance.offers
                     && performance.offers.itemOffered.serviceOutput !== undefined
                     && performance.offers.itemOffered.serviceOutput.reservedTicket !== undefined
-                    && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat !== undefined);
+                    && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined);
             },
             /**
              * ムビチケ対応判定
