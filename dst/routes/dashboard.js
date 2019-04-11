@@ -31,8 +31,8 @@ dashboardRouter.get('/dashboard/reservationCount', (req, res) => __awaiter(this,
         limit: 1,
         typeOf: chevre.factory.reservationType.EventReservation,
         reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
-        modifiedFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
-        modifiedThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+        bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
+        bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
     };
     const result = yield reservationService.search(searchConditions);
     res.json(result);

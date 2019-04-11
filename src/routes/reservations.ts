@@ -70,6 +70,12 @@ reservationsRouter.get(
                 modifiedThrough: (req.query.modifiedThrough !== '')
                     ? moment(`${String(req.query.modifiedThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
                     : undefined,
+                bookingFrom: (req.query.bookingFrom !== '')
+                    ? moment(`${String(req.query.bookingFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+                    : undefined,
+                bookingThrough: (req.query.bookingThrough !== '')
+                    ? moment(`${String(req.query.bookingThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
+                    : undefined,
                 reservedTicket: {
                     ticketType: {
                         ids: (req.query.reservedTicket !== undefined
