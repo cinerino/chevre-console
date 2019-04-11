@@ -216,8 +216,7 @@ body {
   .scheduler .screen {
     position: relative; }
   .scheduler .performance {
-    position: absolute;
-    padding: 0px 2px; }
+    position: absolute; }
     .scheduler .performance:hover {
       z-index: 10; }
 
