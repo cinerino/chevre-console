@@ -22,6 +22,55 @@ dashboardRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, fun
     }
     res.render('index', {});
 }));
+dashboardRouter.get('/dashboard/reservationCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const reservationService = new chevre.service.Reservation({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchConditions = {
+        limit: 1,
+        typeOf: chevre.factory.reservationType.EventReservation,
+        reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
+        modifiedFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
+        modifiedThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+    };
+    const result = yield reservationService.search(searchConditions);
+    res.json(result);
+}));
+dashboardRouter.get('/dashboard/dbStats', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const eventService = new chevre.service.Event({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const stats = yield eventService.fetch({
+        uri: '/stats/dbStats',
+        method: 'GET',
+        // tslint:disable-next-line:no-magic-numbers
+        expectedStatusCodes: [200]
+    }).then((response) => __awaiter(this, void 0, void 0, function* () {
+        return response.json();
+    }));
+    res.json(stats);
+}));
+dashboardRouter.get('/dashboard/health', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const eventService = new chevre.service.Event({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const stats = yield eventService.fetch({
+        uri: '/health',
+        method: 'GET',
+        // tslint:disable-next-line:no-magic-numbers
+        expectedStatusCodes: [200]
+    }).then((response) => __awaiter(this, void 0, void 0, function* () {
+        const version = response.headers.get('X-API-Version');
+        return {
+            version: version,
+            status: yield response.text()
+        };
+    }));
+    res.json(stats);
+}));
 dashboardRouter.get('/dashboard/latestReservations', (req, res) => __awaiter(this, void 0, void 0, function* () {
     const reservationService = new chevre.service.Reservation({
         endpoint: process.env.API_ENDPOINT,

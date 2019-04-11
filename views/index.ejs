@@ -10,23 +10,22 @@ DB-01
 <%- contentFor('body') %>
 
 <div class="container-fluid">
-    <!--
+
     <div class="row">
         <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="card card-stats">
                 <div class="card-header card-header-warning card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">content_copy</i>
+                        <i class="icon fa fa-database"></i>
                     </div>
-                    <p class="card-category">Used Space</p>
-                    <h3 class="card-title">49/50
+                    <p class="card-category">Database Used Space</p>
+                    <h3 class="card-title"><span class="usedSpace"></span>
                         <small>GB</small>
                     </h3>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
-                        <i class="material-icons text-danger">warning</i>
-                        <a href="#pablo">Get More Space...</a>
+                        <i class="material-icons">storage</i> <span class="dbText"></span>
                     </div>
                 </div>
             </div>
@@ -35,14 +34,14 @@ DB-01
             <div class="card card-stats">
                 <div class="card-header card-header-success card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">store</i>
+                        <i class="material-icons">event_seat</i>
                     </div>
-                    <p class="card-category">Revenue</p>
-                    <h3 class="card-title">$34,245</h3>
+                    <p class="card-category">本日の予約</p>
+                    <h3 class="card-title"><span class="reservationCount"></span></h3>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
-                        <i class="material-icons">date_range</i> Last 24 Hours
+                        <i class="material-icons">search</i> <a target="_blank" href="/reservations">すべて見る</a>
                     </div>
                 </div>
             </div>
@@ -51,19 +50,19 @@ DB-01
             <div class="card card-stats">
                 <div class="card-header card-header-danger card-header-icon">
                     <div class="card-icon">
-                        <i class="material-icons">info_outline</i>
+                        <i class="icon fa fa-heartbeat"></i>
                     </div>
-                    <p class="card-category">Fixed Issues</p>
-                    <h3 class="card-title">75</h3>
+                    <p class="card-category">API Health</p>
+                    <h3 class="card-title"><span class="health"></span></h3>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
-                        <i class="material-icons">local_offer</i> Tracked from Github
+                        v<span class="version"></span>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
+        <!-- <div class="col-lg-3 col-md-6 col-sm-6">
             <div class="card card-stats">
                 <div class="card-header card-header-info card-header-icon">
                     <div class="card-icon">
@@ -78,9 +77,9 @@ DB-01
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
-    -->
+
 
     <!--
     <div class="row">
@@ -149,6 +148,7 @@ DB-01
                         <thead class="text-warning">
                             <th>開始日時</th>
                             <th>名称</th>
+                            <th class="w-25">場所</th>
                             <th>有料券</th>
                             <th>前売券</th>
                             <th>無料券</th>
@@ -187,7 +187,7 @@ DB-01
                         <div class="tab-pane active" id="latestReservations">
                             <table class="table table-hover">
                                 <thead class="text-primary">
-                                    <th>予約番号</th>
+                                    <th class="w-25">予約番号</th>
                                     <th>更新日時</th>
                                     <th>イベント</th>
                                     <th>ステータス</th>
