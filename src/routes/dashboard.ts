@@ -24,6 +24,29 @@ dashboardRouter.get(
 );
 
 dashboardRouter.get(
+    '/dashboard/latestReservations',
+    async (req, res) => {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const result = await reservationService.search({
+            typeOf: chevre.factory.reservationType.EventReservation,
+            limit: 10,
+            page: 1,
+            sort: { modifiedTime: chevre.factory.sortType.Descending },
+            reservationStatuses: [
+                chevre.factory.reservationStatusType.ReservationConfirmed,
+                chevre.factory.reservationStatusType.ReservationPending
+            ],
+            modifiedFrom: moment().add(-1, 'day').toDate()
+        });
+
+        res.json(result);
+    }
+);
+
+dashboardRouter.get(
     '/dashboard/eventsWithAggregations',
     async (req, res) => {
         const eventService = new chevre.service.Event({

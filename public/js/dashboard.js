@@ -39,7 +39,39 @@ function updateCharts() {
     // });
     // countNewTransaction(function () {
     // });
+    updateLatestReservations(function () {
+    });
+
     updateEventsWithAggregation(function () {
+    });
+}
+
+function updateLatestReservations(cb) {
+    $.getJSON(
+        '/dashboard/latestReservations',
+        {
+            limit: 10,
+            page: 1,
+            // sort: { orderDate: -1 },
+            // orderDateFrom: moment().add(-1, 'day').toISOString(),
+            // orderDateThrough: moment().toISOString()
+        }
+    ).done(function (data) {
+        $('#latestReservations tbody').empty();
+
+        // $('.eventsCount').text(data.totalCount);
+
+        $.each(data.data, function (_, reservation) {
+            var html = '<td>' + reservation.reservationNumber + '</td>'
+                + '<td>' + moment(reservation.modifiedTime).format('MM/DD HH:mm') + '</td>'
+                + '<td>' + reservation.reservationFor.name.ja + '</td>'
+                + '<td><span class="badge badge-secondary">' + reservation.reservationStatus + '</span></td>';
+            $('<tr>').html(html).appendTo('#latestReservations tbody');
+        });
+
+        cb();
+    }).fail(function () {
+        console.error('予約を検索できませんでした')
     });
 }
 
