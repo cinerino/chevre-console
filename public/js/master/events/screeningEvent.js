@@ -542,14 +542,14 @@ function modalInit(theater, date, ticketGroups) {
     }
 
     var newModal = $('#newModal');
-    newModal.find('.theater span').text($('select[name=theater] option[value=' + theater + ']').text());
+    newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     newModal.find('.day span').text(moment(date).format('YYYY年MM月DD日(ddd)'));
     newModal.find('input[name=theater]').val(theater);
     newModal.find('input[name=day]').val(date);
     newModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 
     var editModal = $('#editModal');
-    editModal.find('.theater span').text($('select[name=theater] option[value=' + theater + ']').text());
+    editModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     editModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 }
 
@@ -650,7 +650,7 @@ function createScheduler() {
                 var _this = this;
                 $('#loadingModal').modal({ backdrop: 'static' });
                 this.searchScreeningEvent().then(function (data) {
-                    $('#loadingModal').modal({ backdrop: 'static' });
+                    modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
                     _this.createScheduleData(data);
                     $('#loadingModal').modal('hide');
                 }).catch(function (error) {
@@ -777,8 +777,8 @@ function createScheduler() {
 
                 // 上映時間
                 var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HHmm');
-                var startTime = moment(performance.startTime).tz('Asia/Tokyo').format('HHmm');
-                var endTime = moment(performance.endTime).tz('Asia/Tokyo').format('HHmm');
+                var startTime = moment(performance.startDate).tz('Asia/Tokyo').format('HHmm');
+                var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HHmm');
                 modal.find('select[name=doorTimeHour]').val(doorTime.slice(0, 2));
                 modal.find('select[name=doorTimeMinutes]').val(fix(doorTime.slice(2, 4)));
                 modal.find('select[name=startTimeHour]').val(startTime.slice(0, 2));
