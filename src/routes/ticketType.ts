@@ -7,8 +7,6 @@ import { CREATED } from 'http-status';
 
 import * as ticketTypeController from '../controllers/ticketType';
 
-const COA_THEATER_CODES: string[] = (process.env.COA_THEATER_CODES !== undefined) ? JSON.parse(process.env.COA_THEATER_CODES) : [];
-
 const ticketTypeCategories = [
     { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
     { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
@@ -51,12 +49,20 @@ ticketTypeMasterRouter.post(
     '/importFromCOA',
     async (req, res, next) => {
         try {
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
 
-            const taskAttributes = COA_THEATER_CODES.map((theaterCode) => {
+            // インポート対象の劇場ブランチコードを検索
+            const { data } = await placeService.searchMovieTheaters({ limit: 100 });
+
+            // タスク作成
+            const taskAttributes = data.map((d) => {
                 return {
                     name: <chevre.factory.taskName.ImportOffersFromCOA>chevre.factory.taskName.ImportOffersFromCOA,
                     status: chevre.factory.taskStatus.Ready,
@@ -65,7 +71,7 @@ ticketTypeMasterRouter.post(
                     numberOfTried: 0,
                     executionResults: [],
                     data: {
-                        theaterCode: theaterCode
+                        theaterCode: d.branchCode
                     }
                 };
             });

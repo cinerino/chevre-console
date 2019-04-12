@@ -15,7 +15,6 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const ticketTypeController = require("../controllers/ticketType");
-const COA_THEATER_CODES = (process.env.COA_THEATER_CODES !== undefined) ? JSON.parse(process.env.COA_THEATER_CODES) : [];
 const ticketTypeCategories = [
     { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
     { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
@@ -47,11 +46,18 @@ ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeCo
  */
 ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
     try {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const taskAttributes = COA_THEATER_CODES.map((theaterCode) => {
+        // インポート対象の劇場ブランチコードを検索
+        const { data } = yield placeService.searchMovieTheaters({ limit: 100 });
+        // タスク作成
+        const taskAttributes = data.map((d) => {
             return {
                 name: chevre.factory.taskName.ImportOffersFromCOA,
                 status: chevre.factory.taskStatus.Ready,
@@ -60,7 +66,7 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(this
                 numberOfTried: 0,
                 executionResults: [],
                 data: {
-                    theaterCode: theaterCode
+                    theaterCode: d.branchCode
                 }
             };
         });
