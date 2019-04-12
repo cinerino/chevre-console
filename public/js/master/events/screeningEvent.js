@@ -622,6 +622,21 @@ function createScheduler() {
                     && performance.offers.acceptedPaymentMethod.indexOf('MovieTicket') < 0);
             },
             /**
+             * 追加特性取得performance.superEvent.additionalProperty
+             */
+            getAdditionalProperty: function(additionalPropertys, name) {
+                if (additionalPropertys === undefined) {
+                    return null;
+                }
+                var findResult = additionalPropertys.find(function(additionalProperty) {
+                    return (additionalProperty.name === name);
+                });
+                if (findResult === undefined) {
+                    return null;
+                }
+                return findResult.value;
+            },
+            /**
              * スケジューラー生成
              */
             create: function () {
@@ -801,3 +816,5 @@ function createScheduler() {
         }
     });
 }
+
+

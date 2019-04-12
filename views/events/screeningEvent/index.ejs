@@ -136,8 +136,8 @@ Aa-4
                                     v-bind:style="getPerformanceStyle(performance)">
                                     <div v-bind:class="{ 
                                     'bg-danger': getOverlapPerformanceCount(performance, screen.performances) > 0,
-                                    'bg-primary': getOverlapPerformanceCount(performance, screen.performances) === 0
-                                    }" class="inner h-100 p-1 rounded pointer border border-white">
+                                    'bg-primary': !getAdditionalProperty(performance.superEvent.additionalProperty, 'color') && getOverlapPerformanceCount(performance, screen.performances) === 0
+                                    }" v-bind:style="{ backgroundColor: getAdditionalProperty(performance.superEvent.additionalProperty, 'color') }" class="inner h-100 p-1 rounded pointer border border-white">
                                         <div class="overflow-hidden nowrap mw-100 text-x-small text-white">
                                             {{ performance.name.ja }}
                                         </div>
