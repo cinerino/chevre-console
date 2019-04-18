@@ -38,7 +38,7 @@ Aa-17
         </div>
 
         <div class="panel-body">
-            <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
             <a class="btn btn-primary" role="button" href="/serviceTypes/add">
                 <i class=" fa fa-plus"></i> 登録</a>
             <% } %>

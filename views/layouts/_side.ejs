@@ -4,7 +4,7 @@
         <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-12') ? 'active': ''; %>"
             href="/places/movieTheater">劇場検索</a>
 
-        <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
         <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-9') ? 'active': ''; %>"
             href="/creativeWorks/movie/add">作品登録</a>
         <% } %>
@@ -45,7 +45,7 @@
         <a class="list-group-item list-group-item-action <%= (displayId === 'AT-01') ? 'active': ''; %>"
             href="/accountTitles">細目検索</a>
 
-        <% if (user.cognitoGroups.movieTheaters === undefined) { %>
+        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
         <a class="list-group-item list-group-item-action <%= (displayId === 'Aa-16') ? 'active': ''; %>"
             href="/serviceTypes/add">興行区分登録</a>
         <% } %>

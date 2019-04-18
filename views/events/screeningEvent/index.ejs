@@ -17,15 +17,15 @@ Aa-4
 
             <div class="input-group">
                 <select class="form-control" name="theater">
-                    <% if (user.cognitoGroups.movieTheaters === undefined) { %>
                     <option value="">選択してください</option>
-                    <% for (const movieTheater of movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
+                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                        <% for (const movieTheater of movieTheaters) { %>
+                        <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                        <% } %>
                     <% } else { %>
-                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
+                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                        <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                        <% } %>
                     <% } %>
                 </select>
             </div>
@@ -108,7 +108,7 @@ Aa-4
                 <thead class="header">
                     <tr class="border text-center">
                         <td v-bind:style="{ width: TIME_WIDTH + 'px' }" class="border" rowspan="2">時間</td>
-                        <td v-for="date in scheduleData.dates" class="border" colspan="9">
+                        <td v-for="date in scheduleData.dates" class="border" v-bind:colspan="date.screens.length">
                             {{ moment(date.data).format('MM/DD') }}</td>
                     </tr>
                     <template v-for="date in scheduleData.dates">
