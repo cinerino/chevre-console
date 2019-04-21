@@ -51,7 +51,9 @@ function add(req, res) {
             }
         });
         const movies = searchMoviesResult.data;
-        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -128,7 +130,9 @@ function update(req, res) {
                 availableFrom: new Date()
             }
         });
-        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
         let message = '';
         let errors = {};
         const eventId = req.params.eventId;
@@ -463,7 +467,9 @@ function index(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
         res.render('events/screeningEventSeries/index', {
             movieTheaters: searchMovieTheatersResult.data
         });

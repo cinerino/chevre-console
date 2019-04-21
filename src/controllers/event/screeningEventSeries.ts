@@ -46,7 +46,9 @@ export async function add(req: Request, res: Response): Promise<void> {
         }
     });
     const movies = searchMoviesResult.data;
-    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+        project: { ids: [req.project.id] }
+    });
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -127,7 +129,9 @@ export async function update(req: Request, res: Response): Promise<void> {
             availableFrom: new Date()
         }
     });
-    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+        project: { ids: [req.project.id] }
+    });
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
@@ -508,7 +512,9 @@ export async function index(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+        project: { ids: [req.project.id] }
+    });
     res.render('events/screeningEventSeries/index', {
         movieTheaters: searchMovieTheatersResult.data
     });
