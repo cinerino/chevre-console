@@ -176,6 +176,7 @@ dashboardRouter.get(
                 limit: 10,
                 page: 1,
                 sort: { startDate: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
                 inSessionFrom: moment().add().toDate(),
                 inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
             });
