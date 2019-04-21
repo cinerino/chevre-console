@@ -31,6 +31,7 @@ export async function createAccountTitleCategory(req: Request, res: Response): P
         if (validatorResult.isEmpty()) {
             try {
                 const accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
@@ -79,6 +80,7 @@ export async function searchAccountTitleCategory(req: Request, res: Response): P
             const result = await accountTitleService.searchAccountTitleCategories({
                 limit: Number(req.query.limit),
                 page: Number(req.query.page),
+                project: { ids: [req.project.id] },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
             });
             res.json({
@@ -113,6 +115,7 @@ export async function updateAccountTitleCategory(req: Request, res: Response): P
     });
 
     const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
+        project: { ids: [req.project.id] },
         codeValue: req.params.codeValue
     });
     let accountTitle = searchAccountTitlesResult.data.shift();
@@ -129,6 +132,7 @@ export async function updateAccountTitleCategory(req: Request, res: Response): P
             // 作品DB登録
             try {
                 accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
@@ -171,6 +175,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const result = await accountTitleService.search({
             limit: Number(req.query.limit),
             page: Number(req.query.page),
+            project: { ids: [req.project.id] },
             codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `^${req.query.codeValue}$` : undefined,
             inCodeSet: {
                 codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
@@ -209,14 +214,16 @@ export async function index(req: Request, res: Response): Promise<void> {
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     debug(searchAccountTitleCategoriesResult);
 
     // 科目検索
     const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     debug(searchAccountTitleSetsResult);
 
@@ -258,7 +265,8 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     const accountTitleCategories = searchAccountTitleCategoriesResult.data;
 
@@ -271,6 +279,7 @@ export async function addAccountTitleSet(req: Request, res: Response): Promise<v
             try {
                 const accountTitleCategory = accountTitleCategories.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                 const accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
@@ -320,6 +329,7 @@ export async function searchAccountTitleSet(req: Request, res: Response): Promis
             const result = await accountTitleService.searchAccountTitleSets({
                 limit: Number(req.query.limit),
                 page: Number(req.query.page),
+                project: { ids: [req.project.id] },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
@@ -343,7 +353,8 @@ export async function searchAccountTitleSet(req: Request, res: Response): Promis
         // 科目分類検索
         const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         debug(searchAccountTitleCategoriesResult);
 
@@ -368,6 +379,7 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     });
 
     const searchAccountTitlesResult = await accountTitleService.searchAccountTitleSets({
+        project: { ids: [req.project.id] },
         codeValue: req.params.codeValue
     });
     let accountTitle = searchAccountTitlesResult.data.shift();
@@ -379,7 +391,8 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     const accountTitleCategories = searchAccountTitleCategoriesResult.data;
 
@@ -389,9 +402,9 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
         const validatorResult = await req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
             try {
                 accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
@@ -458,7 +471,8 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
     // 科目分類検索
     const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     const accountTitleSets = searchAccountTitleSetsResult.data;
 
@@ -471,6 +485,7 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
             try {
                 const accountTitleSet = accountTitleSets.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                 const accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
@@ -530,6 +545,7 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
     });
 
     const searchAccountTitlesResult = await accountTitleService.search({
+        project: { ids: [req.project.id] },
         codeValue: req.params.codeValue
     });
     let accountTitle = searchAccountTitlesResult.data.shift();
@@ -540,7 +556,8 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
     // 科目分類検索
     const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
         limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending }
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
     });
     const accountTitleSets = searchAccountTitleSetsResult.data;
 
@@ -553,6 +570,7 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
             // 作品DB登録
             try {
                 accountTitle = {
+                    project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,

@@ -45,8 +45,13 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchAccountTitlesResult = yield accountTitleService.search({});
-        const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 100 });
+        const searchAccountTitlesResult = yield accountTitleService.search({
+            project: { ids: [req.project.id] }
+        });
+        const searchProductOffersResult = yield offerService.searchProductOffers({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
@@ -56,8 +61,9 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB登録プロセス
                 try {
-                    const ticketType = yield createFromBody(req);
-                    yield offerService.createTicketType(ticketType);
+                    req.body.id = '';
+                    let ticketType = yield createFromBody(req);
+                    ticketType = yield offerService.createTicketType(ticketType);
                     req.flash('message', '登録しました');
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
@@ -106,8 +112,13 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchAccountTitlesResult = yield accountTitleService.search({});
-        const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 100 });
+        const searchAccountTitlesResult = yield accountTitleService.search({
+            project: { ids: [req.project.id] }
+        });
+        const searchProductOffersResult = yield offerService.searchProductOffers({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
         let ticketType = yield offerService.findTicketTypeById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
@@ -118,6 +129,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
                 try {
+                    req.body.id = req.params.id;
                     ticketType = yield createFromBody(req);
                     yield offerService.updateTicketType(ticketType);
                     req.flash('message', '更新しました');
@@ -250,6 +262,7 @@ function createFromBody(req) {
         // tslint:disable-next-line:max-line-length
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
             ? {
+                project: req.project,
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -278,15 +291,18 @@ function createFromBody(req) {
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
             // },
+            project: req.project,
             typeOf: 'Offer',
             priceCurrency: chevre.factory.priceCurrency.JPY,
             id: body.id,
+            identifier: req.body.identifier,
             name: body.name,
             description: body.description,
             alternateName: { ja: body.alternateName.ja, en: '' },
             availability: availability,
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
+                project: req.project,
                 typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
                 price: Number(body.price) * referenceQuantityValue,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -341,8 +357,8 @@ function getList(req, res) {
             const searchConditions = {
                 limit: req.query.limit,
                 page: req.query.page,
-                // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
-                id: (req.query.id !== '' && req.query.id !== undefined) ? req.query.id : undefined,
+                sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+                identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
                 ids: ticketTypeIds,
                 name: (req.query.name !== undefined
                     && req.query.name !== '')
@@ -470,8 +486,8 @@ exports.getTicketTypeGroupList = getTicketTypeGroupList;
 function validateFormAdd(req) {
     // 券種コード
     let colName = '券種コード';
-    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('id', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     // サイト表示用券種名
     colName = 'サイト表示用券種名';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();

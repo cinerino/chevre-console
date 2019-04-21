@@ -3,7 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
-import { Router } from 'express';
+import { Request, Router } from 'express';
 
 const debug = createDebug('chevre-backend:router');
 
@@ -24,7 +24,7 @@ movieTheaterRouter.all(
             if (validatorResult.isEmpty()) {
                 try {
                     debug(req.body);
-                    const movieTheater = createMovieTheaterFromBody(req.body);
+                    const movieTheater = createMovieTheaterFromBody(req);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -88,6 +88,7 @@ movieTheaterRouter.get(
             const { totalCount, data } = await placeService.searchMovieTheaters({
                 limit: req.query.limit,
                 page: req.query.page,
+                project: { ids: [req.project.id] },
                 name: req.query.name
             });
 
@@ -155,7 +156,7 @@ movieTheaterRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    movieTheater = createMovieTheaterFromBody(req.body);
+                    movieTheater = createMovieTheaterFromBody(req);
                     debug('saving an movie theater...', movieTheater);
                     await placeService.updateMovieTheater(movieTheater);
 
@@ -229,9 +230,12 @@ movieTheaterRouter.get(
     }
 );
 
-function createMovieTheaterFromBody(body: any): chevre.factory.place.movieTheater.IPlace {
+function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieTheater.IPlace {
+    const body = req.body;
+
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlace = {
+        project: req.project,
         id: '',
         typeOf: chevre.factory.placeType.MovieTheater,
         branchCode: body.branchCode,

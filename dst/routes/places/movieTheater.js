@@ -28,7 +28,7 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fun
         if (validatorResult.isEmpty()) {
             try {
                 debug(req.body);
-                const movieTheater = createMovieTheaterFromBody(req.body);
+                const movieTheater = createMovieTheaterFromBody(req);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -75,6 +75,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
         const { totalCount, data } = yield placeService.searchMovieTheaters({
             limit: req.query.limit,
             page: req.query.page,
+            project: { ids: [req.project.id] },
             name: req.query.name
         });
         const results = data.map((movieTheater) => {
@@ -126,7 +127,7 @@ movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                movieTheater = createMovieTheaterFromBody(req.body);
+                movieTheater = createMovieTheaterFromBody(req);
                 debug('saving an movie theater...', movieTheater);
                 yield placeService.updateMovieTheater(movieTheater);
                 req.flash('message', '更新しました');
@@ -185,9 +186,11 @@ movieTheaterRouter.get('/getScreenListByTheaterBranchCode', (req, res) => __awai
         });
     }
 }));
-function createMovieTheaterFromBody(body) {
+function createMovieTheaterFromBody(req) {
+    const body = req.body;
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater = {
+        project: req.project,
         id: '',
         typeOf: chevre.factory.placeType.MovieTheater,
         branchCode: body.branchCode,

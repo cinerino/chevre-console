@@ -35,6 +35,7 @@ function createAccountTitleCategory(req, res) {
             if (validatorResult.isEmpty()) {
                 try {
                     const accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
@@ -80,6 +81,7 @@ function searchAccountTitleCategory(req, res) {
                 const result = yield accountTitleService.searchAccountTitleCategories({
                     limit: Number(req.query.limit),
                     page: Number(req.query.page),
+                    project: { ids: [req.project.id] },
                     codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
                 });
                 res.json({
@@ -116,6 +118,7 @@ function updateAccountTitleCategory(req, res) {
             auth: req.user.authClient
         });
         const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
+            project: { ids: [req.project.id] },
             codeValue: req.params.codeValue
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
@@ -131,6 +134,7 @@ function updateAccountTitleCategory(req, res) {
                 // 作品DB登録
                 try {
                     accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
@@ -170,6 +174,7 @@ function getList(req, res) {
             const result = yield accountTitleService.search({
                 limit: Number(req.query.limit),
                 page: Number(req.query.page),
+                project: { ids: [req.project.id] },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `^${req.query.codeValue}$` : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
@@ -210,13 +215,15 @@ function index(req, res) {
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         debug(searchAccountTitleCategoriesResult);
         // 科目検索
         const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         debug(searchAccountTitleSetsResult);
         res.render('accountTitles/index', {
@@ -256,7 +263,8 @@ function addAccountTitleSet(req, res) {
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         const accountTitleCategories = searchAccountTitleCategoriesResult.data;
         if (req.method === 'POST') {
@@ -268,6 +276,7 @@ function addAccountTitleSet(req, res) {
                 try {
                     const accountTitleCategory = accountTitleCategories.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                     const accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
@@ -312,6 +321,7 @@ function searchAccountTitleSet(req, res) {
                 const result = yield accountTitleService.searchAccountTitleSets({
                     limit: Number(req.query.limit),
                     page: Number(req.query.page),
+                    project: { ids: [req.project.id] },
                     codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
                     inCodeSet: {
                         codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
@@ -337,7 +347,8 @@ function searchAccountTitleSet(req, res) {
             // 科目分類検索
             const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
                 limit: 100,
-                sort: { codeValue: chevre.factory.sortType.Ascending }
+                sort: { codeValue: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] }
             });
             debug(searchAccountTitleCategoriesResult);
             res.render('accountTitles/accountTitleSet/index', {
@@ -360,6 +371,7 @@ function updateAccountTitleSet(req, res) {
             auth: req.user.authClient
         });
         const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleSets({
+            project: { ids: [req.project.id] },
             codeValue: req.params.codeValue
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
@@ -370,7 +382,8 @@ function updateAccountTitleSet(req, res) {
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         const accountTitleCategories = searchAccountTitleCategoriesResult.data;
         if (req.method === 'POST') {
@@ -379,9 +392,9 @@ function updateAccountTitleSet(req, res) {
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
                 try {
                     accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
@@ -438,7 +451,8 @@ function createAccountTitle(req, res) {
         // 科目分類検索
         const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         const accountTitleSets = searchAccountTitleSetsResult.data;
         if (req.method === 'POST') {
@@ -450,6 +464,7 @@ function createAccountTitle(req, res) {
                 try {
                     const accountTitleSet = accountTitleSets.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
                     const accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
@@ -503,6 +518,7 @@ function updateAccountTitle(req, res) {
             auth: req.user.authClient
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
+            project: { ids: [req.project.id] },
             codeValue: req.params.codeValue
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
@@ -512,7 +528,8 @@ function updateAccountTitle(req, res) {
         // 科目分類検索
         const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
             limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending }
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
         });
         const accountTitleSets = searchAccountTitleSetsResult.data;
         if (req.method === 'POST') {
@@ -524,6 +541,7 @@ function updateAccountTitle(req, res) {
                 // 作品DB登録
                 try {
                     accountTitle = {
+                        project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,

@@ -35,6 +35,7 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
             limit: Number(req.query.limit),
             page: Number(req.query.page),
             sort: { price: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] },
             typeOf: (req.query.typeOf !== '') ? req.query.typeOf : undefined,
             appliesToMovieTicket: {
                 serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
@@ -74,7 +75,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                let priceSpecification = createMovieFromBody(req.body);
+                let priceSpecification = createMovieFromBody(req);
                 const priceSpecificationService = new chevre.service.PriceSpecification({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -118,7 +119,7 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                priceSpecification = Object.assign({}, createMovieFromBody(req.body), { id: priceSpecification.id });
+                priceSpecification = Object.assign({}, createMovieFromBody(req), { id: priceSpecification.id });
                 yield priceSpecificationService.update(priceSpecification);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -140,8 +141,10 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         SoundFormatType: chevre.factory.soundFormatType
     });
 }));
-function createMovieFromBody(body) {
+function createMovieFromBody(req) {
+    const body = req.body;
     return {
+        project: req.project,
         typeOf: body.typeOf,
         price: Number(body.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,

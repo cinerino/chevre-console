@@ -32,7 +32,7 @@ productOffersRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fu
         // 検証
         if (validatorResult.isEmpty()) {
             try {
-                const offer = createFromBody(req.body);
+                const offer = createFromBody(req);
                 yield offerService.createProductOffer(offer);
                 req.flash('message', '登録しました');
                 res.redirect(`/productOffers/${offer.id}/update`);
@@ -81,7 +81,7 @@ productOffersRouter.all('/:id/update',
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                offer = createFromBody(req.body);
+                offer = createFromBody(req);
                 yield offerService.updateProductOffer(offer);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -134,6 +134,7 @@ productOffersRouter.get('/search',
             limit: req.query.limit,
             page: req.query.page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] },
             ids: offerIds,
             name: (req.query.name !== undefined
                 && req.query.name !== '')
@@ -210,7 +211,8 @@ productOffersRouter.get('/search',
         });
     }
 }));
-function createFromBody(body) {
+function createFromBody(req) {
+    const body = req.body;
     const referenceQuantityValue = Number(body.seatReservationUnit);
     const referenceQuantity = {
         typeOf: 'QuantitativeValue',
@@ -218,9 +220,11 @@ function createFromBody(body) {
         unitCode: chevre.factory.unitCode.C62
     };
     return {
+        project: req.project,
         typeOf: 'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
+        identifier: body.identifier,
         name: body.name,
         description: body.description,
         alternateName: { ja: body.alternateName.ja, en: '' },
@@ -229,6 +233,7 @@ function createFromBody(body) {
             name: body.itemOffered.name
         },
         priceSpecification: {
+            project: req.project,
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -237,6 +242,7 @@ function createFromBody(body) {
             accounting: {
                 typeOf: 'Accounting',
                 operatingRevenue: {
+                    project: req.project,
                     typeOf: 'AccountTitle',
                     codeValue: body.accountTitle,
                     name: ''

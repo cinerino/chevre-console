@@ -56,8 +56,9 @@ function add(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    const ticketTypeGroup = createFromBody(req.body);
-                    yield offerService.createTicketTypeGroup(ticketTypeGroup);
+                    req.body.id = '';
+                    let ticketTypeGroup = yield createFromBody(req);
+                    ticketTypeGroup = yield offerService.createTicketTypeGroup(ticketTypeGroup);
                     req.flash('message', '登録しました');
                     res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
                     return;
@@ -67,7 +68,9 @@ function add(req, res) {
                 }
             }
         }
-        const searchServiceTypesResult = yield serviceTypeService.search({});
+        const searchServiceTypesResult = yield serviceTypeService.search({
+            project: { ids: [req.project.id] }
+        });
         let ticketTypeIds = [];
         if (!_.isEmpty(req.body.ticketTypes)) {
             if (_.isString(req.body.ticketTypes)) {
@@ -117,7 +120,9 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchServiceTypesResult = yield serviceTypeService.search({});
+        const searchServiceTypesResult = yield serviceTypeService.search({
+            project: { ids: [req.project.id] }
+        });
         let message = '';
         let errors = {};
         if (req.method === 'POST') {
@@ -126,11 +131,10 @@ function update(req, res) {
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
-                // 券種グループDB登録
                 try {
                     // 券種グループDB登録
                     req.body.id = req.params.id;
-                    const ticketTypeGroup = createFromBody(req.body);
+                    const ticketTypeGroup = yield createFromBody(req);
                     yield offerService.updateTicketTypeGroup(ticketTypeGroup);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -185,31 +189,37 @@ function update(req, res) {
     });
 }
 exports.update = update;
-function createFromBody(body) {
-    const ticketTypes = (Array.isArray(body.ticketTypes)) ? body.ticketTypes : [body.ticketTypes];
-    return {
-        id: body.id,
-        name: body.name,
-        description: body.description,
-        alternateName: body.alternateName,
-        ticketTypes: [...new Set(ticketTypes)],
-        itemOffered: {
-            serviceType: {
-                typeOf: 'ServiceType',
-                id: body.serviceType,
-                name: ''
-            }
-        },
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
-                .map((p) => {
-                return {
-                    name: String(p.name),
-                    value: String(p.value)
-                };
-            })
-            : undefined
-    };
+function createFromBody(req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const body = req.body;
+        const ticketTypes = (Array.isArray(body.ticketTypes)) ? body.ticketTypes : [body.ticketTypes];
+        const serviceTypeService = new chevre.service.ServiceType({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const serviceType = yield serviceTypeService.findById({ id: req.body.serviceType });
+        return {
+            project: req.project,
+            id: body.id,
+            identifier: req.body.identifier,
+            name: body.name,
+            description: body.description,
+            alternateName: body.alternateName,
+            ticketTypes: [...new Set(ticketTypes)],
+            itemOffered: {
+                serviceType: serviceType
+            },
+            additionalProperty: (Array.isArray(body.additionalProperty))
+                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined
+        };
+    });
 }
 /**
  * 一覧データ取得API
@@ -224,14 +234,14 @@ function getList(req, res) {
             const { totalCount, data } = yield offerService.searchTicketTypeGroups({
                 limit: req.query.limit,
                 page: req.query.page,
-                id: req.query.id,
+                identifier: req.query.identifier,
                 name: req.query.name
             });
             res.json({
                 success: true,
                 count: totalCount,
                 results: data.map((g) => {
-                    return Object.assign({}, g, { ticketGroupCode: g.id });
+                    return Object.assign({}, g);
                 })
             });
         }
@@ -332,8 +342,9 @@ function deleteById(req, res) {
             const ticketTypeGroupId = req.params.id;
             // 削除して問題ない券種グループかどうか検証
             const searchEventsResult = yield eventService.search({
-                typeOf: chevre.factory.eventType.ScreeningEvent,
                 limit: 1,
+                typeOf: chevre.factory.eventType.ScreeningEvent,
+                project: { ids: [req.project.id] },
                 offers: {
                     ids: [ticketTypeGroupId]
                 },
@@ -359,8 +370,8 @@ exports.deleteById = deleteById;
 function validate(req) {
     // 券種グループコード
     let colName = '券種グループコード';
-    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     colName = 'サイト表示用券種グループ名';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });

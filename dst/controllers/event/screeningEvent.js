@@ -66,6 +66,7 @@ function search(req, res) {
             const screen = req.query.screen;
             const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
             const searchResult = yield eventService.search({
+                project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
                 inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
@@ -95,6 +96,7 @@ function search(req, res) {
                 if (searchResult.data.length < searchResult.totalCount) {
                     let dataPage2;
                     const searchResultPage2 = yield eventService.search({
+                        project: { ids: [req.project.id] },
                         typeOf: chevre.factory.eventType.ScreeningEvent,
                         eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
                         inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
@@ -145,6 +147,7 @@ function searchScreeningEventSeries(req, res) {
         });
         try {
             const searchResult = yield eventService.search({
+                project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 location: {
                     branchCodes: [req.query.movieTheaterBranchCode]
@@ -190,7 +193,7 @@ function regist(req, res) {
                 return;
             }
             debug('saving screening event...', req.body);
-            const attributes = yield createMultipleEventFromBody(req.body, req.user);
+            const attributes = yield createMultipleEventFromBody(req, req.user);
             const events = yield eventService.create(attributes);
             debug(events.length, 'events created', events.map((e) => e.id));
             res.json({
@@ -235,7 +238,7 @@ function update(req, res) {
                 return;
             }
             debug('saving screening event...', req.body);
-            const attributes = yield createEventFromBody(req.body, req.user);
+            const attributes = yield createEventFromBody(req);
             yield eventService.update({
                 id: req.params.eventId,
                 attributes: attributes
@@ -295,8 +298,10 @@ exports.cancelPerformance = cancelPerformance;
  * リクエストボディからイベントオブジェクトを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-function createEventFromBody(body, user) {
+function createEventFromBody(req) {
     return __awaiter(this, void 0, void 0, function* () {
+        const body = req.body;
+        const user = req.user;
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
@@ -325,7 +330,10 @@ function createEventFromBody(body, user) {
             throw new Error('上映スクリーン名が見つかりません');
         }
         const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-        const searchServiceTypesResult = yield serviceTypeService.search({ ids: [ticketTypeGroup.itemOffered.serviceType.id] });
+        const searchServiceTypesResult = yield serviceTypeService.search({
+            project: { ids: [req.project.id] },
+            ids: [ticketTypeGroup.itemOffered.serviceType.id]
+        });
         if (searchServiceTypesResult.totalCount === 0) {
             throw new Error('興行区分が見つかりません');
         }
@@ -387,11 +395,7 @@ function createEventFromBody(body, user) {
                 value: 1
             },
             itemOffered: {
-                serviceType: {
-                    typeOf: 'ServiceType',
-                    id: serviceType.id,
-                    name: serviceType.name
-                },
+                serviceType: serviceType,
                 serviceOutput: serviceOutput
             },
             validFrom: salesStartDate,
@@ -399,12 +403,14 @@ function createEventFromBody(body, user) {
             acceptedPaymentMethod: acceptedPaymentMethod
         };
         return {
+            project: req.project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
             doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
             startDate: startDate,
             endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
             workPerformed: screeningEventSeries.workPerformed,
             location: {
+                project: req.project,
                 typeOf: screeningRoom.typeOf,
                 branchCode: screeningRoom.branchCode,
                 name: screeningRoom.name,
@@ -424,8 +430,9 @@ function createEventFromBody(body, user) {
  * リクエストボディからイベントオブジェクトを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-function createMultipleEventFromBody(body, user) {
+function createMultipleEventFromBody(req, user) {
     return __awaiter(this, void 0, void 0, function* () {
+        const body = req.body;
         debug('body:', body);
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -462,7 +469,10 @@ function createMultipleEventFromBody(body, user) {
         const timeData = body.timeData;
         const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({ limit: 100 });
         const ticketTypeGroups = searchTicketTypeGroupsResult.data;
-        const searchServiceTypesResult = yield serviceTypeService.search({ limit: 100 });
+        const searchServiceTypesResult = yield serviceTypeService.search({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
         const serviceTypes = searchServiceTypesResult.data;
         const attributes = [];
         for (let date = startDate; date <= toDate; date = date.add(1, 'day')) {
@@ -526,11 +536,7 @@ function createMultipleEventFromBody(body, user) {
                             value: 1
                         },
                         itemOffered: {
-                            serviceType: {
-                                typeOf: 'ServiceType',
-                                id: serviceType.id,
-                                name: serviceType.name
-                            },
+                            serviceType: serviceType,
                             serviceOutput: serviceOutput
                         },
                         validFrom: salesStartDate,
@@ -538,12 +544,14 @@ function createMultipleEventFromBody(body, user) {
                         acceptedPaymentMethod: acceptedPaymentMethod
                     };
                     attributes.push({
+                        project: req.project,
                         typeOf: chevre.factory.eventType.ScreeningEvent,
                         doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
                         startDate: eventStartDate,
                         endDate: moment(`${formattedDate}T${data.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
                         workPerformed: screeningEventSeries.workPerformed,
                         location: {
+                            project: req.project,
                             typeOf: screeningRoom.typeOf,
                             branchCode: screeningRoom.branchCode,
                             name: screeningRoom.name === undefined ? { en: '', ja: '', kr: '' } : screeningRoom.name,

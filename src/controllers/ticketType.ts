@@ -41,8 +41,13 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchAccountTitlesResult = await accountTitleService.search({});
-    const searchProductOffersResult = await offerService.searchProductOffers({ limit: 100 });
+    const searchAccountTitlesResult = await accountTitleService.search({
+        project: { ids: [req.project.id] }
+    });
+    const searchProductOffersResult = await offerService.searchProductOffers({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
 
     if (req.method === 'POST') {
         // 検証
@@ -53,8 +58,9 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB登録プロセス
             try {
-                const ticketType = await createFromBody(req);
-                await offerService.createTicketType(ticketType);
+                req.body.id = '';
+                let ticketType = await createFromBody(req);
+                ticketType = await offerService.createTicketType(ticketType);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypes/${ticketType.id}/update`);
 
@@ -114,8 +120,13 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchAccountTitlesResult = await accountTitleService.search({});
-    const searchProductOffersResult = await offerService.searchProductOffers({ limit: 100 });
+    const searchAccountTitlesResult = await accountTitleService.search({
+        project: { ids: [req.project.id] }
+    });
+    const searchProductOffersResult = await offerService.searchProductOffers({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
     let ticketType = await offerService.findTicketTypeById({ id: req.params.id });
 
     if (req.method === 'POST') {
@@ -127,6 +138,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 券種DB更新プロセス
             try {
+                req.body.id = req.params.id;
                 ticketType = await createFromBody(req);
                 await offerService.updateTicketType(ticketType);
                 req.flash('message', '更新しました');
@@ -212,6 +224,7 @@ export async function update(req: Request, res: Response): Promise<void> {
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request): Promise<chevre.factory.ticketType.ITicketType> {
     const body = req.body;
+
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -283,6 +296,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
     const eligibleTransactionVolume: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType> | undefined =
         (eligibleTransactionVolumePrice !== undefined)
             ? {
+                project: req.project,
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -316,15 +330,18 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         // ...{
         //     $unset: { eligibleCustomerType: 1 }
         // },
+        project: req.project,
         typeOf: <chevre.factory.offerType>'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
+        identifier: req.body.identifier,
         name: body.name,
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         availability: availability,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: {
+            project: req.project,
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -379,8 +396,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
-            // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
-            id: (req.query.id !== '' && req.query.id !== undefined) ? req.query.id : undefined,
+            sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+            identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
             ids: ticketTypeIds,
             name: (req.query.name !== undefined
                 && req.query.name !== '')
@@ -517,8 +534,8 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
 function validateFormAdd(req: Request): void {
     // 券種コード
     let colName: string = '券種コード';
-    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('id', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     // サイト表示用券種名
     colName = 'サイト表示用券種名';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();

@@ -26,13 +26,14 @@ serviceTypesRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    const serviceType = createMovieFromBody(req.body);
+                    req.body.id = '';
+                    let serviceType = createFromBody(req);
                     debug('saving an serviceType...', serviceType);
                     const serviceTypeService = new chevre.service.ServiceType({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
                     });
-                    await serviceTypeService.create(serviceType);
+                    serviceType = await serviceTypeService.create(serviceType);
 
                     req.flash('message', '登録しました');
                     res.redirect(`/serviceTypes/${serviceType.id}/update`);
@@ -82,7 +83,8 @@ serviceTypesRouter.get(
             const result = await serviceTypeService.search({
                 limit: req.query.limit,
                 page: req.query.page,
-                ids: (req.query.id !== undefined && req.query.id !== '') ? [req.query.id] : undefined,
+                project: { ids: [req.project.id] },
+                identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
                 name: req.query.name
             });
 
@@ -122,9 +124,9 @@ serviceTypesRouter.all(
             const validatorResult = await req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
                 try {
-                    serviceType = createMovieFromBody(req.body);
+                    req.body.id = req.params.id;
+                    serviceType = createFromBody(req);
                     debug('saving an serviceType...', serviceType);
                     await serviceTypeService.update(serviceType);
                     req.flash('message', '更新しました');
@@ -158,10 +160,14 @@ serviceTypesRouter.all(
 
 export default serviceTypesRouter;
 
-function createMovieFromBody(body: any): chevre.factory.serviceType.IServiceType {
+function createFromBody(req: Request): chevre.factory.serviceType.IServiceType {
+    const body = req.body;
+
     return {
+        project: req.project,
         typeOf: 'ServiceType',
         id: body.id,
+        identifier: body.identifier,
         name: body.name,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
@@ -183,8 +189,8 @@ function validate(req: Request, checkType: string): void {
 
     if (checkType === 'add') {
         colName = '興行区分コード';
-        req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+        req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+        req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     }
 
     colName = '名称';

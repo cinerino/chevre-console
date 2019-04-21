@@ -65,7 +65,7 @@ function add(req, res) {
                     const movie = yield creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
                     const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                     req.body.contentRating = movie.contentRating;
-                    const attributes = createEventFromBody(req.body, movie, movieTheater);
+                    const attributes = createEventFromBody(req, movie, movieTheater);
                     debug('saving an event...', attributes);
                     const events = yield eventService.create(attributes);
                     debug('event created', events[0]);
@@ -146,7 +146,7 @@ function update(req, res) {
                     const movie = yield creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
                     const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                     req.body.contentRating = movie.contentRating;
-                    const attributes = createEventFromBody(req.body, movie, movieTheater);
+                    const attributes = createEventFromBody(req, movie, movieTheater);
                     debug('saving an event...', attributes);
                     yield eventService.update({
                         id: eventId,
@@ -232,7 +232,8 @@ exports.getRating = getRating;
  * リクエストボディからイベントオブジェクトを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-function createEventFromBody(body, movie, movieTheater) {
+function createEventFromBody(req, movie, movieTheater) {
+    const body = req.body;
     const videoFormat = (Array.isArray(body.videoFormatType)) ? body.videoFormatType.map((f) => {
         return { typeOf: f, name: f };
     }) : [];
@@ -268,6 +269,7 @@ function createEventFromBody(body, movie, movieTheater) {
         throw new Error('作品の上映時間が未登録です');
     }
     return {
+        project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
             ja: body.nameJa,
@@ -276,6 +278,7 @@ function createEventFromBody(body, movie, movieTheater) {
         },
         kanaName: body.kanaName,
         location: {
+            project: req.project,
             id: movieTheater.id,
             typeOf: movieTheater.typeOf,
             branchCode: movieTheater.branchCode,
@@ -417,6 +420,7 @@ function getList(req, res) {
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { startDate: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
                 name: req.query.name,
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),

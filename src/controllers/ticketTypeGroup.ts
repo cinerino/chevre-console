@@ -47,8 +47,9 @@ export async function add(req: Request, res: Response): Promise<void> {
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                const ticketTypeGroup = createFromBody(req.body);
-                await offerService.createTicketTypeGroup(ticketTypeGroup);
+                req.body.id = '';
+                let ticketTypeGroup = await createFromBody(req);
+                ticketTypeGroup = await offerService.createTicketTypeGroup(ticketTypeGroup);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
 
@@ -58,7 +59,9 @@ export async function add(req: Request, res: Response): Promise<void> {
             }
         }
     }
-    const searchServiceTypesResult = await serviceTypeService.search({});
+    const searchServiceTypesResult = await serviceTypeService.search({
+        project: { ids: [req.project.id] }
+    });
     let ticketTypeIds: string[] = [];
     if (!_.isEmpty(req.body.ticketTypes)) {
         if (_.isString(req.body.ticketTypes)) {
@@ -114,7 +117,9 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchServiceTypesResult = await serviceTypeService.search({});
+    const searchServiceTypesResult = await serviceTypeService.search({
+        project: { ids: [req.project.id] }
+    });
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -123,11 +128,10 @@ export async function update(req: Request, res: Response): Promise<void> {
         const validatorResult = await req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
-            // 券種グループDB登録
             try {
                 // 券種グループDB登録
                 req.body.id = req.params.id;
-                const ticketTypeGroup = createFromBody(req.body);
+                const ticketTypeGroup = await createFromBody(req);
                 await offerService.updateTicketTypeGroup(ticketTypeGroup);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -192,21 +196,27 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 
-function createFromBody(body: any): chevre.factory.ticketType.ITicketTypeGroup {
+async function createFromBody(req: Request): Promise<chevre.factory.ticketType.ITicketTypeGroup> {
+    const body = req.body;
+
     const ticketTypes = (Array.isArray(body.ticketTypes)) ? <string[]>body.ticketTypes : [<string>body.ticketTypes];
 
+    const serviceTypeService = new chevre.service.ServiceType({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const serviceType = await serviceTypeService.findById({ id: req.body.serviceType });
+
     return {
+        project: req.project,
         id: body.id,
+        identifier: req.body.identifier,
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
         ticketTypes: [...new Set(ticketTypes)], // 念のため券種IDをユニークに
         itemOffered: {
-            serviceType: {
-                typeOf: 'ServiceType',
-                id: body.serviceType,
-                name: ''
-            }
+            serviceType: serviceType
         },
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
@@ -232,7 +242,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const { totalCount, data } = await offerService.searchTicketTypeGroups({
             limit: req.query.limit,
             page: req.query.page,
-            id: req.query.id,
+            identifier: req.query.identifier,
             name: req.query.name
         });
         res.json({
@@ -240,8 +250,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
             count: totalCount,
             results: data.map((g) => {
                 return {
-                    ...g,
-                    ticketGroupCode: g.id
+                    ...g
                 };
             })
         });
@@ -333,8 +342,9 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
 
         // 削除して問題ない券種グループかどうか検証
         const searchEventsResult = await eventService.search({
-            typeOf: chevre.factory.eventType.ScreeningEvent,
             limit: 1,
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            project: { ids: [req.project.id] },
             offers: {
                 ids: [ticketTypeGroupId]
             },
@@ -358,8 +368,8 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
 function validate(req: Request): void {
     // 券種グループコード
     let colName: string = '券種グループコード';
-    req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     colName = 'サイト表示用券種グループ名';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });

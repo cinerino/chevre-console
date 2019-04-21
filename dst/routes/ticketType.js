@@ -59,6 +59,7 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(this
         // タスク作成
         const taskAttributes = data.map((d) => {
             return {
+                project: req.project,
                 name: chevre.factory.taskName.ImportOffersFromCOA,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),

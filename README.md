@@ -25,6 +25,7 @@
 | `API_CLIENT_ID`               | true     |                  |                        |
 | `API_CLIENT_SECRET`           | true     |                  |                        |
 | `API_CODE_VERIFIER`           | true     |                  |                        |
+| `PROJECT_ID`                  | true     |                  | Project ID             |
 
 ## License
 

@@ -64,6 +64,7 @@ ticketTypeMasterRouter.post(
             // タスク作成
             const taskAttributes = data.map((d) => {
                 return {
+                    project: req.project,
                     name: <chevre.factory.taskName.ImportOffersFromCOA>chevre.factory.taskName.ImportOffersFromCOA,
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),

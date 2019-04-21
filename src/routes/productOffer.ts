@@ -30,7 +30,7 @@ productOffersRouter.all(
             // 検証
             if (validatorResult.isEmpty()) {
                 try {
-                    const offer = createFromBody(req.body);
+                    const offer = createFromBody(req);
                     await offerService.createProductOffer(offer);
                     req.flash('message', '登録しました');
                     res.redirect(`/productOffers/${offer.id}/update`);
@@ -95,7 +95,7 @@ productOffersRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    offer = createFromBody(req.body);
+                    offer = createFromBody(req);
                     await offerService.updateProductOffer(offer);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -170,6 +170,7 @@ productOffersRouter.get(
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
                 ids: offerIds,
                 name: (req.query.name !== undefined
                     && req.query.name !== '')
@@ -253,7 +254,9 @@ productOffersRouter.get(
     }
 );
 
-function createFromBody(body: any): chevre.factory.offer.product.IOffer {
+function createFromBody(req: Request): chevre.factory.offer.product.IOffer {
+    const body = req.body;
+
     const referenceQuantityValue: number = Number(body.seatReservationUnit);
     const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
@@ -262,9 +265,11 @@ function createFromBody(body: any): chevre.factory.offer.product.IOffer {
     };
 
     return {
+        project: req.project,
         typeOf: <chevre.factory.offerType>'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
+        identifier: body.identifier,
         name: body.name,
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
@@ -273,6 +278,7 @@ function createFromBody(body: any): chevre.factory.offer.product.IOffer {
             name: body.itemOffered.name
         },
         priceSpecification: {
+            project: req.project,
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             price: Number(body.price) * referenceQuantityValue,
             priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -281,6 +287,7 @@ function createFromBody(body: any): chevre.factory.offer.product.IOffer {
             accounting: {
                 typeOf: 'Accounting',
                 operatingRevenue: {
+                    project: req.project,
                     typeOf: 'AccountTitle',
                     codeValue: body.accountTitle,
                     name: ''

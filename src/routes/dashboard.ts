@@ -34,6 +34,7 @@ dashboardRouter.get(
             });
             const searchConditions = {
                 limit: 1,
+                project: { ids: [req.project.id] },
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
                 bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
@@ -117,6 +118,7 @@ dashboardRouter.get(
             });
             const result = await taskService.search({
                 limit: 1,
+                project: { ids: [req.project.id] },
                 runsFrom: moment().add(-1, 'day').toDate(),
                 runsThrough: moment().toDate(),
                 statuses: [chevre.factory.taskStatus.Ready]
@@ -140,10 +142,11 @@ dashboardRouter.get(
                 auth: req.user.authClient
             });
             const result = await reservationService.search({
-                typeOf: chevre.factory.reservationType.EventReservation,
                 limit: 10,
                 page: 1,
                 sort: { modifiedTime: chevre.factory.sortType.Descending },
+                project: { ids: [req.project.id] },
+                typeOf: chevre.factory.reservationType.EventReservation,
                 reservationStatuses: [
                     chevre.factory.reservationStatusType.ReservationConfirmed,
                     chevre.factory.reservationStatusType.ReservationPending

@@ -28,13 +28,14 @@ serviceTypesRouter.all('/add', (req, res) => __awaiter(this, void 0, void 0, fun
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                const serviceType = createMovieFromBody(req.body);
+                req.body.id = '';
+                let serviceType = createFromBody(req);
                 debug('saving an serviceType...', serviceType);
                 const serviceTypeService = new chevre.service.ServiceType({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
-                yield serviceTypeService.create(serviceType);
+                serviceType = yield serviceTypeService.create(serviceType);
                 req.flash('message', '登録しました');
                 res.redirect(`/serviceTypes/${serviceType.id}/update`);
                 return;
@@ -70,7 +71,8 @@ serviceTypesRouter.get('/getlist', (req, res) => __awaiter(this, void 0, void 0,
         const result = yield serviceTypeService.search({
             limit: req.query.limit,
             page: req.query.page,
-            ids: (req.query.id !== undefined && req.query.id !== '') ? [req.query.id] : undefined,
+            project: { ids: [req.project.id] },
+            identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
             name: req.query.name
         });
         res.json({
@@ -104,9 +106,9 @@ serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
         const validatorResult = yield req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
             try {
-                serviceType = createMovieFromBody(req.body);
+                req.body.id = req.params.id;
+                serviceType = createFromBody(req);
                 debug('saving an serviceType...', serviceType);
                 yield serviceTypeService.update(serviceType);
                 req.flash('message', '更新しました');
@@ -131,10 +133,13 @@ serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
     });
 }));
 exports.default = serviceTypesRouter;
-function createMovieFromBody(body) {
+function createFromBody(req) {
+    const body = req.body;
     return {
+        project: req.project,
         typeOf: 'ServiceType',
         id: body.id,
+        identifier: body.identifier,
         name: body.name,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
@@ -153,8 +158,8 @@ function validate(req, checkType) {
     let colName = '';
     if (checkType === 'add') {
         colName = '興行区分コード';
-        req.checkBody('id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('id', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+        req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+        req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     }
     colName = '名称';
     req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();

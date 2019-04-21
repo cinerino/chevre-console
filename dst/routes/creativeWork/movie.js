@@ -31,6 +31,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, functi
         const { data, totalCount } = yield creativeWorkService.searchMovies({
             limit: req.query.limit,
             page: req.query.page,
+            project: { ids: [req.project.id] },
             identifier: req.query.identifier,
             name: req.query.name,
             datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom)) ?

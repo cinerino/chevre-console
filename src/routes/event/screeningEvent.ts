@@ -32,6 +32,7 @@ screeningEventRouter.post(
             // tslint:disable-next-line:no-magic-numbers
             const importThrough = moment(importFrom).add(2, 'months').toDate();
             const taskAttributes = [{
+                project: req.project,
                 name: <chevre.factory.taskName.ImportEventsFromCOA>chevre.factory.taskName.ImportEventsFromCOA,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),

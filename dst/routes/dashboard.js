@@ -31,6 +31,7 @@ dashboardRouter.get('/dashboard/reservationCount', (req, res) => __awaiter(this,
         });
         const searchConditions = {
             limit: 1,
+            project: { ids: [req.project.id] },
             typeOf: chevre.factory.reservationType.EventReservation,
             reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
             bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
@@ -101,6 +102,7 @@ dashboardRouter.get('/dashboard/queueCount', (req, res) => __awaiter(this, void 
         });
         const result = yield taskService.search({
             limit: 1,
+            project: { ids: [req.project.id] },
             runsFrom: moment().add(-1, 'day').toDate(),
             runsThrough: moment().toDate(),
             statuses: [chevre.factory.taskStatus.Ready]
@@ -120,10 +122,11 @@ dashboardRouter.get('/dashboard/latestReservations', (req, res) => __awaiter(thi
             auth: req.user.authClient
         });
         const result = yield reservationService.search({
-            typeOf: chevre.factory.reservationType.EventReservation,
             limit: 10,
             page: 1,
             sort: { modifiedTime: chevre.factory.sortType.Descending },
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.reservationType.EventReservation,
             reservationStatuses: [
                 chevre.factory.reservationStatusType.ReservationConfirmed,
                 chevre.factory.reservationStatusType.ReservationPending

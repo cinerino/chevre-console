@@ -34,6 +34,7 @@ priceSpecificationsRouter.get(
                 limit: Number(req.query.limit),
                 page: Number(req.query.page),
                 sort: { price: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
                 typeOf: (req.query.typeOf !== '') ? req.query.typeOf : undefined,
                 appliesToMovieTicket: {
                     serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
@@ -82,7 +83,7 @@ priceSpecificationsRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    let priceSpecification = createMovieFromBody(req.body);
+                    let priceSpecification = createMovieFromBody(req);
                     const priceSpecificationService = new chevre.service.PriceSpecification({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -137,7 +138,7 @@ priceSpecificationsRouter.all(
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
-                    priceSpecification = { ...createMovieFromBody(req.body), id: priceSpecification.id };
+                    priceSpecification = { ...createMovieFromBody(req), id: priceSpecification.id };
                     await priceSpecificationService.update(priceSpecification);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -166,8 +167,11 @@ priceSpecificationsRouter.all(
     }
 );
 
-function createMovieFromBody(body: any): chevre.factory.priceSpecification.IPriceSpecification<any> {
+function createMovieFromBody(req: Request): chevre.factory.priceSpecification.IPriceSpecification<any> {
+    const body = req.body;
+
     return {
+        project: req.project,
         typeOf: body.typeOf,
         price: Number(body.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,

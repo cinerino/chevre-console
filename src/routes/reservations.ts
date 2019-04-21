@@ -41,6 +41,7 @@ reservationsRouter.get(
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { modifiedTime: chevre.factory.sortType.Descending },
+                project: { ids: [req.project.id] },
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservationNumbers: (req.query.reservationNumber !== undefined
                     && req.query.reservationNumber !== '')

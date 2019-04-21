@@ -57,6 +57,7 @@ export async function search(req: Request, res: Response): Promise<void> {
         const screen = req.query.screen;
         const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
         const searchResult = await eventService.search({
+            project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEvent,
             eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
             inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
@@ -87,6 +88,7 @@ export async function search(req: Request, res: Response): Promise<void> {
             if (searchResult.data.length < searchResult.totalCount) {
                 let dataPage2: typeof searchResult.data;
                 const searchResultPage2 = await eventService.search({
+                    project: { ids: [req.project.id] },
                     typeOf: chevre.factory.eventType.ScreeningEvent,
                     eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
                     inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
@@ -135,6 +137,7 @@ export async function searchScreeningEventSeries(req: Request, res: Response): P
     });
     try {
         const searchResult = await eventService.search({
+            project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
             location: {
                 branchCodes: [req.query.movieTheaterBranchCode]
@@ -178,7 +181,7 @@ export async function regist(req: Request, res: Response): Promise<void> {
         }
 
         debug('saving screening event...', req.body);
-        const attributes = await createMultipleEventFromBody(req.body, req.user);
+        const attributes = await createMultipleEventFromBody(req, req.user);
         const events = await eventService.create(attributes);
         debug(events.length, 'events created', events.map((e) => e.id));
         res.json({
@@ -219,7 +222,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             return;
         }
         debug('saving screening event...', req.body);
-        const attributes = await createEventFromBody(req.body, req.user);
+        const attributes = await createEventFromBody(req);
         await eventService.update({
             id: req.params.eventId,
             attributes: attributes
@@ -274,7 +277,10 @@ export async function cancelPerformance(req: Request, res: Response): Promise<vo
  * リクエストボディからイベントオブジェクトを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-async function createEventFromBody(body: any, user: User): Promise<chevre.factory.event.screeningEvent.IAttributes> {
+async function createEventFromBody(req: Request): Promise<chevre.factory.event.screeningEvent.IAttributes> {
+    const body = req.body;
+    const user = req.user;
+
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
@@ -304,7 +310,10 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
     }
 
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-    const searchServiceTypesResult = await serviceTypeService.search({ ids: [ticketTypeGroup.itemOffered.serviceType.id] });
+    const searchServiceTypesResult = await serviceTypeService.search({
+        project: { ids: [req.project.id] },
+        ids: [ticketTypeGroup.itemOffered.serviceType.id]
+    });
     if (searchServiceTypesResult.totalCount === 0) {
         throw new Error('興行区分が見つかりません');
     }
@@ -368,11 +377,7 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
             value: 1
         },
         itemOffered: {
-            serviceType: {
-                typeOf: 'ServiceType',
-                id: serviceType.id,
-                name: serviceType.name
-            },
+            serviceType: serviceType,
             serviceOutput: serviceOutput
         },
         validFrom: salesStartDate,
@@ -381,12 +386,14 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
     };
 
     return {
+        project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEvent,
         doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
         startDate: startDate,
         endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
         workPerformed: screeningEventSeries.workPerformed,
         location: {
+            project: req.project,
             typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
             branchCode: <string>screeningRoom.branchCode,
             name: screeningRoom.name,
@@ -405,8 +412,10 @@ async function createEventFromBody(body: any, user: User): Promise<chevre.factor
  * リクエストボディからイベントオブジェクトを作成する
  */
 // tslint:disable-next-line:max-func-body-length
-async function createMultipleEventFromBody(body: any, user: User): Promise<chevre.factory.event.screeningEvent.IAttributes[]> {
+async function createMultipleEventFromBody(req: Request, user: User): Promise<chevre.factory.event.screeningEvent.IAttributes[]> {
+    const body = req.body;
     debug('body:', body);
+
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
@@ -446,7 +455,10 @@ async function createMultipleEventFromBody(body: any, user: User): Promise<chevr
     const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({ limit: 100 });
     const ticketTypeGroups = searchTicketTypeGroupsResult.data;
 
-    const searchServiceTypesResult = await serviceTypeService.search({ limit: 100 });
+    const searchServiceTypesResult = await serviceTypeService.search({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
     const serviceTypes = searchServiceTypesResult.data;
 
     const attributes: chevre.factory.event.screeningEvent.IAttributes[] = [];
@@ -513,11 +525,7 @@ async function createMultipleEventFromBody(body: any, user: User): Promise<chevr
                         value: 1
                     },
                     itemOffered: {
-                        serviceType: {
-                            typeOf: 'ServiceType',
-                            id: serviceType.id,
-                            name: serviceType.name
-                        },
+                        serviceType: serviceType,
                         serviceOutput: serviceOutput
                     },
                     validFrom: salesStartDate,
@@ -526,12 +534,14 @@ async function createMultipleEventFromBody(body: any, user: User): Promise<chevr
                 };
 
                 attributes.push({
+                    project: req.project,
                     typeOf: chevre.factory.eventType.ScreeningEvent,
                     doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
                     startDate: eventStartDate,
                     endDate: moment(`${formattedDate}T${data.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
                     workPerformed: screeningEventSeries.workPerformed,
                     location: {
+                        project: req.project,
                         typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
                         branchCode: <string>screeningRoom.branchCode,
                         name: screeningRoom.name === undefined ? { en: '', ja: '', kr: '' } : screeningRoom.name,
