@@ -92,6 +92,7 @@ export async function add(req: Request, res: Response): Promise<void> {
             sort: {
                 'priceSpecification.price': chevre.factory.sortType.Descending
             },
+            project: { ids: [req.project.id] },
             ids: forms.ticketTypes
         });
         ticketTypes = searchTicketTypesResult.data;
@@ -165,6 +166,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             // sort: {
             //     'priceSpecification.price': chevre.factory.sortType.Descending
             // },
+            project: { ids: [req.project.id] },
             ids: forms.ticketTypes
         });
         ticketTypes = searchTicketTypesResult.data;
@@ -242,6 +244,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const { totalCount, data } = await offerService.searchTicketTypeGroups({
             limit: req.query.limit,
             page: req.query.page,
+            project: { ids: [req.project.id] },
             identifier: req.query.identifier,
             name: req.query.name
         });
@@ -275,6 +278,7 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
         const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.query.id });
         const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
+            project: { ids: [req.project.id] },
             ids: ticketGroup.ticketTypes
         });
         res.json({
@@ -304,6 +308,7 @@ export async function getTicketTypePriceList(req: Request, res: Response): Promi
             sort: {
                 'priceSpecification.price': chevre.factory.sortType.Descending
             },
+            project: { ids: [req.project.id] },
             priceSpecification: {
                 // 売上金額で検索
                 accounting: {
