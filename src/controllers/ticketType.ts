@@ -232,7 +232,11 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
 
     const availableAddOn: chevre.factory.offer.IOffer[] = [];
     if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
-        const searchProductOffersResult = await offerService.searchProductOffers({ limit: 1, ids: [req.body.availableAddOn] });
+        const searchProductOffersResult = await offerService.searchProductOffers({
+            limit: 1,
+            ids: [req.body.availableAddOn],
+            project: { ids: [req.project.id] }
+        });
         const productOffer = searchProductOffersResult.data.shift();
         if (productOffer === undefined) {
             throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
@@ -397,6 +401,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
             limit: req.query.limit,
             page: req.query.page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
             ids: ticketTypeIds,
             name: (req.query.name !== undefined
@@ -510,6 +515,7 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
         });
         const { totalCount, data } = await offerService.searchTicketTypeGroups({
             limit: 100,
+            project: { ids: [req.project.id] },
             ticketTypes: [req.params.ticketTypeId]
         });
 

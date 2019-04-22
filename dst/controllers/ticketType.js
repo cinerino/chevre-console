@@ -203,7 +203,11 @@ function createFromBody(req) {
         });
         const availableAddOn = [];
         if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
-            const searchProductOffersResult = yield offerService.searchProductOffers({ limit: 1, ids: [req.body.availableAddOn] });
+            const searchProductOffersResult = yield offerService.searchProductOffers({
+                limit: 1,
+                ids: [req.body.availableAddOn],
+                project: { ids: [req.project.id] }
+            });
             const productOffer = searchProductOffersResult.data.shift();
             if (productOffer === undefined) {
                 throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
@@ -358,6 +362,7 @@ function getList(req, res) {
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
                 identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
                 ids: ticketTypeIds,
                 name: (req.query.name !== undefined
@@ -461,6 +466,7 @@ function getTicketTypeGroupList(req, res) {
             });
             const { totalCount, data } = yield offerService.searchTicketTypeGroups({
                 limit: 100,
+                project: { ids: [req.project.id] },
                 ticketTypes: [req.params.ticketTypeId]
             });
             res.json({
