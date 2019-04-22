@@ -66,5 +66,5 @@ movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, functi
         });
     }
 }));
-movieRouter.all('/:identifier/update', MovieController.update);
+movieRouter.all('/:id/update', MovieController.update);
 exports.default = movieRouter;

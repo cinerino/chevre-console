@@ -59,7 +59,15 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
+                const searchMovieResult = await creativeWorkService.searchMovies({
+                    project: { ids: [req.project.id] },
+                    identifier: `^${req.body.workPerformed.identifier}$`
+                });
+                const movie = searchMovieResult.data.shift();
+                if (movie === undefined) {
+                    throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+                }
+
                 const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                 req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater);
@@ -147,7 +155,15 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const movie = await creativeWorkService.findMovieByIdentifier({ identifier: req.body.workPerformed.identifier });
+                const searchMovieResult = await creativeWorkService.searchMovies({
+                    project: { ids: [req.project.id] },
+                    identifier: `^${req.body.workPerformed.identifier}$`
+                });
+                const movie = searchMovieResult.data.shift();
+                if (movie === undefined) {
+                    throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+                }
+
                 const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
                 req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater);
@@ -229,9 +245,15 @@ export async function getRating(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const movie = await creativeWorkService.findMovieByIdentifier({
-            identifier: req.query.identifier
+        const searchMovieResult = await creativeWorkService.searchMovies({
+            project: { ids: [req.project.id] },
+            identifier: `^${req.query.identifier}$`
         });
+        const movie = searchMovieResult.data.shift();
+        if (movie === undefined) {
+            throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+        }
+
         res.json({
             success: true,
             results: movie.contentRating

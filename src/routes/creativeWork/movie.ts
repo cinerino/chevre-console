@@ -76,6 +76,6 @@ movieRouter.all(
     }
 );
 
-movieRouter.all('/:identifier/update', MovieController.update);
+movieRouter.all('/:id/update', MovieController.update);
 
 export default movieRouter;

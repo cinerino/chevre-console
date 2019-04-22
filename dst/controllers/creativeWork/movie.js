@@ -40,6 +40,7 @@ function add(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
+                    req.body.id = '';
                     const movie = createMovieFromBody(req);
                     const creativeWorkService = new chevre.service.CreativeWork({
                         endpoint: process.env.API_ENDPOINT,
@@ -85,8 +86,8 @@ function update(req, res) {
         });
         let message = '';
         let errors = {};
-        let movie = yield creativeWorkService.findMovieByIdentifier({
-            identifier: req.params.identifier
+        let movie = yield creativeWorkService.findMovieById({
+            id: req.params.id
         });
         if (req.method === 'POST') {
             // バリデーション
@@ -96,6 +97,7 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
+                    req.body.id = req.params.id;
                     movie = createMovieFromBody(req);
                     debug('saving an movie...', movie);
                     yield creativeWorkService.updateMovie(movie);
@@ -138,6 +140,7 @@ function createMovieFromBody(req) {
     const movie = {
         project: req.project,
         typeOf: chevre.factory.creativeWorkType.Movie,
+        id: body.id,
         identifier: body.identifier,
         name: body.name,
         duration: (body.duration !== '') ? moment.duration(Number(body.duration), 'm').toISOString() : null,
