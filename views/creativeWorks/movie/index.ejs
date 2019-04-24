@@ -112,10 +112,9 @@ Aa-10
                     <td name="dayPublished__dayAvailabilityEnds" class="text-left">
                         $dayPublished$<br>$dayAvailabilityEnds$</td>
                     <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <td name="identifier__identifier">
+                    <td name="id__identifier">
                         <div class="text-center">
-                            <a target="_blank" class="btn btn-sm btn-primary"
-                                href="/creativeWorks/movie/$identifier$/update">
+                            <a target="_blank" class="btn btn-sm btn-primary" href="/creativeWorks/movie/$id$/update">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </div>

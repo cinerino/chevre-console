@@ -23,11 +23,16 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({});
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
         if (searchMovieTheatersResult.totalCount === 0) {
             throw new Error('劇場が見つかりません');
         }
-        const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({});
+        const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+            project: { ids: [req.project.id] }
+        });
+
         res.render('events/screeningEvent/index', {
             movieTheaters: searchMovieTheatersResult.data,
             moment: moment,
@@ -55,7 +60,9 @@ export async function search(req: Request, res: Response): Promise<void> {
         const date = req.query.date;
         const days = req.query.days;
         const screen = req.query.screen;
-        const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
+
+        const movieTheater = await placeService.findMovieTheaterById({ id: req.query.theater });
+
         const searchResult = await eventService.search({
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -111,7 +118,10 @@ export async function search(req: Request, res: Response): Promise<void> {
             data = searchResult.data;
             screens = movieTheater.containsPlace;
         }
-        const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({});
+        const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+            project: { ids: [req.project.id] }
+        });
+
         res.json({
             validation: null,
             error: null,
@@ -297,10 +307,13 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
+
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
         id: body.screeningEventId
     });
-    const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
+
+    const movieTheater = await placeService.findMovieTheaterById({ id: body.theater });
+
     const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
     if (screeningRoom === undefined) {
         throw new Error('上映スクリーンが見つかりません');
@@ -436,7 +449,9 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
         id: body.screeningEventId
     });
-    const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
+
+    const movieTheater = await placeService.findMovieTheaterById({ id: body.theater });
+
     const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
     if (screeningRoom === undefined) {
         throw new Error('上映スクリーンが見つかりません');
@@ -452,7 +467,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const mvtkExcludeFlgs: string[] = body.mvtkExcludeFlgData;
     const timeData: { doorTime: string; startTime: string; endTime: string }[] = body.timeData;
 
-    const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({ limit: 100 });
+    const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
     const ticketTypeGroups = searchTicketTypeGroupsResult.data;
 
     const searchServiceTypesResult = await serviceTypeService.search({

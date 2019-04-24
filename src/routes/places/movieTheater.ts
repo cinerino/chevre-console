@@ -24,6 +24,7 @@ movieTheaterRouter.all(
             if (validatorResult.isEmpty()) {
                 try {
                     debug(req.body);
+                    req.body.id = '';
                     const movieTheater = createMovieTheaterFromBody(req);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
@@ -136,7 +137,7 @@ movieTheaterRouter.get(
 );
 
 movieTheaterRouter.all(
-    '/:branchCode/update',
+    '/:id/update',
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -145,8 +146,8 @@ movieTheaterRouter.all(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        let movieTheater = await placeService.findMovieTheaterByBranchCode({
-            branchCode: req.params.branchCode
+        let movieTheater = await placeService.findMovieTheaterById({
+            id: req.params.id
         });
 
         if (req.method === 'POST') {
@@ -156,6 +157,7 @@ movieTheaterRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
+                    req.body.id = req.params.id;
                     movieTheater = createMovieTheaterFromBody(req);
                     debug('saving an movie theater...', movieTheater);
                     await placeService.updateMovieTheater(movieTheater);
@@ -192,22 +194,21 @@ movieTheaterRouter.all(
 );
 
 movieTheaterRouter.get(
-    '/getScreenListByTheaterBranchCode',
+    '/:id/screeningRooms',
     async (req, res) => {
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const branchCode = req.query.branchCode;
-            const place = await placeService.findMovieTheaterByBranchCode({
-                branchCode
+            const movieTheater = await placeService.findMovieTheaterById({
+                id: req.params.id
             });
-            const results = place.containsPlace.map((screen) => ({
+            const screeningRooms = movieTheater.containsPlace.map((screen) => ({
                 branchCode: screen.branchCode,
                 name: screen.name !== undefined ? screen.name.ja : ''
             }));
-            results.sort((screen1, screen2) => {
+            screeningRooms.sort((screen1, screen2) => {
                 if (screen1.name > screen2.name) {
                     return 1;
                 }
@@ -217,13 +218,15 @@ movieTheaterRouter.get(
 
                 return 0;
             });
+
             res.json({
                 success: true,
-                results
+                results: screeningRooms
             });
         } catch (err) {
             res.json({
                 success: false,
+                message: err.message,
                 results: []
             });
         }
@@ -236,7 +239,7 @@ function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieThe
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlace = {
         project: req.project,
-        id: '',
+        id: body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
         branchCode: body.branchCode,
         name: body.name,

@@ -28,6 +28,7 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fun
         if (validatorResult.isEmpty()) {
             try {
                 debug(req.body);
+                req.body.id = '';
                 const movieTheater = createMovieTheaterFromBody(req);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
@@ -110,15 +111,15 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
         });
     }
 }));
-movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    let movieTheater = yield placeService.findMovieTheaterByBranchCode({
-        branchCode: req.params.branchCode
+    let movieTheater = yield placeService.findMovieTheaterById({
+        id: req.params.id
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -127,6 +128,7 @@ movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
+                req.body.id = req.params.id;
                 movieTheater = createMovieTheaterFromBody(req);
                 debug('saving an movie theater...', movieTheater);
                 yield placeService.updateMovieTheater(movieTheater);
@@ -151,21 +153,20 @@ movieTheaterRouter.all('/:branchCode/update', (req, res) => __awaiter(this, void
         forms: forms
     });
 }));
-movieTheaterRouter.get('/getScreenListByTheaterBranchCode', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const branchCode = req.query.branchCode;
-        const place = yield placeService.findMovieTheaterByBranchCode({
-            branchCode
+        const movieTheater = yield placeService.findMovieTheaterById({
+            id: req.params.id
         });
-        const results = place.containsPlace.map((screen) => ({
+        const screeningRooms = movieTheater.containsPlace.map((screen) => ({
             branchCode: screen.branchCode,
             name: screen.name !== undefined ? screen.name.ja : ''
         }));
-        results.sort((screen1, screen2) => {
+        screeningRooms.sort((screen1, screen2) => {
             if (screen1.name > screen2.name) {
                 return 1;
             }
@@ -176,12 +177,13 @@ movieTheaterRouter.get('/getScreenListByTheaterBranchCode', (req, res) => __awai
         });
         res.json({
             success: true,
-            results
+            results: screeningRooms
         });
     }
     catch (err) {
         res.json({
             success: false,
+            message: err.message,
             results: []
         });
     }
@@ -191,7 +193,7 @@ function createMovieTheaterFromBody(req) {
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater = {
         project: req.project,
-        id: '',
+        id: body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
         branchCode: body.branchCode,
         name: body.name,

@@ -41,6 +41,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         sort: {
             datePublished: chevre.factory.sortType.Descending
         },
+        project: { ids: [req.project.id] },
         offers: {
             availableFrom: new Date()
         }
@@ -68,7 +69,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                     throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                 }
 
-                const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
                 req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater);
                 debug('saving an event...', attributes);
@@ -133,6 +134,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         sort: {
             datePublished: chevre.factory.sortType.Descending
         },
+        project: { ids: [req.project.id] },
         offers: {
             availableFrom: new Date()
         }
@@ -164,7 +166,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                     throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                 }
 
-                const movieTheater = await placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
                 req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater);
                 debug('saving an event...', attributes);
@@ -207,7 +209,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
         nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
         duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration,
-        locationBranchCode: event.location.branchCode,
+        locationId: event.location.id,
         translationType: translationType,
         videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
         startDate: (_.isEmpty(req.body.startDate)) ?
@@ -384,7 +386,15 @@ export async function search(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const branchCode = <string | undefined>req.query.branchCode;
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        const locationId = <string>req.query.locationId;
+        const movieTheater = await placeService.findMovieTheaterById({ id: locationId });
+
+        const branchCode = movieTheater.branchCode;
         const fromDate = <string | undefined>req.query.fromDate;
         const toDate = <string | undefined>req.query.toDate;
         if (branchCode === undefined) {
@@ -392,6 +402,7 @@ export async function search(req: Request, res: Response): Promise<void> {
         }
         // 上映終了して「いない」劇場上映作品を検索
         const { totalCount, data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+            project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
             inSessionFrom: (fromDate !== undefined) ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : new Date(),
             inSessionThrough: (toDate !== undefined) ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : undefined,

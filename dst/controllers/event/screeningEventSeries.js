@@ -46,6 +46,7 @@ function add(req, res) {
             sort: {
                 datePublished: chevre.factory.sortType.Descending
             },
+            project: { ids: [req.project.id] },
             offers: {
                 availableFrom: new Date()
             }
@@ -72,7 +73,7 @@ function add(req, res) {
                     if (movie === undefined) {
                         throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                     }
-                    const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                    const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
                     req.body.contentRating = movie.contentRating;
                     const attributes = createEventFromBody(req, movie, movieTheater);
                     debug('saving an event...', attributes);
@@ -133,6 +134,7 @@ function update(req, res) {
             sort: {
                 datePublished: chevre.factory.sortType.Descending
             },
+            project: { ids: [req.project.id] },
             offers: {
                 availableFrom: new Date()
             }
@@ -162,7 +164,7 @@ function update(req, res) {
                     if (movie === undefined) {
                         throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                     }
-                    const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.body.locationBranchCode });
+                    const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
                     req.body.contentRating = movie.contentRating;
                     const attributes = createEventFromBody(req, movie, movieTheater);
                     debug('saving an event...', attributes);
@@ -195,7 +197,7 @@ function update(req, res) {
         if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
             translationType = '1';
         }
-        const forms = Object.assign({ additionalProperty: [], headline: {} }, event, req.body, { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration, locationBranchCode: event.location.branchCode, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
+        const forms = Object.assign({ additionalProperty: [], headline: {} }, event, req.body, { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration, locationId: event.location.id, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
                 (event.startDate !== null) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
                 req.body.startDate, endDate: (_.isEmpty(req.body.endDate)) ?
                 (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '' :
@@ -355,7 +357,13 @@ function search(req, res) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const branchCode = req.query.branchCode;
+            const placeService = new chevre.service.Place({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const locationId = req.query.locationId;
+            const movieTheater = yield placeService.findMovieTheaterById({ id: locationId });
+            const branchCode = movieTheater.branchCode;
             const fromDate = req.query.fromDate;
             const toDate = req.query.toDate;
             if (branchCode === undefined) {
@@ -363,6 +371,7 @@ function search(req, res) {
             }
             // 上映終了して「いない」劇場上映作品を検索
             const { totalCount, data } = yield eventService.search({
+                project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 inSessionFrom: (fromDate !== undefined) ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : new Date(),
                 inSessionThrough: (toDate !== undefined) ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : undefined,

@@ -28,11 +28,15 @@ function index(req, res, next) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const searchMovieTheatersResult = yield placeService.searchMovieTheaters({});
+            const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+                project: { ids: [req.project.id] }
+            });
             if (searchMovieTheatersResult.totalCount === 0) {
                 throw new Error('劇場が見つかりません');
             }
-            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({});
+            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+                project: { ids: [req.project.id] }
+            });
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
                 moment: moment,
@@ -64,7 +68,7 @@ function search(req, res) {
             const date = req.query.date;
             const days = req.query.days;
             const screen = req.query.screen;
-            const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: req.query.theater });
+            const movieTheater = yield placeService.findMovieTheaterById({ id: req.query.theater });
             const searchResult = yield eventService.search({
                 project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -117,7 +121,9 @@ function search(req, res) {
                 data = searchResult.data;
                 screens = movieTheater.containsPlace;
             }
-            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({});
+            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+                project: { ids: [req.project.id] }
+            });
             res.json({
                 validation: null,
                 error: null,
@@ -321,7 +327,7 @@ function createEventFromBody(req) {
         const screeningEventSeries = yield eventService.findById({
             id: body.screeningEventId
         });
-        const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
+        const movieTheater = yield placeService.findMovieTheaterById({ id: body.theater });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
         if (screeningRoom === undefined) {
             throw new Error('上映スクリーンが見つかりません');
@@ -453,7 +459,7 @@ function createMultipleEventFromBody(req, user) {
         const screeningEventSeries = yield eventService.findById({
             id: body.screeningEventId
         });
-        const movieTheater = yield placeService.findMovieTheaterByBranchCode({ branchCode: body.theater });
+        const movieTheater = yield placeService.findMovieTheaterById({ id: body.theater });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
         if (screeningRoom === undefined) {
             throw new Error('上映スクリーンが見つかりません');
@@ -467,7 +473,10 @@ function createMultipleEventFromBody(req, user) {
         const ticketTypeIds = body.ticketData;
         const mvtkExcludeFlgs = body.mvtkExcludeFlgData;
         const timeData = body.timeData;
-        const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({ limit: 100 });
+        const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
         const ticketTypeGroups = searchTicketTypeGroupsResult.data;
         const searchServiceTypesResult = yield serviceTypeService.search({
             limit: 100,

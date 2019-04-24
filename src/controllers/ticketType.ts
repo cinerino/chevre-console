@@ -195,14 +195,10 @@ export async function update(req: Request, res: Response): Promise<void> {
         isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
         seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit,
         accountTitle: (_.isEmpty(req.body.accountTitle))
-            ? (ticketType.priceSpecification.accounting !== undefined)
-                ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
-            : req.body.accountTitle,
-        nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
             ? (ticketType.priceSpecification.accounting !== undefined
-                && ticketType.priceSpecification.accounting.nonOperatingRevenue !== undefined)
-                ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
-            : req.body.nonBoxOfficeSubject
+                && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
+                ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
+            : req.body.accountTitle
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -317,18 +313,19 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
     //     ? [body.eligibleCustomerType]
     //     : undefined;
 
-    const accounting = (body.accountTitle !== undefined && body.accountTitle !== '')
-        ? {
-            typeOf: <'Accounting'>'Accounting',
-            operatingRevenue: <any>{
-                typeOf: 'AccountTitle',
-                codeValue: body.accountTitle,
-                identifier: body.accountTitle,
-                name: ''
-            },
-            accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
-        }
-        : undefined;
+    const accounting = {
+        typeOf: <'Accounting'>'Accounting',
+        operatingRevenue: <any>undefined,
+        accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+    };
+    if (body.accountTitle !== undefined && body.accountTitle !== '') {
+        accounting.operatingRevenue = {
+            typeOf: 'AccountTitle',
+            codeValue: body.accountTitle,
+            identifier: body.accountTitle,
+            name: ''
+        };
+    }
 
     return {
         // ...{

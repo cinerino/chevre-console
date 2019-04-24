@@ -169,13 +169,10 @@ function update(req, res) {
         const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
             } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
-                ? (ticketType.priceSpecification.accounting !== undefined)
-                    ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
-                : req.body.accountTitle, nonBoxOfficeSubject: (_.isEmpty(req.body.nonBoxOfficeSubject))
                 ? (ticketType.priceSpecification.accounting !== undefined
-                    && ticketType.priceSpecification.accounting.nonOperatingRevenue !== undefined)
-                    ? ticketType.priceSpecification.accounting.nonOperatingRevenue.codeValue : undefined
-                : req.body.nonBoxOfficeSubject });
+                    && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
+                    ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
+                : req.body.accountTitle });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
@@ -279,18 +276,19 @@ function createFromBody(req) {
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
         //     : undefined;
-        const accounting = (body.accountTitle !== undefined && body.accountTitle !== '')
-            ? {
-                typeOf: 'Accounting',
-                operatingRevenue: {
-                    typeOf: 'AccountTitle',
-                    codeValue: body.accountTitle,
-                    identifier: body.accountTitle,
-                    name: ''
-                },
-                accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
-            }
-            : undefined;
+        const accounting = {
+            typeOf: 'Accounting',
+            operatingRevenue: undefined,
+            accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+        };
+        if (body.accountTitle !== undefined && body.accountTitle !== '') {
+            accounting.operatingRevenue = {
+                typeOf: 'AccountTitle',
+                codeValue: body.accountTitle,
+                identifier: body.accountTitle,
+                name: ''
+            };
+        }
         return {
             // ...{
             //     $unset: { eligibleCustomerType: 1 }

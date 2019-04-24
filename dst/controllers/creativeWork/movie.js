@@ -53,7 +53,7 @@ function add(req, res) {
                     debug('saving an movie...', movie);
                     yield creativeWorkService.createMovie(movie);
                     req.flash('message', '登録しました');
-                    res.redirect(`/creativeWorks/movie/${movie.identifier}/update`);
+                    res.redirect(`/creativeWorks/movie/${movie.id}/update`);
                     return;
                 }
                 catch (error) {

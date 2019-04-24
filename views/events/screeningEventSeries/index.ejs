@@ -26,15 +26,15 @@ Aa-3
             <select class="form-control" name="locationBranchCode">
                 <option value="">選択してください</option>
                 <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <% for (const movieTheater of movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>">
-                        <%= movieTheater.name.ja %>
-                    </option>
-                    <% } %>
+                <% for (const movieTheater of movieTheaters) { %>
+                <option value="<%= movieTheater.branchCode %>">
+                    <%= movieTheater.name.ja %>
+                </option>
+                <% } %>
                 <% } else { %>
-                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
+                <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                <% } %>
                 <% } %>
             </select>
         </div>
@@ -96,13 +96,13 @@ Aa-3
             </thead>
             <tbody>
                 <tr id="templateRow" eventId="$id$">
-                    <td name="location.branchCode__location.branchCode__location.name.ja">
+                    <td name="location.id__location.branchCode__location.name.ja">
                         <a target="_blank"
-                            href="/places/movieTheater/$location.branchCode$/update">$location.branchCode$<br>$location.name.ja$</a>
+                            href="/places/movieTheater/$location.id$/update">$location.branchCode$<br>$location.name.ja$</a>
                     </td>
-                    <td name="workPerformed.identifier__workPerformed.identifier__workPerformed.name">
+                    <td name="workPerformed.id__workPerformed.identifier__workPerformed.name">
                         <a target="_blank"
-                            href="/creativeWorks/movie/$workPerformed.identifier$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
+                            href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
                     </td>
                     <td name="name.ja__name.en__headline.ja__kanaName">
                         $name.ja$<br>

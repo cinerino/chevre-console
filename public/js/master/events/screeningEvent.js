@@ -125,7 +125,7 @@ function getEventSeries(theater) {
         url: '/events/screeningEventSeries/search',
         type: 'GET',
         data: {
-            branchCode: theater
+            locationId: theater
         }
     }).done(function (data) {
         if (data && data.success) {
@@ -154,7 +154,7 @@ function getEventSeries(theater) {
  * @param {addModal}
  * @returns {void}
  */
-function getScreens(theater, modal = 'none') {
+function getScreens(theaterId, modal = 'none') {
     console.log('searching screens...');
     var selectScreen = $('select[name="screen"]');
     if (modal.indexOf('none') >= 0) {
@@ -172,7 +172,7 @@ function getScreens(theater, modal = 'none') {
         o.val('');
         selectScreen.html(o);
     }
-    if (!theater) {
+    if (!theaterId) {
         resetScreenList();
         return;
     } else {
@@ -180,12 +180,11 @@ function getScreens(theater, modal = 'none') {
     }
     $.ajax({
         dataType: 'json',
-        url: '/places/movieTheater/getScreenListByTheaterBranchCode',
+        url: '/places/movieTheater/' + theaterId + '/screeningRooms',
         type: 'GET',
-        data: {
-            branchCode: theater
-        }
+        data: {}
     }).done(function (data) {
+        console.log('screens found.', data);
         if (data && data.success) {
             if (modal.indexOf('none') >= 0) {
                 selectScreen.html('<option value="">-----</option>');
@@ -624,11 +623,11 @@ function createScheduler() {
             /**
              * 追加特性取得performance.superEvent.additionalProperty
              */
-            getAdditionalProperty: function(additionalPropertys, name) {
+            getAdditionalProperty: function (additionalPropertys, name) {
                 if (additionalPropertys === undefined) {
                     return null;
                 }
-                var findResult = additionalPropertys.find(function(additionalProperty) {
+                var findResult = additionalPropertys.find(function (additionalProperty) {
                     return (additionalProperty.name === name);
                 });
                 if (findResult === undefined) {
@@ -766,7 +765,7 @@ function createScheduler() {
                 }
 
                 modal.find('input[name=performance]').val(performance.id);
-                modal.find('input[name=theater]').val(performance.superEvent.location.branchCode);
+                modal.find('input[name=theater]').val(performance.superEvent.location.id);
                 modal.find('input[name=day]').val(day);
                 modal.find('input[name=screeningEventId]').val(performance.superEvent.id);
                 modal.find('input[name=mvtkExcludeFlg]').prop('checked', this.isSupportMovieTicket(performance));
