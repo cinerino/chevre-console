@@ -28,6 +28,12 @@ const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
 export async function add(req: Request, res: Response): Promise<void> {
     let message = '';
     let errors: any = {};
+
+    const creativeWorkService = new chevre.service.CreativeWork({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
     if (req.method === 'POST') {
         // バリデーション
         validate(req, 'add');
@@ -36,11 +42,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = '';
-                const movie = createMovieFromBody(req);
-                const creativeWorkService = new chevre.service.CreativeWork({
-                    endpoint: <string>process.env.API_ENDPOINT,
-                    auth: req.user.authClient
-                });
+                let movie = createMovieFromBody(req);
 
                 const { totalCount } = await creativeWorkService.searchMovies({ identifier: `^${movie.identifier}$` });
                 if (totalCount > 0) {
@@ -48,7 +50,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                 }
 
                 debug('saving an movie...', movie);
-                await creativeWorkService.createMovie(movie);
+                movie = await creativeWorkService.createMovie(movie);
                 req.flash('message', '登録しました');
                 res.redirect(`/creativeWorks/movie/${movie.id}/update`);
 

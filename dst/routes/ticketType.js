@@ -31,7 +31,10 @@ ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, fun
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const ticketTypeGroupsList = yield offerService.searchTicketTypeGroups({});
+    const ticketTypeGroupsList = yield offerService.searchTicketTypeGroups({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
     // 券種マスタ画面遷移
     res.render('ticketType/index', {
         message: '',

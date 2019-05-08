@@ -92,8 +92,10 @@ Aa-4
 
         <div class="panel-body">
             <button type="button" class="btn btn-primary add-button"><i class=" fa fa-plus"></i> 登録</button>
+            <% if (process.env.USE_COA === '1') { %>
             <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
                 <i class=" fa fa-plus"></i> COAからインポート</a>
+            <% } %>
 
             <button type="button" class="btn search btn-ok btn-success search-button float-right">検索</button>
         </div>

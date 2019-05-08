@@ -33,6 +33,10 @@ function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let message = '';
         let errors = {};
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         if (req.method === 'POST') {
             // バリデーション
             validate(req, 'add');
@@ -41,17 +45,13 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = '';
-                    const movie = createMovieFromBody(req);
-                    const creativeWorkService = new chevre.service.CreativeWork({
-                        endpoint: process.env.API_ENDPOINT,
-                        auth: req.user.authClient
-                    });
+                    let movie = createMovieFromBody(req);
                     const { totalCount } = yield creativeWorkService.searchMovies({ identifier: `^${movie.identifier}$` });
                     if (totalCount > 0) {
                         throw new Error('既に存在する作品コードです');
                     }
                     debug('saving an movie...', movie);
-                    yield creativeWorkService.createMovie(movie);
+                    movie = yield creativeWorkService.createMovie(movie);
                     req.flash('message', '登録しました');
                     res.redirect(`/creativeWorks/movie/${movie.id}/update`);
                     return;

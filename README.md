@@ -26,6 +26,7 @@
 | `API_CLIENT_SECRET`           | true     |                  |                        |
 | `API_CODE_VERIFIER`           | true     |                  |                        |
 | `PROJECT_ID`                  | true     |                  | Project ID             |
+| `USE_COA`                     | false    | 1 or 0           | COA Usage flag         |
 
 ## License
 

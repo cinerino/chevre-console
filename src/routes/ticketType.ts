@@ -28,7 +28,10 @@ ticketTypeMasterRouter.get(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const ticketTypeGroupsList = await offerService.searchTicketTypeGroups({});
+        const ticketTypeGroupsList = await offerService.searchTicketTypeGroups({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
 
         // 券種マスタ画面遷移
         res.render('ticketType/index', {
