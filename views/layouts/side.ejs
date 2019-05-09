@@ -60,12 +60,17 @@
                 <p>価格仕様</p>
             </a>
         </li>
+
+
+        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
         <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
             <a class="nav-link" href="/productOffers">
                 <i class="icon fa fa-glasses"></i>
                 <p>プロダクトオファー</p>
             </a>
         </li>
+        <% } %>
+
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
             <a class="nav-link" href="/reservations">
                 <i class="material-icons">event_seat</i>

@@ -293,6 +293,7 @@
     </p>
 </div>
 
+<% if (process.env.USE_OFFER_ADD_ON === '1') { %>
 <div class="form-group">
     <label for="availableAddOn" class="">
         アドオン
@@ -310,6 +311,7 @@
     <p class="error message text-danger">
     </p>
 </div>
+<% } %>
 
 <%- include('../common/part/_additionalProperty', {
     additionalProperty: forms.additionalProperty
