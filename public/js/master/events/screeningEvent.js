@@ -442,11 +442,12 @@ function update() {
     }
 
     // オンライン表示開始日 ≦ 当日を確認
-    var performanceBefore = $('div[data-performance="' + performance + '"]');
-    var onlineDisplayStartDateBefore = performanceBefore.attr('data-onlineDisplayStartDate');
+    var performanceBefore = scheduler.editingPerforamce;
+    console.log('checking online display start date...', performanceBefore.offers.availabilityStarts);
+    var onlineDisplayStartDateBefore = performanceBefore.offers.availabilityStarts;
     var now = moment();
     var confirmed = false;
-    if (moment(onlineDisplayStartDateBefore + 'T00:00:00T09:00', 'YYYY/MM/DDTHH:mm:ssZ') <= now
+    if (moment(onlineDisplayStartDateBefore) <= now
         && moment(onlineDisplayStartDate + 'T00:00:00T09:00', 'YYYY/MM/DDTHH:mm:ssZ') > now) {
         if (window.confirm('オンライン表示中のスケジュールが非表示になります。本当に変更しますか？')) {
             confirmed = true;
@@ -592,6 +593,7 @@ function createScheduler() {
     return new Vue({
         el: '#scheduler',
         data: {
+            editingPerforamce: undefined,
             HOUR_HEIGHT: 40,
             SCREEN_WIDTH: 60,
             TIME_WIDTH: 50,
@@ -750,7 +752,9 @@ function createScheduler() {
              * パフォーマンス編集
              */
             editPerformance: function (performance) {
-                console.log(performance);
+                this.editingPerforamce = performance;
+                console.log('editing...', this.editingPerforamce);
+
                 var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
                 var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
 
