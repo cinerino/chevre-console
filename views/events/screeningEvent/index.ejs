@@ -115,7 +115,9 @@ Aa-4
                     </tr>
                     <template v-for="date in scheduleData.dates">
                         <td v-for="screen in date.screens" class="border text-center"
-                            v-bind:style="{ minWidth: SCREEN_WIDTH + 'px' }">{{ screen.data.name.ja }}</td>
+                            v-bind:style="{ width: SCREEN_WIDTH + 'px' }">
+                        <div class="mx-auto text-overflow" v-bind:style="{ width: (SCREEN_WIDTH - 3) + 'px' }">{{ screen.data.name.ja }}</div>
+                        </td>
                     </template>
                 </thead>
             </table>
@@ -131,7 +133,7 @@ Aa-4
                         </td>
                         <template v-for="date in scheduleData.dates">
                             <td v-for="screen in date.screens" class="screen border-right border-left"
-                                v-bind:style="{ minWidth: SCREEN_WIDTH + 'px' }">
+                                v-bind:style="{ width: SCREEN_WIDTH + 'px' }">
                                 <div v-for="time in times" v-bind:style="{ height: HOUR_HEIGHT + 'px' }"
                                     class="border-bottom w-100"></div>
                                 <div v-for="performance in screen.performances"
