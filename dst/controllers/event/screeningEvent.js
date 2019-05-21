@@ -17,6 +17,11 @@ const http_status_1 = require("http-status");
 const moment = require("moment");
 const debug = createDebug('chevre-backend:controllers');
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
+var OnlineDisplayType;
+(function (OnlineDisplayType) {
+    OnlineDisplayType["Absolute"] = "absolute";
+    OnlineDisplayType["Relative"] = "relative";
+})(OnlineDisplayType || (OnlineDisplayType = {}));
 function index(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -360,7 +365,12 @@ function createEventFromBody(req) {
         const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
         const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
         const salesEndDate = moment(startDate).add(offersValidAfterStart, 'minutes').toDate();
-        const onlineDisplayStartDate = moment(`${body.onlineDisplayStartDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+        // オンライン表示開始日時は、絶対指定or相対指定
+        const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+            ? moment(`${moment(startDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+                .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+                .toDate()
+            : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
         let acceptedPaymentMethod;
         // ムビチケ除外の場合は対応決済方法を追加
         if (body.mvtkExcludeFlg === '1') {
@@ -496,7 +506,12 @@ function createMultipleEventFromBody(req, user) {
                     const salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYYMMDDTHHmmZ')
                         .add(parseInt(body.saleStartDays, 10) * -1, 'day').toDate();
                     const salesEndDate = moment(eventStartDate).add(offersValidAfterStart, 'minutes').toDate();
-                    const onlineDisplayStartDate = moment(`${body.onlineDisplayStartDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+                    // オンライン表示開始日時は、絶対指定or相対指定
+                    const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+                        ? moment(`${moment(eventStartDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+                            .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+                            .toDate()
+                        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
                     let acceptedPaymentMethod;
                     // ムビチケ除外の場合は対応決済方法を追加
                     if (mvtkExcludeFlgs[i] === '1') {

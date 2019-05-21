@@ -12,6 +12,10 @@ import User from '../../user';
 const debug = createDebug('chevre-backend:controllers');
 
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
+enum OnlineDisplayType {
+    Absolute = 'absolute',
+    Relative = 'relative'
+}
 
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -347,7 +351,14 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
     const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
     const salesEndDate = moment(startDate).add(offersValidAfterStart, 'minutes').toDate();
-    const onlineDisplayStartDate = moment(`${body.onlineDisplayStartDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+
+    // オンライン表示開始日時は、絶対指定or相対指定
+    const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+        ? moment(`${moment(startDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+            .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+            .toDate()
+        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
     // ムビチケ除外の場合は対応決済方法を追加
     if (body.mvtkExcludeFlg === '1') {
@@ -492,7 +503,14 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 const salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYYMMDDTHHmmZ')
                     .add(parseInt(body.saleStartDays, 10) * -1, 'day').toDate();
                 const salesEndDate = moment(eventStartDate).add(offersValidAfterStart, 'minutes').toDate();
-                const onlineDisplayStartDate = moment(`${body.onlineDisplayStartDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+
+                // オンライン表示開始日時は、絶対指定or相対指定
+                const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+                    ? moment(`${moment(eventStartDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+                        .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+                        .toDate()
+                    : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate();
+
                 let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
                 // ムビチケ除外の場合は対応決済方法を追加
                 if (mvtkExcludeFlgs[i] === '1') {

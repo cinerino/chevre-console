@@ -307,7 +307,8 @@ function regist() {
     var saleStartDate = (modal.find('input[name=saleStartDateType]').val() === 'absolute')
         ? modal.find('input[name=saleStartDateAbsolute]').val()
         : modal.find('input[name=saleStartDateRelative]').val();
-    var onlineDisplayStartDate = (modal.find('input[name=onlineDisplayType]').val() === 'absolute')
+    var onlineDisplayType = modal.find('input[name=onlineDisplayType]:checked').val();
+    var onlineDisplayStartDate = (onlineDisplayType === 'absolute')
         ? modal.find('input[name=onlineDisplayStartDateAbsolute]').val()
         : modal.find('input[name=onlineDisplayStartDateRelative]').val();
     var tableData = getTableData();
@@ -325,6 +326,7 @@ function regist() {
         || onlineDisplayStartDate === ''
     ) {
         creatingSchedules = false;
+        console.log(onlineDisplayType, onlineDisplayStartDate);
         alert('情報が足りません');
         return;
     }
@@ -375,6 +377,7 @@ function regist() {
             timeData: tableData.timeData,
             ticketData: tableData.ticketData,
             mvtkExcludeFlgData: tableData.mvtkExcludeFlgData,
+            onlineDisplayType: onlineDisplayType,
             onlineDisplayStartDate: onlineDisplayStartDate,
             maxSeatNumber: maxSeatNumber,
             saleStartDays: saleStartDays,
