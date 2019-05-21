@@ -30,6 +30,9 @@ $(function () {
     // 削除ボタンの処理
     $(document).on('click', '.delete-button', deletePerformance);
 
+    // 絶対・相対切り替え
+    $(document).on('change', 'input[name=onlineDisplayType], input[name=saleStartDateType]', changeInputType)
+
     // 劇場検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
@@ -300,7 +303,13 @@ function regist() {
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
     var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
-    var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
+    // 可能であれば登録時に販売開始日を追加
+    var saleStartDate = (modal.find('input[name=saleStartDateType]').val() === 'absolute')
+        ? modal.find('input[name=saleStartDateAbsolute]').val()
+        : modal.find('input[name=saleStartDateRelative]').val();
+    var onlineDisplayStartDate = (modal.find('input[name=onlineDisplayType]').val() === 'absolute')
+        ? modal.find('input[name=onlineDisplayStartDateAbsolute]').val()
+        : modal.find('input[name=onlineDisplayStartDateRelative]').val();
     var tableData = getTableData();
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
@@ -820,4 +829,12 @@ function createScheduler() {
     });
 }
 
-
+/**
+ * 入力方法切り替え(絶対・相対)
+ */
+function changeInputType() {
+    var inputType = $(this).val();
+    var parent = $(this).parents('.form-group');
+    parent.find('.input-type').addClass('d-none');
+    parent.find('.input-type[data-input-type=' + inputType + ']').removeClass('d-none');
+}

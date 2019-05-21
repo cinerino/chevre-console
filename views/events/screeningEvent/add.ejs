@@ -94,8 +94,8 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">曜日 <span
+                            <div class="row align-items-center">
+                                <label class="col-md-4 text-md-right mb-2 mb-md-0">曜日 <span
                                         class="text-danger">＊</span></label>
                                 <div class="col-md-8">
 
@@ -122,11 +122,51 @@
                         <div class="form-group">
                             <div class="row">
                                 <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
+                                    for="saleStartDate">販売開始日</label>
+                                <div class="col-md-8">
+                                    <div class="form-inline">
+                                        <label class="radio-inline mr-3">
+                                            <input type="radio" value="absolute" name="saleStartDateType"
+                                                checked>絶対</label>
+                                        <label class="radio-inline mr-3">
+                                            <input type="radio" value="relative" name="saleStartDateType">相対</label>
+                                    </div>
+                                    <div class="form-inline input-type" data-input-type="absolute">
+                                        <input class="form-control datepicker" name="saleStartDateAbsolute"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                        日
+                                        <%- include('../../common/part/_timeSelector', {
+                                                hourName: 'saleStartDateHour',
+                                                minuteName: 'saleStartDateMinutes'
+                                            }) %>
+                                    </div>
+                                    <div class="form-inline d-none input-type" data-input-type="relative">
+                                        <input type="text" class="form-control" name="saleStartDateRelative"
+                                            placeholder="上映日からn日" maxlength=10>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="row">
+                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
                                     for="onlineDisplayStartDate">オンライン表示開始日</label>
                                 <div class="col-md-8">
                                     <div class="form-inline">
-                                        <input class="form-control datepicker" name="onlineDisplayStartDate"
-                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                        <label class="radio-inline mr-3">
+                                            <input type="radio" value="absolute" name="onlineDisplayType"
+                                                checked>絶対</label>
+                                        <label class="radio-inline mr-3">
+                                            <input type="radio" value="relative" name="onlineDisplayType">相対</label>
+                                    </div>
+                                    <div class="form-inline input-type" data-input-type="absolute">
+                                        <input type="text" class="form-control datepicker"
+                                            name="onlineDisplayStartDateAbsolute" placeholder="YYYY/MM/DD" maxlength=10>
+                                    </div>
+                                    <div class="form-inline d-none input-type" data-input-type="relative">
+                                        <input type="text" class="form-control" name="onlineDisplayStartDateRelative"
+                                            placeholder="上映日からn日" maxlength=10>
                                     </div>
                                 </div>
                             </div>
