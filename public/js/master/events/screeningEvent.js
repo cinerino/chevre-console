@@ -196,7 +196,7 @@ function getScreens(theaterId, modal = 'none') {
             }
             $.each(data.results, function (_, screen) {
                 var o = $('<option></option>');
-                o.html(screen.name);
+                o.html(screen.branchCode + ' ' + screen.name + ' (' + screen.numSeats + ' seats' + ')');
                 o.val(screen.branchCode);
                 o.appendTo(selectScreen);
             });

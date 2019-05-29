@@ -162,10 +162,15 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(this, void
         const movieTheater = yield placeService.findMovieTheaterById({
             id: req.params.id
         });
-        const screeningRooms = movieTheater.containsPlace.map((screen) => ({
-            branchCode: screen.branchCode,
-            name: screen.name !== undefined ? screen.name.ja : ''
-        }));
+        const screeningRooms = movieTheater.containsPlace.map((screen) => {
+            let numSeats = 0;
+            if (screen.containsPlace !== undefined) {
+                numSeats += screen.containsPlace.reduce((a, b) => {
+                    return a + ((b.containsPlace !== undefined) ? b.containsPlace.length : 0);
+                }, 0);
+            }
+            return Object.assign({}, screen, { name: screen.name !== undefined ? screen.name.ja : '', numSeats: numSeats });
+        });
         screeningRooms.sort((screen1, screen2) => {
             if (screen1.name > screen2.name) {
                 return 1;
