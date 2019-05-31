@@ -73,6 +73,14 @@ $(function () {
         showAdditionalProperty(branchCode);
     });
 
+    // スクリーン情報
+    $(document).on('click', '.showContainsPlace', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing containsPlace...id:', id);
+
+        showContainsPlace(id);
+    });
+
     /**
      * 追加特性を見る
      */
@@ -94,5 +102,74 @@ $(function () {
             + '</textarea>'
         body.append(html);
         modal.modal();
+    }
+
+    /**
+     * スクリーン情報
+     */
+    function showContainsPlace(id) {
+        var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (movieTheater === undefined) {
+            alert('劇場' + id + 'が見つかりません');
+
+            return;
+        }
+
+        $.ajax({
+            dataType: 'json',
+            url: '/places/movieTheater/' + id + '/screeningRooms',
+            cache: false,
+            type: 'GET',
+            data: conditions,
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            console.log(data);
+            if (data.success) {
+                var modal = $('#modal-containsPlace');
+                var body = modal.find('.modal-body');
+
+                var thead = $('<thead>').addClass('table-secondary')
+                    .append([
+                        $('<tr>').append([
+                            $('<th>').text('コード'),
+                            $('<th>').text('名称'),
+                            $('<th>').text('セクション数'),
+                            $('<th>').text('座席数')
+                        ])
+                    ]);
+                var tbody = $('<tbody>')
+                    .append(data.results.map(function (result) {
+                        return $('<tr>').append([
+                            $('<th>').text(result.branchCode),
+                            $('<td>').text(result.name),
+                            $('<td>').attr('align', 'right')
+                                .text(result.containsPlace.length),
+                            $('<td>').attr('align', 'right')
+                                .text(result.numSeats)
+                        ]);
+                    }))
+                var table = $('<table>').addClass('table table-sm table-bordered table-striped')
+                    .append([thead, tbody]);
+
+                var div = $('<div>').addClass('scroll-horizontal')
+                    .css({
+                        'max-height': '500px',
+                        'overflow': 'auto',
+                        'display': 'block'
+                    })
+                    .append(table);
+
+                body.empty().append(div);
+                modal.modal();
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert("fail");
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
     }
 });
