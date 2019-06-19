@@ -1,3 +1,4 @@
+<% if (process.env.USE_OFFER_CATEGORY === '1') { %>
 <div class="form-group">
     <label for="name[ja]" class="">
         券種の種別
@@ -12,6 +13,9 @@
         <% } %>
     </select>
 </div>
+<% } else { %>
+<input type="hidden" name="category" value="1">
+<% } %>
 
 <div class="form-group">
     <label for="name[ja]" class="">

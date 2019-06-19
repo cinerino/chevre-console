@@ -86,6 +86,7 @@ Aa-6
             </div>
         </div>
 
+        <% if (process.env.USE_OFFER_CATEGORY === '1') { %>
         <div class="form-group">
             <label for="category[id]" class="">
                 券種区分
@@ -99,6 +100,7 @@ Aa-6
                 <% }) %>
             </select>
         </div>
+        <% } %>
 
         <div class="panel-body">
             <a class="btn btn-primary" role="button" href="/ticketTypes/add">

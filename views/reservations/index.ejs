@@ -111,6 +111,8 @@ Aa-11
                     <input class="form-control" placeholder="券種コード" name="reservedTicket[ticketType][id]"
                         id="reservedTicket[ticketType][id]" />
                 </div>
+
+                <% if (process.env.USE_OFFER_CATEGORY === '1') { %>
                 <div class="col-md-4">
                     <select class="form-control" name="reservedTicket[ticketType][category][id]">
                         <option value="">券種区分選択</option>
@@ -121,6 +123,7 @@ Aa-11
                         <% } %>
                     </select>
                 </div>
+                <% } %>
             </div>
         </div>
 
