@@ -19,12 +19,6 @@ const NAME_MAX_LENGTH_NAME_EN = 64;
 // 金額
 const CHAGE_MAX_LENGTH = 10;
 
-const ticketTypeCategories = [
-    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
-    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
-    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
-];
-
 /**
  * 新規登録
  */
@@ -103,12 +97,14 @@ export async function add(req: Request, res: Response): Promise<void> {
         }));
     }
 
+    const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
     res.render('ticketType/add', {
         message: message,
         errors: errors,
         forms: forms,
         MovieTicketType: mvtk.util.constants.TICKET_TYPE,
-        ticketTypeCategories: ticketTypeCategories,
+        ticketTypeCategories: searchCategoriesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
     });
@@ -216,12 +212,14 @@ export async function update(req: Request, res: Response): Promise<void> {
         }));
     }
 
+    const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
     res.render('ticketType/update', {
         message: message,
         errors: errors,
         forms: forms,
         MovieTicketType: mvtk.util.constants.TICKET_TYPE,
-        ticketTypeCategories: ticketTypeCategories,
+        ticketTypeCategories: searchCategoriesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
     });
@@ -374,7 +372,8 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
                 })
             : undefined,
         category: {
-            id: <chevre.factory.ticketTypeCategory>body.category
+            project: req.project,
+            id: body.category
         },
         color: <string>body.indicatorColor
     };
@@ -445,11 +444,13 @@ export async function getList(req: Request, res: Response): Promise<void> {
         };
         const result = await offerService.searchTicketTypes(searchConditions);
 
+        const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
         res.json({
             success: true,
             count: result.totalCount,
             results: result.data.map((t) => {
-                const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
+                const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
 
                 const mvtkType = mvtk.util.constants.TICKET_TYPE.find(
                     (ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType

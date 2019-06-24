@@ -7,12 +7,6 @@ import { CREATED } from 'http-status';
 
 import * as ticketTypeController from '../controllers/ticketType';
 
-const ticketTypeCategories = [
-    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
-    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
-    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
-];
-
 const ticketTypeMasterRouter = Router();
 
 // 券種登録
@@ -33,11 +27,13 @@ ticketTypeMasterRouter.get(
             project: { ids: [req.project.id] }
         });
 
+        const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
         // 券種マスタ画面遷移
         res.render('ticketType/index', {
             message: '',
             ticketTypeGroupsList: ticketTypeGroupsList.data,
-            ticketTypeCategories: ticketTypeCategories
+            ticketTypeCategories: searchCategoriesResult.data
         });
     }
 );

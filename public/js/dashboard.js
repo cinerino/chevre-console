@@ -171,9 +171,9 @@ function updateEventsWithAggregation(cb) {
                 + '<td>' + event.name.ja.slice(0, 5) + '...</td>'
                 + '<td>' + event.superEvent.location.name.ja + '</td>'
                 // + '<td>' + event.startDate + '</td>'
-                + '<td>' + event.saleTicketCount + '</td>'
-                + '<td>' + event.preSaleTicketCount + '</td>'
-                + '<td>' + event.freeTicketCount + '</td>'
+                // + '<td>' + event.saleTicketCount + '</td>'
+                // + '<td>' + event.preSaleTicketCount + '</td>'
+                // + '<td>' + event.freeTicketCount + '</td>'
                 + '<td>' + event.checkInCount + '</td>'
                 + '<td>' + event.attendeeCount + '</td>';
             $('<tr>').html(html).appendTo('.eventsWithAggregation tbody');

@@ -8,21 +8,21 @@ import { format } from 'util';
 
 type IEventReservationPriceSpec = chevre.factory.reservation.IPriceSpecification<chevre.factory.reservationType.EventReservation>;
 
-const ticketTypeCategories = [
-    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
-    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
-    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
-];
-
 const reservationsRouter = Router();
 
 reservationsRouter.get(
     '',
-    (_, res) => {
+    async (req, res) => {
+        const offerService = new chevre.service.Offer({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
         res.render('reservations/index', {
             message: '',
             reservationStatusType: chevre.factory.reservationStatusType,
-            ticketTypeCategories: ticketTypeCategories
+            ticketTypeCategories: searchCategoriesResult.data
         });
     }
 );
@@ -131,6 +131,12 @@ reservationsRouter.get(
             };
             const { totalCount, data } = await reservationService.search(searchConditions);
 
+            const offerService = new chevre.service.Offer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+
             res.json({
                 success: true,
                 count: totalCount,
@@ -140,7 +146,7 @@ reservationsRouter.get(
                         (c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification
                     );
 
-                    const ticketTYpe = ticketTypeCategories.find(
+                    const ticketTYpe = searchCategoriesResult.data.find(
                         (c) => t.reservedTicket.ticketType.category !== undefined && c.id === t.reservedTicket.ticketType.category.id
                     );
 

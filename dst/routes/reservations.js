@@ -15,19 +15,19 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment");
 const util_1 = require("util");
-const ticketTypeCategories = [
-    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
-    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
-    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
-];
 const reservationsRouter = express_1.Router();
-reservationsRouter.get('', (_, res) => {
+reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const offerService = new chevre.service.Offer({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
-        ticketTypeCategories: ticketTypeCategories
+        ticketTypeCategories: searchCategoriesResult.data
     });
-});
+}));
 reservationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -129,13 +129,18 @@ reservationsRouter.get('/search',
             checkedIn: (req.query.checkedIn === '1') ? true : undefined
         };
         const { totalCount, data } = yield reservationService.search(searchConditions);
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
         res.json({
             success: true,
             count: totalCount,
             results: data.map((t) => {
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
-                const ticketTYpe = ticketTypeCategories.find((c) => t.reservedTicket.ticketType.category !== undefined && c.id === t.reservedTicket.ticketType.category.id);
+                const ticketTYpe = searchCategoriesResult.data.find((c) => t.reservedTicket.ticketType.category !== undefined && c.id === t.reservedTicket.ticketType.category.id);
                 return Object.assign({}, t, { ticketType: ticketTYpe, unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket.ticketedSeat !== undefined)
                         ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)
                             ? t.reservedTicket.ticketedSeat.seatingType.typeOf

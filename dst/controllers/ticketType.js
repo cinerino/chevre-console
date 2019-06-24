@@ -24,11 +24,6 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 const NAME_MAX_LENGTH_NAME_EN = 64;
 // 金額
 const CHAGE_MAX_LENGTH = 10;
-const ticketTypeCategories = [
-    { id: chevre.factory.ticketTypeCategory.Default, name: '有料券' },
-    { id: chevre.factory.ticketTypeCategory.Advance, name: '前売券' },
-    { id: chevre.factory.ticketTypeCategory.Free, name: '無料券' }
-];
 /**
  * 新規登録
  */
@@ -92,12 +87,13 @@ function add(req, res) {
                 return {};
             }));
         }
+        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
         res.render('ticketType/add', {
             message: message,
             errors: errors,
             forms: forms,
             MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
-            ticketTypeCategories: ticketTypeCategories,
+            ticketTypeCategories: searchCategoriesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -186,12 +182,13 @@ function update(req, res) {
                 return {};
             }));
         }
+        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
         res.render('ticketType/update', {
             message: message,
             errors: errors,
             forms: forms,
             MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
-            ticketTypeCategories: ticketTypeCategories,
+            ticketTypeCategories: searchCategoriesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -334,6 +331,7 @@ function createFromBody(req) {
                 })
                 : undefined,
             category: {
+                project: req.project,
                 id: body.category
             },
             color: body.indicatorColor
@@ -404,11 +402,12 @@ function getList(req, res) {
                 }
             };
             const result = yield offerService.searchTicketTypes(searchConditions);
+            const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
             res.json({
                 success: true,
                 count: result.totalCount,
                 results: result.data.map((t) => {
-                    const category = ticketTypeCategories.find((c) => t.category !== undefined && c.id === t.category.id);
+                    const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
                     const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType);
                     return Object.assign({ appliesToMovieTicket: {
                             name: (t.priceSpecification !== undefined

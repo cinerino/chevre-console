@@ -305,7 +305,7 @@ function createFromBody(req: Request): chevre.factory.offer.product.IOffer {
                 })
             : undefined,
         category: {
-            id: <chevre.factory.ticketTypeCategory>body.category
+            id: body.category
         }
     };
 }
