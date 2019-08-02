@@ -120,18 +120,20 @@
                         </div>
 
                         <div class="form-group">
-                            <!-- <div class="row">
+                            <div class="row">
                                 <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
                                     for="saleStartDate">販売開始日</label>
                                 <div class="col-md-8">
                                     <div class="form-inline">
                                         <label class="radio-inline mr-3">
-                                            <input type="radio" value="absolute" name="saleStartDateType"
-                                                checked>絶対</label>
+                                            <input type="radio" value="default" name="saleStartDateType"
+                                                checked>劇場設定に従う</label>
+                                        <label class="radio-inline mr-3">
+                                            <input type="radio" value="absolute" name="saleStartDateType">絶対</label>
                                         <label class="radio-inline mr-3">
                                             <input type="radio" value="relative" name="saleStartDateType">相対</label>
                                     </div>
-                                    <div class="form-inline input-type" data-input-type="absolute">
+                                    <div class="form-inline d-none input-type" data-input-type="absolute">
                                         <input class="form-control datepicker" name="saleStartDateAbsolute"
                                             placeholder="YYYY/MM/DD" maxlength=10>
                                         日
@@ -145,7 +147,7 @@
                                             placeholder="上映日からn日" maxlength=10>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                         </div>
 
                         <div class="form-group">

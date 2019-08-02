@@ -303,14 +303,23 @@ function regist() {
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
     var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
+
     // 可能であれば登録時に販売開始日を追加
-    var saleStartDate = (modal.find('input[name=saleStartDateType]').val() === 'absolute')
+    var saleStartDateType = modal.find('input[name=saleStartDateType]:checked').val();
+    var saleStartDate = (saleStartDateType === 'absolute')
         ? modal.find('input[name=saleStartDateAbsolute]').val()
-        : modal.find('input[name=saleStartDateRelative]').val();
+        : (saleStartDateType === 'relative')
+            ? modal.find('input[name=saleStartDateRelative]').val()
+            : '';
+    var saleStartTime = (saleStartDateType === 'absolute')
+        ? modal.find('select[name=saleStartDateHour]').val() + modal.find('select[name=saleStartDateMinutes]').val()
+        : '';
+
     var onlineDisplayType = modal.find('input[name=onlineDisplayType]:checked').val();
     var onlineDisplayStartDate = (onlineDisplayType === 'absolute')
         ? modal.find('input[name=onlineDisplayStartDateAbsolute]').val()
         : modal.find('input[name=onlineDisplayStartDateRelative]').val();
+
     var tableData = getTableData();
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
@@ -326,7 +335,6 @@ function regist() {
         || onlineDisplayStartDate === ''
     ) {
         creatingSchedules = false;
-        console.log(onlineDisplayType, onlineDisplayStartDate);
         alert('情報が足りません');
         return;
     }
@@ -377,6 +385,9 @@ function regist() {
             timeData: tableData.timeData,
             ticketData: tableData.ticketData,
             mvtkExcludeFlgData: tableData.mvtkExcludeFlgData,
+            saleStartDateType: saleStartDateType,
+            saleStartDate: saleStartDate,
+            saleStartTime: saleStartTime,
             onlineDisplayType: onlineDisplayType,
             onlineDisplayStartDate: onlineDisplayStartDate,
             maxSeatNumber: maxSeatNumber,
