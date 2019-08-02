@@ -310,10 +310,10 @@ function regist() {
         ? modal.find('input[name=saleStartDateAbsolute]').val()
         : (saleStartDateType === 'relative')
             ? modal.find('input[name=saleStartDateRelative]').val()
-            : '';
+            : 'default';
     var saleStartTime = (saleStartDateType === 'absolute')
         ? modal.find('select[name=saleStartDateHour]').val() + modal.find('select[name=saleStartDateMinutes]').val()
-        : '';
+        : 'default';
 
     var onlineDisplayType = modal.find('input[name=onlineDisplayType]:checked').val();
     var onlineDisplayStartDate = (onlineDisplayType === 'absolute')
@@ -332,6 +332,8 @@ function regist() {
         || tableData.timeData.length === 0
         || tableData.ticketData.length === 0
         || weekDayData.length === 0
+        || saleStartDate === ''
+        || saleStartTime === ''
         || onlineDisplayStartDate === ''
     ) {
         creatingSchedules = false;
@@ -448,7 +450,6 @@ function update() {
     var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var saleStartTime = modal.find('select[name=saleStartDateHour]').val() + modal.find('select[name=saleStartDateMinutes]').val();
-    // var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
     var maxSeatNumber = modal.find('input[name=maxSeatNumber]').val();
     var mvtkExcludeFlg = modal.find('input[name=mvtkExcludeFlg]:checked').val();
@@ -467,7 +468,10 @@ function update() {
         || doorTime === ''
         || startTime === ''
         || endTime === ''
-        || ticketTypeGroup === '') {
+        || ticketTypeGroup === ''
+        || saleStartDate === ''
+        || saleStartTime === ''
+        || onlineDisplayStartDate === '') {
         alert('情報が足りません');
         return;
     }
