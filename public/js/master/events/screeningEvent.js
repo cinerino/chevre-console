@@ -443,6 +443,14 @@ function update() {
     var mvtkExcludeFlg = modal.find('input[name=mvtkExcludeFlg]:checked').val();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]').val();
 
+    // 追加特性を収集
+    var additionalProperty = [];
+    for (let i = 0; i < 10; i++) {
+        var additionalPropertyName = modal.find('input[name="additionalProperty[' + i + '][name]"]').val();
+        var additionalPropertyValue = modal.find('input[name="additionalProperty[' + i + '][value]"]').val();
+        additionalProperty.push({ name: String(additionalPropertyName), value: String(additionalPropertyValue) });
+    }
+
     if (performance === ''
         || screen === ''
         || doorTime === ''
@@ -487,7 +495,8 @@ function update() {
                 onlineDisplayStartDate: onlineDisplayStartDate,
                 maxSeatNumber: maxSeatNumber,
                 mvtkExcludeFlg: mvtkExcludeFlg,
-                reservedSeatsAvailable: reservedSeatsAvailable
+                reservedSeatsAvailable: reservedSeatsAvailable,
+                additionalProperty: additionalProperty
             }
         }).done(function (data) {
             if (!data.error) {
@@ -825,6 +834,17 @@ function createScheduler() {
                 } else {
                     modal.find('input[name=onlineDisplayStartDate]').val('');
                 }
+
+                // 追加特性(フォームを初期化してからイベントの値をセット)
+                for (let i = 0; i < 10; i++) {
+                    modal.find('input[name="additionalProperty[' + i + '][name]"]').val('');
+                    modal.find('input[name="additionalProperty[' + i + '][value]"]').val('');
+                }
+                var additionalProperty = (Array.isArray(performance.additionalProperty)) ? performance.additionalProperty : [];
+                additionalProperty.forEach(function (property, index) {
+                    modal.find('input[name="additionalProperty[' + index + '][name]"]').val(property.name);
+                    modal.find('input[name="additionalProperty[' + index + '][value]"]').val(property.value);
+                });
 
                 modal.modal();
             }

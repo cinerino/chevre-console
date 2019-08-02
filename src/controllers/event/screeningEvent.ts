@@ -429,7 +429,16 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         eventStatus: chevre.factory.eventStatusType.EventScheduled,
         offers: offers,
         checkInCount: <any>undefined,
-        attendeeCount: <any>undefined
+        attendeeCount: <any>undefined,
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : []
     };
 }
 /**

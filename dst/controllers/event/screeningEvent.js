@@ -438,7 +438,16 @@ function createEventFromBody(req) {
             eventStatus: chevre.factory.eventStatusType.EventScheduled,
             offers: offers,
             checkInCount: undefined,
-            attendeeCount: undefined
+            attendeeCount: undefined,
+            additionalProperty: (Array.isArray(body.additionalProperty))
+                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : []
         };
     });
 }
