@@ -5,7 +5,7 @@ Aa-18
 <%- contentFor('styles') %>
 
 <%- contentFor('scripts') %>
-
+<script src="/js/master/places/movieTheater.js"></script>
 <%- contentFor('body') %>
 <div class="form-container">
     <% /* フォーム */ %>
@@ -34,6 +34,7 @@ Aa-18
 <script>
     $(function () {
         $('.btn-ok').on('click', function () {
+            $('.json-editor').remove();
             $('form').submit();
         });
         // datepickerセット

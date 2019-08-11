@@ -212,3 +212,12 @@ body {
         transform: rotate(360deg);
     }
 }
+
+.json-editor h3,
+.json-editor th {
+    color: #000;
+}
+
+.json-editor .card {
+    overflow: auto;
+}

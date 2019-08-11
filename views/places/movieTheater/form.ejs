@@ -62,16 +62,37 @@
     <label for="containsPlaceStr" class="">
         スクリーン
     </label>
-    <textarea rows="10" class="form-control" name="containsPlaceStr" <% if (!isNew) { %>
-        readonly<% } %>><%- forms.containsPlaceStr %></textarea>'
+    <textarea class="d-none" name="containsPlaceStr">
+        <%-(!isNew) ? forms.containsPlaceStr : JSON.stringify([]) %>
+    </textarea>
+    <div class="json-editor" id="containsPlaceStr"></div>
 </div>
 
 <div class="form-group">
     <label for="offersStr" class="">
         オファー
     </label>
-    <textarea rows="10" class="form-control" name="offersStr" <% if (!isNew) { %>
-        readonly<% } %>><%- forms.offersStr %></textarea>'
+    <textarea class="d-none" name="offersStr">
+        <%-(!isNew) ? forms.offersStr : JSON.stringify({
+            "typeOf": "Offer",
+            "eligibleQuantity": {
+              "typeOf": "QuantitativeValue",
+              "maxValue": 0,
+              "unitCode": ""
+            },
+            "availabilityStartsGraceTime": {
+              "typeOf": "QuantitativeValue",
+              "value": 0,
+              "unitCode": ""
+            },
+            "availabilityEndsGraceTime": {
+              "typeOf": "QuantitativeValue",
+              "value": 0,
+              "unitCode": ""
+            }
+          }) %>
+    </textarea>
+    <div class="json-editor" id="offersStr"></div>
 </div>
 
 <%- include('../../common/part/_additionalProperty', {
