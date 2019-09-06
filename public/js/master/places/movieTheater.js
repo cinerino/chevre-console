@@ -15,6 +15,7 @@ function initScreen() {
         format: 'tabs',
         items: {
             type: 'object',
+            title: 'screen',
             properties: {
                 branchCode: { type: 'string' },
                 name: {
@@ -46,10 +47,12 @@ function initScreen() {
                             containsPlace: {
                                 type: 'array',
                                 format: 'table',
-                                title: 'containsPlace',
                                 uniqueItems: true,
+                                format: 'tabs',
                                 items: {
+                                    title: '',
                                     type: 'object',
+                                    format: "grid",
                                     properties: {
                                         branchCode: { type: 'string' },
                                         typeOf: { type: 'string', default: 'Seat' }

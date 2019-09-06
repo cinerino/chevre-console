@@ -213,11 +213,27 @@ body {
     }
 }
 
-.json-editor h3,
-.json-editor th {
-    color: #000;
-}
+// json-editor
 
-.json-editor .card {
-    overflow: auto;
-}
+.json-editor{
+    h3, th {
+        color: #000;
+    }
+    .card {
+        overflow: auto;
+    }
+    .row {
+        & > .col-md-2 {
+            flex: 0 0 100%;
+            max-width: 100%;
+            ul {
+                display: flex;
+                flex-direction: row !important;
+            }
+        }
+        & > .col-md-10 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+} 

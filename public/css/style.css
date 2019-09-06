@@ -197,12 +197,22 @@ body {
   100% {
     transform: rotate(360deg); } }
 
-.json-editor h3,
-.json-editor th {
+.json-editor h3, .json-editor th {
   color: #000; }
 
 .json-editor .card {
   overflow: auto; }
+
+.json-editor .row > .col-md-2 {
+  flex: 0 0 100%;
+  max-width: 100%; }
+  .json-editor .row > .col-md-2 ul {
+    display: flex;
+    flex-direction: row !important; }
+
+.json-editor .row > .col-md-10 {
+  flex: 0 0 100%;
+  max-width: 100%; }
 
 .scheduler {
   margin: 0 auto;
