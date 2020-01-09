@@ -42,8 +42,7 @@ function searchProjects(cb) {
         $('.projects tbody').empty();
 
         $.each(data.data, function (_, project) {
-            var html = '<td><a href="/dashboard/projects/' + project.id + '/select">' + project.id + '</a></td>'
-                + '<td>' + project.name + '...</td>'
+            var html = '<td><a href="/dashboard/projects/' + project.id + '/select">' + project.name + '</a></td>'
             $('<tr>').html(html)
                 .appendTo('.projects tbody');
         });
