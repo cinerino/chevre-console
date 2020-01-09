@@ -18,7 +18,7 @@ homeRouter.get(
         }
 
         res.render(
-            'index',
+            'home',
             {}
         );
     }

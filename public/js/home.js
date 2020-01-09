@@ -1,6 +1,6 @@
-/*
- * ダッシュボードを表現するためのjs
- **/
+/**
+ * プロジェクトホームを表現するためのjs
+ */
 var PROJECT_ID = $('input[name="projectId"]').val();
 
 var orders = [];

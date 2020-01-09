@@ -21,7 +21,7 @@ homeRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function
         next(new Error(req.param('next')));
         return;
     }
-    res.render('index', {});
+    res.render('home', {});
 }));
 homeRouter.get('/reservationCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {

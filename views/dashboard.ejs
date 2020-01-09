@@ -1,0 +1,39 @@
+<%- contentFor('title') %>
+Dashboard
+<%- contentFor('displayId') %>
+DB-01
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/dashboard.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="card projects">
+                <div class="card-header card-header-warning">
+                    <h4 class="card-title">プロジェクト</h4>
+                    <!-- <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p> -->
+                </div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover">
+                        <thead class="text-warning">
+                            <th>ID</th>
+                            <th>名称</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-12">
+        </div>
+    </div>
+</div>
+
+<%- include('./common/master/_loading') %>
