@@ -12,15 +12,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             session: <Express.Session>req.session
         });
 
-        if (process.env.PROJECT_ID === undefined) {
-            throw new Error('Set environment variable `PROJECT_ID`');
-        }
-
-        req.project = {
-            typeOf: 'Project',
-            id: process.env.PROJECT_ID
-        };
-
         if (!req.user.isAuthenticated()) {
             // ログインページへリダイレクト
             res.redirect(req.user.generateAuthUrl());

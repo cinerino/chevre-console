@@ -55,7 +55,8 @@ dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(this, void 0,
  * プロジェクト選択
  */
 dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    req.project.id = req.params.id;
+    const projectId = req.params.id;
+    req.session.projectId = projectId;
     res.redirect('/home');
 }));
 exports.default = dashboardRouter;

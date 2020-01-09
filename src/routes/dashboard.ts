@@ -70,7 +70,8 @@ dashboardRouter.get(
 dashboardRouter.get(
     '/dashboard/projects/:id/select',
     async (req, res) => {
-        req.project.id = req.params.id;
+        const projectId = req.params.id;
+        (<any>req.session).projectId = projectId;
 
         res.redirect('/home');
     }

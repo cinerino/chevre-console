@@ -26,6 +26,24 @@ router.use(authRouter);
 router.use(authentication);
 
 router.use('/', dashboardRouter);
+
+// プロジェクト決定
+router.use((req, res, next) => {
+    // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
+    if (typeof (<any>req.session).projectId === 'string') {
+        req.project = {
+            typeOf: 'Project',
+            id: (<any>req.session).projectId
+        };
+    } else {
+        res.redirect('/');
+
+        return;
+    }
+
+    next();
+});
+
 router.use('/home', homeRouter);
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks/movie', movieRouter);

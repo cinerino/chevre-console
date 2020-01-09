@@ -23,6 +23,21 @@ const router = express.Router();
 router.use(auth_1.default);
 router.use(authentication_1.default);
 router.use('/', dashboard_1.default);
+// プロジェクト決定
+router.use((req, res, next) => {
+    // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
+    if (typeof req.session.projectId === 'string') {
+        req.project = {
+            typeOf: 'Project',
+            id: req.session.projectId
+        };
+    }
+    else {
+        res.redirect('/');
+        return;
+    }
+    next();
+});
 router.use('/home', home_1.default);
 router.use('/accountTitles', accountTitles_1.default);
 router.use('/creativeWorks/movie', movie_1.default);
