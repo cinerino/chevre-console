@@ -11,6 +11,7 @@ import movieRouter from './creativeWork/movie';
 import dashboardRouter from './dashboard';
 import screeningEventRouter from './event/screeningEvent';
 import screeningEventSeriesRouter from './event/screeningEventSeries';
+import homeRouter from './home';
 import movieTheaterRouter from './places/movieTheater';
 import priceSpecificationsRouter from './priceSpecifications';
 import productOffersRouter from './productOffer';
@@ -20,9 +21,12 @@ import ticketTypeMasterRouter from './ticketType';
 import ticketTypeGroupMasterRouter from './ticketTypeGroup';
 
 const router = express.Router();
+
 router.use(authRouter);
 router.use(authentication);
+
 router.use('/', dashboardRouter);
+router.use('/home', homeRouter);
 router.use('/accountTitles', accountTitlesRouter);
 router.use('/creativeWorks/movie', movieRouter);
 router.use('/events/screeningEvent', screeningEventRouter);

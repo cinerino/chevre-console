@@ -10,7 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 予約管理サービスとして再構築。
+- 予約管理サービスとして再構築
+- ダッシュボードとプロジェクトホームを分離
 
 ### Deprecated
 

@@ -52,7 +52,7 @@ function updateCharts() {
 
 function updateReservationCount(cb) {
     $.getJSON(
-        '/dashboard/reservationCount',
+        '/home/reservationCount',
         {}
     ).done(function (data) {
         console.log('reservationCount:', data);
@@ -67,7 +67,7 @@ function updateReservationCount(cb) {
 
 function updateHealth(cb) {
     $.getJSON(
-        '/dashboard/health',
+        '/home/health',
         {}
     ).done(function (data) {
         console.log('health:', data);
@@ -84,7 +84,7 @@ function updateHealth(cb) {
 function updateDbStats(cb) {
     var GB = 1000000000;
     $.getJSON(
-        '/dashboard/dbStats',
+        '/home/dbStats',
         {}
     ).done(function (data) {
         console.log('stats:', data);
@@ -105,7 +105,7 @@ function updateDbStats(cb) {
 
 function updateQueueCount(cb) {
     $.getJSON(
-        '/dashboard/queueCount',
+        '/home/queueCount',
         {}
     ).done(function (data) {
         console.log('QueueCount:', data);
@@ -120,7 +120,7 @@ function updateQueueCount(cb) {
 
 function updateLatestReservations(cb) {
     $.getJSON(
-        '/dashboard/latestReservations',
+        '/home/latestReservations',
         {
             limit: 10,
             page: 1,
@@ -153,7 +153,7 @@ function updateLatestReservations(cb) {
 
 function updateEventsWithAggregation(cb) {
     $.getJSON(
-        '/dashboard/eventsWithAggregations',
+        '/home/eventsWithAggregations',
         {
             limit: 10,
             page: 1,
