@@ -23,29 +23,31 @@ homeRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function
     }
     res.render('home', {});
 }));
-homeRouter.get('/reservationCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    try {
-        const reservationService = new chevre.service.Reservation({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchConditions = {
-            limit: 1,
-            project: { ids: [req.project.id] },
-            typeOf: chevre.factory.reservationType.EventReservation,
-            reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
-            bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
-            bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
-        };
-        const result = yield reservationService.search(searchConditions);
-        res.json(result);
-    }
-    catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
-            error: { message: error.message }
-        });
-    }
-}));
+// homeRouter.get(
+//     '/reservationCount',
+//     async (req, res) => {
+//         try {
+//             const reservationService = new chevre.service.Reservation({
+//                 endpoint: <string>process.env.API_ENDPOINT,
+//                 auth: req.user.authClient
+//             });
+//             const searchConditions = {
+//                 limit: 1,
+//                 project: { ids: [req.project.id] },
+//                 typeOf: chevre.factory.reservationType.EventReservation,
+//                 reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
+//                 bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
+//                 bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+//             };
+//             const result = await reservationService.search(searchConditions);
+//             res.json(result);
+//         } catch (error) {
+//             res.status(INTERNAL_SERVER_ERROR).json({
+//                 error: { message: error.message }
+//             });
+//         }
+//     }
+// );
 homeRouter.get('/dbStats', (req, res) => __awaiter(this, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({

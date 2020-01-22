@@ -24,32 +24,32 @@ homeRouter.get(
     }
 );
 
-homeRouter.get(
-    '/reservationCount',
-    async (req, res) => {
-        try {
-            const reservationService = new chevre.service.Reservation({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const searchConditions = {
-                limit: 1,
-                project: { ids: [req.project.id] },
-                typeOf: chevre.factory.reservationType.EventReservation,
-                reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
-                bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
-                bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
-            };
-            const result = await reservationService.search(searchConditions);
+// homeRouter.get(
+//     '/reservationCount',
+//     async (req, res) => {
+//         try {
+//             const reservationService = new chevre.service.Reservation({
+//                 endpoint: <string>process.env.API_ENDPOINT,
+//                 auth: req.user.authClient
+//             });
+//             const searchConditions = {
+//                 limit: 1,
+//                 project: { ids: [req.project.id] },
+//                 typeOf: chevre.factory.reservationType.EventReservation,
+//                 reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
+//                 bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
+//                 bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+//             };
+//             const result = await reservationService.search(searchConditions);
 
-            res.json(result);
-        } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
-        }
-    }
-);
+//             res.json(result);
+//         } catch (error) {
+//             res.status(INTERNAL_SERVER_ERROR).json({
+//                 error: { message: error.message }
+//             });
+//         }
+//     }
+// );
 
 homeRouter.get(
     '/dbStats',

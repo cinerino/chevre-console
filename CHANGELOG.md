@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約管理サービスとして再構築
 - ダッシュボードとプロジェクトホームを分離
 - 複数プロジェクトをダッシュボードにて選択可能に変更
+- 予約検索の検索結果件数表示を削除
 
 ### Deprecated
 

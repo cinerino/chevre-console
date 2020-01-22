@@ -145,7 +145,7 @@ reservationsRouter.get(
                 attended: (req.query.attended === '1') ? true : undefined,
                 checkedIn: (req.query.checkedIn === '1') ? true : undefined
             };
-            const { totalCount, data } = await reservationService.search(searchConditions);
+            const { data } = await reservationService.search(searchConditions);
 
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
@@ -155,7 +155,9 @@ reservationsRouter.get(
 
             res.json({
                 success: true,
-                count: totalCount,
+                count: (data.length === Number(searchConditions.limit))
+                    ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
+                    : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
                 results: data.map((t) => {
                     const priceSpecification = <IEventReservationPriceSpec>t.price;
                     const unitPriceSpec = priceSpecification.priceComponent.find(

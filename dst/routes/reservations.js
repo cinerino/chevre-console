@@ -144,7 +144,7 @@ reservationsRouter.get('/search',
             attended: (req.query.attended === '1') ? true : undefined,
             checkedIn: (req.query.checkedIn === '1') ? true : undefined
         };
-        const { totalCount, data } = yield reservationService.search(searchConditions);
+        const { data } = yield reservationService.search(searchConditions);
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -152,7 +152,9 @@ reservationsRouter.get('/search',
         const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
         res.json({
             success: true,
-            count: totalCount,
+            count: (data.length === Number(searchConditions.limit))
+                ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
+                : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
             results: data.map((t) => {
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);

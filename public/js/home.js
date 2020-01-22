@@ -51,18 +51,18 @@ function updateCharts() {
 }
 
 function updateReservationCount(cb) {
-    $.getJSON(
-        '/home/reservationCount',
-        {}
-    ).done(function (data) {
-        console.log('reservationCount:', data);
-        $('.reservationCount').removeClass('text-danger').text(data.totalCount);
+    // $.getJSON(
+    //     '/home/reservationCount',
+    //     {}
+    // ).done(function (data) {
+    //     console.log('reservationCount:', data);
+    //     $('.reservationCount').removeClass('text-danger').text(data.totalCount);
 
-        cb();
-    }).fail(function (jqXHR, textStatus, error) {
-        console.error('本日の予約数を検索できませんでした', jqXHR);
-        $('.reservationCount').addClass('text-danger').text(textStatus);
-    });
+    //     cb();
+    // }).fail(function (jqXHR, textStatus, error) {
+    //     console.error('本日の予約数を検索できませんでした', jqXHR);
+    //     $('.reservationCount').addClass('text-danger').text(textStatus);
+    // });
 }
 
 function updateHealth(cb) {
