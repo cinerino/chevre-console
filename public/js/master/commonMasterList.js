@@ -54,10 +54,11 @@ $(function () {
             this._itemsOnPage = itemsOnPage;
             var pager = this.getPager().hide();
             pager.pagination({
-                items: 100,
+                // items: 100,
                 itemsOnPage: itemsOnPage,
                 cssStyle: 'light-theme',
-                displayedPages: 10,
+                displayedPages: 3,
+                edges: 0,
                 onPageClick: function (pageNumber) {
                     onPageChanging(pageNumber);
                 }
