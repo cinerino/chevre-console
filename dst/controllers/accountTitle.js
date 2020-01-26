@@ -78,16 +78,20 @@ function searchAccountTitleCategory(req, res) {
         if (req.xhr) {
             try {
                 debug('searching accountTitleCategories...', req.query);
-                const result = yield accountTitleService.searchAccountTitleCategories({
-                    limit: Number(req.query.limit),
-                    page: Number(req.query.page),
+                const limit = Number(req.query.limit);
+                const page = Number(req.query.page);
+                const { data } = yield accountTitleService.searchAccountTitleCategories({
+                    limit: limit,
+                    page: page,
                     project: { ids: [req.project.id] },
                     codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
                 });
                 res.json({
                     success: true,
-                    count: result.totalCount,
-                    results: result.data
+                    count: (data.length === Number(limit))
+                        ? (Number(page) * Number(limit)) + 1
+                        : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                    results: data
                 });
             }
             catch (error) {
@@ -171,26 +175,32 @@ function getList(req, res) {
                 auth: req.user.authClient
             });
             debug('searching...', req.query);
-            const result = yield accountTitleService.search({
-                limit: Number(req.query.limit),
-                page: Number(req.query.page),
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = yield accountTitleService.search({
+                limit: limit,
+                page: page,
                 project: { ids: [req.project.id] },
-                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `^${req.query.codeValue}$` : undefined,
+                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '')
+                    ? { $eq: req.query.codeValue }
+                    : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
-                        ? `^${req.query.inCodeSet.codeValue}$`
+                        ? { $eq: req.query.inCodeSet.codeValue }
                         : undefined,
                     inCodeSet: {
                         codeValue: (req.query.inCodeSet.inCodeSet.codeValue !== undefined && req.query.inCodeSet.inCodeSet.codeValue !== '')
-                            ? `^${req.query.inCodeSet.inCodeSet.codeValue}$`
+                            ? { $eq: req.query.inCodeSet.inCodeSet.codeValue }
                             : undefined
                     }
                 }
             });
             res.json({
                 success: true,
-                count: result.totalCount,
-                results: result.data
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
             });
         }
         catch (error) {
@@ -318,21 +328,25 @@ function searchAccountTitleSet(req, res) {
         if (req.xhr) {
             try {
                 debug('searching accountTitleCategories...', req.query);
-                const result = yield accountTitleService.searchAccountTitleSets({
-                    limit: Number(req.query.limit),
-                    page: Number(req.query.page),
+                const limit = Number(req.query.limit);
+                const page = Number(req.query.page);
+                const { data } = yield accountTitleService.searchAccountTitleSets({
+                    limit: limit,
+                    page: page,
                     project: { ids: [req.project.id] },
                     codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
                     inCodeSet: {
                         codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
-                            ? `^${req.query.inCodeSet.codeValue}$`
+                            ? { $eq: req.query.inCodeSet.codeValue }
                             : undefined
                     }
                 });
                 res.json({
                     success: true,
-                    count: result.totalCount,
-                    results: result.data
+                    count: (data.length === Number(limit))
+                        ? (Number(page) * Number(limit)) + 1
+                        : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                    results: data
                 });
             }
             catch (error) {

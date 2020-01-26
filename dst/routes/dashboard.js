@@ -31,10 +31,10 @@ dashboardRouter.get('', (req, res, next) => __awaiter(this, void 0, void 0, func
         endpoint: process.env.CINERINO_API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchProjectsResult = yield projectService.search({});
+    const { data } = yield projectService.search({});
     // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
-    if (searchProjectsResult.totalCount === 1) {
-        res.redirect(`/dashboard/projects/${searchProjectsResult.data[0].id}/select`);
+    if (data.length === 1) {
+        res.redirect(`/dashboard/projects/${data[0].id}/select`);
         return;
     }
     res.render('dashboard', { layout: 'layouts/dashboard' });

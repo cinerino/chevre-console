@@ -56,11 +56,11 @@ export async function add(req: Request, res: Response): Promise<void> {
                 let ticketType = await createFromBody(req);
 
                 // 券種コード重複確認
-                const { totalCount } = await offerService.searchTicketTypes({
+                const { data } = await offerService.searchTicketTypes({
                     project: { ids: [req.project.id] },
-                    identifier: `^${ticketType.identifier}$`
+                    identifier: { $eq: ticketType.identifier }
                 });
-                if (totalCount > 0) {
+                if (data.length > 0) {
                     throw new Error(`既に存在する券種コードです: ${ticketType.identifier}`);
                 }
 
@@ -403,9 +403,11 @@ export async function getList(req: Request, res: Response): Promise<void> {
             }
         }
 
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
         const searchConditions = {
-            limit: req.query.limit,
-            page: req.query.page,
+            limit: limit,
+            page: page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
@@ -442,14 +444,16 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     : undefined
             }
         };
-        const result = await offerService.searchTicketTypes(searchConditions);
+        const { data } = await offerService.searchTicketTypes(searchConditions);
 
         const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
 
         res.json({
             success: true,
-            count: result.totalCount,
-            results: result.data.map((t) => {
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data.map((t) => {
                 const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
 
                 const mvtkType = mvtk.util.constants.TICKET_TYPE.find(
@@ -521,15 +525,21 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { totalCount, data } = await offerService.searchTicketTypeGroups({
-            limit: 100,
+
+        const limit = 100;
+        const page = 1;
+        const { data } = await offerService.searchTicketTypeGroups({
+            limit: limit,
+            page: page,
             project: { ids: [req.project.id] },
             ticketTypes: [req.params.ticketTypeId]
         });
 
         res.json({
             success: true,
-            count: totalCount,
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data
         });
     } catch (err) {

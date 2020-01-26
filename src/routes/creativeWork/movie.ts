@@ -31,9 +31,12 @@ movieRouter.all(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const { data, totalCount } = await creativeWorkService.searchMovies({
-                limit: req.query.limit,
-                page: req.query.page,
+
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = await creativeWorkService.searchMovies({
+                limit: limit,
+                page: page,
                 project: { ids: [req.project.id] },
                 identifier: req.query.identifier,
                 name: req.query.name,
@@ -63,7 +66,9 @@ movieRouter.all(
 
             res.json({
                 success: true,
-                count: totalCount,
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: results
             });
         } catch (error) {

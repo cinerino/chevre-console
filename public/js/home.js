@@ -104,18 +104,18 @@ function updateDbStats(cb) {
 }
 
 function updateQueueCount(cb) {
-    $.getJSON(
-        '/home/queueCount',
-        {}
-    ).done(function (data) {
-        console.log('QueueCount:', data);
-        $('.queueCount').removeClass('text-danger').text(data.totalCount);
+    // $.getJSON(
+    //     '/home/queueCount',
+    //     {}
+    // ).done(function (data) {
+    //     console.log('QueueCount:', data);
+    //     $('.queueCount').removeClass('text-danger').text(data.totalCount);
 
-        cb();
-    }).fail(function (jqXHR, textStatus, error) {
-        console.error('キューを検索できませんでした', jqXHR);
-        $('.queueCount').addClass('text-danger').text(textStatus);
-    });
+    //     cb();
+    // }).fail(function (jqXHR, textStatus, error) {
+    //     console.error('キューを検索できませんでした', jqXHR);
+    //     $('.queueCount').addClass('text-danger').text(textStatus);
+    // });
 }
 
 function updateLatestReservations(cb) {
@@ -164,7 +164,7 @@ function updateEventsWithAggregation(cb) {
     ).done(function (data) {
         $('.eventsWithAggregation tbody').empty();
 
-        $('.eventsCount').text(data.totalCount);
+        // $('.eventsCount').text(data.totalCount);
 
         $.each(data.data, function (_, event) {
             var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'

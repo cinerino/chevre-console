@@ -68,17 +68,21 @@ serviceTypesRouter.get('/getlist', (req, res) => __awaiter(this, void 0, void 0,
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const result = yield serviceTypeService.search({
-            limit: req.query.limit,
-            page: req.query.page,
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const { data } = yield serviceTypeService.search({
+            limit: limit,
+            page: page,
             project: { ids: [req.project.id] },
             identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
             name: req.query.name
         });
         res.json({
             success: true,
-            count: result.totalCount,
-            results: result.data
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
         });
     }
     catch (error) {

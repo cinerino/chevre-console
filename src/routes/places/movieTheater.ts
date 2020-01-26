@@ -86,9 +86,12 @@ movieTheaterRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const { totalCount, data } = await placeService.searchMovieTheaters({
-                limit: req.query.limit,
-                page: req.query.page,
+
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = await placeService.searchMovieTheaters({
+                limit: limit,
+                page: page,
                 project: { ids: [req.project.id] },
                 name: req.query.name
             });
@@ -123,7 +126,9 @@ movieTheaterRouter.get(
 
             res.json({
                 success: true,
-                count: totalCount,
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: results
             });
         } catch (err) {

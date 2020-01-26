@@ -30,11 +30,11 @@ dashboardRouter.get(
             auth: req.user.authClient
         });
 
-        const searchProjectsResult = await projectService.search({});
+        const { data } = await projectService.search({});
 
         // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
-        if (searchProjectsResult.totalCount === 1) {
-            res.redirect(`/dashboard/projects/${searchProjectsResult.data[0].id}/select`);
+        if (data.length === 1) {
+            res.redirect(`/dashboard/projects/${data[0].id}/select`);
 
             return;
         }

@@ -158,8 +158,13 @@ reservationsRouter.get('/search',
             results: data.map((t) => {
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
-                const ticketTYpe = searchCategoriesResult.data.find((c) => t.reservedTicket.ticketType.category !== undefined && c.id === t.reservedTicket.ticketType.category.id);
-                return Object.assign({}, t, { ticketType: ticketTYpe, unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket.ticketedSeat !== undefined)
+                const ticketTYpe = searchCategoriesResult.data.find((c) => t.reservedTicket !== undefined
+                    && t.reservedTicket !== null
+                    && t.reservedTicket.ticketType.category !== undefined
+                    && c.id === t.reservedTicket.ticketType.category.id);
+                return Object.assign({}, t, { ticketType: ticketTYpe, unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
+                        && t.reservedTicket !== null
+                        && t.reservedTicket.ticketedSeat !== undefined)
                         ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)
                             ? t.reservedTicket.ticketedSeat.seatingType.typeOf
                             : '', t.reservedTicket.ticketedSeat.seatNumber)

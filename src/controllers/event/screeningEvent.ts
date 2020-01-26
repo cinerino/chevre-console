@@ -34,12 +34,14 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+
         const searchMovieTheatersResult = await placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
         });
-        if (searchMovieTheatersResult.totalCount === 0) {
+        if (searchMovieTheatersResult.data.length === 0) {
             throw new Error('劇場が見つかりません');
         }
+
         const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
             project: { ids: [req.project.id] }
         });
@@ -74,7 +76,9 @@ export async function search(req: Request, res: Response): Promise<void> {
 
         const movieTheater = await placeService.findMovieTheaterById({ id: req.query.theater });
 
+        const limit = 100;
         const searchResult = await eventService.search({
+            limit: limit,
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEvent,
             eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
@@ -103,7 +107,7 @@ export async function search(req: Request, res: Response): Promise<void> {
         let screens: typeof movieTheater.containsPlace;
         if (screen !== undefined) {
             data = searchResult.data.filter((event) => event.location.branchCode === screen);
-            if (searchResult.data.length < searchResult.totalCount) {
+            if (searchResult.data.length >= limit) {
                 let dataPage2: typeof searchResult.data;
                 const searchResultPage2 = await eventService.search({
                     project: { ids: [req.project.id] },
@@ -334,11 +338,12 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     }
 
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
+
     const searchServiceTypesResult = await serviceTypeService.search({
         project: { ids: [req.project.id] },
         ids: [ticketTypeGroup.itemOffered.serviceType.id]
     });
-    if (searchServiceTypesResult.totalCount === 0) {
+    if (searchServiceTypesResult.data.length === 0) {
         throw new Error('興行区分が見つかりません');
     }
     const serviceType = searchServiceTypesResult.data[0];

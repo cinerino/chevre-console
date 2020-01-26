@@ -31,9 +31,11 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const result = yield priceSpecificationService.search({
-            limit: Number(req.query.limit),
-            page: Number(req.query.page),
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const { data } = yield priceSpecificationService.search({
+            limit: limit,
+            page: page,
             sort: { price: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             typeOf: (req.query.typeOf !== '') ? req.query.typeOf : undefined,
@@ -45,8 +47,10 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
         });
         res.json({
             success: true,
-            count: result.totalCount,
-            results: result.data.map((d) => {
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data.map((d) => {
                 const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((t) => t.code === d.appliesToMovieTicketType);
                 return Object.assign({}, d, { appliesToMovieTicket: {
                         name: (d.appliesToMovieTicketType !== undefined && mvtkType !== undefined)

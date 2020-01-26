@@ -77,16 +77,20 @@ export async function searchAccountTitleCategory(req: Request, res: Response): P
     if (req.xhr) {
         try {
             debug('searching accountTitleCategories...', req.query);
-            const result = await accountTitleService.searchAccountTitleCategories({
-                limit: Number(req.query.limit),
-                page: Number(req.query.page),
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = await accountTitleService.searchAccountTitleCategories({
+                limit: limit,
+                page: page,
                 project: { ids: [req.project.id] },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
             });
             res.json({
                 success: true,
-                count: result.totalCount,
-                results: result.data
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
             });
         } catch (error) {
             res.json({
@@ -171,27 +175,34 @@ export async function getList(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+
         debug('searching...', req.query);
-        const result = await accountTitleService.search({
-            limit: Number(req.query.limit),
-            page: Number(req.query.page),
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const { data } = await accountTitleService.search({
+            limit: limit,
+            page: page,
             project: { ids: [req.project.id] },
-            codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `^${req.query.codeValue}$` : undefined,
+            codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '')
+                ? { $eq: req.query.codeValue }
+                : undefined,
             inCodeSet: {
                 codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
-                    ? `^${req.query.inCodeSet.codeValue}$`
+                    ? { $eq: req.query.inCodeSet.codeValue }
                     : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.inCodeSet.codeValue !== undefined && req.query.inCodeSet.inCodeSet.codeValue !== '')
-                        ? `^${req.query.inCodeSet.inCodeSet.codeValue}$`
+                        ? { $eq: req.query.inCodeSet.inCodeSet.codeValue }
                         : undefined
                 }
             }
         });
         res.json({
             success: true,
-            count: result.totalCount,
-            results: result.data
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
         });
     } catch (error) {
         res.json({
@@ -326,21 +337,25 @@ export async function searchAccountTitleSet(req: Request, res: Response): Promis
     if (req.xhr) {
         try {
             debug('searching accountTitleCategories...', req.query);
-            const result = await accountTitleService.searchAccountTitleSets({
-                limit: Number(req.query.limit),
-                page: Number(req.query.page),
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = await accountTitleService.searchAccountTitleSets({
+                limit: limit,
+                page: page,
                 project: { ids: [req.project.id] },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
-                        ? `^${req.query.inCodeSet.codeValue}$`
+                        ? { $eq: req.query.inCodeSet.codeValue }
                         : undefined
                 }
             });
             res.json({
                 success: true,
-                count: result.totalCount,
-                results: result.data
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
             });
         } catch (error) {
             res.json({

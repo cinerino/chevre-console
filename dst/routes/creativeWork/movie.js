@@ -28,9 +28,11 @@ movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, functi
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const { data, totalCount } = yield creativeWorkService.searchMovies({
-            limit: req.query.limit,
-            page: req.query.page,
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const { data } = yield creativeWorkService.searchMovies({
+            limit: limit,
+            page: page,
             project: { ids: [req.project.id] },
             identifier: req.query.identifier,
             name: req.query.name,
@@ -54,7 +56,9 @@ movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, functi
         });
         res.json({
             success: true,
-            count: totalCount,
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: results
         });
     }

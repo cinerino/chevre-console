@@ -130,9 +130,11 @@ productOffersRouter.get('/search',
         if (req.query.id !== '' && req.query.id !== undefined) {
             offerIds.push(req.query.id);
         }
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
         const searchConditions = {
-            limit: req.query.limit,
-            page: req.query.page,
+            limit: limit,
+            page: page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             ids: offerIds,
@@ -168,11 +170,13 @@ productOffersRouter.get('/search',
                     : undefined
             }
         };
-        const result = yield offerService.searchProductOffers(searchConditions);
+        const { data } = yield offerService.searchProductOffers(searchConditions);
         res.json({
             success: true,
-            count: result.totalCount,
-            results: result.data.map((t) => {
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data.map((t) => {
                 return Object.assign({}, t, { eligibleQuantity: {
                         minValue: (t.priceSpecification !== undefined
                             && t.priceSpecification.eligibleQuantity !== undefined

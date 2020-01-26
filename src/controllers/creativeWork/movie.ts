@@ -44,11 +44,12 @@ export async function add(req: Request, res: Response): Promise<void> {
                 req.body.id = '';
                 let movie = createMovieFromBody(req);
 
-                const { totalCount } = await creativeWorkService.searchMovies({
+                const { data } = await creativeWorkService.searchMovies({
+                    limit: 1,
                     project: { ids: [req.project.id] },
-                    identifier: `^${movie.identifier}$`
+                    identifier: { $eq: movie.identifier }
                 });
-                if (totalCount > 0) {
+                if (data.length > 0) {
                     throw new Error('既に存在する作品コードです');
                 }
 

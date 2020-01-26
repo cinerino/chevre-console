@@ -37,7 +37,7 @@ reservationsRouter.get(
                 auth: req.user.authClient
             });
 
-            const searchConditions = {
+            const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { modifiedTime: chevre.factory.sortType.Descending },
@@ -165,14 +165,19 @@ reservationsRouter.get(
                     );
 
                     const ticketTYpe = searchCategoriesResult.data.find(
-                        (c) => t.reservedTicket.ticketType.category !== undefined && c.id === t.reservedTicket.ticketType.category.id
+                        (c) => t.reservedTicket !== undefined
+                            && t.reservedTicket !== null
+                            && t.reservedTicket.ticketType.category !== undefined
+                            && c.id === t.reservedTicket.ticketType.category.id
                     );
 
                     return {
                         ...t,
                         ticketType: ticketTYpe,
                         unitPriceSpec: unitPriceSpec,
-                        ticketedSeat: (t.reservedTicket.ticketedSeat !== undefined)
+                        ticketedSeat: (t.reservedTicket !== undefined
+                            && t.reservedTicket !== null
+                            && t.reservedTicket.ticketedSeat !== undefined)
                             ? format(
                                 '%s %s',
                                 (t.reservedTicket.ticketedSeat.seatingType !== undefined)
