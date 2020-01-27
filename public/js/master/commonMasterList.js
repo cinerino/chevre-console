@@ -1,6 +1,7 @@
 $(function () {
     $.CommonMasterList = $.CommonMasterList || {};
     $.CommonMasterList = {
+        _listTableBodySelector: "",
         _templateRowSelector: "#templateRow",
         _searchedCountAreaSelector: "#searchedCount",
         _resultStatsSelector: "#resultStats",
@@ -17,6 +18,9 @@ $(function () {
         _datas: [],
 
         onPageChanging: function (pageNumber) { },
+        getListBody: function () {
+            return ($(this._listTableBodySelector))
+        },
         getTemplateRow: function () {
             return ($(this._templateRowSelector))
         },
@@ -33,6 +37,7 @@ $(function () {
         // init: 初期化
         //----------------------
         init: function (templateRowSelector, searchedCountAreaSelector) {
+            this._listTableBodySelector = $(templateRowSelector).closest('tbody');
             this._templateRowSelector = templateRowSelector;
             this._searchedCountAreaSelector = searchedCountAreaSelector;
             this._searchedCountText = this.getSearchedCountArea().text();
@@ -126,7 +131,10 @@ $(function () {
                 htmlRow[cntRow] = startTagTemp + tempRow.join("") + endTag;
                 cntRow++;
             });
-            this.getTemplateRow().closest("tbody").html(htmlRow.join(""));
+
+            var listBody = this.getListBody();
+            listBody.html(htmlRow.join(''));
+
             // ページャアイテム数・現在ぺージ再セット
             pager.pagination('updateItems', countData);
             pager.pagination('drawPage', pageNumber);
