@@ -3,13 +3,19 @@
         価格仕様タイプ
     </label>
     <select class="form-control" name="typeOf">
-        <option value="" disabled selected>選択してください</option>
-        <% Object.values(PriceSpecificationType).forEach((type) => { %>
-        <option value="<%= type %>" <% if (type === forms.typeOf) { %> selected<% } %>>
-            <%= type %>
-        </option>
-        <% }) %>
+        <option value="" selected>選択してください</option>
+        <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>"
+            <% if (PriceSpecificationType.CategoryCodeChargeSpecification === forms.typeOf) { %> selected<% } %>>
+            <%= PriceSpecificationType.CategoryCodeChargeSpecification %></option>
+        <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>"
+            <% if (PriceSpecificationType.MovieTicketTypeChargeSpecification === forms.typeOf) { %> selected<% } %>>
+            <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %></option>
     </select>
+    <p class="error message text-danger">
+        <% if (errors && errors.typeOf) { %>
+        <%- errors.typeOf.msg %>
+        <% } %>
+    </p>
 </div>
 
 <div class="form-group">
@@ -28,11 +34,39 @@
 </div>
 
 <div class="form-group">
+    <label for="appliesToCategoryCode" class="">
+        適用カテゴリー
+    </label>
+    <select class="form-control" name="appliesToCategoryCode">
+        <option value="" selected>選択してください</option>
+        <% Object.values(VideoFormatType).forEach((type) => { %>
+        <option
+            value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.VideoFormatType}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+            && forms.appliesToCategoryCode.codeValue === type
+            && forms.appliesToCategoryCode.inCodeSet.identifier === CategorySetIdentifier.VideoFormatType) { %>
+            selected<% } %>>
+            <%= CategorySetIdentifier.VideoFormatType %> <%= type %>
+        </option>
+        <% }) %>
+
+        <% Object.values(SoundFormatType).forEach((type) => { %>
+        <option
+            value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.SoundFormatType}}) %>" <% if (Array.isArray(forms.appliesToCategoryCode) && forms.appliesToCategoryCode.lenght > 0
+                && forms.appliesToCategoryCode.codeValue === type
+                && forms.appliesToCategoryCode.inCodeSet.identifier === CategorySetIdentifier.SoundFormatType) { %>
+            selected<% } %>>
+            <%= CategorySetIdentifier.SoundFormatType %> <%= type %>
+        </option>
+        <% }) %>
+    </select>
+</div>
+
+<div class="form-group">
     <label for="appliesToMovieTicketType" class="">
         適用ムビチケ券種区分
     </label>
     <select class="form-control" name="appliesToMovieTicketType">
-        <option value="" disabled selected>選択してください</option>
+        <option value="" selected>選択してください</option>
         <% Object.values(MovieTicketType).forEach((type) => { %>
         <option value="<%= type.code %>" <% if (type.code === forms.appliesToMovieTicketType) { %> selected<% } %>>
             <%= type.code %> <%= type.name %>
@@ -43,26 +77,12 @@
 
 <div class="form-group">
     <label for="appliesToVideoFormat" class="">
-        適用上映方式
+        ムビチケ適用上映方式
     </label>
     <select class="form-control" name="appliesToVideoFormat">
-        <option value="" disabled selected>選択してください</option>
+        <option value="" selected>選択してください</option>
         <% Object.values(VideoFormatType).forEach((type) => { %>
         <option value="<%= type %>" <% if (type === forms.appliesToVideoFormat) { %> selected<% } %>>
-            <%= type %>
-        </option>
-        <% }) %>
-    </select>
-</div>
-
-<div class="form-group">
-    <label for="appliesToSoundFormat" class="">
-        適用音響方式
-    </label>
-    <select class="form-control" name="appliesToSoundFormat">
-        <option value="" disabled selected>選択してください</option>
-        <% Object.values(SoundFormatType).forEach((type) => { %>
-        <option value="<%= type %>" <% if (type === forms.appliesToSoundFormat) { %> selected<% } %>>
             <%= type %>
         </option>
         <% }) %>

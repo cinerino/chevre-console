@@ -22,7 +22,8 @@ priceSpecificationsRouter.get('', (_, res) => __awaiter(this, void 0, void 0, fu
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType
+        SoundFormatType: chevre.factory.soundFormatType,
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -42,8 +43,14 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
             appliesToMovieTicket: {
                 serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
             },
-            appliesToVideoFormats: (req.query.appliesToVideoFormat !== '') ? [req.query.appliesToVideoFormat] : undefined,
-            appliesToSoundFormats: (req.query.appliesToSoundFormat !== '') ? [req.query.appliesToSoundFormat] : undefined
+            appliesToCategoryCode: Object.assign({}, (typeof req.query.appliesToCategoryCode === 'string' && req.query.appliesToCategoryCode.length > 0)
+                ? {
+                    $elemMatch: {
+                        codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode).codeValue },
+                        'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode).inCodeSet.identifier }
+                    }
+                }
+                : {})
         });
         res.json({
             success: true,
@@ -52,7 +59,9 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
                 const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((t) => t.code === d.appliesToMovieTicketType);
-                return Object.assign({}, d, { appliesToMovieTicket: {
+                return Object.assign({}, d, { appliesToCategoryCode: (Array.isArray(d.appliesToCategoryCode))
+                        ? d.appliesToCategoryCode[0] :
+                        undefined, appliesToMovieTicket: {
                         name: (d.appliesToMovieTicketType !== undefined && mvtkType !== undefined)
                             ? mvtkType.name
                             : undefined
@@ -77,6 +86,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         validate(req);
         const validatorResult = yield req.getValidationResult();
         errors = req.validationErrors(true);
+        console.error(errors);
         if (validatorResult.isEmpty()) {
             try {
                 let priceSpecification = createMovieFromBody(req);
@@ -94,7 +104,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
             }
         }
     }
-    const forms = Object.assign({}, req.body);
+    const forms = Object.assign({ appliesToCategoryCode: {} }, req.body);
     res.render('priceSpecifications/new', {
         message: message,
         errors: errors,
@@ -102,7 +112,8 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType
+        SoundFormatType: chevre.factory.soundFormatType,
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -134,7 +145,12 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
             }
         }
     }
-    const forms = Object.assign({}, priceSpecification, req.body);
+    const forms = Object.assign({}, priceSpecification, (Array.isArray(priceSpecification.appliesToCategoryCode)
+        && priceSpecification.appliesToCategoryCode.length > 0)
+        ? { appliesToCategoryCode: priceSpecification.appliesToCategoryCode[0] }
+        : { appliesToCategoryCode: {} }
+    // ...req.body
+    );
     res.render('priceSpecifications/update', {
         message: message,
         errors: errors,
@@ -142,21 +158,36 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType
+        SoundFormatType: chevre.factory.soundFormatType,
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 function createMovieFromBody(req) {
     const body = req.body;
-    return {
-        project: req.project,
-        typeOf: body.typeOf,
-        price: Number(body.price),
-        priceCurrency: chevre.factory.priceCurrency.JPY,
-        appliesToVideoFormat: body.appliesToVideoFormat,
-        appliesToSoundFormat: body.appliesToSoundFormat,
-        appliesToMovieTicketType: body.appliesToMovieTicketType,
-        valueAddedTaxIncluded: true
-    };
+    const appliesToCategoryCode = (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
+        ? JSON.parse(body.appliesToCategoryCode)
+        : undefined;
+    return Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, appliesToCategoryCode: (appliesToCategoryCode !== undefined)
+            ? [{
+                    typeOf: 'CategoryCode',
+                    codeValue: appliesToCategoryCode.codeValue,
+                    inCodeSet: {
+                        typeOf: 'CategoryCodeSet',
+                        identifier: appliesToCategoryCode.inCodeSet.identifier
+                    }
+                }] : undefined, valueAddedTaxIncluded: true }, (typeof body.appliesToVideoFormat === 'string' && body.appliesToVideoFormat.length > 0)
+        ? { appliesToVideoFormat: body.appliesToVideoFormat }
+        : undefined, (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
+        ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
+        : undefined, {
+        $unset: Object.assign({}, (appliesToCategoryCode === undefined)
+            ? { appliesToCategoryCode: 1 }
+            : undefined, (typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
+            ? { appliesToVideoFormat: 1 }
+            : undefined, (typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
+            ? { appliesToMovieTicketType: 1 }
+            : undefined)
+    });
 }
 function validate(req) {
     let colName = '';
