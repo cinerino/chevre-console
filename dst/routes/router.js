@@ -7,6 +7,7 @@ const express = require("express");
 const authentication_1 = require("../middlewares/authentication");
 const accountTitles_1 = require("./accountTitles");
 const auth_1 = require("./auth");
+const categoryCode_1 = require("./categoryCode");
 const movie_1 = require("./creativeWork/movie");
 const dashboard_1 = require("./dashboard");
 const screeningEvent_1 = require("./event/screeningEvent");
@@ -40,6 +41,7 @@ router.use((req, res, next) => {
 });
 router.use('/home', home_1.default);
 router.use('/accountTitles', accountTitles_1.default);
+router.use('/categoryCodes', categoryCode_1.default);
 router.use('/creativeWorks/movie', movie_1.default);
 router.use('/events/screeningEvent', screeningEvent_1.default);
 router.use('/events/screeningEventSeries', screeningEventSeries_1.default);

@@ -57,10 +57,9 @@
         <li class="nav-item <%= (displayId === 'PS-02') ? 'active': ''; %>">
             <a class="nav-link" href="/priceSpecifications">
                 <i class="icon fa fa-dollar-sign"></i>
-                <p>価格仕様</p>
+                <p>価格仕様 <span class="badge badge-secondary badge-light">Preview</span></p>
             </a>
         </li>
-
 
         <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
         <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">

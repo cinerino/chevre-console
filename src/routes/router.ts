@@ -7,6 +7,7 @@ import authentication from '../middlewares/authentication';
 
 import accountTitlesRouter from './accountTitles';
 import authRouter from './auth';
+import categoryCodesRouter from './categoryCode';
 import movieRouter from './creativeWork/movie';
 import dashboardRouter from './dashboard';
 import screeningEventRouter from './event/screeningEvent';
@@ -46,6 +47,7 @@ router.use((req, res, next) => {
 
 router.use('/home', homeRouter);
 router.use('/accountTitles', accountTitlesRouter);
+router.use('/categoryCodes', categoryCodesRouter);
 router.use('/creativeWorks/movie', movieRouter);
 router.use('/events/screeningEvent', screeningEventRouter);
 router.use('/events/screeningEventSeries', screeningEventSeriesRouter);

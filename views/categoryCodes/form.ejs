@@ -1,0 +1,48 @@
+<div class="form-group">
+    <label for="inCodeSet[identifier]" class="">
+        区分分類<span class="text-danger">＊</span>
+    </label>
+    <select class="form-control" name="inCodeSet[identifier]">
+        <option value="" selected>選択してください</option>
+        <% Object.values(CategorySetIdentifier).forEach((type) => { %>
+        <option value="<%= type %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === type) { %> selected<% } %>>
+            <%= type %>
+        </option>
+        <% }) %>
+    </select>
+    <p class="error message text-danger">
+        <% if (errors && errors['inCodeSet.identifier']) { %>
+        <%- errors['inCodeSet.identifier'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="codeValue" class="">
+        区分コード<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=20
+        value=<%=forms.codeValue %>>
+    <p class="message">
+        半角20文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors.codeValue) { %>
+        <%- errors.codeValue.msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="name[ja]" class="">
+        名称<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=20
+        value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+    <p class="error message text-danger">
+        <% if (errors && errors['name.ja']) { %>
+        <%- errors['name.ja'].msg %>
+        <% } %>
+    </p>
+</div>
