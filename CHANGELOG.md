@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 予約検索の検索結果件数表示を削除
 - ページネーション調整
 - サービスタイプをカテゴリーコードに統合
+- 上映方式タイプの動的管理対応
 
 ### Deprecated
 

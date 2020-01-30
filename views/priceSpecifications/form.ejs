@@ -39,23 +39,34 @@
     </label>
     <select class="form-control" name="appliesToCategoryCode">
         <option value="" selected>選択してください</option>
-        <% Object.values(VideoFormatType).forEach((type) => { %>
+
+        <% videoFormatTypes.forEach((videoFormatType) => { %>
         <option
-            value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.VideoFormatType}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-            && forms.appliesToCategoryCode.codeValue === type
-            && forms.appliesToCategoryCode.inCodeSet.identifier === CategorySetIdentifier.VideoFormatType) { %>
+            value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                && forms.appliesToCategoryCode.codeValue === videoFormatType.codeValue
+                && forms.appliesToCategoryCode.inCodeSet.identifier === videoFormatType.inCodeSet.identifier) { %>
             selected<% } %>>
-            <%= CategorySetIdentifier.VideoFormatType %> <%= type %>
+            上映方式タイプ <%= videoFormatType.codeValue %>
         </option>
         <% }) %>
 
-        <% Object.values(SoundFormatType).forEach((type) => { %>
+        <% soundFormatTypes.forEach((soundFormatType) => { %>
         <option
-            value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.SoundFormatType}}) %>" <% if (Array.isArray(forms.appliesToCategoryCode) && forms.appliesToCategoryCode.lenght > 0
-                && forms.appliesToCategoryCode.codeValue === type
-                && forms.appliesToCategoryCode.inCodeSet.identifier === CategorySetIdentifier.SoundFormatType) { %>
+            value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                    && forms.appliesToCategoryCode.codeValue === soundFormatType.codeValue
+                    && forms.appliesToCategoryCode.inCodeSet.identifier === soundFormatType.inCodeSet.identifier) { %>
             selected<% } %>>
-            <%= CategorySetIdentifier.SoundFormatType %> <%= type %>
+            音響方式タイプ <%= soundFormatType.codeValue %>
+        </option>
+        <% }) %>
+
+        <% seatingTypes.forEach((seatingType) => { %>
+        <option
+            value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                        && forms.appliesToCategoryCode.codeValue === seatingType.codeValue
+                        && forms.appliesToCategoryCode.inCodeSet.identifier === seatingType.inCodeSet.identifier) { %>
+            selected<% } %>>
+            座席タイプ <%= seatingType.codeValue %>
         </option>
         <% }) %>
     </select>
@@ -81,9 +92,11 @@
     </label>
     <select class="form-control" name="appliesToVideoFormat">
         <option value="" selected>選択してください</option>
-        <% Object.values(VideoFormatType).forEach((type) => { %>
-        <option value="<%= type %>" <% if (type === forms.appliesToVideoFormat) { %> selected<% } %>>
-            <%= type %>
+
+        <% videoFormatTypes.forEach((videoFormatType) => { %>
+        <option value="<%= videoFormatType.codeValue %>"
+            <% if (videoFormatType.codeValue === forms.appliesToVideoFormat) { %> selected<% } %>>
+            <%= videoFormatType.codeValue %>
         </option>
         <% }) %>
     </select>

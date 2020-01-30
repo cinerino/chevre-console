@@ -176,14 +176,25 @@
 </div>
 
 <div class="form-group">
-    <label for="videoFormat" class="">
-        上映形態<span class="text-danger">＊</span>
+    <label for="videoFormatType[]" class="">
+        上映方式<span class="text-danger">＊</span>
     </label>
-    <% Object.keys(VideoFormatType).forEach((key) => { %>
-    <input type="checkbox" name="videoFormatType[]" value="<%= VideoFormatType[key] %>" <% if
-            (forms.videoFormatType.indexOf(VideoFormatType[key])>= 0) { %>checked="checked" <% } %>>
-    <%= VideoFormatType[key] %>
-    <% }) %>
+
+    <div class="row pt-2 pb-2 px-3">
+        <% videoFormatTypes.forEach((videoFormatType, key) => { %>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" id="videoFormatType[]<%= key %>"
+                    name="videoFormatType[]" value="<%= videoFormatType.codeValue %>" <% if
+                    (forms.videoFormatType.indexOf(videoFormatType.codeValue)>= 0) { %> checked="checked" <% } %>>
+                <%= videoFormatType.name.ja %>
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+        <% }) %>
+    </div>
 
     <p class="error message text-danger">
         <% if (errors && errors.videoFormatType) { %>
@@ -196,7 +207,21 @@
     <label for="mvtkFlg" class="">
         ムビチケ利用
     </label>
-    <input type="checkbox" <% if (forms.mvtkFlg==1) { %> checked <% } %> value="1" name="mvtkFlg">
+
+    <div class="row pt-2 pb-2 px-3">
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (String(forms.mvtkFlg) === '1') { %>
+                    checked="checked" <% } %> value="1" name="mvtkFlg">
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <p class="error message text-danger">
+    </p>
 </div>
 
 <div class="form-group">

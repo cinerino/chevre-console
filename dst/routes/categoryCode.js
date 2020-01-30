@@ -12,17 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * カテゴリーコードルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const reserve_api_abstract_client_1 = require("@movieticket/reserve-api-abstract-client");
 const express_1 = require("express");
 const Message = require("../common/Const/Message");
 const categoryCodesRouter = express_1.Router();
 categoryCodesRouter.get('', (_, res) => __awaiter(this, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
         message: '',
-        MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
-        PriceSpecificationType: chevre.factory.priceSpecificationType,
-        VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));

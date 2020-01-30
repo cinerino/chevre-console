@@ -16,13 +16,36 @@ const reserve_api_abstract_client_1 = require("@movieticket/reserve-api-abstract
 const express_1 = require("express");
 const Message = require("../common/Const/Message");
 const priceSpecificationsRouter = express_1.Router();
-priceSpecificationsRouter.get('', (_, res) => __awaiter(this, void 0, void 0, function* () {
+priceSpecificationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    // 上映方式タイプ検索
+    const searchVideoFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+    });
+    // 上映方式タイプ検索
+    const searchSoundFormatFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+    });
+    // 座席タイプ検索
+    const searchSeatingTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+    });
     res.render('priceSpecifications/index', {
         message: '',
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
-        VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType,
+        videoFormatTypes: searchVideoFormatTypesResult.data,
+        soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+        seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
@@ -81,6 +104,28 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
 priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    // 上映方式タイプ検索
+    const searchVideoFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+    });
+    // 上映方式タイプ検索
+    const searchSoundFormatFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+    });
+    // 座席タイプ検索
+    const searchSeatingTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+    });
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -111,14 +156,37 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         forms: forms,
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
-        VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType,
+        videoFormatTypes: searchVideoFormatTypesResult.data,
+        soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+        seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    // 上映方式タイプ検索
+    const searchVideoFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+    });
+    // 上映方式タイプ検索
+    const searchSoundFormatFormatTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+    });
+    // 座席タイプ検索
+    const searchSeatingTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+    });
     const priceSpecificationService = new chevre.service.PriceSpecification({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -157,8 +225,9 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         forms: forms,
         MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
-        VideoFormatType: chevre.factory.videoFormatType,
-        SoundFormatType: chevre.factory.soundFormatType,
+        videoFormatTypes: searchVideoFormatTypesResult.data,
+        soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+        seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));

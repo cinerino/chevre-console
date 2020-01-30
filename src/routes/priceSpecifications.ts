@@ -11,13 +11,40 @@ const priceSpecificationsRouter = Router();
 
 priceSpecificationsRouter.get(
     '',
-    async (_, res) => {
+    async (req, res) => {
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        // 上映方式タイプ検索
+        const searchVideoFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+        });
+
+        // 上映方式タイプ検索
+        const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+        });
+
+        // 座席タイプ検索
+        const searchSeatingTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+
         res.render('priceSpecifications/index', {
             message: '',
             MovieTicketType: mvtk.util.constants.TICKET_TYPE,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
-            VideoFormatType: chevre.factory.videoFormatType,
-            SoundFormatType: chevre.factory.soundFormatType,
+            videoFormatTypes: searchVideoFormatTypesResult.data,
+            soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
@@ -94,6 +121,32 @@ priceSpecificationsRouter.all(
         let message = '';
         let errors: any = {};
 
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        // 上映方式タイプ検索
+        const searchVideoFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+        });
+
+        // 上映方式タイプ検索
+        const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+        });
+
+        // 座席タイプ検索
+        const searchSeatingTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -130,8 +183,9 @@ priceSpecificationsRouter.all(
             forms: forms,
             MovieTicketType: mvtk.util.constants.TICKET_TYPE,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
-            VideoFormatType: chevre.factory.videoFormatType,
-            SoundFormatType: chevre.factory.soundFormatType,
+            videoFormatTypes: searchVideoFormatTypesResult.data,
+            soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
@@ -142,6 +196,32 @@ priceSpecificationsRouter.all(
     async (req, res) => {
         let message = '';
         let errors: any = {};
+
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        // 上映方式タイプ検索
+        const searchVideoFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+        });
+
+        // 上映方式タイプ検索
+        const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
+        });
+
+        // 座席タイプ検索
+        const searchSeatingTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
 
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -186,8 +266,9 @@ priceSpecificationsRouter.all(
             forms: forms,
             MovieTicketType: mvtk.util.constants.TICKET_TYPE,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
-            VideoFormatType: chevre.factory.videoFormatType,
-            SoundFormatType: chevre.factory.soundFormatType,
+            videoFormatTypes: searchVideoFormatTypesResult.data,
+            soundFormatTypes: searchSoundFormatFormatTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }

@@ -28,6 +28,7 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 /**
  * 新規登録
  */
+// tslint:disable-next-line:max-func-body-length
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const creativeWorkService = new chevre.service.CreativeWork({
@@ -39,6 +40,10 @@ function add(req, res) {
             auth: req.user.authClient
         });
         const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -54,6 +59,12 @@ function add(req, res) {
         const movies = searchMoviesResult.data;
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
+        });
+        // 上映方式タイプ検索
+        const searchVideoFormatTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
         let message = '';
         let errors = {};
@@ -107,7 +118,7 @@ function add(req, res) {
             forms: forms,
             movies: movies,
             movieTheaters: searchMovieTheatersResult.data,
-            VideoFormatType: chevre.factory.videoFormatType
+            videoFormatTypes: searchVideoFormatTypesResult.data
         });
     });
 }
@@ -130,6 +141,10 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const searchMoviesResult = yield creativeWorkService.searchMovies({
             sort: {
                 datePublished: chevre.factory.sortType.Descending
@@ -141,6 +156,12 @@ function update(req, res) {
         });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
+        });
+        // 上映方式タイプ検索
+        const searchVideoFormatTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
         let message = '';
         let errors = {};
@@ -215,7 +236,7 @@ function update(req, res) {
             forms: forms,
             movies: searchMoviesResult.data,
             movieTheaters: searchMovieTheatersResult.data,
-            VideoFormatType: chevre.factory.videoFormatType
+            videoFormatTypes: searchVideoFormatTypesResult.data
         });
     });
 }
@@ -538,6 +559,6 @@ function validate(req) {
     colName = '上映作品サブタイトル名';
     req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '上映形態';
+    colName = '上映方式';
     req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

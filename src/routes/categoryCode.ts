@@ -2,7 +2,6 @@
  * カテゴリーコードルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { mvtk } from '@movieticket/reserve-api-abstract-client';
 import { Request, Router } from 'express';
 
 import * as Message from '../common/Const/Message';
@@ -14,10 +13,6 @@ categoryCodesRouter.get(
     async (_, res) => {
         res.render('categoryCodes/index', {
             message: '',
-            MovieTicketType: mvtk.util.constants.TICKET_TYPE,
-            PriceSpecificationType: chevre.factory.priceSpecificationType,
-            VideoFormatType: chevre.factory.videoFormatType,
-            SoundFormatType: chevre.factory.soundFormatType,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }

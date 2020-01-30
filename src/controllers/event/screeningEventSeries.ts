@@ -24,6 +24,7 @@ const NAME_MAX_LENGTH_NAME_JA: number = 64;
 /**
  * 新規登録
  */
+// tslint:disable-next-line:max-func-body-length
 export async function add(req: Request, res: Response): Promise<void> {
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: <string>process.env.API_ENDPOINT,
@@ -37,6 +38,11 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
     const searchMoviesResult = await creativeWorkService.searchMovies({
         sort: {
             datePublished: chevre.factory.sortType.Descending
@@ -47,9 +53,18 @@ export async function add(req: Request, res: Response): Promise<void> {
         }
     });
     const movies = searchMoviesResult.data;
+
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
         project: { ids: [req.project.id] }
     });
+
+    // 上映方式タイプ検索
+    const searchVideoFormatTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+    });
+
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -110,7 +125,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: movies,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType
+        videoFormatTypes: searchVideoFormatTypesResult.data
     });
 }
 /**
@@ -130,6 +145,11 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
     const searchMoviesResult = await creativeWorkService.searchMovies({
         sort: {
             datePublished: chevre.factory.sortType.Descending
@@ -142,6 +162,14 @@ export async function update(req: Request, res: Response): Promise<void> {
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
         project: { ids: [req.project.id] }
     });
+
+    // 上映方式タイプ検索
+    const searchVideoFormatTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+    });
+
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
@@ -234,7 +262,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: searchMoviesResult.data,
         movieTheaters: searchMovieTheatersResult.data,
-        VideoFormatType: chevre.factory.videoFormatType
+        videoFormatTypes: searchVideoFormatTypesResult.data
     });
 }
 
@@ -594,6 +622,6 @@ function validate(req: Request): void {
     req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
-    colName = '上映形態';
+    colName = '上映方式';
     req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

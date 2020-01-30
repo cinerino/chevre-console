@@ -25,9 +25,9 @@ PS-02
             <select class="form-control" name="typeOf">
                 <option value="" selected>選択してください</option>
                 <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
-                    <%= PriceSpecificationType.CategoryCodeChargeSpecification %></option>
+                    各種区分加算料金</option>
                 <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                    <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %></option>
+                    ムビチケ加算料金</option>
             </select>
         </div>
 
@@ -37,17 +37,24 @@ PS-02
             </label>
             <select class="form-control" name="appliesToCategoryCode">
                 <option value="">選択してください</option>
-                <% Object.values(VideoFormatType).forEach((type) => { %>
+                <% videoFormatTypes.forEach((videoFormatType) => { %>
                 <option
-                    value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.VideoFormatType}}) %>">
-                    <%= CategorySetIdentifier.VideoFormatType %> <%= type %>
+                    value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>">
+                    上映方式タイプ <%= videoFormatType.name.ja %>
                 </option>
                 <% }) %>
 
-                <% Object.values(SoundFormatType).forEach((type) => { %>
+                <% soundFormatTypes.forEach((soundFormatType) => { %>
                 <option
-                    value="<%= JSON.stringify({codeValue: type, inCodeSet:{identifier:CategorySetIdentifier.SoundFormatType}}) %>">
-                    <%= CategorySetIdentifier.SoundFormatType %> <%= type %>
+                    value="<%= JSON.stringify({codeValue: soundFormatType, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
+                    音響方式タイプ <%= soundFormatType.name.ja %>
+                </option>
+                <% }) %>
+
+                <% seatingTypes.forEach((seatingType) => { %>
+                <option
+                    value="<%= JSON.stringify({codeValue: seatingType, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
+                    座席タイプ <%= seatingType.name.ja %>
                 </option>
                 <% }) %>
             </select>
