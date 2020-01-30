@@ -156,7 +156,7 @@ function update(req, res) {
         }
         // 券種グループ取得
         const ticketGroup = yield offerService.findTicketTypeGroupById({ id: req.params.id });
-        const forms = Object.assign({ additionalProperty: [] }, ticketGroup, { serviceType: ticketGroup.itemOffered.serviceType.id }, req.body, { ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : [] });
+        const forms = Object.assign({ additionalProperty: [] }, ticketGroup, { serviceType: ticketGroup.itemOffered.serviceType.codeValue }, req.body, { ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : [] });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
@@ -207,7 +207,14 @@ function createFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const serviceType = yield serviceTypeService.findById({ id: req.body.serviceType });
+        const searchServiceTypesResult = yield serviceTypeService.search({
+            limit: 1,
+            codeValue: { $eq: req.body.serviceType }
+        });
+        const serviceType = searchServiceTypesResult.data.shift();
+        if (serviceType === undefined) {
+            throw new Error('興行タイプが見つかりません');
+        }
         return {
             project: req.project,
             id: body.id,

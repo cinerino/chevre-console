@@ -158,7 +158,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     const forms = {
         additionalProperty: [],
         ...ticketGroup,
-        serviceType: ticketGroup.itemOffered.serviceType.id,
+        serviceType: ticketGroup.itemOffered.serviceType.codeValue,
         ...req.body,
         ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : []
     };
@@ -217,7 +217,15 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const serviceType = await serviceTypeService.findById({ id: req.body.serviceType });
+
+    const searchServiceTypesResult = await serviceTypeService.search({
+        limit: 1,
+        codeValue: { $eq: req.body.serviceType }
+    });
+    const serviceType = searchServiceTypesResult.data.shift();
+    if (serviceType === undefined) {
+        throw new Error('興行タイプが見つかりません');
+    }
 
     return {
         project: req.project,

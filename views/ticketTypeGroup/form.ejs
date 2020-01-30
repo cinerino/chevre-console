@@ -105,8 +105,8 @@
     </label>
     <select name="serviceType" id="serviceType" class="form-control">
         <% for (let serviceType of serviceTypes) { %>
-        <% if (forms.serviceType === serviceType.id) { %>
-        <option value="<%= serviceType.id %>" selected>
+        <% if (forms.serviceType === serviceType.codeValue) { %>
+        <option value="<%= serviceType.codeValue %>" selected>
             <%= serviceType.name %>
         </option>
         <% } else { %>

@@ -340,15 +340,13 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
 
     const searchServiceTypesResult = await serviceTypeService.search({
-        project: { id: { $eq: req.project.id } },
-        ...{
-            ids: [ticketTypeGroup.itemOffered.serviceType.id]
-        }
+        limit: 1,
+        codeValue: { $eq: <string>ticketTypeGroup.itemOffered.serviceType.codeValue }
     });
-    if (searchServiceTypesResult.data.length === 0) {
-        throw new Error('興行区分が見つかりません');
+    const serviceType = searchServiceTypesResult.data.shift();
+    if (serviceType === undefined) {
+        throw new Error('興行タイプが見つかりません');
     }
-    const serviceType = searchServiceTypesResult.data[0];
 
     let offersValidAfterStart: number;
     if (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '') {
@@ -570,9 +568,9 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 if (ticketTypeGroup === undefined) {
                     throw new Error('Ticket Type Group');
                 }
-                const serviceType = serviceTypes.find((t) => t.id === ticketTypeGroup.itemOffered.serviceType.id);
+                const serviceType = serviceTypes.find((t) => t.codeValue === ticketTypeGroup.itemOffered.serviceType.codeValue);
                 if (serviceType === undefined) {
-                    throw new chevre.factory.errors.NotFound('Service Type');
+                    throw new chevre.factory.errors.NotFound('興行タイプ');
                 }
 
                 const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
