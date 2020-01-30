@@ -34,9 +34,15 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0,
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield categoryCodeService.search(Object.assign({ limit: limit, page: page, 'project.id': { $eq: req.project.id } }, (req.query.inCodeSet !== undefined && req.query.inCodeSet !== null
+        const { data } = yield categoryCodeService.search(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } } }, (req.query.codeValue !== undefined && req.query.codeValue !== null
+            && typeof req.query.codeValue.$eq === 'string' && req.query.codeValue.$eq.length > 0)
+            ? { codeValue: { $eq: req.query.codeValue.$eq } }
+            : undefined, (req.query.inCodeSet !== undefined && req.query.inCodeSet !== null
             && typeof req.query.inCodeSet.identifier === 'string' && req.query.inCodeSet.identifier.length > 0)
-            ? { 'inCodeSet.identifier': { $eq: req.query.inCodeSet.identifier } }
+            ? { inCodeSet: { identifier: { $eq: req.query.inCodeSet.identifier } } }
+            : undefined, (req.query.name !== undefined && req.query.name !== null
+            && typeof req.query.name.$regex === 'string' && req.query.name.$regex.length > 0)
+            ? { name: { $regex: req.query.name.$regex } }
             : undefined));
         res.json({
             success: true,
