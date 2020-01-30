@@ -73,8 +73,11 @@ serviceTypesRouter.get('/getlist', (req, res) => __awaiter(this, void 0, void 0,
         const { data } = yield serviceTypeService.search({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
-            identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
+            project: { id: { $eq: req.project.id } },
+            codeValue: {
+                $eq: (req.query.identifier !== undefined && req.query.identifier !== '') ? req.query.identifier : undefined
+            },
+            // identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
             name: req.query.name
         });
         res.json({
@@ -144,6 +147,11 @@ function createFromBody(req) {
         typeOf: 'ServiceType',
         id: body.id,
         identifier: body.identifier,
+        codeValue: body.identifier,
+        inCodeSet: {
+            typeOf: 'CategoryCodeSet',
+            identifier: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType
+        },
         name: body.name,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')

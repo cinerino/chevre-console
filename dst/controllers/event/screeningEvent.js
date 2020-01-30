@@ -349,10 +349,9 @@ function createEventFromBody(req) {
             throw new Error('上映スクリーン名が見つかりません');
         }
         const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-        const searchServiceTypesResult = yield serviceTypeService.search({
-            project: { ids: [req.project.id] },
+        const searchServiceTypesResult = yield serviceTypeService.search(Object.assign({ project: { id: { $eq: req.project.id } } }, {
             ids: [ticketTypeGroup.itemOffered.serviceType.id]
-        });
+        }));
         if (searchServiceTypesResult.data.length === 0) {
             throw new Error('興行区分が見つかりません');
         }
@@ -507,7 +506,7 @@ function createMultipleEventFromBody(req, user) {
         const ticketTypeGroups = searchTicketTypeGroupsResult.data;
         const searchServiceTypesResult = yield serviceTypeService.search({
             limit: 100,
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } }
         });
         const serviceTypes = searchServiceTypesResult.data;
         const attributes = [];

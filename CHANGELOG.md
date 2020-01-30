@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 複数プロジェクトをダッシュボードにて選択可能に変更
 - 予約検索の検索結果件数表示を削除
 - ページネーション調整
+- サービスタイプをカテゴリーコードに統合
 
 ### Deprecated
 

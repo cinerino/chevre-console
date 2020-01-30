@@ -70,7 +70,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         }
     }
     const searchServiceTypesResult = await serviceTypeService.search({
-        project: { ids: [req.project.id] }
+        project: { id: { $eq: req.project.id } }
     });
     let ticketTypeIds: string[] = [];
     if (!_.isEmpty(req.body.ticketTypes)) {
@@ -129,7 +129,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
     const searchServiceTypesResult = await serviceTypeService.search({
-        project: { ids: [req.project.id] }
+        project: { id: { $eq: req.project.id } }
     });
     let message = '';
     let errors: any = {};

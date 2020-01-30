@@ -77,7 +77,7 @@ function add(req, res) {
             }
         }
         const searchServiceTypesResult = yield serviceTypeService.search({
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } }
         });
         let ticketTypeIds = [];
         if (!_.isEmpty(req.body.ticketTypes)) {
@@ -130,7 +130,7 @@ function update(req, res) {
             auth: req.user.authClient
         });
         const searchServiceTypesResult = yield serviceTypeService.search({
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } }
         });
         let message = '';
         let errors = {};

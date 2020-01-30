@@ -340,8 +340,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
 
     const searchServiceTypesResult = await serviceTypeService.search({
-        project: { ids: [req.project.id] },
-        ids: [ticketTypeGroup.itemOffered.serviceType.id]
+        project: { id: { $eq: req.project.id } },
+        ...{
+            ids: [ticketTypeGroup.itemOffered.serviceType.id]
+        }
     });
     if (searchServiceTypesResult.data.length === 0) {
         throw new Error('興行区分が見つかりません');
@@ -507,7 +509,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
     const searchServiceTypesResult = await serviceTypeService.search({
         limit: 100,
-        project: { ids: [req.project.id] }
+        project: { id: { $eq: req.project.id } }
     });
     const serviceTypes = searchServiceTypesResult.data;
 
