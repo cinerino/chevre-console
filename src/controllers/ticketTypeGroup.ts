@@ -224,7 +224,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
     });
     const serviceType = searchServiceTypesResult.data.shift();
     if (serviceType === undefined) {
-        throw new Error('興行タイプが見つかりません');
+        throw new Error('興行区分が見つかりません');
     }
 
     return {

@@ -2,14 +2,31 @@
     <label for="inCodeSet[identifier]" class="">
         区分分類<span class="text-danger">＊</span>
     </label>
-    <select class="form-control" name="inCodeSet[identifier]">
-        <option value="" selected>選択してください</option>
-        <% Object.values(CategorySetIdentifier).forEach((type) => { %>
-        <option value="<%= type %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === type) { %> selected<% } %>>
-            <%= type %>
+    <% if (!isNew) { %>
+    <input type="hidden" name="inCodeSet[identifier]" value="<%= forms.inCodeSet.identifier %>">
+    <% } %>
+    <select class="form-control" name="inCodeSet[identifier]" <% if (!isNew) { %> disabled<% } %>>
+        <option value="">選択してください</option>
+        <option value="<%= CategorySetIdentifier.ServiceType %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === CategorySetIdentifier.ServiceType) { %> selected<% } %>>
+            興行区分
         </option>
-        <% }) %>
+        <option value="<%= CategorySetIdentifier.VideoFormatType %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === CategorySetIdentifier.VideoFormatType) { %> selected<% } %>>
+            上映方式タイプ
+        </option>
+        <option value="<%= CategorySetIdentifier.SoundFormatType %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === CategorySetIdentifier.SoundFormatType) { %> selected<% } %>>
+            音響方式タイプ
+        </option>
+        <option value="<%= CategorySetIdentifier.SeatingType %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === CategorySetIdentifier.SeatingType) { %> selected<% } %>>
+            座席タイプ
+        </option>
+        <option value="<%= CategorySetIdentifier.MovieTicketType %>" <% if (forms.inCodeSet !== undefined
+            && forms.inCodeSet.identifier === CategorySetIdentifier.MovieTicketType) { %> selected<% } %>>
+            ムビチケ券種区分
+        </option>
     </select>
     <p class="error message text-danger">
         <% if (errors && errors['inCodeSet.identifier']) { %>
@@ -23,7 +40,7 @@
         区分コード<span class="text-danger">＊</span>
     </label>
     <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=20
-        value=<%=forms.codeValue %>>
+        value=<%=forms.codeValue %> <% if (!isNew) { %> readonly <% } %>>
     <p class="message">
         半角20文字以内でご入力ください。
     </p>
@@ -38,8 +55,11 @@
     <label for="name[ja]" class="">
         名称<span class="text-danger">＊</span>
     </label>
-    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=20
+    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
         value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+    <p class="message">
+        30文字以内でご入力ください。
+    </p>
     <p class="error message text-danger">
         <% if (errors && errors['name.ja']) { %>
         <%- errors['name.ja'].msg %>

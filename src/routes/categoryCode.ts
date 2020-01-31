@@ -183,11 +183,23 @@ function validate(req: Request): void {
     let colName: string = '';
 
     colName = '区分分類';
-    req.checkBody('inCodeSet.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('inCodeSet.identifier').notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+
     colName = '区分コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('codeValue')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .isAlphanumeric()
+        .len({ max: 20 })
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 20));
+
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.ja').notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 30));
 }
 
 export default categoryCodesRouter;

@@ -345,7 +345,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     });
     const serviceType = searchServiceTypesResult.data.shift();
     if (serviceType === undefined) {
-        throw new Error('興行タイプが見つかりません');
+        throw new Error('興行区分が見つかりません');
     }
 
     let offersValidAfterStart: number;
@@ -570,7 +570,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 }
                 const serviceType = serviceTypes.find((t) => t.codeValue === ticketTypeGroup.itemOffered.serviceType.codeValue);
                 if (serviceType === undefined) {
-                    throw new chevre.factory.errors.NotFound('興行タイプ');
+                    throw new chevre.factory.errors.NotFound('興行区分');
                 }
 
                 const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
