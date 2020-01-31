@@ -341,7 +341,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
 
     const searchServiceTypesResult = await serviceTypeService.search({
         limit: 1,
-        codeValue: { $eq: <string>ticketTypeGroup.itemOffered.serviceType.codeValue }
+        codeValue: { $eq: ticketTypeGroup.itemOffered.serviceType.codeValue }
     });
     const serviceType = searchServiceTypesResult.data.shift();
     if (serviceType === undefined) {
