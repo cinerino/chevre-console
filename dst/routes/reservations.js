@@ -166,7 +166,9 @@ reservationsRouter.get('/search',
                         && t.reservedTicket !== null
                         && t.reservedTicket.ticketedSeat !== undefined)
                         ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)
-                            ? t.reservedTicket.ticketedSeat.seatingType.typeOf
+                            ? (typeof t.reservedTicket.ticketedSeat.seatingType === 'string')
+                                ? t.reservedTicket.ticketedSeat.seatingType
+                                : t.reservedTicket.ticketedSeat.seatingType.typeOf
                             : '', t.reservedTicket.ticketedSeat.seatNumber)
                         : '非指定' });
             })
