@@ -2,7 +2,6 @@
  * 価格仕様ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { mvtk } from '@movieticket/reserve-api-abstract-client';
 import { Request, Router } from 'express';
 
 import * as Message from '../common/Const/Message';
@@ -38,9 +37,16 @@ priceSpecificationsRouter.get(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+
         res.render('priceSpecifications/index', {
             message: '',
-            MovieTicketType: mvtk.util.constants.TICKET_TYPE,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -89,7 +95,7 @@ priceSpecificationsRouter.get(
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((d) => {
-                    const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
+                    // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
 
                     return {
                         ...d,
@@ -97,9 +103,7 @@ priceSpecificationsRouter.get(
                             ? (<any>d).appliesToCategoryCode[0] :
                             undefined,
                         appliesToMovieTicket: {
-                            name: ((<any>d).appliesToMovieTicketType !== undefined && mvtkType !== undefined)
-                                ? mvtkType.name
-                                : undefined
+                            name: ''
                         }
                     };
                 })
@@ -147,6 +151,13 @@ priceSpecificationsRouter.all(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -155,7 +166,7 @@ priceSpecificationsRouter.all(
             console.error(errors);
             if (validatorResult.isEmpty()) {
                 try {
-                    let priceSpecification = createMovieFromBody(req);
+                    let priceSpecification = createMovieFromBody(req, true);
                     const priceSpecificationService = new chevre.service.PriceSpecification({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -181,7 +192,7 @@ priceSpecificationsRouter.all(
             message: message,
             errors: errors,
             forms: forms,
-            MovieTicketType: mvtk.util.constants.TICKET_TYPE,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -223,6 +234,13 @@ priceSpecificationsRouter.all(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -239,7 +257,7 @@ priceSpecificationsRouter.all(
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
-                    priceSpecification = { ...createMovieFromBody(req), id: priceSpecification.id };
+                    priceSpecification = { ...createMovieFromBody(req, false), id: priceSpecification.id };
                     await priceSpecificationService.update(priceSpecification);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -264,7 +282,7 @@ priceSpecificationsRouter.all(
             message: message,
             errors: errors,
             forms: forms,
-            MovieTicketType: mvtk.util.constants.TICKET_TYPE,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -274,7 +292,7 @@ priceSpecificationsRouter.all(
     }
 );
 
-function createMovieFromBody(req: Request): chevre.factory.priceSpecification.IPriceSpecification<any> {
+function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.priceSpecification.IPriceSpecification<any> {
     const body = req.body;
 
     const appliesToCategoryCode =
@@ -289,6 +307,7 @@ function createMovieFromBody(req: Request): chevre.factory.priceSpecification.IP
         priceCurrency: chevre.factory.priceCurrency.JPY,
         appliesToCategoryCode: (appliesToCategoryCode !== undefined)
             ? [{
+                project: req.project,
                 typeOf: 'CategoryCode',
                 codeValue: appliesToCategoryCode.codeValue,
                 inCodeSet: {
@@ -303,19 +322,20 @@ function createMovieFromBody(req: Request): chevre.factory.priceSpecification.IP
         ...(typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
             ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
             : undefined,
-        ...{
-            $unset: {
-                ...(appliesToCategoryCode === undefined)
-                    ? { appliesToCategoryCode: 1 }
-                    : undefined,
-                ...(typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
-                    ? { appliesToVideoFormat: 1 }
-                    : undefined,
-                ...(typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
-                    ? { appliesToMovieTicketType: 1 }
-                    : undefined
-            }
-        }
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(appliesToCategoryCode === undefined)
+                        ? { appliesToCategoryCode: 1 }
+                        : undefined,
+                    ...(typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
+                        ? { appliesToVideoFormat: 1 }
+                        : undefined,
+                    ...(typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
+                        ? { appliesToMovieTicketType: 1 }
+                        : undefined
+                }
+            } : undefined
     };
 }
 

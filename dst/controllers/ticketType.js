@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 券種マスタコントローラー
  */
 const chevre = require("@chevre/api-nodejs-client");
-const reserve_api_abstract_client_1 = require("@movieticket/reserve-api-abstract-client");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -39,6 +38,16 @@ function add(req, res) {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
+        });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] }
@@ -92,7 +101,7 @@ function add(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
             ticketTypeCategories: searchCategoriesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
@@ -118,6 +127,16 @@ function update(req, res) {
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] }
+        });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
         const searchProductOffersResult = yield offerService.searchProductOffers({
             limit: 100,
@@ -187,7 +206,7 @@ function update(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
             ticketTypeCategories: searchCategoriesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
@@ -346,6 +365,16 @@ function getList(req, res) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            // ムビチケ券種区分検索
+            const searchMovieTicketTypesResult = yield categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+            });
             // 券種グループ取得
             let ticketTypeIds = [];
             if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
@@ -412,12 +441,15 @@ function getList(req, res) {
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((t) => {
                     const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
-                    const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType);
+                    const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => {
+                        return t.priceSpecification !== undefined
+                            && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
+                    });
                     return Object.assign({ appliesToMovieTicket: {
                             name: (t.priceSpecification !== undefined
                                 && t.priceSpecification.appliesToMovieTicketType !== undefined
                                 && mvtkType !== undefined)
-                                ? mvtkType.name
+                                ? mvtkType.name.ja
                                 : undefined
                         } }, t, { eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined

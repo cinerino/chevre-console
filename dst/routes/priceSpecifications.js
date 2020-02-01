@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 価格仕様ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const reserve_api_abstract_client_1 = require("@movieticket/reserve-api-abstract-client");
 const express_1 = require("express");
 const Message = require("../common/Const/Message");
 const priceSpecificationsRouter = express_1.Router();
@@ -39,9 +38,15 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, 
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
+    // ムビチケ券種区分検索
+    const searchMovieTicketTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+    });
     res.render('priceSpecifications/index', {
         message: '',
-        MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
+        movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -81,13 +86,11 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(this, void 0, v
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
-                const mvtkType = reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE.find((t) => t.code === d.appliesToMovieTicketType);
+                // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
                 return Object.assign({}, d, { appliesToCategoryCode: (Array.isArray(d.appliesToCategoryCode))
                         ? d.appliesToCategoryCode[0] :
                         undefined, appliesToMovieTicket: {
-                        name: (d.appliesToMovieTicketType !== undefined && mvtkType !== undefined)
-                            ? mvtkType.name
-                            : undefined
+                        name: ''
                     } });
             })
         });
@@ -126,6 +129,12 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
+    // ムビチケ券種区分検索
+    const searchMovieTicketTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+    });
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -134,7 +143,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         console.error(errors);
         if (validatorResult.isEmpty()) {
             try {
-                let priceSpecification = createMovieFromBody(req);
+                let priceSpecification = createMovieFromBody(req, true);
                 const priceSpecificationService = new chevre.service.PriceSpecification({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -154,7 +163,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(this, void 0, void
         message: message,
         errors: errors,
         forms: forms,
-        MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
+        movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -187,6 +196,12 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
+    // ムビチケ券種区分検索
+    const searchMovieTicketTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+    });
     const priceSpecificationService = new chevre.service.PriceSpecification({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -202,7 +217,7 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                priceSpecification = Object.assign({}, createMovieFromBody(req), { id: priceSpecification.id });
+                priceSpecification = Object.assign({}, createMovieFromBody(req, false), { id: priceSpecification.id });
                 yield priceSpecificationService.update(priceSpecification);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -223,7 +238,7 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         message: message,
         errors: errors,
         forms: forms,
-        MovieTicketType: reserve_api_abstract_client_1.mvtk.util.constants.TICKET_TYPE,
+        movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
@@ -231,13 +246,14 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(this, void 
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
-function createMovieFromBody(req) {
+function createMovieFromBody(req, isNew) {
     const body = req.body;
     const appliesToCategoryCode = (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
         ? JSON.parse(body.appliesToCategoryCode)
         : undefined;
     return Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, appliesToCategoryCode: (appliesToCategoryCode !== undefined)
             ? [{
+                    project: req.project,
                     typeOf: 'CategoryCode',
                     codeValue: appliesToCategoryCode.codeValue,
                     inCodeSet: {
@@ -248,15 +264,16 @@ function createMovieFromBody(req) {
         ? { appliesToVideoFormat: body.appliesToVideoFormat }
         : undefined, (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
         ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
-        : undefined, {
-        $unset: Object.assign({}, (appliesToCategoryCode === undefined)
-            ? { appliesToCategoryCode: 1 }
-            : undefined, (typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
-            ? { appliesToVideoFormat: 1 }
-            : undefined, (typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
-            ? { appliesToMovieTicketType: 1 }
-            : undefined)
-    });
+        : undefined, (!isNew)
+        ? {
+            $unset: Object.assign({}, (appliesToCategoryCode === undefined)
+                ? { appliesToCategoryCode: 1 }
+                : undefined, (typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
+                ? { appliesToVideoFormat: 1 }
+                : undefined, (typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
+                ? { appliesToMovieTicketType: 1 }
+                : undefined)
+        } : undefined);
 }
 function validate(req) {
     let colName = '';

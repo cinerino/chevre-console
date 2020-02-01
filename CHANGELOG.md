@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ページネーション調整
 - サービスタイプをカテゴリーコードに統合
 - 上映方式タイプの動的管理対応
+- ムビチケ券種区分をカテゴリーコードとして管理
 
 ### Deprecated
 

@@ -75,6 +75,11 @@ categoryCodesRouter.all(
         let message = '';
         let errors: any = {};
 
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -84,10 +89,18 @@ categoryCodesRouter.all(
             if (validatorResult.isEmpty()) {
                 try {
                     let categoryCode = createMovieFromBody(req);
-                    const categoryCodeService = new chevre.service.CategoryCode({
-                        endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
+
+                    // 区分コード重複確認
+                    const { data } = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        codeValue: { $eq: categoryCode.codeValue },
+                        inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
                     });
+                    if (data.length > 0) {
+                        throw new Error('既に存在する区分コードです');
+                    }
+
                     categoryCode = await categoryCodeService.create(categoryCode);
 
                     req.flash('message', '登録しました');
@@ -166,16 +179,14 @@ function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategor
     const body = req.body;
 
     return {
+        project: req.project,
         typeOf: 'CategoryCode',
         codeValue: body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: body.inCodeSet.identifier
         },
-        name: <any>{ ja: body.name.ja },
-        ...{
-            project: req.project
-        }
+        name: <any>{ ja: body.name.ja }
     };
 }
 

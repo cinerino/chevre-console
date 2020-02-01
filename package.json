@@ -16,7 +16,6 @@
     "@chevre/api-nodejs-client": "2.2.0-alpha.5",
     "@cinerino/api-nodejs-client": "2.0.0-alpha.54",
     "@json-editor/json-editor": "^1.4.0-beta.0",
-    "@movieticket/reserve-api-abstract-client": "^1.1.0",
     "body-parser": "^1.19.0",
     "bootstrap": "^4.3.1",
     "connect-redis": "^3.4.1",

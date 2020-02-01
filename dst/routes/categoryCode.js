@@ -61,6 +61,10 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0,
 categoryCodesRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -70,10 +74,16 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fu
         if (validatorResult.isEmpty()) {
             try {
                 let categoryCode = createMovieFromBody(req);
-                const categoryCodeService = new chevre.service.CategoryCode({
-                    endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                // 区分コード重複確認
+                const { data } = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    codeValue: { $eq: categoryCode.codeValue },
+                    inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
                 });
+                if (data.length > 0) {
+                    throw new Error('既に存在する区分コードです');
+                }
                 categoryCode = yield categoryCodeService.create(categoryCode);
                 req.flash('message', '登録しました');
                 res.redirect(`/categoryCodes/${categoryCode.id}/update`);
@@ -131,12 +141,16 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, voi
 }));
 function createMovieFromBody(req) {
     const body = req.body;
-    return Object.assign({ typeOf: 'CategoryCode', codeValue: body.codeValue, inCodeSet: {
+    return {
+        project: req.project,
+        typeOf: 'CategoryCode',
+        codeValue: body.codeValue,
+        inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: body.inCodeSet.identifier
-        }, name: { ja: body.name.ja } }, {
-        project: req.project
-    });
+        },
+        name: { ja: body.name.ja }
+    };
 }
 function validate(req) {
     let colName = '';

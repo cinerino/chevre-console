@@ -2,7 +2,6 @@
  * 券種マスタコントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { mvtk } from '@movieticket/reserve-api-abstract-client';
 import { Request, Response } from 'express';
 import * as _ from 'underscore';
 
@@ -35,6 +34,18 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // ムビチケ券種区分検索
+    const searchMovieTicketTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+    });
+
     const searchAccountTitlesResult = await accountTitleService.search({
         project: { ids: [req.project.id] }
     });
@@ -103,7 +114,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
-        MovieTicketType: mvtk.util.constants.TICKET_TYPE,
+        movieTicketTypes: searchMovieTicketTypesResult.data,
         ticketTypeCategories: searchCategoriesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
@@ -129,6 +140,18 @@ export async function update(req: Request, res: Response): Promise<void> {
     const searchAccountTitlesResult = await accountTitleService.search({
         project: { ids: [req.project.id] }
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // ムビチケ券種区分検索
+    const searchMovieTicketTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+    });
+
     const searchProductOffersResult = await offerService.searchProductOffers({
         limit: 100,
         project: { ids: [req.project.id] }
@@ -218,7 +241,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
-        MovieTicketType: mvtk.util.constants.TICKET_TYPE,
+        movieTicketTypes: searchMovieTicketTypesResult.data,
         ticketTypeCategories: searchCategoriesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
@@ -386,6 +409,17 @@ export async function getList(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
 
         // 券種グループ取得
         let ticketTypeIds: string[] = [];
@@ -456,8 +490,11 @@ export async function getList(req: Request, res: Response): Promise<void> {
             results: data.map((t) => {
                 const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
 
-                const mvtkType = mvtk.util.constants.TICKET_TYPE.find(
-                    (ticketType) => t.priceSpecification !== undefined && ticketType.code === t.priceSpecification.appliesToMovieTicketType
+                const mvtkType = searchMovieTicketTypesResult.data.find(
+                    (movieTicketType) => {
+                        return t.priceSpecification !== undefined
+                            && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
+                    }
                 );
 
                 return {
@@ -465,7 +502,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
                         name: (t.priceSpecification !== undefined
                             && t.priceSpecification.appliesToMovieTicketType !== undefined
                             && mvtkType !== undefined)
-                            ? mvtkType.name
+                            ? (<any>mvtkType.name).ja
                             : undefined
                     },
                     ...t,

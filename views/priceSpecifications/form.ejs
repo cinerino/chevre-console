@@ -78,9 +78,10 @@
     </label>
     <select class="form-control" name="appliesToMovieTicketType">
         <option value="" selected>選択してください</option>
-        <% Object.values(MovieTicketType).forEach((type) => { %>
-        <option value="<%= type.code %>" <% if (type.code === forms.appliesToMovieTicketType) { %> selected<% } %>>
-            <%= type.code %> <%= type.name %>
+        <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
+        <option value="<%= movieTicketType.codeValue %>"
+            <% if (movieTicketType.codeValue === forms.appliesToMovieTicketType) { %> selected<% } %>>
+            <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
         </option>
         <% }) %>
     </select>
