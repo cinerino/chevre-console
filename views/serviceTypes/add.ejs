@@ -16,18 +16,18 @@ Aa-16
             <%- include('../common/successMessage') %>
         </div>
         <div class="form-group">
-            <label for="identifier" class="">
+            <label for="codeValue" class="">
                 興行区分コード<span class="text-danger">＊</span>
             </label>
-            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                value="<%= forms.identifier %>">
+            <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+                value="<%= forms.codeValue %>">
             <p class="message">
                 <% /*半角64文字以内でご入力ください。*/ %>
                 半角64文字以内でご入力ください。
             </p>
             <p class="error message text-danger">
-                <% if (errors && errors.identifier) { %>
-                <%- errors.identifier.msg %>
+                <% if (errors && errors.codeValue) { %>
+                <%- errors.codeValue.msg %>
                 <% } %>
             </p>
         </div>

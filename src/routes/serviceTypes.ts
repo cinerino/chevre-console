@@ -88,9 +88,8 @@ serviceTypesRouter.get(
                 page: page,
                 project: { id: { $eq: req.project.id } },
                 codeValue: {
-                    $eq: (req.query.identifier !== undefined && req.query.identifier !== '') ? req.query.identifier : undefined
+                    $eq: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined
                 },
-                // identifiers: (req.query.identifier !== undefined && req.query.identifier !== '') ? [req.query.identifier] : undefined,
                 name: req.query.name
             });
 
@@ -175,8 +174,8 @@ function createFromBody(req: Request): chevre.factory.serviceType.IServiceType {
         project: req.project,
         typeOf: <any>'ServiceType',
         id: body.id,
-        identifier: body.identifier,
-        codeValue: body.identifier,
+        identifier: body.codeValue,
+        codeValue: body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType
@@ -202,8 +201,8 @@ function validate(req: Request, checkType: string): void {
 
     if (checkType === 'add') {
         colName = '興行区分コード';
-        req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+        req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+        req.checkBody('codeValue', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
     }
 
     colName = '名称';
