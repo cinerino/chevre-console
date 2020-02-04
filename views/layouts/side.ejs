@@ -32,13 +32,13 @@
         </li>
         <li class="nav-item <%= (displayId === 'Aa-6') ? 'active': ''; %>">
             <a class="nav-link" href="/ticketTypes">
-                <i class="icon fa fa-tag"></i>
+                <i class="material-icons">local_offer</i>
                 <p>券種</p>
             </a>
         </li>
         <li class="nav-item <%= (displayId === 'Aa-8') ? 'active': ''; %>">
             <a class="nav-link" href="/ticketTypeGroups">
-                <i class="icon fa fa-tags"></i>
+                <i class="material-icons">local_offer</i>
                 <p>券種グループ</p>
             </a>
         </li>
@@ -69,9 +69,16 @@
 
         <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
         <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
-            <a class="nav-link" href="/productOffers">
+            <a class="nav-link" href="/addOns">
+                <i class="material-icons">local_offer</i>
+                <p>アドオン <span class="badge badge-secondary badge-light">Preview</span></p>
+            </a>
+        </li>
+
+        <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
+            <a class="nav-link" href="/products">
                 <i class="icon fa fa-glasses"></i>
-                <p>プロダクトオファー</p>
+                <p>プロダクト <span class="badge badge-secondary badge-light">Preview</span></p>
             </a>
         </li>
         <% } %>

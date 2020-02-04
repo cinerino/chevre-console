@@ -6,6 +6,7 @@ import * as express from 'express';
 import authentication from '../middlewares/authentication';
 
 import accountTitlesRouter from './accountTitles';
+import addOnsRouter from './addOns';
 import authRouter from './auth';
 import categoryCodesRouter from './categoryCode';
 import movieRouter from './creativeWork/movie';
@@ -15,7 +16,7 @@ import screeningEventSeriesRouter from './event/screeningEventSeries';
 import homeRouter from './home';
 import movieTheaterRouter from './places/movieTheater';
 import priceSpecificationsRouter from './priceSpecifications';
-import productOffersRouter from './productOffer';
+import productsRouter from './products';
 import reservationsRouter from './reservations';
 import serviceTypesRouter from './serviceTypes';
 import ticketTypeMasterRouter from './ticketType';
@@ -47,13 +48,14 @@ router.use((req, res, next) => {
 
 router.use('/home', homeRouter);
 router.use('/accountTitles', accountTitlesRouter);
+router.use('/addOns', addOnsRouter);
 router.use('/categoryCodes', categoryCodesRouter);
 router.use('/creativeWorks/movie', movieRouter);
 router.use('/events/screeningEvent', screeningEventRouter);
 router.use('/events/screeningEventSeries', screeningEventSeriesRouter);
 router.use('/places/movieTheater', movieTheaterRouter);
 router.use('/priceSpecifications', priceSpecificationsRouter);
-router.use('/productOffers', productOffersRouter);
+router.use('/products', productsRouter);
 router.use('/reservations', reservationsRouter);
 router.use('/serviceTypes', serviceTypesRouter);
 router.use('/ticketTypes', ticketTypeMasterRouter);

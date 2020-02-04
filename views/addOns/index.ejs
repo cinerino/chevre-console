@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-プロダクトオファー検索
+アドオン検索
 <%- contentFor('displayId') %>
 PO-01
 <%- contentFor('styles') %>
@@ -8,7 +8,7 @@ PO-01
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
-<script src="/js/master/productOffers/index.js"></script>
+<script src="/js/master/addOns/index.js"></script>
 <%- contentFor('body') %>
 
 <div class="form-container search p-3 bg-light-gray mb-3">
@@ -30,14 +30,14 @@ PO-01
             <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
         </div>
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="name" class="">
                 名称
             </label>
             <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
-        </div>
+        </div> -->
 
-        <div class="form-group">
+        <!-- <div class="form-group">
             <label for="" class="">
                 単価
             </label>
@@ -69,10 +69,10 @@ PO-01
                     <span class="input-group-text">円以下</span>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/productOffers/new">
+            <a class="btn btn-primary" role="button" href="/addOns/new">
                 <i class=" fa fa-plus"></i> 登録</a>
 
             <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
@@ -91,9 +91,9 @@ PO-01
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>名称<br>English Name<br>代替名称</th>
-                    <th>発生金額<br>売上金額<br>適用単位</th>
+                    <th>オファーコード</th>
+                    <th>名称</th>
+                    <th>発生金額<br>適用単位</th>
                     <th>アイテム</th>
                     <th></th>
                 </tr>
@@ -101,23 +101,22 @@ PO-01
 
             <tbody>
                 <tr id="templateRow">
-                    <td name="id__id">
+                    <td name="id__identifier">
                         <p>
-                            <a target="_blank" href="/productOffers/$id$/update">
-                                $id$
+                            <a target="_blank" href="/addOns/$id$/update">
+                                $identifier$
                             </a>
                         </p>
-                    <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
-                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
+                    <td name="name.ja">$name.ja$</td>
+                    <td name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value"
                         style="text-align:right;">
                         <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
-                        <p>$priceSpecification.accounting.accountsReceivable$ $priceSpecification.priceCurrency$</p>
                         <p>/ $referenceQuantity.value$ 枚</p>
                     </td>
                     <td name="itemOffered.name.ja">$itemOffered.name.ja$</td>
                     <td name="id__id__id" class="center">
                         <div class="text-center">
-                            <a target="_blank" class="btn btn-sm btn-primary" href="/productOffers/$id$/update">
+                            <a target="_blank" class="btn btn-sm btn-primary" href="/addOns/$id$/update">
                                 <i class="fas fa-edit"></i>
                             </a>
                         </div>

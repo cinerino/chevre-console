@@ -35,7 +35,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/productOffers/search';
+        var url = '/addOns/search';
         // alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',

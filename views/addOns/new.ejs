@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-プロダクトオファー登録
+アドオン登録
 <%- contentFor('displayId') %>
 PO-02
 <%- contentFor('styles') %>
@@ -16,23 +16,7 @@ PO-02
             <%- include('../common/successMessage') %>
         </div>
 
-        <div class="form-group">
-            <label for="id" class="">
-                オファーID<span class="text-danger">＊</span>
-            </label>
-            <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64 value=<%=forms.id
-                    %>>
-            <p class="message">
-                半角64文字以内でご入力ください。
-            </p>
-            <p class="error message text-danger">
-                <% if (errors && errors.id) { %>
-                <%- errors.id.msg %>
-                <% } %>
-            </p>
-        </div>
-
-        <%- include('form', { forms: forms }) %>
+        <%- include('form', { forms: forms, isNew: true }) %>
 
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">登録する</button>

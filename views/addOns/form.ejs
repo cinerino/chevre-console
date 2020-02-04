@@ -1,0 +1,96 @@
+<div class="form-group">
+    <label for="id" class="">
+        オファーコード<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value=<%=forms.identifier
+                    %><% if (!isNew) { %> readonly <% } %>>
+    <p class="message">
+        半角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors.identifier) { %>
+        <%- errors.identifier.msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="name[ja]" class="">
+        名称<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%=forms.name.ja
+            %>">
+    <p class="message">
+        全角64文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['name.ja']) { %>
+        <%- errors['name.ja'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="itemOffered[id]" class="">
+        アイテム<span class="text-danger">＊</span>
+    </label>
+    <select class="form-control" name="itemOffered[id]">
+        <option value="" selected>選択してください</option>
+        <% products.forEach((product) => { %>
+        <option value="<%= product.id %>"
+            <% if (forms.itemOffered !== undefined && forms.itemOffered !== null && forms.itemOffered.id === product.id) { %>
+            selected<% } %>>
+            <%= product.identifier %> <%= product.name.ja %>
+        </option>
+        <% }) %>
+    </select>
+    <p class="error message text-danger">
+        <% if (errors && errors['itemOffered.id']) { %>
+        <%- errors['itemOffered.id'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="priceSpecification[price]" class="">
+        発生金額<span class="text-danger">＊</span>
+    </label>
+    <input type="text" class="form-control" name="priceSpecification[price]" id="priceSpecification[price]"
+        placeholder="" maxlength=10 value="<%= (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.price !== undefined)
+         ? String(forms.priceSpecification.price)
+          : ''
+            %>">
+    <p class="message">
+        半角10文字以内でご入力ください。
+    </p>
+    <p class="error message text-danger">
+        <% if (errors && errors['priceSpecification.price']) { %>
+        <%- errors['priceSpecification.price'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<div class="form-group">
+    <label for="priceSpecification[referenceQuantity][value]" class="">
+        適用単位<span class="text-danger">＊</span>
+    </label>
+    <select class="form-control" name="priceSpecification[referenceQuantity][value]">
+        <option value="" disabled selected>選択してください</option>
+        <% for (let i = 1; i <= 4; i++) { %>
+        <option value="<%= i %>"
+            <% if (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.referenceQuantity !== undefined && String(forms.priceSpecification.referenceQuantity.value) === String(i)) { %>
+            selected <% } %>>
+            <%= i %>
+        </option>
+        <% } %>
+    </select>
+    <p class="error message text-danger">
+        <% if (errors && errors['priceSpecification.referenceQuantity.value']) { %>
+        <%- errors['priceSpecification.referenceQuantity.value'].msg %>
+        <% } %>
+    </p>
+</div>
+
+<%- include('../common/part/_additionalProperty', {
+    additionalProperty: forms.additionalProperty
+}) %>

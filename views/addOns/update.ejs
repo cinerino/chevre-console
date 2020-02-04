@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-プロダクトオファー更新
+アドオン編集
 <%- contentFor('displayId') %>
 PO-03
 <%- contentFor('styles') %>
@@ -7,7 +7,7 @@ PO-03
 <%- contentFor('scripts') %>
 <script src="/js/tinycolor-min.js"></script>
 <script src="/js/bootstrap.colorpickersliders.js"></script>
-<script src="/js/master/ticketTypeAdd.js"></script>
+<script src="/js/master/addOns/form.js"></script>
 
 <%- contentFor('body') %>
 
@@ -20,10 +20,11 @@ PO-03
 
         <input type="hidden" name="id" value="<%= forms.id %>">
 
-        <%- include('form', {forms: forms}) %>
+        <%- include('form', {forms: forms, isNew: false}) %>
 
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">更新する</button>
+            <button type="button" class="btn btn-delete btn-danger">削除する</button>
         </div>
     </form>
 </div>

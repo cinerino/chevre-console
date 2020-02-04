@@ -27,6 +27,7 @@ const CHAGE_MAX_LENGTH = 10;
  * 新規登録
  */
 // tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:max-func-body-length
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         let message = '';
@@ -52,9 +53,12 @@ function add(req, res) {
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] }
         });
-        const searchProductOffersResult = yield offerService.searchProductOffers({
+        const searchProductOffersResult = yield offerService.search({
             limit: 100,
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } },
+            itemOffered: {
+                typeOf: { $eq: 'Product' }
+            }
         });
         if (req.method === 'POST') {
             // 検証
@@ -138,9 +142,12 @@ function update(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
-        const searchProductOffersResult = yield offerService.searchProductOffers({
+        const searchProductOffersResult = yield offerService.search({
             limit: 100,
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } },
+            itemOffered: {
+                typeOf: { $eq: 'Product' }
+            }
         });
         let ticketType = yield offerService.findTicketTypeById({ id: req.params.id });
         if (req.method === 'POST') {
@@ -224,10 +231,13 @@ function createFromBody(req) {
         });
         const availableAddOn = [];
         if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
-            const searchProductOffersResult = yield offerService.searchProductOffers({
+            const searchProductOffersResult = yield offerService.search({
                 limit: 1,
-                ids: [req.body.availableAddOn],
-                project: { ids: [req.project.id] }
+                id: { $eq: req.body.availableAddOn },
+                project: { id: { $eq: req.project.id } },
+                itemOffered: {
+                    typeOf: { $eq: 'Product' }
+                }
             });
             const productOffer = searchProductOffersResult.data.shift();
             if (productOffer === undefined) {

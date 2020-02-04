@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - カテゴリーコード管理を追加
+- プロダクト管理を追加
+- アドオン管理を追加
 
 ### Changed
 

@@ -1,0 +1,67 @@
+<%- contentFor('title') %>
+プロダクト検索
+<%- contentFor('displayId') %>
+PR-00
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/products/index.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="form-container search mb-3 searchCategoryCode">
+    <form method="post" class="p-3 bg-light-gray">
+        <%- include('../common/master/_hidden') %>
+        <div class="menu-group">
+        </div>
+
+        <div class="form-group">
+            <label for="name[$regex]" class="">
+                名称
+            </label>
+            <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder="" maxlength=64 value="">
+        </div>
+
+        <div class="panel-body">
+            <a class="btn btn-primary" role="button" href="/products/new">
+                <i class=" fa fa-plus"></i> 登録</a>
+
+            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+        </div>
+    </form>
+</div>
+
+<div class="form-container search">
+    <p id="resultStats" style="display:none;">
+    </p>
+    <!-- <p class="mb-3" id="searchedCount" style="display:none;">
+        検索結果 $searched_count$件
+    </p> -->
+    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
+        <table class="table table-bordered table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="templateRow">
+                    <td name="id__id">
+                        <a target="_blank" href="/products/$id$">$id$</a>
+                    </td>
+                    <td name="name.ja">
+                        $name.ja$
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="pager" class="div_pager_parent"></div>
+</div>
+
+<%- include('../common/master/_loading') %>
