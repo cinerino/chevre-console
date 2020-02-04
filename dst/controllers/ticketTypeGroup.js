@@ -43,7 +43,7 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const serviceTypeService = new chevre.service.ServiceType({
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -76,8 +76,10 @@ function add(req, res) {
                 }
             }
         }
-        const searchServiceTypesResult = yield serviceTypeService.search({
-            project: { id: { $eq: req.project.id } }
+        const searchServiceTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
         });
         let ticketTypeIds = [];
         if (!_.isEmpty(req.body.ticketTypes)) {
@@ -125,12 +127,14 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const serviceTypeService = new chevre.service.ServiceType({
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchServiceTypesResult = yield serviceTypeService.search({
-            project: { id: { $eq: req.project.id } }
+        const searchServiceTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
         });
         let message = '';
         let errors = {};
@@ -203,12 +207,14 @@ function createFromBody(req) {
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
         const ticketTypes = (Array.isArray(body.ticketTypes)) ? body.ticketTypes : [body.ticketTypes];
-        const serviceTypeService = new chevre.service.ServiceType({
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchServiceTypesResult = yield serviceTypeService.search({
+        const searchServiceTypesResult = yield categoryCodeService.search({
             limit: 1,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
             codeValue: { $eq: req.body.serviceType }
         });
         const serviceType = searchServiceTypesResult.data.shift();

@@ -107,11 +107,11 @@
         <% for (let serviceType of serviceTypes) { %>
         <% if (forms.serviceType === serviceType.codeValue) { %>
         <option value="<%= serviceType.codeValue %>" selected>
-            <%= serviceType.name %>
+            <%= serviceType.name.ja %>
         </option>
         <% } else { %>
         <option value="<%= serviceType.codeValue %>">
-            <%= serviceType.name %>
+            <%= serviceType.name.ja %>
         </option>
         <% } %>
         <% } %>

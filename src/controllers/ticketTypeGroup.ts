@@ -34,10 +34,11 @@ export async function add(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const serviceTypeService = new chevre.service.ServiceType({
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -69,9 +70,13 @@ export async function add(req: Request, res: Response): Promise<void> {
             }
         }
     }
-    const searchServiceTypesResult = await serviceTypeService.search({
-        project: { id: { $eq: req.project.id } }
+
+    const searchServiceTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
+
     let ticketTypeIds: string[] = [];
     if (!_.isEmpty(req.body.ticketTypes)) {
         if (_.isString(req.body.ticketTypes)) {
@@ -124,12 +129,15 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const serviceTypeService = new chevre.service.ServiceType({
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchServiceTypesResult = await serviceTypeService.search({
-        project: { id: { $eq: req.project.id } }
+
+    const searchServiceTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     let message = '';
     let errors: any = {};
@@ -213,13 +221,15 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
 
     const ticketTypes = (Array.isArray(body.ticketTypes)) ? <string[]>body.ticketTypes : [<string>body.ticketTypes];
 
-    const serviceTypeService = new chevre.service.ServiceType({
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
 
-    const searchServiceTypesResult = await serviceTypeService.search({
+    const searchServiceTypesResult = await categoryCodeService.search({
         limit: 1,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
         codeValue: { $eq: req.body.serviceType }
     });
     const serviceType = searchServiceTypesResult.data.shift();

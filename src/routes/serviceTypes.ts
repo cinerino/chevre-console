@@ -29,11 +29,12 @@ serviceTypesRouter.all(
                     req.body.id = '';
                     let serviceType = createFromBody(req);
                     debug('saving an serviceType...', serviceType);
-                    const serviceTypeService = new chevre.service.ServiceType({
+
+                    const categoryCodeService = new chevre.service.CategoryCode({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
                     });
-                    serviceType = await serviceTypeService.create(serviceType);
+                    serviceType = await categoryCodeService.create(serviceType);
 
                     req.flash('message', '登録しました');
                     res.redirect(`/serviceTypes/${serviceType.id}/update`);
@@ -76,17 +77,18 @@ serviceTypesRouter.get(
     '/getlist',
     async (req, res) => {
         try {
-            const serviceTypeService = new chevre.service.ServiceType({
+            const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
-            const { data } = await serviceTypeService.search({
+            const { data } = await categoryCodeService.search({
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
                 codeValue: {
                     $eq: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined
                 },
@@ -117,11 +119,11 @@ serviceTypesRouter.all(
         let message = '';
         let errors: any = {};
 
-        const serviceTypeService = new chevre.service.ServiceType({
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        let serviceType = await serviceTypeService.findById({
+        let serviceType = await categoryCodeService.findById({
             id: req.params.id
         });
 
@@ -135,7 +137,7 @@ serviceTypesRouter.all(
                     req.body.id = req.params.id;
                     serviceType = createFromBody(req);
                     debug('saving an serviceType...', serviceType);
-                    await serviceTypeService.update(serviceType);
+                    await categoryCodeService.update(serviceType);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
 
@@ -172,9 +174,8 @@ function createFromBody(req: Request): chevre.factory.serviceType.IServiceType {
 
     return {
         project: req.project,
-        typeOf: <any>'ServiceType',
+        typeOf: 'CategoryCode',
         id: body.id,
-        identifier: body.codeValue,
         codeValue: body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
@@ -201,11 +202,17 @@ function validate(req: Request, checkType: string): void {
 
     if (checkType === 'add') {
         colName = '興行区分コード';
-        req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('codeValue', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+        req.checkBody('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', colName))
+            .len({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     }
 
     colName = '名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
 }

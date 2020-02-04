@@ -318,7 +318,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const serviceTypeService = new chevre.service.ServiceType({
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
@@ -339,8 +339,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
 
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
 
-    const searchServiceTypesResult = await serviceTypeService.search({
+    const searchServiceTypesResult = await categoryCodeService.search({
         limit: 1,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
         codeValue: { $eq: ticketTypeGroup.itemOffered.serviceType.codeValue }
     });
     const serviceType = searchServiceTypesResult.data.shift();
@@ -473,7 +475,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const serviceTypeService = new chevre.service.ServiceType({
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
@@ -505,9 +507,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     });
     const ticketTypeGroups = searchTicketTypeGroupsResult.data;
 
-    const searchServiceTypesResult = await serviceTypeService.search({
+    const searchServiceTypesResult = await categoryCodeService.search({
         limit: 100,
-        project: { id: { $eq: req.project.id } }
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     const serviceTypes = searchServiceTypesResult.data;
 
