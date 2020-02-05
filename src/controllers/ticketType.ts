@@ -280,6 +280,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         }
 
         availableAddOn.push({
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: productOffer.typeOf,
             id: productOffer.id,
             name: productOffer.name,
@@ -394,7 +395,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
             appliesToMovieTicketType: appliesToMovieTicketType,
             accounting: accounting
         },
-        availableAddOn: availableAddOn,
+        addOn: availableAddOn,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
@@ -545,8 +546,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
                             : '--'
                     },
                     categoryName: (category !== undefined) ? category.name : '--',
-                    availableAddOnNames: (Array.isArray(t.availableAddOn))
-                        ? t.availableAddOn.map((a) => {
+                    availableAddOnNames: (Array.isArray(t.addOn))
+                        ? t.addOn.map((a) => {
                             return (a.name !== undefined) ? (<any>a.name).ja : a.id;
                         }).join('\n')
                         : ''

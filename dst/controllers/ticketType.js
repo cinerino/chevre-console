@@ -244,6 +244,7 @@ function createFromBody(req) {
                 throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
             }
             availableAddOn.push({
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: productOffer.typeOf,
                 id: productOffer.id,
                 name: productOffer.name,
@@ -349,7 +350,7 @@ function createFromBody(req) {
                 appliesToMovieTicketType: appliesToMovieTicketType,
                 accounting: accounting
             },
-            availableAddOn: availableAddOn,
+            addOn: availableAddOn,
             additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
@@ -486,8 +487,8 @@ function getList(req, res) {
                             value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
                                 ? t.priceSpecification.referenceQuantity.value
                                 : '--'
-                        }, categoryName: (category !== undefined) ? category.name : '--', availableAddOnNames: (Array.isArray(t.availableAddOn))
-                            ? t.availableAddOn.map((a) => {
+                        }, categoryName: (category !== undefined) ? category.name : '--', availableAddOnNames: (Array.isArray(t.addOn))
+                            ? t.addOn.map((a) => {
                                 return (a.name !== undefined) ? a.name.ja : a.id;
                             }).join('\n')
                             : '' });

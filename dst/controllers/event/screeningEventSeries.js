@@ -299,6 +299,7 @@ function createEventFromBody(req, movie, movieTheater) {
         acceptedPaymentMethod.push(paymentMethodType);
     });
     const offers = {
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         acceptedPaymentMethod: acceptedPaymentMethod

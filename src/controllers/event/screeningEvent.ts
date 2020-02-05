@@ -402,6 +402,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         };
 
     const offers: chevre.factory.event.screeningEvent.IOffer = {
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         id: ticketTypeGroup.id,
         name: ticketTypeGroup.name,
         typeOf: 'Offer',
@@ -590,6 +591,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         }
                     };
                 const offers: chevre.factory.event.screeningEvent.IOffer = {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     id: ticketTypeGroup.id,
                     name: ticketTypeGroup.name,
                     typeOf: 'Offer',

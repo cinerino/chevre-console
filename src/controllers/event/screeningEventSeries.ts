@@ -331,6 +331,7 @@ function createEventFromBody(
     });
 
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         acceptedPaymentMethod: acceptedPaymentMethod

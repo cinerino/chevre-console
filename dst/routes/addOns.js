@@ -259,6 +259,7 @@ function createFromBody(req, itemOffered) {
     const priceSpec = {
         project: req.project,
         typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
+        name: body.name,
         price: Number(body.priceSpecification.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,
         valueAddedTaxIncluded: true,

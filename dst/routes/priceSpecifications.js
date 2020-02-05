@@ -251,7 +251,7 @@ function createMovieFromBody(req, isNew) {
     const appliesToCategoryCode = (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
         ? JSON.parse(body.appliesToCategoryCode)
         : undefined;
-    return Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, appliesToCategoryCode: (appliesToCategoryCode !== undefined)
+    return Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: body.name, appliesToCategoryCode: (appliesToCategoryCode !== undefined)
             ? [{
                     project: req.project,
                     typeOf: 'CategoryCode',
@@ -280,5 +280,10 @@ function validate(req) {
     colName = '価格仕様タイプ';
     req.checkBody('typeOf', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     // req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = '名称';
+    req.checkBody('name.ja').notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 30));
 }
 exports.default = priceSpecificationsRouter;
