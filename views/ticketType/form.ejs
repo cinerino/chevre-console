@@ -307,7 +307,7 @@
         <option value="" selected>選択してください</option>
         <% for (let productOffer of productOffers) { %>
         <option value="<%= productOffer.id %>"
-            <% if (Array.isArray(forms.availableAddOn) && forms.availableAddOn[0] !== undefined && forms.availableAddOn[0].id === productOffer.id) { %>
+            <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].id === productOffer.id) { %>
             selected <% } %>>
             <%= productOffer.id %> <%= productOffer.name.ja %>
         </option>
