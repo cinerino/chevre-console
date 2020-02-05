@@ -100,13 +100,23 @@ function add(req, res) {
                 return {};
             }));
         }
-        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+        const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
         res.render('ticketType/add', {
             message: message,
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
-            ticketTypeCategories: searchCategoriesResult.data,
+            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
+                return {
+                    id: d.codeValue,
+                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
+                };
+            }),
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -208,13 +218,23 @@ function update(req, res) {
                 return {};
             }));
         }
-        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+        const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
         res.render('ticketType/update', {
             message: message,
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
-            ticketTypeCategories: searchCategoriesResult.data,
+            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
+                return {
+                    id: d.codeValue,
+                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
+                };
+            }),
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -445,14 +465,13 @@ function getList(req, res) {
                 }
             };
             const { data } = yield offerService.searchTicketTypes(searchConditions);
-            const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+            // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
             res.json({
                 success: true,
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((t) => {
-                    const category = searchCategoriesResult.data.find((c) => t.category !== undefined && c.id === t.category.id);
                     const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => {
                         return t.priceSpecification !== undefined
                             && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
@@ -488,7 +507,7 @@ function getList(req, res) {
                             value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
                                 ? t.priceSpecification.referenceQuantity.value
                                 : '--'
-                        }, categoryName: (category !== undefined) ? category.name : '--', availableAddOnNames: (Array.isArray(t.addOn))
+                        }, availableAddOnNames: (Array.isArray(t.addOn))
                             ? t.addOn.map((a) => {
                                 return (a.name !== undefined) ? a.name.ja : a.id;
                             }).join('\n')

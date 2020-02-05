@@ -26,16 +26,30 @@ ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, fun
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const ticketTypeGroupsList = yield offerService.searchTicketTypeGroups({
         limit: 100,
         project: { ids: [req.project.id] }
     });
-    const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+    });
     // 券種マスタ画面遷移
     res.render('ticketType/index', {
         message: '',
         ticketTypeGroupsList: ticketTypeGroupsList.data,
-        ticketTypeCategories: searchCategoriesResult.data
+        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
+            return {
+                id: d.codeValue,
+                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
+            };
+        })
     });
 }));
 ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);

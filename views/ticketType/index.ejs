@@ -126,7 +126,8 @@ Aa-6
         <table class="table table-bordered table-striped mb-0">
             <thead>
                 <tr>
-                    <th>券種コード<br>種別<br>細目コード<br>在庫</th>
+                    <th>券種コード<br>細目コード<br>在庫</th>
+                    <th>カテゴリー</th>
                     <th>名称<br>English Name<br>代替名称</th>
                     <th>発生金額<br>売上金額<br>適用単位</th>
                     <th>適用条件</th>
@@ -138,17 +139,20 @@ Aa-6
             <tbody>
                 <tr id="templateRow" _id="$id$">
                     <td
-                        name="id__identifier__categoryName__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability">
+                        name="id__identifier__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability">
                         <p>
                             <a target="_blank" href="/ticketTypes/$id$/update">
                                 $identifier$
                             </a>
                         </p>
-                        <p class="badge badge-info">$categoryName$</p>
                         <p><a target="_blank"
                                 href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
                         </p>
                         <p class="badge badge-secondary">$availability$</p>
+                    </td>
+                    <td name="category.id">
+                        <p>$category.id$</p>
+                    </td>
                     <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
                     <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
                         style="text-align:right;">

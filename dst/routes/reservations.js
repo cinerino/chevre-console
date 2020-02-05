@@ -17,15 +17,29 @@ const moment = require("moment");
 const util_1 = require("util");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    const offerService = new chevre.service.Offer({
+    // const offerService = new chevre.service.Offer({
+    //     endpoint: <string>process.env.API_ENDPOINT,
+    //     auth: req.user.authClient
+    // });
+    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+    });
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
-        ticketTypeCategories: searchCategoriesResult.data
+        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
+            return {
+                id: d.codeValue,
+                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
+            };
+        })
     });
 }));
 reservationsRouter.get('/search', 
@@ -145,11 +159,11 @@ reservationsRouter.get('/search',
             checkedIn: (req.query.checkedIn === '1') ? true : undefined
         };
         const { data } = yield reservationService.search(searchConditions);
-        const offerService = new chevre.service.Offer({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchCategoriesResult = yield offerService.searchCategories({ project: { ids: [req.project.id] } });
+        // const offerService = new chevre.service.Offer({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
         res.json({
             success: true,
             count: (data.length === Number(searchConditions.limit))
@@ -158,11 +172,15 @@ reservationsRouter.get('/search',
             results: data.map((t) => {
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
-                const ticketTYpe = searchCategoriesResult.data.find((c) => t.reservedTicket !== undefined
-                    && t.reservedTicket !== null
-                    && t.reservedTicket.ticketType.category !== undefined
-                    && c.id === t.reservedTicket.ticketType.category.id);
-                return Object.assign({}, t, { ticketType: ticketTYpe, unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
+                // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
+                //     (c) => t.reservedTicket !== undefined
+                //         && t.reservedTicket !== null
+                //         && t.reservedTicket.ticketType.category !== undefined
+                //         && c.codeValue === t.reservedTicket.ticketType.category.id
+                // );
+                return Object.assign({}, t, { 
+                    // ticketType: ticketTYpe,
+                    unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
                         && t.reservedTicket !== null
                         && t.reservedTicket.ticketedSeat !== undefined)
                         ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)

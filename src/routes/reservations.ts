@@ -13,16 +13,30 @@ const reservationsRouter = Router();
 reservationsRouter.get(
     '',
     async (req, res) => {
-        const offerService = new chevre.service.Offer({
+        // const offerService = new chevre.service.Offer({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+        const searchOfferCategoryTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
 
         res.render('reservations/index', {
             message: '',
             reservationStatusType: chevre.factory.reservationStatusType,
-            ticketTypeCategories: searchCategoriesResult.data
+            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
+                return {
+                    id: d.codeValue,
+                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
+                };
+            })
         });
     }
 );
@@ -147,11 +161,11 @@ reservationsRouter.get(
             };
             const { data } = await reservationService.search(searchConditions);
 
-            const offerService = new chevre.service.Offer({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
+            // const offerService = new chevre.service.Offer({
+            //     endpoint: <string>process.env.API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+            // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
 
             res.json({
                 success: true,
@@ -164,16 +178,16 @@ reservationsRouter.get(
                         (c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification
                     );
 
-                    const ticketTYpe = searchCategoriesResult.data.find(
-                        (c) => t.reservedTicket !== undefined
-                            && t.reservedTicket !== null
-                            && t.reservedTicket.ticketType.category !== undefined
-                            && c.id === t.reservedTicket.ticketType.category.id
-                    );
+                    // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
+                    //     (c) => t.reservedTicket !== undefined
+                    //         && t.reservedTicket !== null
+                    //         && t.reservedTicket.ticketType.category !== undefined
+                    //         && c.codeValue === t.reservedTicket.ticketType.category.id
+                    // );
 
                     return {
                         ...t,
-                        ticketType: ticketTYpe,
+                        // ticketType: ticketTYpe,
                         unitPriceSpec: unitPriceSpec,
                         ticketedSeat: (t.reservedTicket !== undefined
                             && t.reservedTicket !== null
