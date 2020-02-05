@@ -341,6 +341,7 @@ function createFromBody(req) {
             priceSpecification: {
                 project: req.project,
                 typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
+                name: body.name,
                 price: Number(body.price) * referenceQuantityValue,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true,
