@@ -18,7 +18,7 @@ $(function () {
     });
 
     var conditions = {};
-    $(document).on('click', '.searchCategoryCode .btn-ok', function () {
+    $(document).on('click', '.searchProducts .btn-ok', function () {
         // 検索条件取得
         conditions = $.fn.getDataFromForm('form');
         // 検索API呼び出し

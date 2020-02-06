@@ -112,7 +112,6 @@ export async function add(req: Request, res: Response): Promise<void> {
         }));
     }
 
-    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
     const searchOfferCategoryTypesResult = await categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -124,12 +123,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         errors: errors,
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-            return {
-                id: d.codeValue,
-                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-            };
-        }),
+        ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
     });
@@ -233,7 +227,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             referenceQuantity: {}
         },
         ...ticketType,
-        category: (ticketType.category !== undefined) ? ticketType.category.id : '',
+        category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '',
         price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit),
         accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit),
         ...req.body,
@@ -252,7 +246,6 @@ export async function update(req: Request, res: Response): Promise<void> {
         }));
     }
 
-    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
     const searchOfferCategoryTypesResult = await categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -264,12 +257,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         errors: errors,
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-            return {
-                id: d.codeValue,
-                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-            };
-        }),
+        ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
     });
@@ -283,6 +271,26 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;
+
+    if (typeof body.category === 'string' && body.category.length > 0) {
+        const searchOfferCategoryTypesResult = await categoryCodeService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+            codeValue: { $eq: body.category }
+        });
+        if (searchOfferCategoryTypesResult.data.length === 0) {
+            throw new Error('オファーカテゴリーが見つかりません');
+        }
+        offerCategory = searchOfferCategoryTypesResult.data[0];
+    }
 
     const availableAddOn: chevre.factory.offer.IOffer[] = [];
     if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
@@ -426,12 +434,21 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
                     };
                 })
             : undefined,
-        category: {
-            project: req.project,
-            id: body.category,
-            codeValue: body.category
-        },
-        color: <string>body.indicatorColor
+        color: <string>body.indicatorColor,
+        ...(offerCategory !== undefined)
+            ? {
+                category: {
+                    project: offerCategory.project,
+                    id: offerCategory.id,
+                    codeValue: offerCategory.codeValue
+                }
+            }
+            : undefined,
+        ...{
+            $unset: {
+                ...(offerCategory === undefined) ? { category: 1 } : undefined
+            }
+        }
     };
 }
 
@@ -512,8 +529,6 @@ export async function getList(req: Request, res: Response): Promise<void> {
             }
         };
         const { data } = await offerService.searchTicketTypes(searchConditions);
-
-        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
 
         res.json({
             success: true,

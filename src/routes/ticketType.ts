@@ -32,7 +32,6 @@ ticketTypeMasterRouter.get(
             project: { ids: [req.project.id] }
         });
 
-        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -43,12 +42,7 @@ ticketTypeMasterRouter.get(
         res.render('ticketType/index', {
             message: '',
             ticketTypeGroupsList: ticketTypeGroupsList.data,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-                return {
-                    id: d.codeValue,
-                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-                };
-            })
+            ticketTypeCategories: searchOfferCategoryTypesResult.data
         });
     }
 );

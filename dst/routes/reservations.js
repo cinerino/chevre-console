@@ -17,15 +17,10 @@ const moment = require("moment");
 const util_1 = require("util");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
-    // const offerService = new chevre.service.Offer({
-    //     endpoint: <string>process.env.API_ENDPOINT,
-    //     auth: req.user.authClient
-    // });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -34,12 +29,7 @@ reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, functio
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-            return {
-                id: d.codeValue,
-                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-            };
-        })
+        ticketTypeCategories: searchOfferCategoryTypesResult.data
     });
 }));
 reservationsRouter.get('/search', 

@@ -100,7 +100,6 @@ function add(req, res) {
                 return {};
             }));
         }
-        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -111,12 +110,7 @@ function add(req, res) {
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-                return {
-                    id: d.codeValue,
-                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-                };
-            }),
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -208,7 +202,7 @@ function update(req, res) {
             : '';
         const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
-            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.id : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
+            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined
                     && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
@@ -218,7 +212,6 @@ function update(req, res) {
                 return {};
             }));
         }
-        // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -229,12 +222,7 @@ function update(req, res) {
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-                return {
-                    id: d.codeValue,
-                    name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-                };
-            }),
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
         });
@@ -249,6 +237,23 @@ function createFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        let offerCategory;
+        if (typeof body.category === 'string' && body.category.length > 0) {
+            const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                codeValue: { $eq: body.category }
+            });
+            if (searchOfferCategoryTypesResult.data.length === 0) {
+                throw new Error('オファーカテゴリーが見つかりません');
+            }
+            offerCategory = searchOfferCategoryTypesResult.data[0];
+        }
         const availableAddOn = [];
         if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
             const searchProductOffersResult = yield offerService.search({
@@ -344,19 +349,11 @@ function createFromBody(req) {
                 name: ''
             };
         }
-        return {
+        return Object.assign({ 
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
             // },
-            project: req.project,
-            typeOf: 'Offer',
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            id: body.id,
-            identifier: req.body.identifier,
-            name: body.name,
-            description: body.description,
-            alternateName: { ja: body.alternateName.ja, en: '' },
-            availability: availability,
+            project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: body.name, description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 project: req.project,
@@ -370,9 +367,7 @@ function createFromBody(req) {
                 referenceQuantity: referenceQuantity,
                 appliesToMovieTicketType: appliesToMovieTicketType,
                 accounting: accounting
-            },
-            addOn: availableAddOn,
-            additionalProperty: (Array.isArray(body.additionalProperty))
+            }, addOn: availableAddOn, additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -380,14 +375,17 @@ function createFromBody(req) {
                         value: String(p.value)
                     };
                 })
-                : undefined,
-            category: {
-                project: req.project,
-                id: body.category,
-                codeValue: body.category
-            },
-            color: body.indicatorColor
-        };
+                : undefined, color: body.indicatorColor }, (offerCategory !== undefined)
+            ? {
+                category: {
+                    project: offerCategory.project,
+                    id: offerCategory.id,
+                    codeValue: offerCategory.codeValue
+                }
+            }
+            : undefined, {
+            $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined)
+        });
     });
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
@@ -466,7 +464,6 @@ function getList(req, res) {
                 }
             };
             const { data } = yield offerService.searchTicketTypes(searchConditions);
-            // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
             res.json({
                 success: true,
                 count: (data.length === Number(limit))

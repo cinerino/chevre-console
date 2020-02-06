@@ -3,11 +3,11 @@
         オファーカテゴリー
     </label>
     <select class="form-control" name="category">
-        <option value="" disabled selected>選択してください</option>
+        <option value="" selected>選択してください</option>
         <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-        <option value="<%= ticketTypeCategory.id %>" <% if (forms.category === ticketTypeCategory.id ) { %> selected
-            <% } %>>
-            <%= ticketTypeCategory.name %>
+        <option value="<%= ticketTypeCategory.codeValue %>"
+            <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
+            <%= ticketTypeCategory.name.ja %>
         </option>
         <% } %>
     </select>

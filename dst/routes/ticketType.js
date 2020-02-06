@@ -34,7 +34,6 @@ ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, fun
         limit: 100,
         project: { ids: [req.project.id] }
     });
-    // const searchCategoriesResult = await offerService.searchCategories({ project: { ids: [req.project.id] } });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -44,12 +43,7 @@ ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, fun
     res.render('ticketType/index', {
         message: '',
         ticketTypeGroupsList: ticketTypeGroupsList.data,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data.map((d) => {
-            return {
-                id: d.codeValue,
-                name: (d.name !== undefined && d.name !== null && typeof d.name !== 'string') ? d.name.ja : ''
-            };
-        })
+        ticketTypeCategories: searchOfferCategoryTypesResult.data
     });
 }));
 ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
