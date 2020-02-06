@@ -383,7 +383,8 @@ function createFromBody(req) {
                 : undefined,
             category: {
                 project: req.project,
-                id: body.category
+                id: body.category,
+                codeValue: body.category
             },
             color: body.indicatorColor
         };

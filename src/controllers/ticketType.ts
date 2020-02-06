@@ -428,7 +428,8 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
             : undefined,
         category: {
             project: req.project,
-            id: body.category
+            id: body.category,
+            codeValue: body.category
         },
         color: <string>body.indicatorColor
     };

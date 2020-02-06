@@ -131,10 +131,9 @@ Aa-11
                         id="reservedTicket[ticketType][id]" />
                 </div>
 
-                <% if (process.env.USE_OFFER_CATEGORY === '1') { %>
                 <div class="col-md-4">
                     <select class="form-control" name="reservedTicket[ticketType][category][id]">
-                        <option value="">券種区分選択</option>
+                        <option value="">オファーカテゴリー選択</option>
                         <% for (let ticketTypeCategory of ticketTypeCategories) { %>
                         <option value="<%= ticketTypeCategory.id %>">
                             <%= ticketTypeCategory.name %>
@@ -142,7 +141,6 @@ Aa-11
                         <% } %>
                     </select>
                 </div>
-                <% } %>
             </div>
         </div>
 
