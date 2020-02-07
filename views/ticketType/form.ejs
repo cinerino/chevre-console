@@ -11,11 +11,13 @@
         </option>
         <% } %>
     </select>
+    <p class="error message text-danger">
+    </p>
 </div>
 
 <div class="form-group">
     <label for="name[ja]" class="">
-        サイト表示用券種名<span class="text-danger">＊</span>
+        名称<span class="text-danger">＊</span>
     </label>
     <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%=forms.name.ja
             %>">
@@ -31,7 +33,7 @@
 
 <div class="form-group">
     <label for="name[en]" class="">
-        サイト表示用券種名英<span class="text-danger">＊</span>
+        名称(英)<span class="text-danger">＊</span>
     </label>
     <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%=forms.name.en
             %>">
@@ -44,6 +46,28 @@
         <% } %>
     </p>
 </div>
+
+<% if (!isNew) { %>
+<div class="form-group">
+    <label for="" class="">
+        高度な名称
+    </label>
+    <a class="d-block pt-1" data-toggle="collapse" href="#editNameJson" role="button" aria-expanded="false"
+        aria-controls="editNameJson">
+        編集する
+    </a>
+
+    <div class="collapse" id="editNameJson">
+        <textarea class="form-control" name="nameStr" rows=10>
+                <%= JSON.stringify(forms.name, null, '\t') %>
+                </textarea>
+    </div>
+    <p class="message">
+    </p>
+    <p class="error message text-danger">
+    </p>
+</div>
+<% } %>
 
 <div class="form-group">
     <label for="alternateName[ja]" class="">
@@ -97,14 +121,38 @@
     <label for="isBoxTicket" class="">
         BOX利用
     </label>
-    <input type="checkbox" value="1" name="isBoxTicket" <% if (forms.isBoxTicket) { %> checked <% } %>>
+    <!-- <input type="checkbox" value="1" name="isBoxTicket" <% if (forms.isBoxTicket) { %> checked <% } %>> -->
+
+    <div class="row pt-2 pb-2 px-3">
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (forms.isBoxTicket) { %> checked="checked" <% } %>
+                    value="1" name="isBoxTicket">
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
     <label for="isOnlineTicket" class="">
         オンライン利用
     </label>
-    <input type="checkbox" value="1" name="isOnlineTicket" <% if (forms.isOnlineTicket) { %> checked <% } %>>
+    <!-- <input type="checkbox" value="1" name="isOnlineTicket" <% if (forms.isOnlineTicket) { %> checked <% } %>> -->
+
+    <div class="row pt-2 pb-2 px-3">
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (forms.isOnlineTicket) { %> checked="checked"
+                    <% } %> value="1" name="isOnlineTicket">
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
@@ -244,9 +292,12 @@
     <label for="indicatorColor" class="">
         入場時表示カラー
     </label>
-    <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor" id="indicatorColor"
-        value="<%= forms.indicatorColor %>" style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
-    <input type="hidden" name="hiddenColor" id="hiddenColor">
+
+    <div class="row pt-2 pb-2 px-3">
+        <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor" id="indicatorColor"
+            value="<%= forms.indicatorColor %>" style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
+        <input type="hidden" name="hiddenColor" id="hiddenColor">
+    </div>
 </div>
 
 <div class="form-group">

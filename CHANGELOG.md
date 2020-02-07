@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - カテゴリーコード管理を追加
 - プロダクト管理を追加
 - アドオン管理を追加
+- 券種の高度な名称編集を追加
 
 ### Changed
 

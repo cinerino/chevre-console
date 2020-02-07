@@ -20,7 +20,7 @@ Aa-5
 
         <input type="hidden" name="identifier" value="<%= forms.identifier %>">
 
-        <%- include('form', {forms: forms}) %>
+        <%- include('form', {forms: forms, isNew: false}) %>
 
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">更新する</button>

@@ -397,6 +397,15 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         };
     }
 
+    let nameFromJson: any = {};
+    if (typeof body.nameStr === 'string' && body.nameStr.length > 0) {
+        try {
+            nameFromJson = JSON.parse(body.nameStr);
+        } catch (error) {
+            throw new Error(`高度な名称の型が不適切です ${error.message}`);
+        }
+    }
+
     return {
         // ...{
         //     $unset: { eligibleCustomerType: 1 }
@@ -406,7 +415,11 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
         identifier: req.body.identifier,
-        name: body.name,
+        name: {
+            ...nameFromJson,
+            ja: body.name.ja,
+            en: body.name.en
+        },
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         availability: availability,
@@ -642,12 +655,12 @@ function validateFormAdd(req: Request): void {
     let colName: string = '券種コード';
     req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
-    // サイト表示用券種名
-    colName = 'サイト表示用券種名';
+    // 名称
+    colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // サイト表示用券種名英
-    colName = 'サイト表示用券種名英';
+    // 名称(英)
+    colName = '名称(英)';
     req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
 
