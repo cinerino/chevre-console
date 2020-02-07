@@ -173,10 +173,13 @@ reservationsRouter.get('/search',
                     unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
                         && t.reservedTicket !== null
                         && t.reservedTicket.ticketedSeat !== undefined)
-                        ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined)
+                        ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined
+                            && t.reservedTicket.ticketedSeat.seatingType !== null)
                             ? (typeof t.reservedTicket.ticketedSeat.seatingType === 'string')
                                 ? t.reservedTicket.ticketedSeat.seatingType
-                                : t.reservedTicket.ticketedSeat.seatingType.typeOf
+                                : (Array.isArray(t.reservedTicket.ticketedSeat.seatingType))
+                                    ? t.reservedTicket.ticketedSeat.seatingType.join(',')
+                                    : t.reservedTicket.ticketedSeat.seatingType.typeOf // 旧データへの互換性対応
                             : '', t.reservedTicket.ticketedSeat.seatNumber)
                         : '非指定' });
             })

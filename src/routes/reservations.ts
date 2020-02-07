@@ -185,10 +185,13 @@ reservationsRouter.get(
                             && t.reservedTicket.ticketedSeat !== undefined)
                             ? format(
                                 '%s %s',
-                                (t.reservedTicket.ticketedSeat.seatingType !== undefined)
+                                (t.reservedTicket.ticketedSeat.seatingType !== undefined
+                                    && t.reservedTicket.ticketedSeat.seatingType !== null)
                                     ? (typeof t.reservedTicket.ticketedSeat.seatingType === 'string')
                                         ? t.reservedTicket.ticketedSeat.seatingType
-                                        : t.reservedTicket.ticketedSeat.seatingType.typeOf
+                                        : (Array.isArray(t.reservedTicket.ticketedSeat.seatingType))
+                                            ? t.reservedTicket.ticketedSeat.seatingType.join(',')
+                                            : (<any>t.reservedTicket.ticketedSeat.seatingType).typeOf // 旧データへの互換性対応
                                     : '',
                                 t.reservedTicket.ticketedSeat.seatNumber
                             )

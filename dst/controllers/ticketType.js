@@ -70,7 +70,7 @@ function add(req, res) {
                 // 券種DB登録プロセス
                 try {
                     req.body.id = '';
-                    let ticketType = yield createFromBody(req);
+                    let ticketType = yield createFromBody(req, true);
                     // 券種コード重複確認
                     const { data } = yield offerService.searchTicketTypes({
                         project: { ids: [req.project.id] },
@@ -164,7 +164,7 @@ function update(req, res) {
                 // 券種DB更新プロセス
                 try {
                     req.body.id = req.params.id;
-                    ticketType = yield createFromBody(req);
+                    ticketType = yield createFromBody(req, false);
                     yield offerService.updateTicketType(ticketType);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -230,7 +230,7 @@ function update(req, res) {
 }
 exports.update = update;
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-function createFromBody(req) {
+function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
         const offerService = new chevre.service.Offer({
@@ -358,11 +358,7 @@ function createFromBody(req) {
                 throw new Error(`高度な名称の型が不適切です ${error.message}`);
             }
         }
-        return Object.assign({ 
-            // ...{
-            //     $unset: { eligibleCustomerType: 1 }
-            // },
-            project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign({}, nameFromJson, { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
+        return Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign({}, nameFromJson, { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 project: req.project,
@@ -392,9 +388,14 @@ function createFromBody(req) {
                     codeValue: offerCategory.codeValue
                 }
             }
-            : undefined, {
-            $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined)
-        });
+            : undefined, (!isNew)
+            // ...{
+            //     $unset: { eligibleCustomerType: 1 }
+            // },
+            ? {
+                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined)
+            }
+            : undefined);
     });
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length

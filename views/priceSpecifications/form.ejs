@@ -6,10 +6,10 @@
         <option value="" selected>選択してください</option>
         <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>"
             <% if (PriceSpecificationType.CategoryCodeChargeSpecification === forms.typeOf) { %> selected<% } %>>
-            <%= PriceSpecificationType.CategoryCodeChargeSpecification %></option>
+            各種区分加算料金</option>
         <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>"
             <% if (PriceSpecificationType.MovieTicketTypeChargeSpecification === forms.typeOf) { %> selected<% } %>>
-            <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %></option>
+            ムビチケ加算料金</option>
     </select>
     <p class="error message text-danger">
         <% if (errors && errors.typeOf) { %>
