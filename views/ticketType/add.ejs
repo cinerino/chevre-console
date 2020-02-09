@@ -16,21 +16,19 @@ Aa-5
             <%- include('../common/successMessage') %>
         </div>
 
-        <div class="form-group">
-            <label for="identifier" class="">
+        <div class="form-group bmd-form-group">
+            <label for="identifier" class="bmd-label-static">
                 券種コード<span class="text-danger">＊</span>
             </label>
             <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value=<%=forms.identifier
                     %>>
-            <p class="message">
-                半角64文字以内でご入力ください。
-            </p>
-            <p class="error message text-danger">
-                <% if (errors && errors.identifier) { %>
-                <%- errors.identifier.msg %>
-                <% } %>
-            </p>
+            <span class="bmd-help">半角64文字以内でご入力ください</span>
         </div>
+        <p class="error message text-danger">
+            <% if (errors && errors.identifier) { %>
+            <%- errors.identifier.msg %>
+            <% } %>
+        </p>
 
         <%- include('form', { forms: forms, isNew: true }) %>
 

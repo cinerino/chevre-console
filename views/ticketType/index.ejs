@@ -159,10 +159,10 @@ Aa-6
                         <p>/ $referenceQuantity.value$ 枚</p>
                     </td>
                     <td
-                        name="eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
+                        name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
                         <div class="row">
                             <div class="col-md-3 pr-1">
-                                <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
+                                <i class="icon fa fa-ticket-alt"></i>
                             </div>
                             <div class="col-md-9 pl-1">
                                 <p>$eligibleQuantity.minValue$ 枚以上</p>
@@ -170,7 +170,7 @@ Aa-6
                         </div>
                         <div class="row">
                             <div class="col-md-3 pr-1">
-                                <p class="text-center"><i class="icon fa fa-ticket-alt"></i></p>
+                                <i class="icon fa fa-ticket-alt"></i>
                             </div>
                             <div class="col-md-9 pl-1">
                                 <p>$eligibleQuantity.maxValue$ 枚以下</p>
@@ -178,7 +178,7 @@ Aa-6
                         </div>
                         <div class="row">
                             <div class="col-md-3 pr-1">
-                                <p class="text-center"><i class="icon fa fa-dollar-sign"></i></p>
+                                <i class="icon fa fa-dollar-sign"></i>
                             </div>
                             <div class="col-md-9 pl-1">
                                 <p>$eligibleTransactionVolume.price$ $eligibleTransactionVolume.priceCurrency$ 以上</p>
@@ -186,10 +186,27 @@ Aa-6
                         </div>
                         <div class="row">
                             <div class="col-md-3 pr-1">
-                                <p class="text-center">ムビ</p>
+                                <p class="">ムビ</p>
                             </div>
                             <div class="col-md-9 pl-1">
                                 <p>$priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <i class="material-icons"><small>event_seat</small></i>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <span class="">$eligibleSeatingType.0.codeValue$</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 pr-1">
+                                <i class="material-icons"><small>monetization_on</small></i>
+                            </div>
+                            <div class="col-md-9 pl-1">
+                                <span class="">$eligibleMonetaryAmount.0.value$
+                                    $eligibleMonetaryAmount.0.currency$</span>
                             </div>
                         </div>
                     </td>

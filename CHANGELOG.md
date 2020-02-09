@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 上映方式タイプの動的管理対応
 - ムビチケ券種区分をカテゴリーコードとして管理
 - オファーカテゴリー管理を追加
+- オファー適用条件拡張
 
 ### Deprecated
 

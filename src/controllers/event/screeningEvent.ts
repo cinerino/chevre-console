@@ -392,9 +392,12 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             typeOf: chevre.factory.reservationType.EventReservation,
             reservedTicket: {
                 typeOf: 'Ticket',
-                ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+                ticketedSeat: {
+                    typeOf: chevre.factory.placeType.Seat
+                }
             }
-        } : {
+        }
+        : {
             typeOf: chevre.factory.reservationType.EventReservation,
             reservedTicket: {
                 typeOf: 'Ticket'

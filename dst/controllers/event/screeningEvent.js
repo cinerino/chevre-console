@@ -399,14 +399,17 @@ function createEventFromBody(req) {
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservedTicket: {
                     typeOf: 'Ticket',
-                    ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+                    ticketedSeat: {
+                        typeOf: chevre.factory.placeType.Seat
+                    }
                 }
-            } : {
-            typeOf: chevre.factory.reservationType.EventReservation,
-            reservedTicket: {
-                typeOf: 'Ticket'
             }
-        };
+            : {
+                typeOf: chevre.factory.reservationType.EventReservation,
+                reservedTicket: {
+                    typeOf: 'Ticket'
+                }
+            };
         const offers = {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             id: ticketTypeGroup.id,

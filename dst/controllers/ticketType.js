@@ -44,22 +44,6 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // ムビチケ券種区分検索
-        const searchMovieTicketTypesResult = yield categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
-        const searchAccountTitlesResult = yield accountTitleService.search({
-            project: { ids: [req.project.id] }
-        });
-        const searchProductOffersResult = yield offerService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: {
-                typeOf: { $eq: 'Product' }
-            }
-        });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
@@ -105,11 +89,34 @@ function add(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+        // 座席タイプ検索
+        const searchSeatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+        const searchAccountTitlesResult = yield accountTitleService.search({
+            project: { ids: [req.project.id] }
+        });
+        const searchProductOffersResult = yield offerService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: {
+                typeOf: { $eq: 'Product' }
+            }
+        });
         res.render('ticketType/add', {
             message: message,
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
@@ -140,25 +147,13 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // ムビチケ券種区分検索
-        const searchMovieTicketTypesResult = yield categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
-        const searchProductOffersResult = yield offerService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: {
-                typeOf: { $eq: 'Product' }
-            }
-        });
         let ticketType = yield offerService.findTicketTypeById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
+            console.error(errors);
             // 検証
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
@@ -217,11 +212,31 @@ function update(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+        // 座席タイプ検索
+        const searchSeatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+        const searchProductOffersResult = yield offerService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: {
+                typeOf: { $eq: 'Product' }
+            }
+        });
         res.render('ticketType/update', {
             message: message,
             errors: errors,
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
@@ -358,6 +373,39 @@ function createFromBody(req, isNew) {
                 throw new Error(`高度な名称の型が不適切です ${error.message}`);
             }
         }
+        // 適用座席タイプがあれば設定
+        let eligibleSeatingTypes;
+        if (Array.isArray(req.body.eligibleSeatingType) && req.body.eligibleSeatingType.length > 0
+            && typeof req.body.eligibleSeatingType[0].id === 'string' && req.body.eligibleSeatingType[0].id.length > 0) {
+            const searchSeatingTypeResult = yield categoryCodeService.search({
+                limit: 1,
+                id: { $eq: req.body.eligibleSeatingType[0].id },
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+            });
+            const seatingType = searchSeatingTypeResult.data.shift();
+            if (seatingType === undefined) {
+                throw new Error(`Seating Type ${req.body.eligibleSeatingType[0].id} Not Found`);
+            }
+            eligibleSeatingTypes = [{
+                    project: seatingType.project,
+                    typeOf: seatingType.typeOf,
+                    id: seatingType.id,
+                    codeValue: seatingType.codeValue,
+                    inCodeSet: seatingType.inCodeSet
+                }];
+        }
+        // 適用金額があれば設定
+        let eligibleMonetaryAmount;
+        if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
+            && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
+            && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
+            eligibleMonetaryAmount = [{
+                    typeOf: 'MonetaryAmount',
+                    currency: req.body.eligibleMonetaryAmount[0].currency,
+                    value: Number(req.body.eligibleMonetaryAmount[0].value)
+                }];
+        }
         return Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign({}, nameFromJson, { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
@@ -388,12 +436,20 @@ function createFromBody(req, isNew) {
                     codeValue: offerCategory.codeValue
                 }
             }
+            : undefined, (Array.isArray(eligibleSeatingTypes))
+            ? {
+                eligibleSeatingType: eligibleSeatingTypes
+            }
+            : undefined, (eligibleMonetaryAmount !== undefined)
+            ? {
+                eligibleMonetaryAmount: eligibleMonetaryAmount
+            }
             : undefined, (!isNew)
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined)
+                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined)
             }
             : undefined);
     });
@@ -597,11 +653,21 @@ function validateFormAdd(req) {
     colName = '発生金額';
     req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('price', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
-        .isNumeric().len({ max: CHAGE_MAX_LENGTH });
+        .isNumeric()
+        .len({ max: CHAGE_MAX_LENGTH });
     colName = '売上金額';
     req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
         .isNumeric().len({ max: CHAGE_MAX_LENGTH });
+    colName = '適用ポイント';
+    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.lenth > 0
+        && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
+        req.checkBody('eligibleMonetaryAmount.0.value')
+            .optional()
+            .isNumeric()
+            .withMessage('数値を入力してください')
+            .len({ max: 10 });
+    }
     // colName = '細目';
     // req.checkBody('accountTitle', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }
