@@ -131,6 +131,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
+        accountTypes: [],
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
@@ -275,6 +276,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
+        accountTypes: [],
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
@@ -448,7 +450,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         }];
     }
 
-    // 適用金額があれば設定
+    // 適用口座があれば設定
     let eligibleMonetaryAmount: chevre.factory.offer.IEligibleMonetaryAmount[] | undefined;
     if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
         && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
@@ -457,6 +459,34 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             typeOf: 'MonetaryAmount',
             currency: req.body.eligibleMonetaryAmount[0].currency,
             value: Number(req.body.eligibleMonetaryAmount[0].value)
+        }];
+    }
+
+    // 適用サブ予約条件があれば設定
+    let eligibleSubReservation: chevre.factory.offer.IEligibleSubReservation[] | undefined;
+    if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
+        && typeof req.body.eligibleSubReservation[0].typeOfGood !== undefined
+        && typeof req.body.eligibleSubReservation[0].typeOfGood !== null
+        && typeof req.body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
+        && req.body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
+        && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
+        && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
+        const searchSeatingTypeResult = await categoryCodeService.search({
+            limit: 1,
+            id: { $eq: req.body.eligibleSubReservation[0].typeOfGood.seatingType },
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+        const seatingType = searchSeatingTypeResult.data.shift();
+        if (seatingType === undefined) {
+            throw new Error(`Seating Type ${req.body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
+        }
+
+        eligibleSubReservation = [{
+            typeOfGood: {
+                seatingType: seatingType.codeValue
+            },
+            amountOfThisGood: Number(req.body.eligibleSubReservation[0].amountOfThisGood)
         }];
     }
 
@@ -518,6 +548,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 eligibleMonetaryAmount: eligibleMonetaryAmount
             }
             : undefined,
+        ...(eligibleSubReservation !== undefined)
+            ? {
+                eligibleSubReservation: eligibleSubReservation
+            }
+            : undefined,
         ...(!isNew)
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
@@ -526,7 +561,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 $unset: {
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined,
-                    ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined
+                    ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined,
+                    ...(eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined
                 }
             }
             : undefined
@@ -752,10 +788,21 @@ function validateFormAdd(req: Request): void {
     req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
         .isNumeric().len({ max: CHAGE_MAX_LENGTH });
 
-    colName = '適用ポイント';
-    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.lenth > 0
+    colName = '適用口座条件';
+    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
         && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
         req.checkBody('eligibleMonetaryAmount.0.value')
+            .optional()
+            .isNumeric()
+            .withMessage('数値を入力してください')
+            .len({ max: 10 });
+    }
+
+    colName = '適用サブ予約条件';
+    if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
+        && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
+        && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
+        req.checkBody('eligibleSubReservation.0.amountOfThisGood')
             .optional()
             .isNumeric()
             .withMessage('数値を入力してください')

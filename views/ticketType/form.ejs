@@ -151,6 +151,9 @@
                 </option>
                 <% }) %>
             </select>
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+            </div>
         </div>
 
         <p class="error message text-danger">
@@ -161,36 +164,18 @@
     </div>
 
     <div class="form-group bmd-form-group col-md-3">
-        <label for="eligibleSeatingType[][id]" class="bmd-label-static">
-            適用座席タイプ
-        </label>
-        <select class="form-control" name="eligibleSeatingType[][id]">
-            <option value="" selected>なし</option>
-            <% Object.values(seatingTypes).forEach((seatingType) => { %>
-            <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSeatingType) && forms.eligibleSeatingType.length > 0
-                && seatingType.codeValue === forms.eligibleSeatingType[0].codeValue) { %> selected<% } %>>
-                <%= seatingType.codeValue %> <%= seatingType.name.ja %>
-            </option>
-            <% }) %>
-        </select>
-
-        <p class="error message text-danger">
-            <% if (errors && errors['eligibleSeatingType.id']) { %>
-            <%- errors['eligibleSeatingType.id'].msg %>
-            <% } %>
-        </p>
-    </div>
-
-    <div class="form-group bmd-form-group col-md-3">
         <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
-            適用ポイント
+            適用口座条件
         </label>
         <div class="input-group">
             <select class="form-control" name="eligibleMonetaryAmount[][currency]">
                 <option value="" selected>指定しない</option>
-                <option value="Point" <% if (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0
-                    && 'Point' === forms.eligibleMonetaryAmount[0].currency) { %> selected<% } %>>ポイント
+                <% Object.values(accountTypes).forEach((accountType) => { %>
+                <option value="<%= accountType.id %>" <% if (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0
+                    && accountType.codeValue === eligibleMonetaryAmount[0].currency) { %> selected<% } %>>
+                    <%= accountType.codeValue %> <%= accountType.name.ja %>
                 </option>
+                <% }) %>
             </select>
             <div class="input-group-append">
                 <span class="input-group-text" id="basic-addon2">が</span>
@@ -208,6 +193,67 @@
         <p class="error message text-danger">
             <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
             <%- errors['eligibleMonetaryAmount.0.value'].msg %>
+            <% } %>
+        </p>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="eligibleSeatingType[][id]" class="bmd-label-static">
+            適用座席タイプ
+        </label>
+        <div class="input-group">
+            <select class="form-control" name="eligibleSeatingType[][id]">
+                <option value="" selected>なし</option>
+                <% Object.values(seatingTypes).forEach((seatingType) => { %>
+                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSeatingType) && forms.eligibleSeatingType.length > 0
+                    && seatingType.codeValue === forms.eligibleSeatingType[0].codeValue) { %> selected<% } %>>
+                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
+                </option>
+                <% }) %>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+            </div>
+        </div>
+
+        <p class="error message text-danger">
+            <% if (errors && errors['eligibleSeatingType.id']) { %>
+            <%- errors['eligibleSeatingType.id'].msg %>
+            <% } %>
+        </p>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="eligibleSubReservation[][typeOfGood][seatingType]" class="bmd-label-static">
+            適用サブ予約条件
+        </label>
+        <div class="input-group">
+            <select class="form-control" name="eligibleSubReservation[][typeOfGood][seatingType]">
+                <option value="" selected>指定しない</option>
+                <% Object.values(seatingTypes).forEach((seatingType) => { %>
+                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0
+                    && seatingType.codeValue === forms.eligibleSubReservation[0].typeOfGood.seatingType) { %>
+                    selected<% } %>>
+                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
+                </option>
+                <% }) %>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">が</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" class="form-control" name="eligibleSubReservation[][amountOfThisGood]"
+                id="eligibleMonetaryAmount[][value]" placeholder="" maxlength=10
+                value="<%= (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0) ? forms.eligibleSubReservation[0].amountOfThisGood : '' %>">
+            <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">席必要</span>
+            </div>
+        </div>
+
+        <p class="error message text-danger">
+            <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
+            <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
             <% } %>
         </p>
     </div>
