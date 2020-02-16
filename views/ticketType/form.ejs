@@ -1,428 +1,518 @@
-<div class="form-group bmd-form-group">
-    <label for="name[ja]" class="bmd-label-static">
-        名称<span class="text-danger">＊</span>
-    </label>
-    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%=forms.name.ja
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">基本設定</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="form-group bmd-form-group">
+            <label for="identifier" class="bmd-label-static">
+                券種コード<span class="text-danger">＊</span>
+            </label>
+            <% if (isNew) { %>
+            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier
+                %>">
+            <span class="bmd-help">半角64文字以内でご入力ください</span>
+            <% } else { %>
+            <label for="identifier" class="bmd-label-static">
+                券種コード<span class="text-danger">＊</span>
+            </label>
+            <input type="text" disabled class="form-control" value="<%= forms.identifier %>">
+            <input type="hidden" name="identifier" value="<%= forms.identifier %>">
+            <% } %>
+        </div>
+        <p class="error message text-danger">
+            <% if (errors && errors.identifier) { %>
+            <%- errors.identifier.msg %>
+            <% } %>
+        </p>
+
+        <div class="form-group bmd-form-group">
+            <label for="name[ja]" class="bmd-label-static">
+                名称<span class="text-danger">＊</span>
+            </label>
+            <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%=forms.name.ja
             %>">
-    <span class="bmd-help">全角64文字以内でご入力ください</span>
-    <p class="error message text-danger">
-        <% if (errors && errors['name.ja']) { %>
-        <%- errors['name.ja'].msg %>
-        <% } %>
-    </p>
-</div>
+            <span class="bmd-help">全角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['name.ja']) { %>
+                <%- errors['name.ja'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<div class="form-group bmd-form-group">
-    <label for="name[en]" class="bmd-label-static">
-        名称(英)<span class="text-danger">＊</span>
-    </label>
-    <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%=forms.name.en
+        <div class="form-group bmd-form-group">
+            <label for="name[en]" class="bmd-label-static">
+                名称(英)<span class="text-danger">＊</span>
+            </label>
+            <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%=forms.name.en
             %>">
-    <span class="bmd-help">半角64文字以内でご入力ください</span>
-    <p class="error message text-danger">
-        <% if (errors && errors['name.en']) { %>
-        <%- errors['name.en'].msg %>
-        <% } %>
-    </p>
-</div>
+            <span class="bmd-help">半角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['name.en']) { %>
+                <%- errors['name.en'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<% if (!isNew) { %>
-<div class="form-group bmd-form-group">
-    <label for="" class="bmd-label-static">
-        高度な名称
-    </label>
-    <a class="d-block pt-1" data-toggle="collapse" href="#editNameJson" role="button" aria-expanded="false"
-        aria-controls="editNameJson">
-        編集する
-    </a>
+        <% if (!isNew) { %>
+        <div class="form-group bmd-form-group">
+            <label for="" class="bmd-label-static">
+                高度な名称
+            </label>
+            <a class="d-block pt-1" data-toggle="collapse" href="#editNameJson" role="button" aria-expanded="false"
+                aria-controls="editNameJson">
+                編集する
+            </a>
 
-    <div class="collapse" id="editNameJson">
-        <textarea class="form-control" name="nameStr" rows=10>
+            <div class="collapse" id="editNameJson">
+                <textarea class="form-control" name="nameStr" rows=10>
                 <%= JSON.stringify(forms.name, null, '\t') %>
                 </textarea>
-    </div>
-    <p class="message">
-    </p>
-    <p class="error message text-danger">
-    </p>
-</div>
-<% } %>
-
-<div class="form-group bmd-form-group">
-    <label for="alternateName[ja]" class="bmd-label-static">
-        代替名称<span class="text-danger">＊</span>
-    </label>
-    <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]" placeholder="" maxlength=64
-        value="<%= forms.alternateName.ja %>">
-    <span class="bmd-help">全角64文字以内でご入力ください</span>
-    <p class="error message text-danger">
-        <% if (errors && errors['alternateName.ja']) { %>
-        <%- errors['alternateName.ja'].msg %>
+            </div>
+            <p class="message">
+            </p>
+            <p class="error message text-danger">
+            </p>
+        </div>
         <% } %>
-    </p>
-</div>
 
-<div class="form-row">
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="price" class="bmd-label-static">
-            発生金額<span class="text-danger">＊</span>
-        </label>
-        <div class="input-group">
-            <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value="<%=forms.price
+        <div class="form-group bmd-form-group">
+            <label for="alternateName[ja]" class="bmd-label-static">
+                代替名称<span class="text-danger">＊</span>
+            </label>
+            <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]" placeholder=""
+                maxlength=64 value="<%= forms.alternateName.ja %>">
+            <span class="bmd-help">全角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['alternateName.ja']) { %>
+                <%- errors['alternateName.ja'].msg %>
+                <% } %>
+            </p>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="price" class="bmd-label-static">
+                    発生金額<span class="text-danger">＊</span>
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value="<%=forms.price
                     %>">
-            <div class="input-group-append">
-                <span class="input-group-text">円 / 1枚 ×</span>
+                    <div class="input-group-append">
+                        <span class="input-group-text">円 / 1枚 ×</span>
+                    </div>
+                    <select class="form-control" name="seatReservationUnit">
+                        <% for (let i = 1; i <= 10; i++) { %>
+                        <option value="<%= i %>" <% if (forms.seatReservationUnit==i) { %> selected <% } %>>
+                            <%= i %>
+                        </option>
+                        <% } %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text">枚で販売</span>
+                    </div>
+                </div>
+                <span class="bmd-help">半角10文字以内でご入力ください</span>
+
+                <p class="error message text-danger">
+                    <% if (errors && errors.price) { %>
+                    <%- errors.price.msg %>
+                    <% } %>
+                </p>
+                <p class="error message text-danger">
+                    <% if (errors && errors.seatReservationUnit) { %>
+                    <%- errors.seatReservationUnit.msg %>
+                    <% } %>
+                </p>
             </div>
-            <select class="form-control" name="seatReservationUnit">
-                <% for (let i = 1; i <= 10; i++) { %>
-                <option value="<%= i %>" <% if (forms.seatReservationUnit==i) { %> selected <% } %>>
-                    <%= i %>
-                </option>
+
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="accountsReceivable" class="bmd-label-static">
+                    売上金額<span class="text-danger">＊</span>
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="accountsReceivable" id="accountsReceivable"
+                        placeholder="" maxlength=10 value="<%=forms.accountsReceivable %>">
+                    <div class="input-group-append">
+                        <span class="input-group-text">円として計上</span>
+                    </div>
+                </div>
+                <span class="bmd-help">半角10文字以内でご入力ください</span>
+
+                <p class="error message text-danger">
+                    <% if (errors && errors.accountsReceivable) { %>
+                    <%- errors.accountsReceivable.msg %>
+                    <% } %>
+                </p>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-3">
+            </div>
+        </div>
+
+        <div class="form-group bmd-form-group">
+            <label for="" class="bmd-label-static">
+                利用状況
+            </label>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" <% if (forms.isBoxTicket) { %> checked="checked"
+                        <% } %> value="1" name="isBoxTicket">BOX利用
+                    <span class="form-check-sign">
+                        <span class="check"></span>
+                    </span>
+                </label>
+            </div>
+            <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" <% if (forms.isOnlineTicket) { %> checked="checked"
+                        <% } %> value="1" name="isOnlineTicket">オンライン利用
+                    <span class="form-check-sign">
+                        <span class="check"></span>
+                    </span>
+                </label>
+            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
+
+        <div class="form-group bmd-form-group">
+            <label for="description[ja]" class="bmd-label-static">
+                補足説明
+            </label>
+            <input type="text" class="form-control" name="description[ja]" id="description[ja]" placeholder=""
+                maxlength=64 value="<%=forms.description.ja %>">
+            <span class="bmd-help">全角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['description.ja']) { %>
+                <%- errors['description.ja'].msg %>
                 <% } %>
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text">枚で販売</span>
-            </div>
+            </p>
         </div>
-        <span class="bmd-help">半角10文字以内でご入力ください</span>
 
-        <p class="error message text-danger">
-            <% if (errors && errors.price) { %>
-            <%- errors.price.msg %>
-            <% } %>
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors.seatReservationUnit) { %>
-            <%- errors.seatReservationUnit.msg %>
-            <% } %>
-        </p>
-    </div>
-
-    <div class="form-group bmd-form-group col-md-3">
-    </div>
-
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="accountsReceivable" class="bmd-label-static">
-            売上金額<span class="text-danger">＊</span>
-        </label>
-        <div class="input-group">
-            <input type="text" class="form-control" name="accountsReceivable" id="accountsReceivable" placeholder=""
-                maxlength=10 value="<%=forms.accountsReceivable %>">
-            <div class="input-group-append">
-                <span class="input-group-text">円として計上</span>
-            </div>
+        <div class="form-group bmd-form-group">
+            <label for="description[en]" class="bmd-label-static">
+                補足説明英
+            </label>
+            <input type="text" class="form-control" name="description[en]" id="description[en]" placeholder=""
+                maxlength=64 value="<%=forms.description.en %>">
+            <span class="bmd-help">半角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['description.en']) { %>
+                <%- errors['description.en'].msg %>
+                <% } %>
+            </p>
         </div>
-        <span class="bmd-help">半角10文字以内でご入力ください</span>
-
-        <p class="error message text-danger">
-            <% if (errors && errors.accountsReceivable) { %>
-            <%- errors.accountsReceivable.msg %>
-            <% } %>
-        </p>
-    </div>
-
-    <div class="form-group bmd-form-group col-md-3">
     </div>
 </div>
+<!-- end card -->
 
-<div class="form-group bmd-form-group">
-    <div class="form-check form-check-inline">
-        <label class="form-check-label">
-            <input class="form-check-input" type="checkbox" <% if (forms.isBoxTicket) { %> checked="checked" <% } %>
-                value="1" name="isBoxTicket">BOX利用
-            <span class="form-check-sign">
-                <span class="check"></span>
-            </span>
-        </label>
-    </div>
-    <div class="form-check form-check-inline">
-        <label class="form-check-label">
-            <input class="form-check-input" type="checkbox" <% if (forms.isOnlineTicket) { %> checked="checked" <% } %>
-                value="1" name="isOnlineTicket">オンライン利用
-            <span class="form-check-sign">
-                <span class="check"></span>
-            </span>
-        </label>
-    </div>
-    <p class="error message text-danger">
-    </p>
-</div>
-
-<div class="form-row">
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="appliesToMovieTicketType" class="bmd-label-static">
-            適用ムビチケ券種区分
-        </label>
-        <div class="input-group">
-            <select class="form-control" name="appliesToMovieTicketType">
-                <option value="" selected>なし</option>
-                <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                <option value="<%= movieTicketType.codeValue %>"
-                    <% if (movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicketType) { %>
-                    selected<% } %>>
-                    <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
-            </div>
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">適用条件</h4>
         </div>
-
-        <p class="error message text-danger">
-            <% if (errors && errors.appliesToMovieTicketType) { %>
-            <%- errors.appliesToMovieTicketType.msg %>
-            <% } %>
-        </p>
     </div>
+    <div class="card-body">
 
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
-            適用口座条件
-        </label>
-        <div class="input-group">
-            <select class="form-control" name="eligibleMonetaryAmount[][currency]">
-                <option value="" selected>指定しない</option>
-                <% Object.values(accountTypes).forEach((accountType) => { %>
-                <option value="<%= accountType.id %>" <% if (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="appliesToMovieTicketType" class="bmd-label-static">
+                    適用ムビチケ券種区分
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="appliesToMovieTicketType">
+                        <option value="" selected>なし</option>
+                        <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
+                        <option value="<%= movieTicketType.codeValue %>"
+                            <% if (movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicketType) { %>
+                            selected<% } %>>
+                            <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+                    </div>
+                </div>
+
+                <p class="error message text-danger">
+                    <% if (errors && errors.appliesToMovieTicketType) { %>
+                    <%- errors.appliesToMovieTicketType.msg %>
+                    <% } %>
+                </p>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
+                    適用口座
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="eligibleMonetaryAmount[][currency]">
+                        <option value="" selected>指定しない</option>
+                        <% Object.values(accountTypes).forEach((accountType) => { %>
+                        <option value="<%= accountType.id %>" <% if (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0
                     && accountType.codeValue === eligibleMonetaryAmount[0].currency) { %> selected<% } %>>
-                    <%= accountType.codeValue %> <%= accountType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">が</span>
-            </div>
-        </div>
-        <div class="input-group">
-            <input type="text" class="form-control" name="eligibleMonetaryAmount[][value]"
-                id="eligibleMonetaryAmount[][value]" placeholder="" maxlength=10
-                value="<%= (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0) ? forms.eligibleMonetaryAmount[0].value : '' %>">
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">必要</span>
-            </div>
-        </div>
+                            <%= accountType.codeValue %> <%= accountType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">が</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="eligibleMonetaryAmount[][value]"
+                        id="eligibleMonetaryAmount[][value]" placeholder="" maxlength=10
+                        value="<%= (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0) ? forms.eligibleMonetaryAmount[0].value : '' %>">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">必要</span>
+                    </div>
+                </div>
 
-        <p class="error message text-danger">
-            <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
-            <%- errors['eligibleMonetaryAmount.0.value'].msg %>
-            <% } %>
-        </p>
-    </div>
+                <p class="error message text-danger">
+                    <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
+                    <%- errors['eligibleMonetaryAmount.0.value'].msg %>
+                    <% } %>
+                </p>
+            </div>
 
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="eligibleSeatingType[][id]" class="bmd-label-static">
-            適用座席タイプ
-        </label>
-        <div class="input-group">
-            <select class="form-control" name="eligibleSeatingType[][id]">
-                <option value="" selected>なし</option>
-                <% Object.values(seatingTypes).forEach((seatingType) => { %>
-                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSeatingType) && forms.eligibleSeatingType.length > 0
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="eligibleSeatingType[][id]" class="bmd-label-static">
+                    適用座席タイプ
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="eligibleSeatingType[][id]">
+                        <option value="" selected>なし</option>
+                        <% Object.values(seatingTypes).forEach((seatingType) => { %>
+                        <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSeatingType) && forms.eligibleSeatingType.length > 0
                     && seatingType.codeValue === forms.eligibleSeatingType[0].codeValue) { %> selected<% } %>>
-                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+                            <%= seatingType.codeValue %> <%= seatingType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+                    </div>
+                </div>
+
+                <p class="error message text-danger">
+                    <% if (errors && errors['eligibleSeatingType.id']) { %>
+                    <%- errors['eligibleSeatingType.id'].msg %>
+                    <% } %>
+                </p>
             </div>
-        </div>
 
-        <p class="error message text-danger">
-            <% if (errors && errors['eligibleSeatingType.id']) { %>
-            <%- errors['eligibleSeatingType.id'].msg %>
-            <% } %>
-        </p>
-    </div>
-
-    <div class="form-group bmd-form-group col-md-3">
-        <label for="eligibleSubReservation[][typeOfGood][seatingType]" class="bmd-label-static">
-            適用サブ予約条件
-        </label>
-        <div class="input-group">
-            <select class="form-control" name="eligibleSubReservation[][typeOfGood][seatingType]">
-                <option value="" selected>指定しない</option>
-                <% Object.values(seatingTypes).forEach((seatingType) => { %>
-                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="eligibleSubReservation[][typeOfGood][seatingType]" class="bmd-label-static">
+                    適用サブ予約
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="eligibleSubReservation[][typeOfGood][seatingType]">
+                        <option value="" selected>指定しない</option>
+                        <% Object.values(seatingTypes).forEach((seatingType) => { %>
+                        <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0
                     && seatingType.codeValue === forms.eligibleSubReservation[0].typeOfGood.seatingType) { %>
-                    selected<% } %>>
-                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">が</span>
-            </div>
-        </div>
-        <div class="input-group">
-            <input type="text" class="form-control" name="eligibleSubReservation[][amountOfThisGood]"
-                id="eligibleMonetaryAmount[][value]" placeholder="" maxlength=10
-                value="<%= (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0) ? forms.eligibleSubReservation[0].amountOfThisGood : '' %>">
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">席必要</span>
+                            selected<% } %>>
+                            <%= seatingType.codeValue %> <%= seatingType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">が</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="eligibleSubReservation[][amountOfThisGood]"
+                        id="eligibleSubReservation[][amountOfThisGood]" placeholder="" maxlength=10
+                        value="<%= (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0) ? forms.eligibleSubReservation[0].amountOfThisGood : '' %>">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">席必要</span>
+                    </div>
+                </div>
+
+                <p class="error message text-danger">
+                    <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
+                    <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
+                    <% } %>
+                </p>
             </div>
         </div>
 
-        <p class="error message text-danger">
-            <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
-            <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
-            <% } %>
-        </p>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="priceSpecification[eligibleQuantity][minValue]" class="bmd-label-static">
+                    適用アイテム数
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="priceSpecification[eligibleQuantity][minValue]">
+                        <option value="" selected>指定しない</option>
+                        <% for (let i = 1; i <= 50; i++) { %>
+                        <option value="<%= i %>"
+                            <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.minValue) === i) { %>
+                            selected <% } %>>
+                            <%= i %>
+                        </option>
+                        <% } %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">枚以上</span>
+                    </div>
+
+                    <select class="form-control" name="priceSpecification[eligibleQuantity][maxValue]">
+                        <option value="" selected>指定しない</option>
+                        <% for (let i = 1; i <= 50; i++) { %>
+                        <option value="<%= i %>"
+                            <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.maxValue) === i) { %>
+                            selected <% } %>>
+                            <%= i %>
+                        </option>
+                        <% } %>
+                    </select>
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">枚以下</span>
+                    </div>
+                </div>
+                <p class="error message text-danger">
+                </p>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="priceSpecification[eligibleTransactionVolume][price]" class="bmd-label-static">
+                    適用金額
+                </label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="priceSpecification[eligibleTransactionVolume][price]"
+                        id="priceSpecification[eligibleTransactionVolume][price]" placeholder=""
+                        value="<%= (forms.priceSpecification.eligibleTransactionVolume !== undefined) ? Number(forms.priceSpecification.eligibleTransactionVolume.price) : '' %>">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="basic-addon2">円以上</span>
+                    </div>
+                </div>
+                <p class="error message text-danger">
+                </p>
+            </div>
+        </div>
+
     </div>
 </div>
+<!-- end card -->
 
-<div class="form-row">
-    <div class="form-group bmd-form-group col-md-6">
-        <label for="priceSpecification[eligibleQuantity][minValue]" class="bmd-label-static">
-            適用アイテム数
-        </label>
-        <div class="input-group">
-            <select class="form-control" name="priceSpecification[eligibleQuantity][minValue]">
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">その他の設定</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="form-group bmd-form-group">
+            <label for="indicatorColor" class="bmd-label-static">
+                表示カラー
+            </label>
+            <div class="row pt-2 pb-2 px-3">
+                <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor"
+                    id="indicatorColor" value="<%= forms.indicatorColor %>"
+                    style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
+                <input type="hidden" name="hiddenColor" id="hiddenColor">
+            </div>
+        </div>
+
+        <div class="form-group bmd-form-group">
+            <label for="name[ja]" class="bmd-label-static">
+                オファーカテゴリー
+            </label>
+            <select class="form-control" name="category">
                 <option value="" selected>指定しない</option>
-                <% for (let i = 1; i <= 50; i++) { %>
-                <option value="<%= i %>"
-                    <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.minValue) === i) { %>
-                    selected <% } %>>
-                    <%= i %>
+                <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+                <option value="<%= ticketTypeCategory.codeValue %>"
+                    <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
+                    <%= ticketTypeCategory.name.ja %>
                 </option>
                 <% } %>
             </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">枚以上</span>
-            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
 
-            <select class="form-control" name="priceSpecification[eligibleQuantity][maxValue]">
+        <div class="form-group bmd-form-group">
+            <label for="accountTitle" class="bmd-label-static">
+                細目
+            </label>
+            <select class="form-control" name="accountTitle">
                 <option value="" selected>指定しない</option>
-                <% for (let i = 1; i <= 50; i++) { %>
-                <option value="<%= i %>"
-                    <% if (forms.priceSpecification.eligibleQuantity !== undefined && Number(forms.priceSpecification.eligibleQuantity.maxValue) === i) { %>
+                <% for (let accountTitle of accountTitles) { %>
+                <option value="<%= accountTitle.codeValue %>" <% if (forms.accountTitle==accountTitle.codeValue) { %>
                     selected <% } %>>
-                    <%= i %>
+                    <%= accountTitle.name %>
                 </option>
                 <% } %>
             </select>
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">枚以下</span>
+            <p class="error message text-danger">
+                <% if (errors && errors.accountTitle) { %>
+                <%- errors.accountTitle.msg %>
+                <% } %>
+            </p>
+        </div>
+
+        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
+        <div class="form-group bmd-form-group">
+            <label for="availableAddOn" class="bmd-label-static">
+                アドオン
+            </label>
+            <select class="form-control" name="availableAddOn">
+                <option value="" selected>なし</option>
+                <% for (let productOffer of productOffers) { %>
+                <option value="<%= productOffer.id %>"
+                    <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].id === productOffer.id) { %>
+                    selected <% } %>>
+                    <%= productOffer.id %> <%= productOffer.name.ja %>
+                </option>
+                <% } %>
+            </select>
+            <p class="error message text-danger">
+            </p>
+        </div>
+        <% } %>
+
+        <% if (forms.validRateLimit !== undefined && forms.validRateLimit !== null) { %>
+        <div class="form-group bmd-form-group">
+            <label for="availableAddOn" class="bmd-label-static">
+                レート制限
+            </label>
+
+            <div class="input-group">
+                <input type="text" disabled class="form-control" name="validRateLimit[scope]" id="validRateLimit[scope]"
+                    placeholder="" maxlength=10 value="<%= forms.validRateLimit.scope %>">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">のスコープで</span>
+                </div>
+                <input type="text" disabled class="form-control" name="validRateLimit[unitInSeconds]"
+                    id="validRateLimit[unitInSeconds]" placeholder="" maxlength=10
+                    value="<%= forms.validRateLimit.unitInSeconds %>">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">秒に1席</span>
+                </div>
             </div>
         </div>
-        <p class="error message text-danger">
-        </p>
-    </div>
 
-    <div class="form-group bmd-form-group col-md-6">
-        <label for="priceSpecification[eligibleTransactionVolume][price]" class="bmd-label-static">
-            適用金額
-        </label>
-        <div class="input-group">
-            <input type="text" class="form-control" name="priceSpecification[eligibleTransactionVolume][price]"
-                id="priceSpecification[eligibleTransactionVolume][price]" placeholder=""
-                value="<%= (forms.priceSpecification.eligibleTransactionVolume !== undefined) ? Number(forms.priceSpecification.eligibleTransactionVolume.price) : '' %>">
-            <div class="input-group-append">
-                <span class="input-group-text" id="basic-addon2">円以上</span>
-            </div>
+        <% } %>
+
+    </div>
+</div>
+<!-- end card -->
+
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">追加特性</h4>
         </div>
-        <p class="error message text-danger">
-        </p>
+    </div>
+    <div class="card-body">
+        <%- include('../common/part/_additionalProperty', {
+            additionalProperty: forms.additionalProperty
+        }) %>
+
     </div>
 </div>
-
-<div class="form-group bmd-form-group">
-    <label for="description[ja]" class="bmd-label-static">
-        補足説明
-    </label>
-    <input type="text" class="form-control" name="description[ja]" id="description[ja]" placeholder="" maxlength=64
-        value="<%=forms.description.ja %>">
-    <span class="bmd-help">全角64文字以内でご入力ください</span>
-    <p class="error message text-danger">
-        <% if (errors && errors['description.ja']) { %>
-        <%- errors['description.ja'].msg %>
-        <% } %>
-    </p>
-</div>
-
-<div class="form-group bmd-form-group">
-    <label for="description[en]" class="bmd-label-static">
-        補足説明英
-    </label>
-    <input type="text" class="form-control" name="description[en]" id="description[en]" placeholder="" maxlength=64
-        value="<%=forms.description.en %>">
-    <span class="bmd-help">半角64文字以内でご入力ください</span>
-    <p class="error message text-danger">
-        <% if (errors && errors['description.en']) { %>
-        <%- errors['description.en'].msg %>
-        <% } %>
-    </p>
-</div>
-
-<div class="form-group bmd-form-group">
-    <label for="indicatorColor" class="bmd-label-static">
-        入場時表示カラー
-    </label>
-    <div class="row pt-2 pb-2 px-3">
-        <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor" id="indicatorColor"
-            value="<%= forms.indicatorColor %>" style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
-        <input type="hidden" name="hiddenColor" id="hiddenColor">
-    </div>
-</div>
-
-<div class="form-group bmd-form-group">
-    <label for="name[ja]" class="bmd-label-static">
-        オファーカテゴリー
-    </label>
-    <select class="form-control" name="category">
-        <option value="" selected>指定しない</option>
-        <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-        <option value="<%= ticketTypeCategory.codeValue %>"
-            <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
-            <%= ticketTypeCategory.name.ja %>
-        </option>
-        <% } %>
-    </select>
-    <p class="error message text-danger">
-    </p>
-</div>
-
-<div class="form-group bmd-form-group">
-    <label for="accountTitle" class="bmd-label-static">
-        細目
-    </label>
-    <select class="form-control" name="accountTitle">
-        <option value="" selected>指定しない</option>
-        <% for (let accountTitle of accountTitles) { %>
-        <option value="<%= accountTitle.codeValue %>" <% if (forms.accountTitle==accountTitle.codeValue) { %> selected
-            <% } %>>
-            <%= accountTitle.name %>
-        </option>
-        <% } %>
-    </select>
-    <p class="error message text-danger">
-        <% if (errors && errors.accountTitle) { %>
-        <%- errors.accountTitle.msg %>
-        <% } %>
-    </p>
-</div>
-
-<% if (process.env.USE_OFFER_ADD_ON === '1') { %>
-<div class="form-group bmd-form-group">
-    <label for="availableAddOn" class="bmd-label-static">
-        アドオン
-    </label>
-    <select class="form-control" name="availableAddOn">
-        <option value="" selected>なし</option>
-        <% for (let productOffer of productOffers) { %>
-        <option value="<%= productOffer.id %>"
-            <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].id === productOffer.id) { %>
-            selected <% } %>>
-            <%= productOffer.id %> <%= productOffer.name.ja %>
-        </option>
-        <% } %>
-    </select>
-    <p class="error message text-danger">
-    </p>
-</div>
-<% } %>
-
-<%- include('../common/part/_additionalProperty', {
-    additionalProperty: forms.additionalProperty
-}) %>
+<!-- end card -->

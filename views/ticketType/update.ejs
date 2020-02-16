@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-券種マスタ更新
+券種編集
 <%- contentFor('displayId') %>
 Aa-5
 <%- contentFor('styles') %>
@@ -12,15 +12,13 @@ Aa-5
 <%- contentFor('body') %>
 
 <div class="form-container">
-    <form method="post" class="p-3 bg-light-gray">
+    <form method="post">
         <div class="menu-group">
             <%- include('../common/errorMessage') %>
             <%- include('../common/successMessage') %>
         </div>
 
-        <input type="hidden" name="identifier" value="<%= forms.identifier %>">
-
-        <%- include('form', {forms: forms, isNew: false}) %>
+        <%- include('form', { forms: forms, isNew: false }) %>
 
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">更新する</button>
