@@ -652,6 +652,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            // tslint:disable-next-line:cyclomatic-complexity
             results: data.map((t) => {
                 const mvtkType = searchMovieTicketTypesResult.data.find(
                     (movieTicketType) => {
@@ -701,6 +702,9 @@ export async function getList(req: Request, res: Response): Promise<void> {
                         ? t.addOn.map((a) => {
                             return (a.name !== undefined) ? (<any>a.name).ja : a.id;
                         }).join('\n')
+                        : '',
+                    validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
+                        ? `1 ${(<any>t).validRateLimit.scope} / ${(<any>t).validRateLimit.unitInSeconds} s`
                         : ''
                 };
             })

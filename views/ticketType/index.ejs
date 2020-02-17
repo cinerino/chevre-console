@@ -121,120 +121,135 @@ Aa-6
         検索結果$searched_count$件
     </p> -->
     <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>券種コード<br>細目コード<br>在庫</th>
-                    <th>カテゴリー</th>
-                    <th>名称<br>English Name<br>代替名称</th>
-                    <th>発生金額<br>売上金額<br>適用単位</th>
-                    <th>適用条件</th>
-                    <th>アドオン</th>
-                    <th></th>
-                </tr>
-            </thead>
 
-            <tbody>
-                <tr id="templateRow" _id="$id$">
-                    <td
-                        name="id__identifier__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability">
-                        <p>
-                            <a target="_blank" href="/ticketTypes/$id$/update">
-                                $identifier$
-                            </a>
-                        </p>
-                        <p><a target="_blank"
-                                href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
-                        </p>
-                        <p class="badge badge-secondary">$availability$</p>
-                    </td>
-                    <td name="category.codeValue">
-                        <p>$category.codeValue$</p>
-                    </td>
-                    <td name="name.ja__name.en__alternateName.ja">$name.ja$<br>$name.en$<br>$alternateName.ja$</td>
-                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
-                        style="text-align:right;">
-                        <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
-                        <p>$priceSpecification.accounting.accountsReceivable$ $priceSpecification.priceCurrency$</p>
-                        <p>/ $referenceQuantity.value$ 枚</p>
-                    </td>
-                    <td
-                        name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <i class="icon fa fa-ticket-alt"></i>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <p>$eligibleQuantity.minValue$ 枚以上</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <i class="icon fa fa-ticket-alt"></i>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <p>$eligibleQuantity.maxValue$ 枚以下</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <i class="icon fa fa-dollar-sign"></i>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <p>$eligibleTransactionVolume.price$ $eligibleTransactionVolume.priceCurrency$ 以上</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <p class="">ムビ</p>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <p>$priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$</p>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <i class="material-icons"><small>event_seat</small></i>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <span class="">$eligibleSeatingType.0.codeValue$</span>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-3 pr-1">
-                                <i class="material-icons"><small>monetization_on</small></i>
-                            </div>
-                            <div class="col-md-9 pl-1">
-                                <span class="">$eligibleMonetaryAmount.0.value$
-                                    $eligibleMonetaryAmount.0.currency$</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td name="availableAddOnNames">$availableAddOnNames$</td>
-                    <td name="id__id__id" class="center">
-                        <div class="text-center">
-                            <a target="_blank" class="btn btn-sm btn-primary" href="/ticketTypes/$id$/update">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="text-primary">
+                            <tr>
+                                <th>券種コード<br>細目コード<br>利用状況<br>カテゴリー</th>
+                                <th>名称<br>English Name<br>代替名称</th>
+                                <th>発生金額<br>売上金額<br>適用単位</th>
+                                <th>適用条件</th>
+                                <th>有効性</th>
+                                <th>アドオン</th>
+                                <th></th>
+                            </tr>
+                        </thead>
 
-                        <div class="text-center mt-2">
-                            <a href="javascript:void(0)" data-id="$id$"
-                                class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
-                                関連券種<br>グループ
-                            </a>
-                        </div>
+                        <tbody>
+                            <tr id="templateRow" _id="$id$">
+                                <td
+                                    name="id__identifier__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability__category.codeValue">
+                                    <p>
+                                        <a target="_blank" href="/ticketTypes/$id$/update">
+                                            $identifier$
+                                        </a>
+                                    </p>
+                                    <p><a target="_blank"
+                                            href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
+                                    </p>
+                                    <p class="badge badge-secondary">$availability$</p>
+                                    <p>$category.codeValue$</p>
+                                </td>
+                                <td name="name.ja__name.en__alternateName.ja">
+                                    $name.ja$<br>$name.en$<br>$alternateName.ja$</td>
+                                <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
+                                    style="text-align:right;">
+                                    <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
+                                    <p>$priceSpecification.accounting.accountsReceivable$
+                                        $priceSpecification.priceCurrency$</p>
+                                    <p>/ $referenceQuantity.value$ 枚</p>
+                                </td>
+                                <td
+                                    name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <i class="icon fa fa-ticket-alt"></i>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <p>$eligibleQuantity.minValue$ 枚以上</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <i class="icon fa fa-ticket-alt"></i>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <p>$eligibleQuantity.maxValue$ 枚以下</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <i class="icon fa fa-dollar-sign"></i>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <p>$eligibleTransactionVolume.price$
+                                                $eligibleTransactionVolume.priceCurrency$ 以上</p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <p class="">ムビ</p>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <p>$priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <i class="material-icons"><small>event_seat</small></i>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <span class="">$eligibleSeatingType.0.codeValue$</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-3 pr-1">
+                                            <i class="material-icons"><small>monetization_on</small></i>
+                                        </div>
+                                        <div class="col-md-9 pl-1">
+                                            <span class="">$eligibleMonetaryAmount.0.value$
+                                                $eligibleMonetaryAmount.0.currency$</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td name="validRateLimitStr">
+                                    $validRateLimitStr$
+                                </td>
+                                <td name="availableAddOnNames">$availableAddOnNames$</td>
+                                <td name="id__id__id" class="center">
+                                    <div class="text-center">
+                                        <a target="_blank" class="btn btn-sm btn-primary"
+                                            href="/ticketTypes/$id$/update">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
 
-                        <div class="text-center mt-2">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                data-id="$id$">
-                                <span>追加特性</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                                    <div class="text-center mt-2">
+                                        <a href="javascript:void(0)" data-id="$id$"
+                                            class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
+                                            関連券種<br>グループ
+                                        </a>
+                                    </div>
+
+                                    <div class="text-center mt-2">
+                                        <a href="javascript:void(0)"
+                                            class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                            data-id="$id$">
+                                            <span>追加特性</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
