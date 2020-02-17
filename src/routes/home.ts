@@ -171,7 +171,7 @@ homeRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const result = await eventService.searchWithAggregateReservation({
+            const result = await eventService.search({
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 limit: 10,
                 page: 1,

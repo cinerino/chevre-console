@@ -149,7 +149,7 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(this, void 0, 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const result = yield eventService.searchWithAggregateReservation({
+        const result = yield eventService.search({
             typeOf: chevre.factory.eventType.ScreeningEvent,
             limit: 10,
             page: 1,
