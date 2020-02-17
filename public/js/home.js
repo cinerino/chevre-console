@@ -167,12 +167,31 @@ function updateEventsWithAggregation(cb) {
         // $('.eventsCount').text(data.totalCount);
 
         $.each(data.data, function (_, event) {
+            var name = '?';
+            var reservationCount = '?';
+            var checkInCount = '?';
+            var attendeeCount = '?';
+
+            if (event.name !== undefined && event.name !== null) {
+                if (typeof event.name === 'string') {
+                    name = event.name.slice(0, 5);
+                } else {
+                    name = event.name.ja.slice(0, 5);
+                }
+            }
+
+            if (event.aggregateReservation !== undefined && event.aggregateReservation !== null) {
+                reservationCount = String(event.aggregateReservation.reservationCount);
+                checkInCount = String(event.aggregateReservation.checkInCount);
+                attendeeCount = String(event.aggregateReservation.attendeeCount);
+            }
+
             var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'
-                + '<td>' + event.name.ja.slice(0, 5) + '...</td>'
+                + '<td>' + name + '...</td>'
                 + '<td>' + event.superEvent.location.name.ja + '</td>'
-                + '<td>' + event.aggregateReservation.reservationCount + '</td>'
-                + '<td>' + event.aggregateReservation.checkInCount + '</td>'
-                + '<td>' + event.aggregateReservation.attendeeCount + '</td>';
+                + '<td>' + reservationCount + '</td>'
+                + '<td>' + checkInCount + '</td>'
+                + '<td>' + attendeeCount + '</td>';
             $('<tr>').html(html).appendTo('.eventsWithAggregation tbody');
         });
 
