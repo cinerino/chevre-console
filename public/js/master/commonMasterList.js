@@ -120,7 +120,7 @@ $(function () {
                         if (fieldId.indexOf('|parseDateTime') > -1) {
                             fieldId = fieldId.replace('|parseDateTime', '');
                             value = $.fn.getStringValue(data, fieldId, "");
-                            if (value) value = moment(value).format('YYYY-MM-DD HH:mm:ss');
+                            if (value) value = moment(value).format('YY-MM-DD HH:mm:ss');
                         } else {
                             value = $.fn.getStringValue(data, fieldId, '');
                         }

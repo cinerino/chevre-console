@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Response } from 'express';
+import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
 import * as Message from '../common/Const/Message';
@@ -226,6 +227,16 @@ export async function update(req: Request, res: Response): Promise<void> {
         category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '',
         price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit),
         accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit),
+        validFrom: (ticketType.validFrom !== undefined)
+            ? moment(ticketType.validFrom)
+                .tz('Asia/Tokyo')
+                .format('YYYY/MM/DD')
+            : '',
+        validThrough: (ticketType.validThrough !== undefined)
+            ? moment(ticketType.validThrough)
+                .tz('Asia/Tokyo')
+                .format('YYYY/MM/DD')
+            : '',
         ...req.body,
         isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
         isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
@@ -490,6 +501,22 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         }];
     }
 
+    let validFrom: Date | undefined;
+    if (typeof req.body.validFrom === 'string' && req.body.validFrom.length > 0) {
+        validFrom = moment(`${req.body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .toDate();
+        // validFrom = moment(req.body.validFrom)
+        //     .toDate();
+    }
+
+    let validThrough: Date | undefined;
+    if (typeof req.body.validThrough === 'string' && req.body.validThrough.length > 0) {
+        validThrough = moment(`${req.body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .toDate();
+        // validThrough = moment(req.body.validThrough)
+        //     .toDate();
+    }
+
     return {
         project: req.project,
         typeOf: <chevre.factory.offerType>'Offer',
@@ -553,6 +580,16 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 eligibleSubReservation: eligibleSubReservation
             }
             : undefined,
+        ...(validFrom instanceof Date)
+            ? {
+                validFrom: validFrom
+            }
+            : undefined,
+        ...(validThrough instanceof Date)
+            ? {
+                validThrough: validThrough
+            }
+            : undefined,
         ...(!isNew)
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
@@ -562,7 +599,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined,
                     ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined,
-                    ...(eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined
+                    ...(validFrom === undefined) ? { validFrom: 1 } : undefined,
+                    ...(validThrough === undefined) ? { validThrough: 1 } : undefined
                 }
             }
             : undefined

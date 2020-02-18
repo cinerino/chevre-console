@@ -402,6 +402,62 @@
 <div class="card">
     <div class="card-header card-header-primary card-header-text">
         <div class="card-text">
+            <h4 class="card-title">有効性</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="form-group bmd-form-group">
+            <label for="priceSpecification[eligibleQuantity][minValue]" class="bmd-label-static">
+                有効期間
+            </label>
+
+            <div class="input-group date" id="datetimepicker2">
+                <input type="text" class="form-control datepicker" name="validFrom" value="<%= forms.validFrom %>">
+                <!-- <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span> -->
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">から</span>
+                </div>
+
+                <input type="text" class="form-control datepicker" name="validThrough"
+                    value="<%= forms.validThrough %>">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">まで有効</span>
+                </div>
+            </div>
+            <p class="error message text-danger">
+            </p>
+        </div>
+
+        <div class="form-group bmd-form-group">
+            <label for="availableAddOn" class="bmd-label-static">
+                レート制限
+            </label>
+
+            <div class="input-group">
+                <input type="text" disabled class="form-control" name="validRateLimit[scope]" id="validRateLimit[scope]"
+                    placeholder="" maxlength=10
+                    value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.scope : '' %>">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">のスコープで</span>
+                </div>
+                <input type="text" disabled class="form-control" name="validRateLimit[unitInSeconds]"
+                    id="validRateLimit[unitInSeconds]" placeholder="" maxlength=10
+                    value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.unitInSeconds : '' %>">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">秒に1席</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->
+
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
             <h4 class="card-title">その他の設定</h4>
         </div>
     </div>
@@ -473,29 +529,6 @@
             <p class="error message text-danger">
             </p>
         </div>
-        <% } %>
-
-        <% if (forms.validRateLimit !== undefined && forms.validRateLimit !== null) { %>
-        <div class="form-group bmd-form-group">
-            <label for="availableAddOn" class="bmd-label-static">
-                レート制限
-            </label>
-
-            <div class="input-group">
-                <input type="text" disabled class="form-control" name="validRateLimit[scope]" id="validRateLimit[scope]"
-                    placeholder="" maxlength=10 value="<%= forms.validRateLimit.scope %>">
-                <div class="input-group-append">
-                    <span class="input-group-text" id="basic-addon2">のスコープで</span>
-                </div>
-                <input type="text" disabled class="form-control" name="validRateLimit[unitInSeconds]"
-                    id="validRateLimit[unitInSeconds]" placeholder="" maxlength=10
-                    value="<%= forms.validRateLimit.unitInSeconds %>">
-                <div class="input-group-append">
-                    <span class="input-group-text" id="basic-addon2">秒に1席</span>
-                </div>
-            </div>
-        </div>
-
         <% } %>
 
     </div>

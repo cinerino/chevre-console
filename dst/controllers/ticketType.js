@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 券種マスタコントローラー
  */
 const chevre = require("@chevre/api-nodejs-client");
+const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -198,7 +199,15 @@ function update(req, res) {
             : '';
         const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
-            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit) }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
+            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit), validFrom: (ticketType.validFrom !== undefined)
+                ? moment(ticketType.validFrom)
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '', validThrough: (ticketType.validThrough !== undefined)
+                ? moment(ticketType.validThrough)
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '' }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined
                     && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
@@ -434,6 +443,20 @@ function createFromBody(req, isNew) {
                     amountOfThisGood: Number(req.body.eligibleSubReservation[0].amountOfThisGood)
                 }];
         }
+        let validFrom;
+        if (typeof req.body.validFrom === 'string' && req.body.validFrom.length > 0) {
+            validFrom = moment(`${req.body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate();
+            // validFrom = moment(req.body.validFrom)
+            //     .toDate();
+        }
+        let validThrough;
+        if (typeof req.body.validThrough === 'string' && req.body.validThrough.length > 0) {
+            validThrough = moment(`${req.body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate();
+            // validThrough = moment(req.body.validThrough)
+            //     .toDate();
+        }
         return Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign({}, nameFromJson, { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
@@ -476,12 +499,20 @@ function createFromBody(req, isNew) {
             ? {
                 eligibleSubReservation: eligibleSubReservation
             }
+            : undefined, (validFrom instanceof Date)
+            ? {
+                validFrom: validFrom
+            }
+            : undefined, (validThrough instanceof Date)
+            ? {
+                validThrough: validThrough
+            }
             : undefined, (!isNew)
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined, (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined)
+                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined, (validFrom === undefined) ? { validFrom: 1 } : undefined, (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
