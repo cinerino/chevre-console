@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -160,7 +161,7 @@ function update(req, res) {
         }
         // 券種グループ取得
         const ticketGroup = yield offerService.findTicketTypeGroupById({ id: req.params.id });
-        const forms = Object.assign({ additionalProperty: [] }, ticketGroup, { serviceType: ticketGroup.itemOffered.serviceType.codeValue }, req.body, { ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : [] });
+        const forms = Object.assign(Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, ticketGroup), { serviceType: ticketGroup.itemOffered.serviceType.codeValue }), req.body), { ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : [] });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};

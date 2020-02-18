@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -22,7 +23,7 @@ movieRouter.all('/add', MovieController.add);
 movieRouter.all('', (__, res) => {
     res.render('creativeWorks/movie/index', {});
 });
-movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -48,7 +49,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(this, void 0, void 0, functi
             }
         });
         const results = data.map((movie) => {
-            return Object.assign({}, movie, { dayPublished: (movie.datePublished !== undefined)
+            return Object.assign(Object.assign({}, movie), { dayPublished: (movie.datePublished !== undefined)
                     ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
                     : '未指定', dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                     ? moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')

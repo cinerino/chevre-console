@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -17,7 +18,7 @@ const dashboardRouter = express_1.Router();
 /**
  * ダッシュボード
  */
-dashboardRouter.get('', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.next !== undefined) {
         next(new Error(req.param('next')));
         return;
@@ -42,7 +43,7 @@ dashboardRouter.get('', (req, res, next) => __awaiter(this, void 0, void 0, func
 /**
  * プロジェクト検索
  */
-dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(this, void 0, void 0, function* () {
+dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // 管理プロジェクト検索
     const projectService = new cinerinoapi.service.Project({
         endpoint: process.env.CINERINO_API_ENDPOINT,
@@ -54,7 +55,7 @@ dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(this, void 0,
 /**
  * プロジェクト選択
  */
-dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(this, void 0, void 0, function* () {
+dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const projectId = req.params.id;
     req.session.projectId = projectId;
     res.redirect('/home');

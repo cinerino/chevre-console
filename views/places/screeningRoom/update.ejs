@@ -1,0 +1,24 @@
+<%- contentFor('title') %>
+スクリーン編集
+<%- contentFor('displayId') %>
+SR-02
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/master/places/screeningRoom.js"></script>
+<%- contentFor('body') %>
+<div class="form-container">
+    <% /* フォーム */ %>
+    <form method="post">
+        <div class="menu-group">
+            <%- include('../../common/errorMessage') %>
+            <%- include('../../common/successMessage') %>
+        </div>
+
+        <%- include('form', { forms: forms, isNew: false }) %>
+
+        <div class="btn-area panel-body">
+            <button type="button" class="btn btn-ok btn-primary">更新する</button>
+        </div>
+    </form>
+</div>

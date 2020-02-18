@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -197,9 +198,9 @@ function update(req, res) {
         const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
             ? ticketType.priceSpecification.accounting.accountsReceivable
             : '';
-        const forms = Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
+        const forms = Object.assign(Object.assign(Object.assign(Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
-            } }, ticketType, { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit), validFrom: (ticketType.validFrom !== undefined)
+            } }, ticketType), { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit), validFrom: (ticketType.validFrom !== undefined)
                 ? moment(ticketType.validFrom)
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD')
@@ -207,7 +208,7 @@ function update(req, res) {
                 ? moment(ticketType.validThrough)
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD')
-                : '' }, req.body, { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
+                : '' }), req.body), { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
                 ? (ticketType.priceSpecification.accounting !== undefined
                     && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
@@ -457,7 +458,7 @@ function createFromBody(req, isNew) {
             // validThrough = moment(req.body.validThrough)
             //     .toDate();
         }
-        return Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign({}, nameFromJson, { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 project: req.project,
@@ -487,32 +488,32 @@ function createFromBody(req, isNew) {
                     codeValue: offerCategory.codeValue
                 }
             }
-            : undefined, (Array.isArray(eligibleSeatingTypes))
+            : undefined), (Array.isArray(eligibleSeatingTypes))
             ? {
                 eligibleSeatingType: eligibleSeatingTypes
             }
-            : undefined, (eligibleMonetaryAmount !== undefined)
+            : undefined), (eligibleMonetaryAmount !== undefined)
             ? {
                 eligibleMonetaryAmount: eligibleMonetaryAmount
             }
-            : undefined, (eligibleSubReservation !== undefined)
+            : undefined), (eligibleSubReservation !== undefined)
             ? {
                 eligibleSubReservation: eligibleSubReservation
             }
-            : undefined, (validFrom instanceof Date)
+            : undefined), (validFrom instanceof Date)
             ? {
                 validFrom: validFrom
             }
-            : undefined, (validThrough instanceof Date)
+            : undefined), (validThrough instanceof Date)
             ? {
                 validThrough: validThrough
             }
-            : undefined, (!isNew)
+            : undefined), (!isNew)
             // ...{
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined, (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined, (validFrom === undefined) ? { validFrom: 1 } : undefined, (validThrough === undefined) ? { validThrough: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined), (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined), (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined), (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
@@ -604,13 +605,13 @@ function getList(req, res) {
                         return t.priceSpecification !== undefined
                             && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
                     });
-                    return Object.assign({ appliesToMovieTicket: {
+                    return Object.assign(Object.assign({ appliesToMovieTicket: {
                             name: (t.priceSpecification !== undefined
                                 && t.priceSpecification.appliesToMovieTicketType !== undefined
                                 && mvtkType !== undefined)
                                 ? mvtkType.name.ja
                                 : undefined
-                        } }, t, { eligibleQuantity: {
+                        } }, t), { eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined
                                 && t.priceSpecification.eligibleQuantity !== undefined
                                 && t.priceSpecification.eligibleQuantity.minValue !== undefined)

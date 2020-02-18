@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -17,7 +18,7 @@ const express_1 = require("express");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const movieTheaterRouter = express_1.Router();
-movieTheaterRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -67,7 +68,7 @@ movieTheaterRouter.get('', (_, res) => {
         message: ''
     });
 });
-movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -88,7 +89,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
                 // tslint:disable-next-line:no-magic-numbers
                 ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                 : undefined;
-            return Object.assign({}, movieTheater, { screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--', availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
+            return Object.assign(Object.assign({}, movieTheater), { screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--', availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
                     // tslint:disable-next-line:no-magic-numbers
@@ -115,7 +116,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, 
         });
     }
 }));
-movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
@@ -145,7 +146,7 @@ movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater, req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [], offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
@@ -157,7 +158,7 @@ movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
         forms: forms
     });
 }));
-movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(this, void 0, void 0, function* () {
+movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -173,7 +174,7 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(this, void
                     return a + ((b.containsPlace !== undefined) ? b.containsPlace.length : 0);
                 }, 0);
             }
-            return Object.assign({}, screen, { name: screen.name !== undefined
+            return Object.assign(Object.assign({}, screen), { name: screen.name !== undefined
                     ? (typeof screen.name === 'string') ? screen.name : screen.name.ja
                     : '', numSeats: numSeats });
         });

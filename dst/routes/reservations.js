@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -16,7 +17,7 @@ const express_1 = require("express");
 const moment = require("moment");
 const util_1 = require("util");
 const reservationsRouter = express_1.Router();
-reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -34,7 +35,7 @@ reservationsRouter.get('', (req, res) => __awaiter(this, void 0, void 0, functio
 }));
 reservationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res) => __awaiter(this, void 0, void 0, function* () {
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
@@ -168,7 +169,7 @@ reservationsRouter.get('/search',
                 //         && t.reservedTicket.ticketType.category !== undefined
                 //         && c.codeValue === t.reservedTicket.ticketType.category.id
                 // );
-                return Object.assign({}, t, { 
+                return Object.assign(Object.assign({}, t), { 
                     // ticketType: ticketTYpe,
                     unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
                         && t.reservedTicket !== null

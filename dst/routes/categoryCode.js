@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -15,13 +16,13 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const Message = require("../common/Const/Message");
 const categoryCodesRouter = express_1.Router();
-categoryCodesRouter.get('', (_, res) => __awaiter(this, void 0, void 0, function* () {
+categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
         message: '',
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
-categoryCodesRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0, function* () {
+categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -29,13 +30,13 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0,
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield categoryCodeService.search(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } } }, (req.query.codeValue !== undefined && req.query.codeValue !== null
+        const { data } = yield categoryCodeService.search(Object.assign(Object.assign(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } } }, (req.query.codeValue !== undefined && req.query.codeValue !== null
             && typeof req.query.codeValue.$eq === 'string' && req.query.codeValue.$eq.length > 0)
             ? { codeValue: { $eq: req.query.codeValue.$eq } }
-            : undefined, (req.query.inCodeSet !== undefined && req.query.inCodeSet !== null
+            : undefined), (req.query.inCodeSet !== undefined && req.query.inCodeSet !== null
             && typeof req.query.inCodeSet.identifier === 'string' && req.query.inCodeSet.identifier.length > 0)
             ? { inCodeSet: { identifier: { $eq: req.query.inCodeSet.identifier } } }
-            : undefined, (req.query.name !== undefined && req.query.name !== null
+            : undefined), (req.query.name !== undefined && req.query.name !== null
             && typeof req.query.name.$regex === 'string' && req.query.name.$regex.length > 0)
             ? { name: { $regex: req.query.name.$regex } }
             : undefined));
@@ -58,7 +59,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(this, void 0, void 0,
         });
     }
 }));
-categoryCodesRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
+categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -102,7 +103,7 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, fu
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
-categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
+categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -120,7 +121,7 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, voi
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                categoryCode = Object.assign({}, createMovieFromBody(req), { id: categoryCode.id });
+                categoryCode = Object.assign(Object.assign({}, createMovieFromBody(req)), { id: categoryCode.id });
                 yield categoryCodeService.update(categoryCode);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -131,7 +132,7 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, voi
             }
         }
     }
-    const forms = Object.assign({}, categoryCode, req.body);
+    const forms = Object.assign(Object.assign({}, categoryCode), req.body);
     res.render('categoryCodes/update', {
         message: message,
         errors: errors,

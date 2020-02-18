@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -21,7 +22,7 @@ ticketTypeMasterRouter.all('/add', ticketTypeController.add);
 // 券種編集
 ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 // 券種一覧
-ticketTypeMasterRouter.get('', (req, res) => __awaiter(this, void 0, void 0, function* () {
+ticketTypeMasterRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -51,7 +52,7 @@ ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeCo
 /**
  * COA券種インポート
  */
-ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -78,7 +79,7 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(this
                 }
             };
         });
-        const tasks = yield Promise.all(taskAttributes.map((a) => __awaiter(this, void 0, void 0, function* () {
+        const tasks = yield Promise.all(taskAttributes.map((a) => __awaiter(void 0, void 0, void 0, function* () {
             return taskService.create(a);
         })));
         res.status(http_status_1.CREATED)

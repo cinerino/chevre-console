@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -18,7 +19,7 @@ const Message = require("../common/Const/Message");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 10;
 const serviceTypesRouter = express_1.Router();
-serviceTypesRouter.all('/add', (req, res) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -62,7 +63,7 @@ serviceTypesRouter.get('', (_, res) => {
         message: ''
     });
 });
-serviceTypesRouter.get('/getlist', (req, res) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -97,7 +98,7 @@ serviceTypesRouter.get('/getlist', (req, res) => __awaiter(this, void 0, void 0,
         });
     }
 }));
-serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void 0, function* () {
+serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -127,7 +128,7 @@ serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(this, void 0, void
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [] }, serviceType, req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [] }, serviceType), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};

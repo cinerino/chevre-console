@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -17,7 +18,7 @@ const http_status_1 = require("http-status");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const addOnsRouter = express_1.Router();
-addOnsRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function* () {
+addOnsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -91,7 +92,7 @@ addOnsRouter.all('/new', (req, res) => __awaiter(this, void 0, void 0, function*
 }));
 addOnsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res) => __awaiter(this, void 0, void 0, function* () {
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -147,7 +148,7 @@ addOnsRouter.get('/search',
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((t) => {
-                return Object.assign({}, t, { eligibleQuantity: {
+                return Object.assign(Object.assign({}, t), { eligibleQuantity: {
                         minValue: (t.priceSpecification !== undefined
                             && t.priceSpecification.eligibleQuantity !== undefined
                             && t.priceSpecification.eligibleQuantity.minValue !== undefined)
@@ -187,7 +188,7 @@ addOnsRouter.get('/search',
 }));
 addOnsRouter.all('/:id/update', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res) => __awaiter(this, void 0, void 0, function* () {
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -230,7 +231,7 @@ addOnsRouter.all('/:id/update',
             .end();
         return;
     }
-    const forms = Object.assign({}, offer, req.body);
+    const forms = Object.assign(Object.assign({}, offer), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
@@ -243,7 +244,7 @@ addOnsRouter.all('/:id/update',
         products: searchProductsResult.data
     });
 }));
-addOnsRouter.get('', (__, res) => __awaiter(this, void 0, void 0, function* () {
+addOnsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('addOns/index', {
         message: ''
     });

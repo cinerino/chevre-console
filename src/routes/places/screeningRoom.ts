@@ -2,12 +2,12 @@
  * スクリーンルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-// import * as createDebug from 'debug';
-import { Router } from 'express';
+import * as createDebug from 'debug';
+import { Request, Router } from 'express';
 
-// const debug = createDebug('chevre-backend:router');
+const debug = createDebug('chevre-backend:router');
 
-// const NUM_ADDITIONAL_PROPERTY = 5;
+const NUM_ADDITIONAL_PROPERTY = 5;
 
 const screeningRoomRouter = Router();
 
@@ -71,9 +71,18 @@ const screeningRoomRouter = Router();
 
 screeningRoomRouter.get(
     '',
-    (_, res) => {
+    async (req, res) => {
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
+
         res.render('places/screeningRoom/index', {
-            message: ''
+            message: '',
+            movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
@@ -89,38 +98,24 @@ screeningRoomRouter.get(
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
-            const { data } = await placeService.searchMovieTheaters({
+            const { data } = await placeService.searchScreeningRooms({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
-                name: req.query.name
+                project: { id: { $eq: req.project.id } },
+                containedInPlace: {
+                    branchCode: {
+                        $eq: (typeof req.query?.containedInPlace?.branchCode?.$eq === 'string'
+                            && req.query?.containedInPlace?.branchCode?.$eq.length > 0)
+                            ? req.query?.containedInPlace?.branchCode?.$eq
+                            : undefined
+                    }
+                }
+                // name: req.query.name
             });
 
-            const results = data.map((movieTheater) => {
-                const availabilityEndsGraceTimeInMinutes =
-                    (movieTheater.offers !== undefined
-                        && movieTheater.offers.availabilityEndsGraceTime !== undefined
-                        && movieTheater.offers.availabilityEndsGraceTime.value !== undefined)
-                        // tslint:disable-next-line:no-magic-numbers
-                        ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
-                        : undefined;
-
+            const results = data.map((screeningRoom) => {
                 return {
-                    ...movieTheater,
-                    screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--',
-                    availabilityStartsGraceTimeInDays:
-                        (movieTheater.offers !== undefined
-                            && movieTheater.offers.availabilityStartsGraceTime !== undefined
-                            && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
-                            // tslint:disable-next-line:no-magic-numbers
-                            ? -movieTheater.offers.availabilityStartsGraceTime.value
-                            : undefined,
-                    availabilityEndsGraceTimeInMinutes:
-                        (availabilityEndsGraceTimeInMinutes !== undefined)
-                            ? (availabilityEndsGraceTimeInMinutes >= 0)
-                                ? `${availabilityEndsGraceTimeInMinutes}分後`
-                                : `${-availabilityEndsGraceTimeInMinutes}分前`
-                            : undefined
+                    ...screeningRoom
                 };
             });
 
@@ -141,84 +136,125 @@ screeningRoomRouter.get(
     }
 );
 
-// screeningRoomRouter.all(
-//     '/:id/update',
-//     async (req, res) => {
-//         let message = '';
-//         let errors: any = {};
+screeningRoomRouter.all(
+    '/:id/update',
+    async (req, res) => {
+        let message = '';
+        let errors: any = {};
 
-//         const placeService = new chevre.service.Place({
-//             endpoint: <string>process.env.API_ENDPOINT,
-//             auth: req.user.authClient
-//         });
-//         let movieTheater = await placeService.findMovieTheaterById({
-//             id: req.params.id
-//         });
+        const splittedId = req.params.id.split(':');
+        const movieTheaterBranchCode = splittedId[0];
+        const screeningRoomBranchCode = splittedId[1];
 
-//         if (req.method === 'POST') {
-//             // バリデーション
-//             // validate(req, 'update');
-//             const validatorResult = await req.getValidationResult();
-//             errors = req.validationErrors(true);
-//             if (validatorResult.isEmpty()) {
-//                 try {
-//                     req.body.id = req.params.id;
-//                     movieTheater = createFromBody(req);
-//                     debug('saving an movie theater...', movieTheater);
-//                     await placeService.updateMovieTheater(movieTheater);
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
 
-//                     req.flash('message', '更新しました');
-//                     res.redirect(req.originalUrl);
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
 
-//                     return;
-//                 } catch (error) {
-//                     message = error.message;
-//                 }
-//             }
-//         }
+        const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            branchCode: { $eq: screeningRoomBranchCode },
+            containedInPlace: {
+                branchCode: { $eq: movieTheaterBranchCode }
+            }
+        });
 
-//         const forms = {
-//             additionalProperty: [],
-//             offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
-//             containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
-//             ...movieTheater,
-//             ...req.body
-//         };
-//         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-//             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-//                 return {};
-//             }));
-//         }
+        let screeningRoom = searchScreeningRoomsResult.data[0];
+        if (screeningRoom === undefined) {
+            throw new Error('Screening Room Not Found');
+        }
 
-//         res.render('places/movieTheater/update', {
-//             message: message,
-//             errors: errors,
-//             forms: forms
-//         });
-//     }
-// );
+        if (req.method === 'POST') {
+            // バリデーション
+            // validate(req, 'update');
+            const validatorResult = await req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                try {
+                    screeningRoom = createFromBody(req, false);
+                    debug('saving screeningRoom...', screeningRoom);
+                    await placeService.updateScreeningRoom(screeningRoom);
 
-// function createFromBody(req: Request): chevre.factory.place.screeningRoom.IPlace {
-//     const body = req.body;
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
 
-//     return {
-//         project: req.project,
-//         id: body.id,
-//         typeOf: chevre.factory.placeType.ScreeningRoom,
-//         branchCode: body.branchCode,
-//         name: body.name,
-//         containsPlace: JSON.parse(body.containsPlaceStr),
-//         telephone: body.telephone,
-//         additionalProperty: (Array.isArray(body.additionalProperty))
-//             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
-//                 .map((p: any) => {
-//                     return {
-//                         name: String(p.name),
-//                         value: String(p.value)
-//                     };
-//                 })
-//             : undefined
-//     };
-// }
+                    return;
+                } catch (error) {
+                    console.error(error);
+                    message = error.message;
+                }
+            }
+        }
+
+        const forms = {
+            additionalProperty: [],
+            ...screeningRoom,
+            ...req.body
+        };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+
+        res.render('places/screeningRoom/update', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            movieTheaters: searchMovieTheatersResult.data
+        });
+    }
+);
+
+function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoom.IPlace {
+    const body = req.body;
+
+    let openSeatingAllowed: boolean | undefined;
+    if (body.openSeatingAllowed === '1') {
+        openSeatingAllowed = true;
+    }
+
+    return {
+        project: req.project,
+        typeOf: chevre.factory.placeType.ScreeningRoom,
+        branchCode: body.branchCode,
+        name: body.name,
+        address: body.address,
+        containedInPlace: {
+            project: req.project,
+            typeOf: chevre.factory.placeType.MovieTheater,
+            branchCode: body.containedInPlace.branchCode
+        },
+        containsPlace: [], // 更新しないため空でよし
+        additionalProperty: (Array.isArray(body.additionalProperty))
+            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined,
+        ...(typeof openSeatingAllowed === 'boolean')
+            ? { openSeatingAllowed: openSeatingAllowed }
+            : undefined,
+        ...(!isNew)
+            // ...{
+            //     $unset: { eligibleCustomerType: 1 }
+            // },
+            ? {
+                $unset: {
+                    'containsPlace.$.noExistingAttributeName': 1, // $unsetは空だとエラーになるので
+                    ...(openSeatingAllowed === undefined) ? { 'containsPlace.$.openSeatingAllowed': 1 } : undefined
+                }
+            }
+            : undefined
+    };
+}
 
 export default screeningRoomRouter;

@@ -6,11 +6,29 @@
                 <p>Home</p>
             </a>
         </li>
-        <li class="nav-item <%= (displayId === 'Aa-12') ? 'active': ''; %>">
-            <a class="nav-link" href="/places/movieTheater">
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#theaters">
                 <i class="material-icons">theaters</i>
-                <p>劇場</p>
+                <p> 施設
+                    <b class="caret"></b>
+                </p>
             </a>
+            <div class="collapse" id="theaters">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'Aa-12') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/movieTheater">
+                            <i class="material-icons">theaters</i>
+                            <p>劇場</p>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'SR-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/screeningRoom">
+                            <i class="material-icons">theaters</i>
+                            <p>スクリーン</p>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
         <li class="nav-item <%= (displayId === 'Aa-10') ? 'active': ''; %>">
             <a class="nav-link" href="/creativeWorks/movie">
@@ -57,13 +75,13 @@
         <li class="nav-item <%= (displayId === 'CC-00') ? 'active': ''; %>">
             <a class="nav-link" href="/categoryCodes">
                 <i class="material-icons">category</i>
-                <p>各種区分 <span class="badge badge-secondary badge-light">Preview</span></p>
+                <p>各種区分 <span class="badge badge-secondary">Preview</span></p>
             </a>
         </li>
         <li class="nav-item <%= (displayId === 'PS-02') ? 'active': ''; %>">
             <a class="nav-link" href="/priceSpecifications">
                 <i class="material-icons">attach_money</i>
-                <p>価格仕様 <span class="badge badge-secondary badge-light">Preview</span></p>
+                <p>価格仕様 <span class="badge badge-secondary">Preview</span></p>
             </a>
         </li>
 
@@ -71,14 +89,14 @@
         <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
             <a class="nav-link" href="/addOns">
                 <i class="material-icons">local_offer</i>
-                <p>アドオン <span class="badge badge-secondary badge-light">Preview</span></p>
+                <p>アドオン <span class="badge badge-secondary">Preview</span></p>
             </a>
         </li>
 
         <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
             <a class="nav-link" href="/products">
                 <i class="material-icons">local_drink</i>
-                <p>プロダクト <span class="badge badge-secondary badge-light">Preview</span></p>
+                <p>プロダクト <span class="badge badge-secondary">Preview</span></p>
             </a>
         </li>
         <% } %>

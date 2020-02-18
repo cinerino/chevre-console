@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -155,7 +156,7 @@ function updateAccountTitleCategory(req, res) {
                 }
             }
         }
-        const forms = Object.assign({}, accountTitle, req.body);
+        const forms = Object.assign(Object.assign({}, accountTitle), req.body);
         res.render('accountTitles/accountTitleCategory/edit', {
             message: message,
             errors: errors,
@@ -426,7 +427,7 @@ function updateAccountTitleSet(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitle, req.body);
+        const forms = Object.assign(Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitle), req.body);
         res.render('accountTitles/accountTitleSet/edit', {
             message: message,
             errors: errors,
@@ -582,7 +583,7 @@ function updateAccountTitle(req, res) {
                 }
             }
         }
-        const forms = Object.assign({ additionalProperty: [] }, accountTitle, req.body);
+        const forms = Object.assign(Object.assign({ additionalProperty: [] }, accountTitle), req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};

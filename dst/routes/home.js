@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -16,7 +17,7 @@ const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const homeRouter = express_1.Router();
-homeRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.query.next !== undefined) {
         next(new Error(req.param('next')));
         return;
@@ -48,7 +49,7 @@ homeRouter.get('/', (req, res, next) => __awaiter(this, void 0, void 0, function
 //         }
 //     }
 // );
-homeRouter.get('/dbStats', (req, res) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -59,7 +60,7 @@ homeRouter.get('/dbStats', (req, res) => __awaiter(this, void 0, void 0, functio
             method: 'GET',
             // tslint:disable-next-line:no-magic-numbers
             expectedStatusCodes: [200]
-        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+        }).then((response) => __awaiter(void 0, void 0, void 0, function* () {
             return response.json();
         }));
         res.json(stats);
@@ -70,7 +71,7 @@ homeRouter.get('/dbStats', (req, res) => __awaiter(this, void 0, void 0, functio
         });
     }
 }));
-homeRouter.get('/health', (req, res) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -81,7 +82,7 @@ homeRouter.get('/health', (req, res) => __awaiter(this, void 0, void 0, function
             method: 'GET',
             // tslint:disable-next-line:no-magic-numbers
             expectedStatusCodes: [200]
-        }).then((response) => __awaiter(this, void 0, void 0, function* () {
+        }).then((response) => __awaiter(void 0, void 0, void 0, function* () {
             const version = response.headers.get('X-API-Version');
             return {
                 version: version,
@@ -96,7 +97,7 @@ homeRouter.get('/health', (req, res) => __awaiter(this, void 0, void 0, function
         });
     }
 }));
-homeRouter.get('/queueCount', (req, res) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
@@ -117,7 +118,7 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(this, void 0, void 0, func
         });
     }
 }));
-homeRouter.get('/latestReservations', (req, res) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
@@ -143,7 +144,7 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(this, void 0, void
         });
     }
 }));
-homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(this, void 0, void 0, function* () {
+homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
