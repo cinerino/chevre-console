@@ -222,7 +222,9 @@ movieTheaterRouter.get(
 
                 return {
                     ...screen,
-                    name: screen.name !== undefined ? screen.name.ja : '',
+                    name: screen.name !== undefined
+                        ? (typeof screen.name === 'string') ? screen.name : screen.name.ja
+                        : '',
                     numSeats: numSeats
                 };
             });

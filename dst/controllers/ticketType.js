@@ -512,7 +512,7 @@ function createFromBody(req, isNew) {
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined, (validFrom === undefined) ? { validFrom: 1 } : undefined, (validThrough === undefined) ? { validThrough: 1 } : undefined)
+                $unset: Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined, (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined, (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined, (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined, (validFrom === undefined) ? { validFrom: 1 } : undefined, (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });

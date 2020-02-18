@@ -173,7 +173,9 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(this, void
                     return a + ((b.containsPlace !== undefined) ? b.containsPlace.length : 0);
                 }, 0);
             }
-            return Object.assign({}, screen, { name: screen.name !== undefined ? screen.name.ja : '', numSeats: numSeats });
+            return Object.assign({}, screen, { name: screen.name !== undefined
+                    ? (typeof screen.name === 'string') ? screen.name : screen.name.ja
+                    : '', numSeats: numSeats });
         });
         screeningRooms.sort((screen1, screen2) => {
             if (screen1.name > screen2.name) {

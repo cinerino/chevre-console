@@ -618,7 +618,9 @@ function createMultipleEventFromBody(req, user) {
                             project: req.project,
                             typeOf: screeningRoom.typeOf,
                             branchCode: screeningRoom.branchCode,
-                            name: screeningRoom.name === undefined ? { en: '', ja: '', kr: '' } : screeningRoom.name,
+                            name: screeningRoom.name === undefined
+                                ? { en: '', ja: '', kr: '' }
+                                : screeningRoom.name,
                             alternateName: screeningRoom.alternateName,
                             address: screeningRoom.address
                         },
