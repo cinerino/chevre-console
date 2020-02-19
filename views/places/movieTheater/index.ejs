@@ -12,27 +12,29 @@ Aa-12
 
 <%- contentFor('body') %>
 
-<div class="form-container search p-3 bg-light-gray mb-3">
-    <form method="post">
-        <%- include('../../common/master/_hidden') %>
-        <div class="menu-group">
-        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <%- include('../../common/master/_hidden') %>
+            <div class="menu-group">
+            </div>
 
-        <div class="form-group">
-            <label for="name" class="">
-                名称
-            </label>
-            <input class="form-control" name="name" id="name" placeholder="" maxlength=64>
-        </div>
+            <div class="form-group">
+                <label for="name" class="">
+                    名称
+                </label>
+                <input class="form-control" name="name" id="name" placeholder="" maxlength=64>
+            </div>
 
-        <div>
-            <a class="btn btn-primary" role="button" href="/places/movieTheater/new">
-                <i class=" fa fa-plus"></i> 登録</a>
+            <div>
+                <a class="btn btn-primary" role="button" href="/places/movieTheater/new">
+                    <i class=" fa fa-plus"></i> 登録</a>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">

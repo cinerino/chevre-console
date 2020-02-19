@@ -124,9 +124,11 @@ seatRouter.get(
                 // name: req.query.name
             });
 
-            const results = data.map((seat) => {
+            const results = data.map((seat, index) => {
                 return {
-                    ...seat
+                    ...seat,
+                    seatingTypeStr: (Array.isArray(seat.seatingType)) ? seat.seatingType.join(',') : '',
+                    id: `${seat.branchCode}:${index}`
                 };
             });
 
@@ -167,8 +169,19 @@ seatRouter.all(
                 auth: req.user.authClient
             });
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
             const searchMovieTheatersResult = await placeService.searchMovieTheaters({
                 project: { ids: [req.project.id] }
+            });
+
+            const searchSeatingTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
 
             const searchSeatsResult = await placeService.searchSeats({
@@ -228,7 +241,8 @@ seatRouter.all(
                 message: message,
                 errors: errors,
                 forms: forms,
-                movieTheaters: searchMovieTheatersResult.data
+                movieTheaters: searchMovieTheatersResult.data,
+                seatingTypes: searchSeatingTypesResult.data
             });
         } catch (error) {
             next(error);
@@ -238,6 +252,11 @@ seatRouter.all(
 
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat.IPlace {
     const body = req.body;
+
+    let seatingType: string[] | undefined;
+    if (typeof body.seatingType === 'string' && body.seatingType.length > 0) {
+        seatingType = [body.seatingType];
+    }
 
     return {
         project: req.project,
@@ -267,13 +286,14 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat
                     };
                 })
             : undefined,
+        ...(Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined,
         ...(!isNew)
-            // ...{
-            //     $unset: { eligibleCustomerType: 1 }
-            // },
             ? {
                 $unset: {
-                    noExistingAttributeName: 1 // $unsetは空だとエラーになるので
+                    noExistingAttributeName: 1, // $unsetは空だとエラーになるので
+                    ...(seatingType === undefined)
+                        ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
+                        : undefined
                 }
             }
             : undefined

@@ -244,13 +244,10 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
             ? { openSeatingAllowed: openSeatingAllowed }
             : undefined,
         ...(!isNew)
-            // ...{
-            //     $unset: { eligibleCustomerType: 1 }
-            // },
             ? {
                 $unset: {
-                    'containsPlace.$.noExistingAttributeName': 1, // $unsetは空だとエラーになるので
-                    ...(openSeatingAllowed === undefined) ? { 'containsPlace.$.openSeatingAllowed': 1 } : undefined
+                    noExistingAttributeName: 1, // $unsetは空だとエラーになるので
+                    ...(openSeatingAllowed === undefined) ? { 'containsPlace.$[screeningRoom].openSeatingAllowed': 1 } : undefined
                 }
             }
             : undefined

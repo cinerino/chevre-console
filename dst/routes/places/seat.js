@@ -115,8 +115,8 @@ seatRouter.get('/search',
             }
             // name: req.query.name
         });
-        const results = data.map((seat) => {
-            return Object.assign({}, seat);
+        const results = data.map((seat, index) => {
+            return Object.assign(Object.assign({}, seat), { seatingTypeStr: (Array.isArray(seat.seatingType)) ? seat.seatingType.join(',') : '', id: `${seat.branchCode}:${index}` });
         });
         res.json({
             success: true,
@@ -149,8 +149,17 @@ seatRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
+        });
+        const searchSeatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const searchSeatsResult = yield placeService.searchSeats({
             limit: 1,
@@ -200,7 +209,8 @@ seatRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void
             message: message,
             errors: errors,
             forms: forms,
-            movieTheaters: searchMovieTheatersResult.data
+            movieTheaters: searchMovieTheatersResult.data,
+            seatingTypes: searchSeatingTypesResult.data
         });
     }
     catch (error) {
@@ -209,7 +219,11 @@ seatRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void
 }));
 function createFromBody(req, isNew) {
     const body = req.body;
-    return Object.assign({ project: req.project, typeOf: chevre.factory.placeType.Seat, branchCode: body.branchCode, containedInPlace: {
+    let seatingType;
+    if (typeof body.seatingType === 'string' && body.seatingType.length > 0) {
+        seatingType = [body.seatingType];
+    }
+    return Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.placeType.Seat, branchCode: body.branchCode, containedInPlace: {
             project: req.project,
             typeOf: chevre.factory.placeType.ScreeningRoomSection,
             branchCode: body.containedInPlace.branchCode,
@@ -231,14 +245,11 @@ function createFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined }, (!isNew)
-        // ...{
-        //     $unset: { eligibleCustomerType: 1 }
-        // },
+            : undefined }, (Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined), (!isNew)
         ? {
-            $unset: {
-                noExistingAttributeName: 1 // $unsetは空だとエラーになるので
-            }
+            $unset: Object.assign({ noExistingAttributeName: 1 }, (seatingType === undefined)
+                ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
+                : undefined)
         }
         : undefined);
 }

@@ -67,29 +67,21 @@ $(function () {
 
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
-        var branchCode = $(this).attr('data-branchCode');
-        console.log('showing additionalProperty...branchCode:', branchCode);
-
-        showAdditionalProperty(branchCode);
-    });
-
-    // スクリーン情報
-    $(document).on('click', '.showContainsPlace', function (event) {
         var id = $(this).attr('data-id');
-        console.log('showing containsPlace...id:', id);
+        console.log('showing additionalProperty...id:', id);
 
-        showContainsPlace(id);
+        showAdditionalProperty(id);
     });
 
     /**
      * 追加特性を見る
      */
-    function showAdditionalProperty(branchCode) {
+    function showAdditionalProperty(id) {
         var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
-            return data.branchCode === branchCode
+            return data.id === id
         });
         if (movieTheater === undefined) {
-            alert('劇場' + branchCode + 'が見つかりません');
+            alert('座席' + id + 'が見つかりません');
 
             return;
         }
