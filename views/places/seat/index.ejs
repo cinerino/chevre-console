@@ -1,14 +1,14 @@
 <%- contentFor('title') %>
-スクリーン検索
+座席検索
 <%- contentFor('displayId') %>
-SR-01
+ST-01
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
-<script src="/js/master/places/screeningRooms.js"></script>
+<script src="/js/master/places/seats.js"></script>
 
 <%- contentFor('body') %>
 
@@ -19,10 +19,10 @@ SR-01
         </div>
 
         <div class="form-group">
-            <label for="containedInPlace[branchCode][$eq]" class="">
+            <label for="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]" class="">
                 劇場
             </label>
-            <select class="form-control" name="containedInPlace[branchCode][$eq]">
+            <select class="form-control" name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]">
                 <option value="">選択してください</option>
                 <% for (const movieTheater of movieTheaters) { %>
                 <option value="<%= movieTheater.branchCode %>">
@@ -30,6 +30,13 @@ SR-01
                 </option>
                 <% } %>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label for="branchCode[$eq]" class="">
+                座席コード
+            </label>
+            <input class="form-control" name="branchCode[$eq]">
         </div>
 
         <div>
@@ -58,16 +65,33 @@ SR-01
                             <tr>
                                 <th>コード</th>
                                 <th>劇場</th>
-                                <th>名称</th>
-                                <th>アドレス</th>
-                                <th>自由席</th>
+                                <th>スクリーン</th>
+                                <th>セクション</th>
+                                <th>座席タイプ</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" identifier="">
-                                <td name="containedInPlace.branchCode__branchCode__branchCode"><a target="_blank"
-                                        href="/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">$branchCode$</a>
+                                <td
+                                    name="typeOf__containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
+                                    <span class="badge badge-secondary">$typeOf$</span><br>
+                                    <a target="_blank"
+                                        href="/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">$branchCode$</a>
+                                </td>
+                                <td
+                                    name="containedInPlace.containedInPlace.containedInPlace.typeOf__containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja">
+                                    <span
+                                        class="badge badge-secondary">$containedInPlace.containedInPlace.containedInPlace.typeOf$</span><br>
+                                    $containedInPlace.containedInPlace.containedInPlace.branchCode$<br>
+                                    $containedInPlace.containedInPlace.containedInPlace.name.ja$<br>
+                                </td>
+                                <td
+                                    name="containedInPlace.containedInPlace.typeOf__containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja">
+                                    <span
+                                        class="badge badge-secondary">$containedInPlace.containedInPlace.typeOf$</span><br>
+                                    $containedInPlace.containedInPlace.branchCode$<br>
+                                    $containedInPlace.containedInPlace.name.ja$<br>
                                 </td>
                                 <td
                                     name="containedInPlace.typeOf__containedInPlace.branchCode__containedInPlace.name.ja">
@@ -75,25 +99,17 @@ SR-01
                                     $containedInPlace.branchCode$<br>
                                     $containedInPlace.name.ja$<br>
                                 </td>
-                                <td name="name.ja__name.en">
-                                    $name.ja$<br>
-                                    $name.en$
-                                </td>
-                                <td name="address.ja__address.en">
-                                    $address.ja$<br>
-                                    $address.en$
-                                </td>
-                                <td name="openSeatingAllowed">
-                                    $openSeatingAllowed$<br>
+                                <td name="seatingType">
+                                    $seatingType$<br>
                                 </td>
                                 <td name="branchCode__id" class="">
-                                    <div class="text-center">
+                                    <!-- <div class="text-center">
                                         <a href="javascript:void(0)"
                                             class="btn btn-sm btn-outline-primary showAdditionalProperty"
                                             data-branchCode="$branchCode$">
                                             <span>追加特性</span>
                                         </a>
-                                    </div>
+                                    </div> -->
                                 </td>
                             </tr>
                         </tbody>

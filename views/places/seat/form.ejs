@@ -1,0 +1,76 @@
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">基本設定</h4>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="form-group bmd-form-group">
+            <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                劇場
+            </label>
+            <% if (isNew) { %>
+            <select class="form-control" name="containedInPlace[branchCode]">
+                <option value="">選択してください</option>
+                <% for (const movieTheater of movieTheaters) { %>
+                <option value="<%= movieTheater.branchCode %>">
+                    <%= movieTheater.name.ja %>
+                </option>
+                <% } %>
+            </select>
+            <% } else { %>
+            <select class="form-control" disabled>
+                <% for (const movieTheater of movieTheaters) { %>
+                <option value="<%= movieTheater.branchCode %>"
+                    <% if (movieTheater.branchCode === forms.containedInPlace.containedInPlace.containedInPlace.branchCode) { %>
+                    selected<% } %>>
+                    <%= movieTheater.name.ja %>
+                </option>
+                <% } %>
+            </select>
+            <input type="hidden" name="containedInPlace[containedInPlace][containedInPlace][branchCode]"
+                value="<%= forms.containedInPlace.containedInPlace.containedInPlace.branchCode %>">
+            <% } %>
+        </div>
+
+        <input type="hidden" name="containedInPlace[containedInPlace][branchCode]"
+            value="<%= forms.containedInPlace.containedInPlace.branchCode %>">
+        <input type="hidden" name="containedInPlace[branchCode]" value="<%= forms.containedInPlace.branchCode %>">
+
+        <div class="form-group bmd-form-group">
+            <label class="bmd-label-static">
+                枝番号
+            </label>
+            <% if (isNew) { %>
+            <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder="" maxlength=64
+                value="<%= forms.branchCode %>">
+            <span class="bmd-help">半角64文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors.branchCode) { %>
+                <%- errors.branchCode.msg %>
+                <% } %>
+            </p>
+            <% } else { %>
+            <input disabled type="text" class="form-control" value="<%= forms.branchCode %>">
+            <input type="hidden" name="branchCode" value="<%= forms.branchCode %>">
+            <% } %>
+
+        </div>
+    </div>
+</div>
+<!-- end card -->
+
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">追加特性</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <%- include('../../common/part/_additionalProperty', {
+            additionalProperty: forms.additionalProperty
+        }) %>
+    </div>
+</div>
+<!-- end card -->
