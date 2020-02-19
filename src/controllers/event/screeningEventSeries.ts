@@ -332,7 +332,7 @@ function createEventFromBody(
 
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: 'Offer',
+        typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
         acceptedPaymentMethod: acceptedPaymentMethod
     };

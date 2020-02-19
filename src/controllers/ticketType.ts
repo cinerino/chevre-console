@@ -115,6 +115,13 @@ export async function add(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
 
+    // 口座タイプ検索
+    const searchAccountTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+    });
+
     const searchAccountTitlesResult = await accountTitleService.search({
         project: { ids: [req.project.id] }
     });
@@ -132,7 +139,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
-        accountTypes: [],
+        accountTypes: searchAccountTypesResult.data,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data
@@ -273,6 +280,13 @@ export async function update(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
 
+    // 口座タイプ検索
+    const searchAccountTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+    });
+
     const searchProductOffersResult = await offerService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -287,7 +301,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
-        accountTypes: [],
+        accountTypes: searchAccountTypesResult.data,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productOffers: searchProductOffersResult.data

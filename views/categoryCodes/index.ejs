@@ -12,65 +12,70 @@ CC-00
 
 <%- contentFor('body') %>
 
-<div class="form-container search mb-3 searchCategoryCode">
-    <form method="post" class="p-3 bg-light-gray">
-        <%- include('../common/master/_hidden') %>
-        <div class="menu-group">
-        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <%- include('../common/master/_hidden') %>
+            <div class="menu-group">
+            </div>
 
-        <div class="form-group">
-            <label for="inCodeSet[identifier]" class="">
-                区分分類
-            </label>
-            <select class="form-control" name="inCodeSet[identifier]">
-                <option value="" selected>未選択</option>
-                <option value="<%= CategorySetIdentifier.ServiceType%>">
-                    興行区分
-                </option>
-                <option value="<%= CategorySetIdentifier.DistributorType%>">
-                    配給区分
-                </option>
-                <option value="<%= CategorySetIdentifier.OfferCategoryType%>">
-                    オファーカテゴリー
-                </option>
-                <option value="<%= CategorySetIdentifier.VideoFormatType%>">
-                    上映方式タイプ
-                </option>
-                <option value="<%= CategorySetIdentifier.SoundFormatType%>">
-                    音響方式タイプ
-                </option>
-                <option value="<%= CategorySetIdentifier.SeatingType%>">
-                    座席タイプ
-                </option>
-                <option value="<%= CategorySetIdentifier.MovieTicketType%>">
-                    ムビチケ券種区分
-                </option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label for="inCodeSet[identifier]" class="">
+                    区分分類
+                </label>
+                <select class="form-control" name="inCodeSet[identifier]">
+                    <option value="" selected>未選択</option>
+                    <option value="<%= CategorySetIdentifier.ServiceType%>">
+                        興行区分
+                    </option>
+                    <option value="<%= CategorySetIdentifier.DistributorType%>">
+                        配給区分
+                    </option>
+                    <option value="<%= CategorySetIdentifier.OfferCategoryType%>">
+                        オファーカテゴリー
+                    </option>
+                    <option value="<%= CategorySetIdentifier.VideoFormatType%>">
+                        上映方式タイプ
+                    </option>
+                    <option value="<%= CategorySetIdentifier.SoundFormatType%>">
+                        音響方式タイプ
+                    </option>
+                    <option value="<%= CategorySetIdentifier.SeatingType%>">
+                        座席タイプ
+                    </option>
+                    <option value="<%= CategorySetIdentifier.MovieTicketType%>">
+                        ムビチケ券種区分
+                    </option>
+                    <option value="<%= CategorySetIdentifier.AccountType%>">
+                        口座タイプ
+                    </option>
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label for="codeValue[$eq]" class="">
-                区分コード
-            </label>
-            <input type="text" class="form-control" name="codeValue[$eq]" id="codeValue[$eq]" placeholder=""
-                maxlength=64 value="">
-        </div>
+            <div class="form-group">
+                <label for="codeValue[$eq]" class="">
+                    区分コード
+                </label>
+                <input type="text" class="form-control" name="codeValue[$eq]" id="codeValue[$eq]" placeholder=""
+                    maxlength=64 value="">
+            </div>
 
-        <div class="form-group">
-            <label for="name[$regex]" class="">
-                名称
-            </label>
-            <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder="" maxlength=64 value="">
-        </div>
+            <div class="form-group">
+                <label for="name[$regex]" class="">
+                    名称
+                </label>
+                <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder="" maxlength=64 value="">
+            </div>
 
-        <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/categoryCodes/new">
-                <i class=" fa fa-plus"></i> 登録</a>
+            <div class="panel-body">
+                <a class="btn btn-primary" role="button" href="/categoryCodes/new">
+                    <i class=" fa fa-plus"></i> 登録</a>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">
@@ -79,27 +84,34 @@ CC-00
     <!-- <p class="mb-3" id="searchedCount" style="display:none;">
         検索結果 $searched_count$件
     </p> -->
-    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>区分分類</th>
-                    <th>区分コード</th>
-                    <th>名称</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow">
-                    <td name="inCodeSet.identifier">$inCodeSet.identifier$</td>
-                    <td name="id__codeValue">
-                        <a target="_blank" href="/categoryCodes/$id$/update">$codeValue$</a>
-                    </td>
-                    <td name="name.ja">
-                        $name.ja$
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="list" style="display:none;">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="text-primary">
+                            <tr>
+                                <th>区分分類</th>
+                                <th>区分コード</th>
+                                <th>名称</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="templateRow">
+                                <td name="inCodeSet.identifier">$inCodeSet.identifier$</td>
+                                <td name="id__codeValue">
+                                    <a target="_blank" href="/categoryCodes/$id$/update">$codeValue$</a>
+                                </td>
+                                <td name="name.ja">
+                                    $name.ja$
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>

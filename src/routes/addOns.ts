@@ -320,7 +320,7 @@ function createFromBody(req: Request, itemOffered: any): chevre.factory.offer.IO
     };
 
     return {
-        typeOf: 'Offer',
+        typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: req.params.id,
         name: body.name,

@@ -276,7 +276,7 @@ function createFromBody(req, itemOffered) {
             accountsReceivable: undefined
         }
     };
-    return Object.assign({ typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.params.id, name: body.name, itemOffered: {
+    return Object.assign({ typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.params.id, name: body.name, itemOffered: {
             project: itemOffered.project,
             typeOf: itemOffered.typeOf,
             id: itemOffered.id,

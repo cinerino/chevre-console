@@ -166,7 +166,7 @@ function createMovieFromBody(req: Request): chevre.factory.creativeWork.movie.IC
             moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
         offers: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: 'Offer',
+            typeOf: chevre.factory.offerType.Offer,
             priceCurrency: chevre.factory.priceCurrency.JPY,
             availabilityEnds: (!_.isEmpty(body.offers) && !_.isEmpty(body.offers.availabilityEnds)) ?
                 moment(`${body.offers.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate() : undefined

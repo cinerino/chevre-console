@@ -1,76 +1,89 @@
-<div class="form-group">
-    <label for="inCodeSet[identifier]" class="">
-        区分分類<span class="text-danger">＊</span>
-    </label>
-    <% if (!isNew) { %>
-    <input type="hidden" name="inCodeSet[identifier]" value="<%= forms.inCodeSet.identifier %>">
-    <% } %>
-    <select class="form-control" name="inCodeSet[identifier]" <% if (!isNew) { %> disabled<% } %>>
-        <option value="">選択してください</option>
-        <option value="<%= CategorySetIdentifier.ServiceType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.ServiceType) { %> selected<% } %>>
-            興行区分
-        </option>
-        <option value="<%= CategorySetIdentifier.DistributorType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.DistributorType) { %> selected<% } %>>
-            配給区分
-        </option>
-        <option value="<%= CategorySetIdentifier.OfferCategoryType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.OfferCategoryType) { %> selected<% } %>>
-            オファーカテゴリー
-        </option>
-        <option value="<%= CategorySetIdentifier.VideoFormatType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.VideoFormatType) { %> selected<% } %>>
-            上映方式タイプ
-        </option>
-        <option value="<%= CategorySetIdentifier.SoundFormatType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.SoundFormatType) { %> selected<% } %>>
-            音響方式タイプ
-        </option>
-        <option value="<%= CategorySetIdentifier.SeatingType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.SeatingType) { %> selected<% } %>>
-            座席タイプ
-        </option>
-        <option value="<%= CategorySetIdentifier.MovieTicketType %>" <% if (forms.inCodeSet !== undefined
-            && forms.inCodeSet.identifier === CategorySetIdentifier.MovieTicketType) { %> selected<% } %>>
-            ムビチケ券種区分
-        </option>
-    </select>
-    <p class="error message text-danger">
-        <% if (errors && errors['inCodeSet.identifier']) { %>
-        <%- errors['inCodeSet.identifier'].msg %>
-        <% } %>
-    </p>
-</div>
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">基本設定</h4>
+        </div>
+    </div>
 
-<div class="form-group">
-    <label for="codeValue" class="">
-        区分コード<span class="text-danger">＊</span>
-    </label>
-    <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=20
-        value=<%=forms.codeValue %> <% if (!isNew) { %> readonly <% } %>>
-    <p class="message">
-        半角20文字以内でご入力ください。
-    </p>
-    <p class="error message text-danger">
-        <% if (errors && errors.codeValue) { %>
-        <%- errors.codeValue.msg %>
-        <% } %>
-    </p>
-</div>
+    <div class="card-body">
+        <div class="form-group bmd-form-group">
+            <label for="inCodeSet[identifier]" class="bmd-label-static">
+                区分分類<span class="text-danger">＊</span>
+            </label>
+            <% if (!isNew) { %>
+            <input type="hidden" name="inCodeSet[identifier]" value="<%= forms.inCodeSet.identifier %>">
+            <% } %>
+            <select class="form-control" name="inCodeSet[identifier]" <% if (!isNew) { %> disabled<% } %>>
+                <option value="">選択してください</option>
+                <option value="<%= CategorySetIdentifier.ServiceType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.ServiceType) { %> selected<% } %>>
+                    興行区分
+                </option>
+                <option value="<%= CategorySetIdentifier.DistributorType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.DistributorType) { %> selected<% } %>>
+                    配給区分
+                </option>
+                <option value="<%= CategorySetIdentifier.OfferCategoryType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.OfferCategoryType) { %> selected<% } %>>
+                    オファーカテゴリー
+                </option>
+                <option value="<%= CategorySetIdentifier.VideoFormatType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.VideoFormatType) { %> selected<% } %>>
+                    上映方式タイプ
+                </option>
+                <option value="<%= CategorySetIdentifier.SoundFormatType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.SoundFormatType) { %> selected<% } %>>
+                    音響方式タイプ
+                </option>
+                <option value="<%= CategorySetIdentifier.SeatingType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.SeatingType) { %> selected<% } %>>
+                    座席タイプ
+                </option>
+                <option value="<%= CategorySetIdentifier.MovieTicketType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.MovieTicketType) { %> selected<% } %>>
+                    ムビチケ券種区分
+                </option>
+                <option value="<%= CategorySetIdentifier.AccountType%>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.AccountType) { %> selected<% } %>>
+                    口座タイプ
+                </option>
+            </select>
+            <p class="error message text-danger">
+                <% if (errors && errors['inCodeSet.identifier']) { %>
+                <%- errors['inCodeSet.identifier'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<div class="form-group">
-    <label for="name[ja]" class="">
-        名称<span class="text-danger">＊</span>
-    </label>
-    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
-        value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
-    <p class="message">
-        30文字以内でご入力ください。
-    </p>
-    <p class="error message text-danger">
-        <% if (errors && errors['name.ja']) { %>
-        <%- errors['name.ja'].msg %>
-        <% } %>
-    </p>
+        <div class="form-group bmd-form-group">
+            <label for="codeValue" class="bmd-label-static">
+                区分コード<span class="text-danger">＊</span>
+            </label>
+            <% if (!isNew) { %>
+            <input type="hidden" name="codeValue" value="<%= forms.codeValue %>">
+            <% } %>
+            <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=20
+                value="<%= forms.codeValue %>" <% if (!isNew) { %> disabled<% } %>>
+            <span class="bmd-help">半角20文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors.codeValue) { %>
+                <%- errors.codeValue.msg %>
+                <% } %>
+            </p>
+        </div>
+
+        <div class="form-group bmd-form-group">
+            <label for="name[ja]" class="bmd-label-static">
+                名称<span class="text-danger">＊</span>
+            </label>
+            <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
+                value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+            <span class="bmd-help">30文字以内でご入力ください</span>
+            <p class="error message text-danger">
+                <% if (errors && errors['name.ja']) { %>
+                <%- errors['name.ja'].msg %>
+                <% } %>
+            </p>
+        </div>
+    </div>
 </div>

@@ -103,6 +103,12 @@ function add(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
+        // 口座タイプ検索
+        const searchAccountTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+        });
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] }
         });
@@ -119,7 +125,7 @@ function add(req, res) {
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
-            accountTypes: [],
+            accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
@@ -235,6 +241,12 @@ function update(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
+        // 口座タイプ検索
+        const searchAccountTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+        });
         const searchProductOffersResult = yield offerService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -248,7 +260,7 @@ function update(req, res) {
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
-            accountTypes: [],
+            accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productOffers: searchProductOffersResult.data
