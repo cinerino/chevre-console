@@ -20,12 +20,12 @@
             <input type="text" disabled class="form-control" value="<%= forms.identifier %>">
             <input type="hidden" name="identifier" value="<%= forms.identifier %>">
             <% } %>
+            <span class="bmd-help text-danger d-block">
+                <% if (errors && errors.identifier) { %>
+                <%- errors.identifier.msg %>
+                <% } %>
+            </span>
         </div>
-        <p class="error message text-danger">
-            <% if (errors && errors.identifier) { %>
-            <%- errors.identifier.msg %>
-            <% } %>
-        </p>
 
         <div class="form-group bmd-form-group">
             <label for="name[ja]" class="bmd-label-static">
@@ -34,11 +34,11 @@
             <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64 value="<%=forms.name.ja
             %>">
             <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['name.ja']) { %>
                 <%- errors['name.ja'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -48,11 +48,11 @@
             <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64 value="<%=forms.name.en
             %>">
             <span class="bmd-help">半角64文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['name.en']) { %>
                 <%- errors['name.en'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <% if (!isNew) { %>
@@ -70,10 +70,6 @@
                 <%= JSON.stringify(forms.name, null, '\t') %>
                 </textarea>
             </div>
-            <p class="message">
-            </p>
-            <p class="error message text-danger">
-            </p>
         </div>
         <% } %>
 
@@ -84,11 +80,11 @@
             <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]" placeholder=""
                 maxlength=64 value="<%= forms.alternateName.ja %>">
             <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['alternateName.ja']) { %>
                 <%- errors['alternateName.ja'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <div class="form-row">
@@ -115,16 +111,16 @@
                 </div>
                 <span class="bmd-help">半角10文字以内でご入力ください</span>
 
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors.price) { %>
                     <%- errors.price.msg %>
                     <% } %>
-                </p>
-                <p class="error message text-danger">
+                </span>
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors.seatReservationUnit) { %>
                     <%- errors.seatReservationUnit.msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
 
             <div class="form-group bmd-form-group col-md-3">
@@ -139,12 +135,11 @@
                     </div>
                 </div>
                 <span class="bmd-help">半角10文字以内でご入力ください</span>
-
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors.accountsReceivable) { %>
                     <%- errors.accountsReceivable.msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
 
             <div class="form-group bmd-form-group col-md-3">
@@ -173,8 +168,6 @@
                     </span>
                 </label>
             </div>
-            <p class="error message text-danger">
-            </p>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -184,11 +177,11 @@
             <input type="text" class="form-control" name="description[ja]" id="description[ja]" placeholder=""
                 maxlength=64 value="<%=forms.description.ja %>">
             <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['description.ja']) { %>
                 <%- errors['description.ja'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -198,11 +191,11 @@
             <input type="text" class="form-control" name="description[en]" id="description[en]" placeholder=""
                 maxlength=64 value="<%=forms.description.en %>">
             <span class="bmd-help">半角64文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['description.en']) { %>
                 <%- errors['description.en'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
     </div>
 </div>
@@ -237,11 +230,11 @@
                     </div>
                 </div>
 
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors.appliesToMovieTicketType) { %>
                     <%- errors.appliesToMovieTicketType.msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
 
             <div class="form-group bmd-form-group col-md-3">
@@ -252,8 +245,12 @@
                     <select class="form-control" name="eligibleMonetaryAmount[][currency]">
                         <option value="" selected>指定しない</option>
                         <% Object.values(accountTypes).forEach((accountType) => { %>
-                        <option value="<%= accountType.id %>" <% if (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0
-                    && accountType.codeValue === eligibleMonetaryAmount[0].currency) { %> selected<% } %>>
+                        <%
+                        const selected = Array.isArray(forms.eligibleMonetaryAmount)
+                            && forms.eligibleMonetaryAmount.length > 0
+                            && accountType.codeValue === forms.eligibleMonetaryAmount[0].currency;
+                        %>
+                        <option value="<%= accountType.id %>" <% if (selected) { %> selected<% } %>>
                             <%= accountType.codeValue %> <%= accountType.name.ja %>
                         </option>
                         <% }) %>
@@ -271,11 +268,11 @@
                     </div>
                 </div>
 
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
                     <%- errors['eligibleMonetaryAmount.0.value'].msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
 
             <div class="form-group bmd-form-group col-md-3">
@@ -297,11 +294,11 @@
                     </div>
                 </div>
 
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors['eligibleSeatingType.id']) { %>
                     <%- errors['eligibleSeatingType.id'].msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
 
             <div class="form-group bmd-form-group col-md-3">
@@ -332,11 +329,11 @@
                     </div>
                 </div>
 
-                <p class="error message text-danger">
+                <span class="bmd-help text-danger d-block">
                     <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
                     <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
                     <% } %>
-                </p>
+                </span>
             </div>
         </div>
 
@@ -374,8 +371,6 @@
                         <span class="input-group-text" id="basic-addon2">枚以下</span>
                     </div>
                 </div>
-                <p class="error message text-danger">
-                </p>
             </div>
 
             <div class="form-group bmd-form-group col-md-6">
@@ -390,8 +385,6 @@
                         <span class="input-group-text" id="basic-addon2">円以上</span>
                     </div>
                 </div>
-                <p class="error message text-danger">
-                </p>
             </div>
         </div>
 
@@ -426,8 +419,6 @@
                     <span class="input-group-text" id="basic-addon2">まで有効</span>
                 </div>
             </div>
-            <p class="error message text-danger">
-            </p>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -487,8 +478,6 @@
                 </option>
                 <% } %>
             </select>
-            <p class="error message text-danger">
-            </p>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -504,11 +493,11 @@
                 </option>
                 <% } %>
             </select>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors.accountTitle) { %>
                 <%- errors.accountTitle.msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
@@ -526,8 +515,6 @@
                 </option>
                 <% } %>
             </select>
-            <p class="error message text-danger">
-            </p>
         </div>
         <% } %>
 

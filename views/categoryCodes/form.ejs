@@ -48,11 +48,11 @@
                     口座タイプ
                 </option>
             </select>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['inCodeSet.identifier']) { %>
                 <%- errors['inCodeSet.identifier'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -65,11 +65,11 @@
             <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=20
                 value="<%= forms.codeValue %>" <% if (!isNew) { %> disabled<% } %>>
             <span class="bmd-help">半角20文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors.codeValue) { %>
                 <%- errors.codeValue.msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -79,11 +79,11 @@
             <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
                 value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
             <span class="bmd-help">30文字以内でご入力ください</span>
-            <p class="error message text-danger">
+            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors['name.ja']) { %>
                 <%- errors['name.ja'].msg %>
                 <% } %>
-            </p>
+            </span>
         </div>
     </div>
 </div>

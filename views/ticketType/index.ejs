@@ -11,108 +11,111 @@ Aa-6
 <script src="/js/master/ticketTypeList.js"></script>
 <%- contentFor('body') %>
 <% /* フォーム */ %>
-<div class="form-container search p-3 bg-light-gray mb-3">
-    <form method="post">
-        <% /* 共通Hiddenコントロール */ %>
-        <%- include('../common/master/_hidden') %>
-        <div class="menu-group">
-            <% /* メッセージ */ %>
-            <% if (message !== '') { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= message %>
-            </p>
-            <% } %>
-        </div>
 
-        <div class="form-group">
-            <label for="identifier" class="">
-                券種コード
-            </label>
-            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64>
-        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <% /* 共通Hiddenコントロール */ %>
+            <%- include('../common/master/_hidden') %>
+            <div class="menu-group">
+            </div>
 
-        <div class="form-group">
-            <label for="name" class="">
-                名称
-            </label>
-            <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
-        </div>
-
-        <div class="form-group">
-            <label for="ticketTypeGroups" class="">
-                券種グループ
-            </label>
-            <select name="ticketTypeGroups" id="ticketTypeGroups" class="form-control">
-                <option value="">---</option>
-                <% for (let ticketTypeGroupList of ticketTypeGroupsList) { %>
-                <option value="<%- ticketTypeGroupList.id %>">
-                    <%- ticketTypeGroupList.name.ja %>
-                </option>
-                <% } %>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="" class="">
-                単価
-            </label>
-            <div class="input-group">
-                <select class="form-control" name="priceSpecification[referenceQuantity][value]">
-                    <option value="">---</option>
-                    <% for (let i = 1; i <= 10; i++) { %>
-                    <option value="<%= i %>">
-                        <%= i %>
-                    </option>
-                    <% } %>
-                </select>
-
-                <div class="input-group-append">
-                    <span class="input-group-text">枚あたり</span>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="identifier" class="bmd-label-static">
+                        券種コード
+                    </label>
+                    <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+                        maxlength=64>
                 </div>
 
-                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
-                    id="priceSpecification[minPrice]" value="" />
-
-                <div class="input-group-append">
-                    <span class="input-group-text">円以上</span>
-                </div>
-
-                <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
-                    id="priceSpecification[maxPrice]" value="" />
-
-                <div class="input-group-append">
-                    <span class="input-group-text">円以下</span>
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="name" class="bmd-label-static">
+                        名称
+                    </label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
                 </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="category[id]" class="">
-                オファーカテゴリー
-            </label>
-            <select class="form-control" name="category[id]">
-                <option value="">---</option>
-                <% ticketTypeCategories.forEach((category) => { %>
-                <option value="<%= category.id %>">
-                    <%= category.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-        </div>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="ticketTypeGroups" class="bmd-label-static">
+                        券種グループ
+                    </label>
+                    <select name="ticketTypeGroups" id="ticketTypeGroups" class="form-control">
+                        <option value="">---</option>
+                        <% for (let ticketTypeGroupList of ticketTypeGroupsList) { %>
+                        <option value="<%- ticketTypeGroupList.id %>">
+                            <%- ticketTypeGroupList.name.ja %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
 
-        <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/ticketTypes/add">
-                <i class=" fa fa-plus"></i> 登録</a>
-            <% if (process.env.USE_COA === '1') { %>
-            <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
-                <i class=" fa fa-plus"></i> COAからインポート</a>
-            <% } %>
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="category[id]" class="bmd-label-static">
+                        オファーカテゴリー
+                    </label>
+                    <select class="form-control" name="category[id]">
+                        <option value="">---</option>
+                        <% ticketTypeCategories.forEach((category) => { %>
+                        <option value="<%= category.id %>">
+                            <%= category.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+            <div class="form-group bmd-form-group">
+                <label for="" class="bmd-label-static">
+                    単価
+                </label>
+                <div class="input-group">
+                    <select class="form-control" name="priceSpecification[referenceQuantity][value]">
+                        <option value="">---</option>
+                        <% for (let i = 1; i <= 10; i++) { %>
+                        <option value="<%= i %>">
+                            <%= i %>
+                        </option>
+                        <% } %>
+                    </select>
+
+                    <div class="input-group-append">
+                        <span class="input-group-text">枚あたり</span>
+                    </div>
+
+                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
+                        id="priceSpecification[minPrice]" value="" />
+
+                    <div class="input-group-append">
+                        <span class="input-group-text">円以上</span>
+                    </div>
+
+                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
+                        id="priceSpecification[maxPrice]" value="" />
+
+                    <div class="input-group-append">
+                        <span class="input-group-text">円以下</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <a class="btn btn-primary" role="button" href="/ticketTypes/add">
+                    <i class=" fa fa-plus"></i> 登録</a>
+                <% if (process.env.USE_COA === '1') { %>
+                <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
+                    <i class=" fa fa-plus"></i> COAからインポート</a>
+                <% } %>
+
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
+
 <% /* 一覧 */ %>
 <div class="form-container search">
     <p id="resultStats" style="display:none;">
@@ -127,121 +130,59 @@ Aa-6
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>券種コード<br>細目コード<br>利用状況<br>カテゴリー</th>
-                                <th>名称<br>English Name<br>代替名称</th>
-                                <th>発生金額<br>売上金額<br>適用単位</th>
+                                <th>券種コード<br>利用状況</th>
+                                <th>名称</th>
+                                <th>発生金額<br>売上金額</th>
                                 <th>適用条件</th>
                                 <th>有効性</th>
-                                <th>アドオン</th>
+                                <th>アドオン<br>追加特性</th>
                                 <th></th>
                             </tr>
                         </thead>
 
                         <tbody>
                             <tr id="templateRow" _id="$id$">
-                                <td
-                                    name="id__identifier__priceSpecification.accounting.operatingRevenue.codeValue__priceSpecification.accounting.operatingRevenue.codeValue__availability__category.codeValue">
-                                    <p>
-                                        <a target="_blank" href="/ticketTypes/$id$/update">
-                                            $identifier$
-                                        </a>
-                                    </p>
-                                    <p><a target="_blank"
-                                            href="/accountTitles/$priceSpecification.accounting.operatingRevenue.codeValue$">$priceSpecification.accounting.operatingRevenue.codeValue$
-                                    </p>
-                                    <p class="badge badge-secondary">$availability$</p>
-                                    <p>$category.codeValue$</p>
+                                <td name="id__identifier__availability">
+                                    <a target="_blank" href="/ticketTypes/$id$/update">
+                                        $identifier$
+                                    </a><br>
+                                    <span class="badge badge-secondary">$availability$</span>
                                 </td>
-                                <td name="name.ja__name.en__alternateName.ja">
-                                    $name.ja$<br>$name.en$<br>$alternateName.ja$</td>
+                                <td name="name.ja__name.en">
+                                    $name.ja$<br>$name.en$</td>
                                 <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
                                     style="text-align:right;">
-                                    <p>$priceSpecification.price$ $priceSpecification.priceCurrency$</p>
-                                    <p>$priceSpecification.accounting.accountsReceivable$
-                                        $priceSpecification.priceCurrency$</p>
-                                    <p>/ $referenceQuantity.value$ 枚</p>
+                                    $priceSpecification.price$ $priceSpecification.priceCurrency$ /
+                                    $referenceQuantity.value$<br>
+                                    $priceSpecification.accounting.accountsReceivable$
+                                    $priceSpecification.priceCurrency$
                                 </td>
                                 <td
-                                    name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__eligibleQuantity.minValue__eligibleQuantity.maxValue__eligibleTransactionVolume.price__eligibleTransactionVolume.priceCurrency__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <i class="icon fa fa-ticket-alt"></i>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <p>$eligibleQuantity.minValue$ 枚以上</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <i class="icon fa fa-ticket-alt"></i>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <p>$eligibleQuantity.maxValue$ 枚以下</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <i class="icon fa fa-dollar-sign"></i>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <p>$eligibleTransactionVolume.price$
-                                                $eligibleTransactionVolume.priceCurrency$ 以上</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <p class="">ムビ</p>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <p>$priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <i class="material-icons"><small>event_seat</small></i>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <span class="">$eligibleSeatingType.0.codeValue$</span>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-3 pr-1">
-                                            <i class="material-icons"><small>monetization_on</small></i>
-                                        </div>
-                                        <div class="col-md-9 pl-1">
-                                            <span class="">$eligibleMonetaryAmount.0.value$
-                                                $eligibleMonetaryAmount.0.currency$</span>
-                                        </div>
-                                    </div>
+                                    name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
+                                    ムビ: $priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>
+                                    座席: $eligibleSeatingType.0.codeValue$<br>
+                                    口座: $eligibleMonetaryAmount.0.value$
+                                    $eligibleMonetaryAmount.0.currency$
                                 </td>
                                 <td name="validFrom|parseDateTime__validThrough|parseDateTime__validRateLimitStr">
                                     $validFrom$ ~ $validThrough$<br>
                                     $validRateLimitStr$
                                 </td>
-                                <td name="availableAddOnNames">$availableAddOnNames$</td>
-                                <td name="id__id__id" class="center">
-                                    <div class="text-center">
-                                        <a target="_blank" class="btn btn-sm btn-primary"
-                                            href="/ticketTypes/$id$/update">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
+                                <td name="availableAddOnNames__id">$availableAddOnNames$<br>
 
-                                    <div class="text-center mt-2">
-                                        <a href="javascript:void(0)" data-id="$id$"
-                                            class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
-                                            関連券種<br>グループ
-                                        </a>
-                                    </div>
-
-                                    <div class="text-center mt-2">
-                                        <a href="javascript:void(0)"
-                                            class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                            data-id="$id$">
-                                            <span>追加特性</span>
-                                        </a>
-                                    </div>
+                                    <a href="javascript:void(0)"
+                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
+                                        <span>追加特性</span>
+                                    </a>
+                                </td>
+                                <td name="id__id" class="text-center">
+                                    <a target="_blank" class="btn btn-sm btn-primary" href="/ticketTypes/$id$/update">
+                                        <i class="fas fa-edit"></i>
+                                    </a><br>
+                                    <a href="javascript:void(0)" data-id="$id$"
+                                        class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
+                                        関連グループ
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>

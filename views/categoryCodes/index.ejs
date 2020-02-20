@@ -19,52 +19,57 @@ CC-00
             <div class="menu-group">
             </div>
 
-            <div class="form-group">
-                <label for="inCodeSet[identifier]" class="">
-                    区分分類
-                </label>
-                <select class="form-control" name="inCodeSet[identifier]">
-                    <option value="" selected>未選択</option>
-                    <option value="<%= CategorySetIdentifier.ServiceType%>">
-                        興行区分
-                    </option>
-                    <option value="<%= CategorySetIdentifier.DistributorType%>">
-                        配給区分
-                    </option>
-                    <option value="<%= CategorySetIdentifier.OfferCategoryType%>">
-                        オファーカテゴリー
-                    </option>
-                    <option value="<%= CategorySetIdentifier.VideoFormatType%>">
-                        上映方式タイプ
-                    </option>
-                    <option value="<%= CategorySetIdentifier.SoundFormatType%>">
-                        音響方式タイプ
-                    </option>
-                    <option value="<%= CategorySetIdentifier.SeatingType%>">
-                        座席タイプ
-                    </option>
-                    <option value="<%= CategorySetIdentifier.MovieTicketType%>">
-                        ムビチケ券種区分
-                    </option>
-                    <option value="<%= CategorySetIdentifier.AccountType%>">
-                        口座タイプ
-                    </option>
-                </select>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-12">
+                    <label for="inCodeSet[identifier]" class="bmd-label-static">
+                        区分分類
+                    </label>
+                    <select class="form-control" name="inCodeSet[identifier]">
+                        <option value="" selected>未選択</option>
+                        <option value="<%= CategorySetIdentifier.ServiceType%>">
+                            興行区分
+                        </option>
+                        <option value="<%= CategorySetIdentifier.DistributorType%>">
+                            配給区分
+                        </option>
+                        <option value="<%= CategorySetIdentifier.OfferCategoryType%>">
+                            オファーカテゴリー
+                        </option>
+                        <option value="<%= CategorySetIdentifier.VideoFormatType%>">
+                            上映方式タイプ
+                        </option>
+                        <option value="<%= CategorySetIdentifier.SoundFormatType%>">
+                            音響方式タイプ
+                        </option>
+                        <option value="<%= CategorySetIdentifier.SeatingType%>">
+                            座席タイプ
+                        </option>
+                        <option value="<%= CategorySetIdentifier.MovieTicketType%>">
+                            ムビチケ券種区分
+                        </option>
+                        <option value="<%= CategorySetIdentifier.AccountType%>">
+                            口座タイプ
+                        </option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="codeValue[$eq]" class="">
-                    区分コード
-                </label>
-                <input type="text" class="form-control" name="codeValue[$eq]" id="codeValue[$eq]" placeholder=""
-                    maxlength=64 value="">
-            </div>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="codeValue[$eq]" class="bmd-label-static">
+                        区分コード
+                    </label>
+                    <input type="text" class="form-control" name="codeValue[$eq]" id="codeValue[$eq]" placeholder=""
+                        maxlength=64 value="">
+                </div>
 
-            <div class="form-group">
-                <label for="name[$regex]" class="">
-                    名称
-                </label>
-                <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder="" maxlength=64 value="">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="name[$regex]" class="bmd-label-static">
+                        名称
+                    </label>
+                    <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder="" maxlength=64
+                        value="">
+                </div>
             </div>
 
             <div class="panel-body">
