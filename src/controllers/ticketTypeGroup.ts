@@ -107,13 +107,16 @@ export async function add(req: Request, res: Response): Promise<void> {
     }
     if (forms.ticketTypes.length > 0) {
         const searchTicketTypesResult = await offerService.searchTicketTypes({
-            sort: {
-                'priceSpecification.price': chevre.factory.sortType.Descending
-            },
+            // sort: {
+            //     'priceSpecification.price': chevre.factory.sortType.Descending
+            // },
             project: { ids: [req.project.id] },
             ids: forms.ticketTypes
         });
         ticketTypes = searchTicketTypesResult.data;
+
+        // 券種を登録順にソート
+        ticketTypes = ticketTypes.sort((a, b) => forms.ticketTypes.indexOf(a.id) - forms.ticketTypes.indexOf(b.id));
     }
 
     res.render('ticketTypeGroup/add', {
@@ -164,14 +167,14 @@ export async function update(req: Request, res: Response): Promise<void> {
             }
         }
     }
+
     // 券種グループ取得
     const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.params.id });
     const forms = {
         additionalProperty: [],
         ...ticketGroup,
         serviceType: ticketGroup.itemOffered.serviceType.codeValue,
-        ...req.body,
-        ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? ticketGroup.ticketTypes : []
+        ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -187,9 +190,6 @@ export async function update(req: Request, res: Response): Promise<void> {
     if (forms.ticketTypes.length > 0) {
         const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
-            sort: {
-                'priceSpecification.price': chevre.factory.sortType.Descending
-            },
             // sort: {
             //     'priceSpecification.price': chevre.factory.sortType.Descending
             // },
@@ -197,24 +197,10 @@ export async function update(req: Request, res: Response): Promise<void> {
             ids: forms.ticketTypes
         });
         ticketTypes = searchTicketTypesResult.data;
+
+        // 券種を登録順にソート
+        ticketTypes = ticketTypes.sort((a, b) => forms.ticketTypes.indexOf(a.id) - forms.ticketTypes.indexOf(b.id));
     }
-
-    // 券種を発生金額(単価)でソート
-    ticketTypes = ticketTypes.sort((a, b) => {
-        if (a.priceSpecification === undefined) {
-            throw new Error(`Price Specification undefined. Ticket Type:${a.id}`);
-        }
-        if (b.priceSpecification === undefined) {
-            throw new Error(`Price Specification undefined. Ticket Type:${b.id}`);
-        }
-
-        const aUnitPrice = Math.floor(a.priceSpecification.price
-            / ((a.priceSpecification.referenceQuantity.value !== undefined) ? a.priceSpecification.referenceQuantity.value : 1));
-        const bUnitPrice = Math.floor(b.priceSpecification.price
-            / ((b.priceSpecification.referenceQuantity.value !== undefined) ? b.priceSpecification.referenceQuantity.value : 1));
-
-        return bUnitPrice - aUnitPrice;
-    });
 
     res.render('ticketTypeGroup/update', {
         message: message,
@@ -295,7 +281,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((g) => {
                 return {
-                    ...g
+                    ...g,
+                    offerCount: g.ticketTypes.length
                 };
             })
         });
@@ -327,12 +314,16 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
             project: { ids: [req.project.id] },
             ids: ticketGroup.ticketTypes
         });
+
+        // 券種を登録順にソート
+        const ticketTypes = data.sort((a, b) => ticketGroup.ticketTypes.indexOf(a.id) - ticketGroup.ticketTypes.indexOf(b.id));
+
         res.json({
             success: true,
-            count: (data.length === Number(limit))
+            count: (ticketTypes.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
-                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data.map((t) => (t.alternateName !== undefined) ? t.alternateName.ja : t.name.ja)
+                : ((Number(page) - 1) * Number(limit)) + Number(ticketTypes.length),
+            results: ticketTypes.map((t) => (t.alternateName !== undefined) ? t.alternateName.ja : t.name.ja)
         });
     } catch (err) {
         res.json({
@@ -341,6 +332,7 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
         });
     }
 }
+
 /**
  * 券種金額
  */

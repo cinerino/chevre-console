@@ -65,6 +65,7 @@ Aa-8
                             <tr>
                                 <th>コード</th>
                                 <th>名称</th>
+                                <th>券種</th>
                                 <th>興行区分</th>
                                 <th></th>
                             </tr>
@@ -73,15 +74,16 @@ Aa-8
                             <tr id="templateRow" _id="$id$">
                                 <td name="identifier">$identifier$</td>
                                 <td name="name.ja">$name.ja$</td>
+                                <td name="offerCount__id" class="text-center">
+                                    <a href="javascript:void(0)" class="popupListTicketType" data-id="$id$">
+                                        $offerCount$ 券種
+                                    </a>
+                                </td>
                                 <td name="itemOffered.serviceType.codeValue">$itemOffered.serviceType.codeValue$</td>
-                                <td name="id__id__id" class="text-center">
+                                <td name="id__id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-sm btn-primary"
                                         href="/ticketTypeGroups/$id$/update">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary popupListTicketType" data-id="$id$">
-                                        <span>関連券種</span>
                                     </a>
                                     <a href="javascript:void(0)"
                                         class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
