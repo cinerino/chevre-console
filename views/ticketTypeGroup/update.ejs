@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-券種グループマスタ更新
+券種グループ編集
 <%- contentFor('displayId') %>
 Aa-7
 <%- contentFor('styles') %>
@@ -16,10 +16,7 @@ Aa-7
             <%- include('../common/successMessage') %>
         </div>
 
-        <input type="hidden" name="id" value="<%= forms.id %>">
-        <input type="hidden" name="identifier" value="<%= forms.identifier %>">
-
-        <%- include('form', { forms: forms }) %>
+        <%- include('form', { forms: forms, isNew: false }) %>
 
         <div class="btn-area panel-body">
             <button type="button" class="btn btn-ok btn-primary">更新する</button>

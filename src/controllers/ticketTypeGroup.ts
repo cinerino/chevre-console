@@ -102,6 +102,9 @@ export async function add(req: Request, res: Response): Promise<void> {
 
     // 券種マスタから取得
     let ticketTypes: chevre.factory.ticketType.ITicketType[] = [];
+    if (typeof forms.ticketTypes === 'string') {
+        forms.ticketTypes = [forms.ticketTypes];
+    }
     if (forms.ticketTypes.length > 0) {
         const searchTicketTypesResult = await offerService.searchTicketTypes({
             sort: {
@@ -178,9 +181,15 @@ export async function update(req: Request, res: Response): Promise<void> {
 
     // 券種マスタから取得
     let ticketTypes: chevre.factory.ticketType.ITicketType[] = [];
+    if (typeof forms.ticketTypes === 'string') {
+        forms.ticketTypes = [forms.ticketTypes];
+    }
     if (forms.ticketTypes.length > 0) {
         const searchTicketTypesResult = await offerService.searchTicketTypes({
             limit: 100,
+            sort: {
+                'priceSpecification.price': chevre.factory.sortType.Descending
+            },
             // sort: {
             //     'priceSpecification.price': chevre.factory.sortType.Descending
             // },

@@ -99,6 +99,9 @@ function add(req, res) {
         }
         // 券種マスタから取得
         let ticketTypes = [];
+        if (typeof forms.ticketTypes === 'string') {
+            forms.ticketTypes = [forms.ticketTypes];
+        }
         if (forms.ticketTypes.length > 0) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 sort: {
@@ -169,9 +172,15 @@ function update(req, res) {
         }
         // 券種マスタから取得
         let ticketTypes = [];
+        if (typeof forms.ticketTypes === 'string') {
+            forms.ticketTypes = [forms.ticketTypes];
+        }
         if (forms.ticketTypes.length > 0) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: 100,
+                sort: {
+                    'priceSpecification.price': chevre.factory.sortType.Descending
+                },
                 // sort: {
                 //     'priceSpecification.price': chevre.factory.sortType.Descending
                 // },
