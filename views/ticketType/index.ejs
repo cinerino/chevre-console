@@ -135,7 +135,7 @@ Aa-6
                                 <th>発生金額<br>売上金額</th>
                                 <th>適用条件</th>
                                 <th>有効性</th>
-                                <th>アドオン<br>追加特性</th>
+                                <th>アドオン</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -160,7 +160,7 @@ Aa-6
                                 <td
                                     name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
                                     ムビ: $priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>
-                                    座席: $eligibleSeatingType.0.codeValue$<br>
+                                    座席: $eligibleSeatingType.0.codeValue$ /
                                     口座: $eligibleMonetaryAmount.0.value$
                                     $eligibleMonetaryAmount.0.currency$
                                 </td>
@@ -168,20 +168,19 @@ Aa-6
                                     $validFrom$ ~ $validThrough$<br>
                                     $validRateLimitStr$
                                 </td>
-                                <td name="availableAddOnNames__id">$availableAddOnNames$<br>
-
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
-                                    </a>
+                                <td name="availableAddOnNames">$availableAddOnNames$
                                 </td>
-                                <td name="id__id" class="text-center">
+                                <td name="id__id__id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-primary" href="/ticketTypes/$id$/update">
                                         <i class="fas fa-edit"></i>
-                                    </a><br>
+                                    </a>
                                     <a href="javascript:void(0)" data-id="$id$"
                                         class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
                                         関連グループ
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
+                                        <span>追加特性</span>
                                     </a>
                                 </td>
                             </tr>
