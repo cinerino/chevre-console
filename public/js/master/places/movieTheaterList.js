@@ -132,7 +132,7 @@ $(function () {
                 var modal = $('#modal-containsPlace');
                 var body = modal.find('.modal-body');
 
-                var thead = $('<thead>').addClass('table-secondary')
+                var thead = $('<thead>').addClass('text-primary')
                     .append([
                         $('<tr>').append([
                             $('<th>').text('コード'),
@@ -152,10 +152,10 @@ $(function () {
                                 .text(result.numSeats)
                         ]);
                     }))
-                var table = $('<table>').addClass('table table-sm table-bordered table-striped')
+                var table = $('<table>').addClass('table table-sm')
                     .append([thead, tbody]);
 
-                var div = $('<div>').addClass('scroll-horizontal')
+                var div = $('<div>').addClass('')
                     .css({
                         'max-height': '500px',
                         'overflow': 'auto',

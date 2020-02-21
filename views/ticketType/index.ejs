@@ -21,7 +21,7 @@ Aa-6
             </div>
 
             <div class="form-row">
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="identifier" class="bmd-label-static">
                         券種コード
                     </label>
@@ -29,16 +29,13 @@ Aa-6
                         maxlength=64>
                 </div>
 
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="name" class="bmd-label-static">
                         名称
                     </label>
                     <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
                 </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="ticketTypeGroups" class="bmd-label-static">
                         券種グループ
                     </label>
@@ -52,7 +49,7 @@ Aa-6
                     </select>
                 </div>
 
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="category[id]" class="bmd-label-static">
                         オファーカテゴリー
                     </label>
@@ -67,38 +64,42 @@ Aa-6
                 </div>
             </div>
 
-            <div class="form-group bmd-form-group">
-                <label for="" class="bmd-label-static">
-                    単価
-                </label>
-                <div class="input-group">
-                    <select class="form-control" name="priceSpecification[referenceQuantity][value]">
-                        <option value="">---</option>
-                        <% for (let i = 1; i <= 10; i++) { %>
-                        <option value="<%= i %>">
-                            <%= i %>
-                        </option>
-                        <% } %>
-                    </select>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="" class="bmd-label-static">
+                        単価
+                    </label>
+                    <div class="input-group">
+                        <select class="form-control" name="priceSpecification[referenceQuantity][value]">
+                            <option value="">---</option>
+                            <% for (let i = 1; i <= 10; i++) { %>
+                            <option value="<%= i %>">
+                                <%= i %>
+                            </option>
+                            <% } %>
+                        </select>
 
-                    <div class="input-group-append">
-                        <span class="input-group-text">枚あたり</span>
-                    </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text">枚あたり</span>
+                        </div>
 
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
-                        id="priceSpecification[minPrice]" value="" />
+                        <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
+                            id="priceSpecification[minPrice]" value="" />
 
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以上</span>
-                    </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text">円以上</span>
+                        </div>
 
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
-                        id="priceSpecification[maxPrice]" value="" />
+                        <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
+                            id="priceSpecification[maxPrice]" value="" />
 
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以下</span>
+                        <div class="input-group-append">
+                            <span class="input-group-text">円以下</span>
+                        </div>
                     </div>
                 </div>
+
+                <div class="form-group bmd-form-group col-md-6"></div>
             </div>
 
             <div class="panel-body">

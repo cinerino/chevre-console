@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-パフォーマンス検索
+スケジュール検索
 <%- contentFor('displayId') %>
 Aa-4
 <%- contentFor('styles') %>
@@ -13,69 +13,73 @@ Aa-4
 <div class="card">
     <div class="card-body search">
         <form>
-            <div class="form-group bmd-form-group">
-                <label class="bmd-label-static">劇場 <span class="text-danger">＊</span></label>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static">劇場 <span class="text-danger">＊</span></label>
 
-                <div class="input-group">
-                    <select class="form-control" name="theater">
-                        <option value="">選択してください</option>
-                        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                        <% for (const movieTheater of movieTheaters) { %>
-                        <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                        <% } %>
-                        <% } else { %>
-                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                        <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                        <% } %>
-                        <% } %>
+                    <div class="input-group">
+                        <select class="form-control" name="theater">
+                            <option value="">選択してください</option>
+                            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                            <% for (const movieTheater of movieTheaters) { %>
+                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
+                            <% } %>
+                            <% } else { %>
+                            <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
+                            <% } %>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static">シアター</label>
+                    <select class="form-control" name="screen">
+                        <option value="">劇場を選択してください</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="form-group bmd-form-group">
-                <label class="bmd-label-static">上映日 <span class="text-danger">＊</span></label>
+                <div class="form-group bmd-form-group col-md-6">
+                    <label class="bmd-label-static">上映日 <span class="text-danger">＊</span></label>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
-                            maxlength="10">
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-check form-check-radio form-check-inline">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
-                                    checked> 1日
-                                <span class="circle">
-                                    <span class="check"></span>
-                                </span>
-                            </label>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
+                                maxlength="10">
                         </div>
-                        <div class="form-check form-check-radio form-check-inline">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="days" id="radio-days-3" value="3"> 3日
-                                <span class="circle">
-                                    <span class="check"></span>
-                                </span>
-                            </label>
-                        </div>
-                        <div class="form-check form-check-radio form-check-inline disabled">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="radio" name="days" id="radio-days-7" value="7"> 7日
-                                <span class="circle">
-                                    <span class="check"></span>
-                                </span>
-                            </label>
+
+                        <div class="col-md-6">
+                            <div class="form-check form-check-radio form-check-inline">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
+                                        checked> 1日
+                                    <span class="circle">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-radio form-check-inline">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="days" id="radio-days-3"
+                                        value="3"> 3日
+                                    <span class="circle">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="form-check form-check-radio form-check-inline disabled">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="days" id="radio-days-7"
+                                        value="7"> 7日
+                                    <span class="circle">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="form-group bmd-form-group">
-                <label class="bmd-label-static">シアター</label>
-                <select class="form-control" name="screen">
-                    <option value="">劇場を選択してください</option>
-                </select>
             </div>
 
             <div class="form-group bmd-form-group">

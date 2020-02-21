@@ -20,28 +20,29 @@ Aa-3
             <div class="menu-group">
             </div>
 
-            <div class="form-group bmd-form-group">
-                <label for="locationBranchCode" class="bmd-label-static">
-                    劇場
-                </label>
-                <select class="form-control" name="locationBranchCode">
-                    <option value="">選択してください</option>
-                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <% for (const movieTheater of movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>">
-                        <%= movieTheater.name.ja %>
-                    </option>
-                    <% } %>
-                    <% } else { %>
-                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
-                    <% } %>
-                </select>
-            </div>
-
             <div class="form-row">
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label for="locationBranchCode" class="bmd-label-static">
+                        劇場
+                    </label>
+                    <select class="form-control" name="locationBranchCode">
+                        <option value="">選択してください</option>
+                        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                        <% for (const movieTheater of movieTheaters) { %>
+                        <option value="<%= movieTheater.branchCode %>">
+                            <%= movieTheater.name.ja %>
+                        </option>
+                        <% } %>
+                        <% } else { %>
+                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                        <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                        <% } %>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="form-group bmd-form-group col-md-3">
+                </div>
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="movieIdentifier" class="bmd-label-static">
                         作品コード
                     </label>
@@ -49,9 +50,9 @@ Aa-3
                         maxlength=64 value="">
                 </div>
 
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-3">
                     <label for="name" class="bmd-label-static">
-                        上映作品名
+                        作品名
                     </label>
                     <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
                 </div>

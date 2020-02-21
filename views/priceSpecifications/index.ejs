@@ -12,76 +12,80 @@ PS-02
 
 <%- contentFor('body') %>
 
-<div class="form-container search mb-3 searchPriceSpecification">
-    <form method="post" class="p-3 bg-light-gray">
-        <%- include('../common/master/_hidden') %>
-        <div class="menu-group">
-        </div>
+<div class="card">
+    <div class="card-body search searchPriceSpecification">
+        <form method="post">
+            <%- include('../common/master/_hidden') %>
+            <div class="menu-group">
+            </div>
 
-        <div class="form-group">
-            <label for="typeOf" class="">
-                価格仕様タイプ
-            </label>
-            <select class="form-control" name="typeOf">
-                <option value="" selected>選択してください</option>
-                <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
-                    各種区分加算料金</option>
-                <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                    ムビチケ加算料金</option>
-            </select>
-        </div>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-4">
+                    <label for="typeOf" class="bmd-label-static">
+                        価格仕様タイプ
+                    </label>
+                    <select class="form-control" name="typeOf">
+                        <option value="" selected>選択してください</option>
+                        <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
+                            各種区分加算料金</option>
+                        <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
+                            ムビチケ加算料金</option>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label for="appliesToCategoryCode" class="">
-                適用カテゴリー
-            </label>
-            <select class="form-control" name="appliesToCategoryCode">
-                <option value="">選択してください</option>
-                <% videoFormatTypes.forEach((videoFormatType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>">
-                    上映方式タイプ <%= videoFormatType.name.ja %>
-                </option>
-                <% }) %>
+                <div class="form-group bmd-form-group col-md-4">
+                    <label for="appliesToCategoryCode" class="bmd-label-static">
+                        適用カテゴリー
+                    </label>
+                    <select class="form-control" name="appliesToCategoryCode">
+                        <option value="">選択してください</option>
+                        <% videoFormatTypes.forEach((videoFormatType) => { %>
+                        <option
+                            value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>">
+                            上映方式タイプ <%= videoFormatType.name.ja %>
+                        </option>
+                        <% }) %>
 
-                <% soundFormatTypes.forEach((soundFormatType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: soundFormatType, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
-                    音響方式タイプ <%= soundFormatType.name.ja %>
-                </option>
-                <% }) %>
+                        <% soundFormatTypes.forEach((soundFormatType) => { %>
+                        <option
+                            value="<%= JSON.stringify({codeValue: soundFormatType, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
+                            音響方式タイプ <%= soundFormatType.name.ja %>
+                        </option>
+                        <% }) %>
 
-                <% seatingTypes.forEach((seatingType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: seatingType, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
-                    座席タイプ <%= seatingType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-        </div>
+                        <% seatingTypes.forEach((seatingType) => { %>
+                        <option
+                            value="<%= JSON.stringify({codeValue: seatingType, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
+                            座席タイプ <%= seatingType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label for="appliesToMovieTicketType" class="">
-                適用ムビチケ券種区分
-            </label>
-            <select class="form-control" name="appliesToMovieTicketType">
-                <option value="">選択してください</option>
-                <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                <option value="<%= movieTicketType.codeValue %>">
-                    <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-        </div>
+                <div class="form-group bmd-form-group col-md-4">
+                    <label for="appliesToMovieTicketType" class="bmd-label-static">
+                        適用ムビチケ券種区分
+                    </label>
+                    <select class="form-control" name="appliesToMovieTicketType">
+                        <option value="">選択してください</option>
+                        <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
+                        <option value="<%= movieTicketType.codeValue %>">
+                            <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                        </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
 
-        <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/priceSpecifications/new">
-                <i class=" fa fa-plus"></i> 登録</a>
+            <div class="panel-body">
+                <a class="btn btn-primary" role="button" href="/priceSpecifications/new">
+                    <i class=" fa fa-plus"></i> 登録</a>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">
@@ -90,33 +94,39 @@ PS-02
     <!-- <p class="mb-3" id="searchedCount" style="display:none;">
         検索結果 $searched_count$件
     </p> -->
-    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>価格仕様タイプ</th>
-                    <th>名称</th>
-                    <th>適用カテゴリー</th>
-                    <th>適用ムビチケ券種区分</th>
-                    <th>金額</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow">
-                    <td name="id__typeOf">
-                        <a target="_blank" href="/priceSpecifications/$id$/update">$typeOf$</a>
-                    </td>
-                    <td name="name.ja">$name.ja$</td>
-                    <td name="appliesToCategoryCode.inCodeSet.identifier__appliesToCategoryCode.codeValue">
-                        $appliesToCategoryCode.inCodeSet.identifier$
-                        $appliesToCategoryCode.codeValue$</td>
-                    <td name="appliesToMovieTicketType__appliesToMovieTicket.name__appliesToVideoFormat">
-                        $appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>$appliesToVideoFormat$
-                    </td>
-                    <td name="price__priceCurrency">$price$ $priceCurrency$</td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="list" style="display:none;">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="text-primary">
+                            <tr>
+                                <th>価格仕様タイプ</th>
+                                <th>名称</th>
+                                <th>適用カテゴリー</th>
+                                <th>適用ムビチケ券種区分</th>
+                                <th>金額</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="templateRow">
+                                <td name="id__typeOf">
+                                    <a target="_blank" href="/priceSpecifications/$id$/update">$typeOf$</a>
+                                </td>
+                                <td name="name.ja">$name.ja$</td>
+                                <td name="appliesToCategoryCode.inCodeSet.identifier__appliesToCategoryCode.codeValue">
+                                    $appliesToCategoryCode.inCodeSet.identifier$
+                                    $appliesToCategoryCode.codeValue$</td>
+                                <td name="appliesToMovieTicketType__appliesToMovieTicket.name__appliesToVideoFormat">
+                                    $appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>$appliesToVideoFormat$
+                                </td>
+                                <td name="price__priceCurrency">$price$ $priceCurrency$</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
