@@ -10,98 +10,99 @@ Aa-4
 
 <%- contentFor('body') %>
 
-<div class="form-container search p-3 bg-light-gray mb-4">
-    <form>
-        <div class="form-group">
-            <label class="">劇場 <span class="text-danger">＊</span></label>
+<div class="card">
+    <div class="card-body search">
+        <form>
+            <div class="form-group bmd-form-group">
+                <label class="bmd-label-static">劇場 <span class="text-danger">＊</span></label>
 
-            <div class="input-group">
-                <select class="form-control" name="theater">
-                    <option value="">選択してください</option>
-                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <% for (const movieTheater of movieTheaters) { %>
-                    <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
-                    <% } else { %>
-                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                    <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                    <% } %>
-                    <% } %>
+                <div class="input-group">
+                    <select class="form-control" name="theater">
+                        <option value="">選択してください</option>
+                        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                        <% for (const movieTheater of movieTheaters) { %>
+                        <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
+                        <% } %>
+                        <% } else { %>
+                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                        <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
+                        <% } %>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group bmd-form-group">
+                <label class="bmd-label-static">上映日 <span class="text-danger">＊</span></label>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
+                            maxlength="10">
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-check form-check-radio form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
+                                    checked> 1日
+                                <span class="circle">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-radio form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="days" id="radio-days-3" value="3"> 3日
+                                <span class="circle">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="form-check form-check-radio form-check-inline disabled">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="radio" name="days" id="radio-days-7" value="7"> 7日
+                                <span class="circle">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group bmd-form-group">
+                <label class="bmd-label-static">シアター</label>
+                <select class="form-control" name="screen">
+                    <option value="">劇場を選択してください</option>
                 </select>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="">上映日 <span class="text-danger">＊</span></label>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
-                        maxlength="10">
-                </div>
-
-                <div class="col-md-6">
-                    <div class="form-check form-check-radio form-check-inline">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
-                                checked> 1日
-                            <span class="circle">
-                                <span class="check"></span>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="form-check form-check-radio form-check-inline">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="radio" name="days" id="radio-days-3" value="3"> 3日
-                            <span class="circle">
-                                <span class="check"></span>
-                            </span>
-                        </label>
-                    </div>
-                    <div class="form-check form-check-radio form-check-inline disabled">
-                        <label class="form-check-label">
-                            <input class="form-check-input" type="radio" name="days" id="radio-days-7" value="7"> 7日
-                            <span class="circle">
-                                <span class="check"></span>
-                            </span>
-                        </label>
-                    </div>
+            <div class="form-group bmd-form-group">
+                <div class="form-check">
+                    <label class="form-check-label" for="onlyReservedSeatsAvailable">
+                        <input class="form-check-input" type="checkbox" name="onlyReservedSeatsAvailable"
+                            id="onlyReservedSeatsAvailable" value="1">
+                        座席指定有のみ
+                        <span class="form-check-sign">
+                            <span class="check"></span>
+                        </span>
+                    </label>
                 </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="">シアター</label>
-            <select class="form-control" name="screen">
-                <option value="">劇場を選択してください</option>
-            </select>
-        </div>
+            <div class="panel-body">
+                <button type="button" class="btn btn-primary add-button"><i class=" fa fa-plus"></i> 登録</button>
+                <% if (process.env.USE_COA === '1') { %>
+                <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
+                    <i class=" fa fa-plus"></i> COAからインポート</a>
+                <% } %>
 
-        <div class="form-group">
-            <div class="form-check">
-                <label class="form-check-label" for="onlyReservedSeatsAvailable">
-                    <input class="form-check-input" type="checkbox" name="onlyReservedSeatsAvailable"
-                        id="onlyReservedSeatsAvailable" value="1">
-                    座席指定有のみ
-                    <span class="form-check-sign">
-                        <span class="check"></span>
-                    </span>
-                </label>
+                <button type="button" class="btn search btn-ok btn-success search-button float-right">検索</button>
             </div>
-        </div>
-
-        <div class="panel-body">
-            <button type="button" class="btn btn-primary add-button"><i class=" fa fa-plus"></i> 登録</button>
-            <% if (process.env.USE_COA === '1') { %>
-            <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
-                <i class=" fa fa-plus"></i> COAからインポート</a>
-            <% } %>
-
-            <button type="button" class="btn search btn-ok btn-success search-button float-right">検索</button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
-
 
 <div id="scheduler" class="d-none">
     <div v-if="scheduleData.dates.length > 0" class="scheduler text-small">
@@ -116,7 +117,8 @@ Aa-4
                     <template v-for="date in scheduleData.dates">
                         <td v-for="screen in date.screens" class="border text-center"
                             v-bind:style="{ width: SCREEN_WIDTH + 'px' }">
-                        <div class="mx-auto text-overflow" v-bind:style="{ width: (SCREEN_WIDTH - 3) + 'px' }">{{ screen.data.name.ja }}</div>
+                            <div class="mx-auto text-overflow" v-bind:style="{ width: (SCREEN_WIDTH - 3) + 'px' }">
+                                {{ screen.data.name.ja }}</div>
                         </td>
                     </template>
                 </thead>
