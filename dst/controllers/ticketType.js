@@ -598,10 +598,10 @@ function getList(req, res) {
                     }
                 },
                 category: {
-                    ids: (req.query.category !== undefined
-                        && req.query.category.id !== undefined
-                        && req.query.category.id !== '')
-                        ? [req.query.category.id]
+                    codeValue: (req.query.category !== undefined
+                        && typeof req.query.category.codeValue === 'string'
+                        && req.query.category.codeValue !== '')
+                        ? { $in: [req.query.category.codeValue] }
                         : undefined
                 }
             };

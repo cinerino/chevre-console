@@ -659,7 +659,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
 
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const searchConditions = {
+        const searchConditions: chevre.factory.ticketType.ITicketTypeSearchConditions = {
             limit: limit,
             page: page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
@@ -691,13 +691,14 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 }
             },
             category: {
-                ids: (req.query.category !== undefined
-                    && req.query.category.id !== undefined
-                    && req.query.category.id !== '')
-                    ? [req.query.category.id]
+                codeValue: (req.query.category !== undefined
+                    && typeof req.query.category.codeValue === 'string'
+                    && req.query.category.codeValue !== '')
+                    ? { $in: [req.query.category.codeValue] }
                     : undefined
             }
         };
+
         const { data } = await offerService.searchTicketTypes(searchConditions);
 
         res.json({
