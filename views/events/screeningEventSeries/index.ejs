@@ -1,5 +1,5 @@
 <%- contentFor('title') %>
-作品検索
+劇場上映作品検索
 <%- contentFor('displayId') %>
 Aa-3
 <%- contentFor('styles') %>
@@ -12,70 +12,75 @@ Aa-3
 
 <%- contentFor('body') %>
 
-<div class="form-container mb-3">
-    <form method="post" class="p-3 bg-light-gray">
-        <%- include('../../common/master/_hidden') %>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <%- include('../../common/master/_hidden') %>
 
-        <div class="menu-group">
-        </div>
-
-        <div class="form-group">
-            <label for="locationBranchCode" class="">
-                劇場
-            </label>
-            <select class="form-control" name="locationBranchCode">
-                <option value="">選択してください</option>
-                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                <% for (const movieTheater of movieTheaters) { %>
-                <option value="<%= movieTheater.branchCode %>">
-                    <%= movieTheater.name.ja %>
-                </option>
-                <% } %>
-                <% } else { %>
-                <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
-                <% } %>
-                <% } %>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="movieIdentifier" class="">
-                作品コード
-            </label>
-            <input type="text" class="form-control" name="movieIdentifier" id="movieIdentifier" placeholder=""
-                maxlength=64 value="">
-        </div>
-
-        <div class="form-group">
-            <label for="name" class="">
-                上映作品名
-            </label>
-            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
-        </div>
-
-        <div class="form-group">
-            <label for="containsEnded" class="">
-            </label>
-            <div class="form-check">
-                <label class="form-check-label" for="containsEnded">
-                    <input class="form-check-input" type="checkbox" name="containsEnded" value="1" id="containsEnded">
-                    終了作品を含む
-                    <span class="form-check-sign">
-                        <span class="check"></span>
-                    </span>
-                </label>
+            <div class="menu-group">
             </div>
-        </div>
 
-        <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/events/screeningEventSeries/add">
-                <i class=" fa fa-plus"></i> 登録</a>
+            <div class="form-group bmd-form-group">
+                <label for="locationBranchCode" class="bmd-label-static">
+                    劇場
+                </label>
+                <select class="form-control" name="locationBranchCode">
+                    <option value="">選択してください</option>
+                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                    <% for (const movieTheater of movieTheaters) { %>
+                    <option value="<%= movieTheater.branchCode %>">
+                        <%= movieTheater.name.ja %>
+                    </option>
+                    <% } %>
+                    <% } else { %>
+                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                    <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %></option>
+                    <% } %>
+                    <% } %>
+                </select>
+            </div>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="movieIdentifier" class="bmd-label-static">
+                        作品コード
+                    </label>
+                    <input type="text" class="form-control" name="movieIdentifier" id="movieIdentifier" placeholder=""
+                        maxlength=64 value="">
+                </div>
+
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="name" class="bmd-label-static">
+                        上映作品名
+                    </label>
+                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
+                </div>
+            </div>
+
+            <div class="form-group bmd-form-group">
+                <label for="containsEnded" class="bmd-label-static">
+                </label>
+                <div class="form-check">
+                    <label class="form-check-label" for="containsEnded">
+                        <input class="form-check-input" type="checkbox" name="containsEnded" value="1"
+                            id="containsEnded">
+                        終了作品を含む
+                        <span class="form-check-sign">
+                            <span class="check"></span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <a class="btn btn-primary" role="button" href="/events/screeningEventSeries/add">
+                    <i class=" fa fa-plus"></i> 登録</a>
+
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">
@@ -84,60 +89,55 @@ Aa-3
     <!-- <p class="mb-3" id="searchedCount" style="display:none;">
         検索結果 $searched_count$件
     </p> -->
-    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>劇場</th>
-                    <th>作品</th>
-                    <th class="text-left">名称<br>English Name<br>サブタイトル<br>カナ</th>
-                    <th>上映開始日<br>上映終了日</th>
-                    <th>字幕<br>吹替<br>上映形態</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow" eventId="$id$">
-                    <td name="location.id__location.branchCode__location.name.ja">
-                        <a target="_blank"
-                            href="/places/movieTheater/$location.id$/update">$location.branchCode$<br>$location.name.ja$</a>
-                    </td>
-                    <td name="workPerformed.id__workPerformed.identifier__workPerformed.name">
-                        <a target="_blank"
-                            href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
-                    </td>
-                    <td name="name.ja__name.en__headline.ja__kanaName">
-                        $name.ja$<br>
-                        $name.en$<br>
-                        $headline.ja$<br>
-                        $kanaName$<br>
-                    </td>
-                    <td name="startDay__endDay">$startDay$<br>$endDay$</td>
-                    <td name="subtitleLanguage__dubLanguage__videoFormat">
-                        $subtitleLanguage$
-                        <br>$dubLanguage$
-                        <br>$videoFormat$
-                    </td>
-                    <td name="id__id" class="center">
-                        <div class="text-center">
-                            <div class="text-center">
-                                <a target="_blank" class="btn btn-sm btn-primary"
-                                    href="/events/screeningEventSeries/$id$/update">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-2">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                data-id="$id$">
-                                <span>追加特性</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="list" style="display:none;">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="text-primary">
+                            <tr>
+                                <th>劇場</th>
+                                <th>作品</th>
+                                <th class="text-left">名称<br>カナ</th>
+                                <th>上映開始日<br>上映終了日</th>
+                                <th>上映形態</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="templateRow" eventId="$id$">
+                                <td name="location.id__location.name.ja">
+                                    <a target="_blank"
+                                        href="/places/movieTheater/$location.id$/update">$location.name.ja$</a>
+                                </td>
+                                <td name="workPerformed.id__workPerformed.identifier__workPerformed.name">
+                                    <a target="_blank"
+                                        href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
+                                </td>
+                                <td name="name.ja__kanaName">
+                                    $name.ja$<br>
+                                    $kanaName$<br>
+                                </td>
+                                <td name="startDay__endDay">$startDay$<br>$endDay$</td>
+                                <td name="videoFormat">
+                                    $videoFormat$
+                                </td>
+                                <td name="id__id" class="text-center">
+                                    <a target="_blank" class="btn btn-sm btn-primary"
+                                        href="/events/screeningEventSeries/$id$/update">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
+                                        <span>追加特性</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
