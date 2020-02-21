@@ -12,75 +12,81 @@ Aa-10
 
 <%- contentFor('body') %>
 
-<div class="form-container search mb-3">
-    <form method="post" class="p-3 bg-light-gray">
-        <%- include('../../common/master/_hidden') %>
-        <div class="menu-group">
-        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <%- include('../../common/master/_hidden') %>
+            <div class="menu-group">
+            </div>
 
-        <div class="form-group">
-            <label for="identifier" class="">
-                作品コード
-            </label>
-            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                value="">
-        </div>
-
-        <div class="form-group">
-            <label for="name" class="">
-                作品名
-            </label>
-            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
-        </div>
-
-        <div class="form-group">
-            <label for="datePublishedThrough" class="">
-                公開日(From - To)
-            </label>
-
-            <div class="input-group">
-                <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedFrom"
-                    id="datePublishedFrom" value="" />
-                <div class="input-group-append">
-                    <span class="input-group-text">から</span>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="identifier" class="bmd-label-static">
+                        作品コード
+                    </label>
+                    <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+                        maxlength=64 value="">
                 </div>
-                <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedThrough"
-                    id="datePublishedThrough" value="" />
-                <div class="input-group-append">
-                    <span class="input-group-text">まで</span>
+
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="name" class="bmd-label-static">
+                        作品名
+                    </label>
+                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
                 </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="availableThrough" class="">
-                興行期間(From - To)
-            </label>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="datePublishedThrough" class="bmd-label-static">
+                        公開日(From - To)
+                    </label>
 
-            <div class="input-group">
-                <input class="form-control datepicker" placeholder="" maxlength=10 name="availableFrom"
-                    id="availableFrom" value="" />
-                <div class="input-group-append">
-                    <span class="input-group-text">から</span>
+                    <div class="input-group">
+                        <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedFrom"
+                            id="datePublishedFrom" value="" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">から</span>
+                        </div>
+                        <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedThrough"
+                            id="datePublishedThrough" value="" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">まで</span>
+                        </div>
+                    </div>
                 </div>
-                <input class="form-control datepicker" placeholder="" maxlength=10 name="availableThrough"
-                    id="availableThrough" value="" />
-                <div class="input-group-append">
-                    <span class="input-group-text">まで</span>
+
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="availableThrough" class="bmd-label-static">
+                        興行期間(From - To)
+                    </label>
+
+                    <div class="input-group">
+                        <input class="form-control datepicker" placeholder="" maxlength=10 name="availableFrom"
+                            id="availableFrom" value="" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">から</span>
+                        </div>
+                        <input class="form-control datepicker" placeholder="" maxlength=10 name="availableThrough"
+                            id="availableThrough" value="" />
+                        <div class="input-group-append">
+                            <span class="input-group-text">まで</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="panel-body">
-            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-            <a class="btn btn-primary" role="button" href="/creativeWorks/movie/add">
-                <i class=" fa fa-plus"></i> 登録</a>
-            <% } %>
+            <div class="panel-body">
+                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                <a class="btn btn-primary" role="button" href="/creativeWorks/movie/add">
+                    <i class=" fa fa-plus"></i> 登録</a>
+                <% } %>
 
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">
@@ -90,48 +96,51 @@ Aa-10
         検索結果 $searched_count$件
     </p> -->
     <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>作品コード</th>
-                    <th class="text-left">作品名<br>サブタイトル</th>
-                    <th>上映時間(分)</th>
-                    <th>レイティング</th>
-                    <th>公開日<br>興行終了予定日</th>
-                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <th></th>
-                    <% } %>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow" identifier="$identifier$">
-                    <td name="identifier">$identifier$</td>
-                    <td name="name__headline">
-                        $name$<br>$headline$
-                    </td>
-                    <td name="duration" class="text-right">$duration$</td>
-                    <td name="contentRating" class="text-left">$contentRating$</td>
-                    <td name="dayPublished__dayAvailabilityEnds" class="text-left">
-                        $dayPublished$<br>$dayAvailabilityEnds$</td>
-                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                    <td name="id__identifier">
-                        <div class="text-center">
-                            <a target="_blank" class="btn btn-sm btn-primary" href="/creativeWorks/movie/$id$/update">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
-
-                        <div class="text-center mt-2">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                data-identifier="$identifier$">
-                                <span>追加特性</span>
-                            </a>
-                        </div>
-                    </td>
-                    <% } %>
-                </tr>
-            </tbody>
-        </table>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>作品コード</th>
+                                <th class="text-left">作品名<br>サブタイトル</th>
+                                <th>上映時間</th>
+                                <th>レイティング</th>
+                                <th>公開日<br>興行終了予定日</th>
+                                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                                <th></th>
+                                <% } %>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="templateRow" identifier="$identifier$">
+                                <td name="identifier">$identifier$</td>
+                                <td name="name__headline">
+                                    $name$<br>$headline$
+                                </td>
+                                <td name="durationAsMinutes" class="text-right">$durationAsMinutes$ 分</td>
+                                <td name="contentRating" class="text-center">$contentRating$</td>
+                                <td name="dayPublished__dayAvailabilityEnds" class="text-left">
+                                    $dayPublished$<br>$dayAvailabilityEnds$</td>
+                                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                                <td name="id__identifier" class="text-center">
+                                    <a target="_blank" class="btn btn-sm btn-primary"
+                                        href="/creativeWorks/movie/$id$/update">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"
+                                        class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                        data-identifier="$identifier$">
+                                        <span>追加特性</span>
+                                    </a>
+                                </td>
+                                <% } %>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>

@@ -14,22 +14,6 @@ Aa-9
             <%- include('../../common/errorMessage') %>
             <%- include('../../common/successMessage') %>
         </div>
-        <% /* 作品コード */ %>
-        <div class="form-group row">
-            <label for="identifier" class="">
-                作品コード<span class="text-danger">＊</span>
-            </label>
-            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                value="<%= forms.identifier %>">
-            <p class="message">
-                半角64文字以内でご入力ください。
-            </p>
-            <p class="error message text-danger">
-                <% if (errors && errors.identifier) { %>
-                <%- errors.identifier.msg %>
-                <% } %>
-            </p>
-        </div>
 
         <%- include('form', { forms: forms, isNew: true }) %>
 

@@ -49,7 +49,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             }
         });
         const results = data.map((movie) => {
-            return Object.assign(Object.assign({}, movie), { dayPublished: (movie.datePublished !== undefined)
+            return Object.assign(Object.assign({}, movie), { durationAsMinutes: (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : '', dayPublished: (movie.datePublished !== undefined)
                     ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
                     : '未指定', dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                     ? moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')

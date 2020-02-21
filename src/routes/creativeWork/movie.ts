@@ -55,6 +55,7 @@ movieRouter.all(
             const results = data.map((movie) => {
                 return {
                     ...movie,
+                    durationAsMinutes: (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : '',
                     dayPublished: (movie.datePublished !== undefined)
                         ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
                         : '未指定',
