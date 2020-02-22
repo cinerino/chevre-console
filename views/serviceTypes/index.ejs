@@ -12,42 +12,39 @@ Aa-17
 
 <%- contentFor('body') %>
 
-<div class="form-container search mb-3">
-    <form method="post" class="p-3 bg-light-gray">
-        <%- include('../common/master/_hidden') %>
-        <div class="menu-group">
-            <% if (message !== '') { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= message %>
-            </p>
-            <% } %>
-        </div>
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            <%- include('../common/master/_hidden') %>
+            <div class="menu-group">
+                <% if (message !== '') { %>
+                <p class="error message text-danger panel-body bg-danger">
+                    <%= message %>
+                </p>
+                <% } %>
+            </div>
 
-        <div class="form-group">
-            <label for="codeValue" class="">
-                興行区分コード
-            </label>
-            <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
-                value="">
-        </div>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-6">
+                    <label for="codeValue" class="bmd-label-static">
+                        コード
+                    </label>
+                    <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+                        value="">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="name" class="">
-                名称
-            </label>
-            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
-        </div>
+            <div class="panel-body">
+                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                <a class="btn btn-primary" role="button" href="/serviceTypes/add">
+                    <i class=" fa fa-plus"></i> 登録</a>
+                <% } %>
 
-        <div class="panel-body">
-            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-            <a class="btn btn-primary" role="button" href="/serviceTypes/add">
-                <i class=" fa fa-plus"></i> 登録</a>
-            <% } %>
-
-            <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
-    </form>
+                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
+                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div class="form-container search">
@@ -58,38 +55,41 @@ Aa-17
             検索結果 $searched_count$件
         </p> -->
     </div>
-    <div id="list" class="scroll-horizontal text-small mb-3" style="display:none;">
-        <table class="table table-bordered table-striped mb-0">
-            <thead>
-                <tr>
-                    <th>興行区分コード</th>
-                    <th style="text-align:left;">名称</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow" identifier="$id$">
-                    <td name="codeValue">$codeValue$</td>
-                    <td name="name.ja">
-                        $name.ja$
-                    </td>
-                    <td name="edit__id__id">
-                        <div class="text-center">
-                            <a target="_blank" class="btn btn-sm btn-primary" href="/serviceTypes/$id$/update">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                        </div>
-
-                        <div class="text-center mt-2">
-                            <a href="javascript:void(0)" class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                data-id="$id$">
-                                <span>追加特性</span>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div id="list" style="display:none;">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="text-primary">
+                            <tr>
+                                <th>コード</th>
+                                <th>名称</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="templateRow" identifier="$id$">
+                                <td name="id__codeValue">
+                                    <a target="_blank" href="/serviceTypes/$id$/update">
+                                        $codeValue$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
+                                </td>
+                                <td name="name.ja">
+                                    $name.ja$
+                                </td>
+                                <td name="edit__id">
+                                    <a target="_blank" href="/serviceTypes/$id$/update">
+                                        編集
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <div id="pager" class="div_pager_parent"></div>
 </div>
