@@ -121,6 +121,12 @@ $(function () {
                             fieldId = fieldId.replace('|parseDateTime', '');
                             value = $.fn.getStringValue(data, fieldId, "");
                             if (value) value = moment(value).format('YY-MM-DD HH:mm:ss');
+                        } else if (fieldId.indexOf('|slice') > -1) {
+                            fieldId = fieldId.replace('|slice', '');
+                            value = $.fn.getStringValue(data, fieldId, "");
+                            if (typeof value === 'string' && value.length > 10) {
+                                value = value.slice(0, 10) + '...';
+                            }
                         } else {
                             value = $.fn.getStringValue(data, fieldId, '');
                         }
