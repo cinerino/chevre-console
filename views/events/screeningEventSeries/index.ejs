@@ -97,40 +97,50 @@ Aa-3
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
+                                <th>ID</th>
                                 <th>劇場</th>
                                 <th>作品</th>
-                                <th class="text-left">名称<br>カナ</th>
-                                <th>上映開始日<br>上映終了日</th>
+                                <th class="text-left">名称</th>
+                                <th>上映期間</th>
                                 <th>上映形態</th>
+                                <th>追加特性</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" eventId="$id$">
+                                <td name="id__id">
+                                    <a target="_blank" href="/events/screeningEventSeries/$id$/update">
+                                        $id$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
+                                </td>
                                 <td name="location.id__location.name.ja">
                                     <a target="_blank"
-                                        href="/places/movieTheater/$location.id$/update">$location.name.ja$</a>
+                                        href="/places/movieTheater/$location.id$/update">$location.name.ja$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                 </td>
                                 <td name="workPerformed.id__workPerformed.identifier__workPerformed.name">
                                     <a target="_blank"
-                                        href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.identifier$<br>$workPerformed.name$</a>
+                                        href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                 </td>
-                                <td name="name.ja__kanaName">
-                                    $name.ja$<br>
-                                    $kanaName$<br>
+                                <td name="name.ja">
+                                    $name.ja$
                                 </td>
-                                <td name="startDay__endDay">$startDay$<br>$endDay$</td>
+                                <td name="startDay__endDay">$startDay$ - $endDay$</td>
                                 <td name="videoFormat">
                                     $videoFormat$
                                 </td>
-                                <td name="id__id" class="text-center">
+                                <td name="id__additionalProperty">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                        <span>表示</span>
+                                    </a>
+                                </td>
+                                <td name="id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-primary"
                                         href="/events/screeningEventSeries/$id$/update">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
                                     </a>
                                 </td>
                             </tr>

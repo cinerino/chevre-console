@@ -138,6 +138,8 @@ Aa-6
                                 <th>適用条件</th>
                                 <th>有効性</th>
                                 <th>アドオン</th>
+                                <th>追加特性</th>
+                                <th>関連グループ</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -147,6 +149,7 @@ Aa-6
                                 <td name="id__identifier__availability">
                                     <a target="_blank" href="/ticketTypes/$id$/update">
                                         $identifier$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                     </a><br>
                                     <span class="badge badge-secondary">$availability$</span>
                                 </td>
@@ -172,17 +175,19 @@ Aa-6
                                 </td>
                                 <td name="availableAddOnNames">$availableAddOnNames$
                                 </td>
-                                <td name="id__id__id" class="text-center">
+                                <td name="id__additionalProperty">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                        <span>表示</span>
+                                    </a>
+                                </td>
+                                <td name="id__ticketTypeGroups" class="text-center">
+                                    <a href="javascript:void(0)" data-id="$id$" class="popupListTicketTypeGroup">
+                                        表示
+                                    </a>
+                                </td>
+                                <td name="id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-primary" href="/ticketTypes/$id$/update">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="$id$"
-                                        class="btn btn-sm btn-outline-primary popupListTicketTypeGroup">
-                                        関連グループ
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
                                     </a>
                                 </td>
                             </tr>

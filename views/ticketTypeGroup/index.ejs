@@ -24,7 +24,7 @@ Aa-8
             <div class="form-row">
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="identifier" class="bmd-label-static">
-                        券種グループコード
+                        コード
                     </label>
                     <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
                         maxlength=64>
@@ -32,7 +32,7 @@ Aa-8
 
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="name" class="bmd-label-static">
-                        券種グループ名
+                        名称
                     </label>
                     <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
                 </div>
@@ -71,12 +71,18 @@ Aa-8
                                 <th>名称</th>
                                 <th>券種</th>
                                 <th>興行区分</th>
+                                <th>追加特性</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" _id="$id$">
-                                <td name="identifier">$identifier$</td>
+                                <td name="id__identifier">
+                                    <a target="_blank" href="/ticketTypeGroups/$id$/update">
+                                        $identifier$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
+                                </td>
                                 <td name="name.ja">$name.ja$</td>
                                 <td name="offerCount__id" class="text-center">
                                     <a href="javascript:void(0)" class="popupListTicketType" data-id="$id$">
@@ -84,14 +90,15 @@ Aa-8
                                     </a>
                                 </td>
                                 <td name="itemOffered.serviceType.codeValue">$itemOffered.serviceType.codeValue$</td>
-                                <td name="id__id" class="text-center">
+                                <td name="id__additionalProperty">
+                                    <a href="javascript:void(0)" class=" showAdditionalProperty" data-id="$id$">
+                                        <span>表示</span>
+                                    </a>
+                                </td>
+                                <td name="id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-sm btn-primary"
                                         href="/ticketTypeGroups/$id$/update">
                                         <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
                                     </a>
                                 </td>
                             </tr>

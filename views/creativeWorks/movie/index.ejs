@@ -107,14 +107,18 @@ Aa-10
                                 <th>上映時間</th>
                                 <th>レイティング</th>
                                 <th>公開日<br>興行終了予定日</th>
-                                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                                <th>追加特性</th>
                                 <th></th>
-                                <% } %>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" identifier="$identifier$">
-                                <td name="identifier">$identifier$</td>
+                                <td name="id__identifier">
+                                    <a target="_blank" href="/creativeWorks/movie/$id$/update">
+                                        $identifier$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
+                                </td>
                                 <td name="name__headline">
                                     $name$<br>$headline$
                                 </td>
@@ -122,19 +126,18 @@ Aa-10
                                 <td name="contentRating" class="text-center">$contentRating$</td>
                                 <td name="dayPublished__dayAvailabilityEnds" class="text-left">
                                     $dayPublished$<br>$dayAvailabilityEnds$</td>
-                                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                                <td name="id__identifier" class="text-center">
+                                <td name="identifier__addtionalProperty">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty"
+                                        data-identifier="$identifier$">
+                                        <span>表示</span>
+                                    </a>
+                                </td>
+                                <td name="id" class="text-center">
                                     <a target="_blank" class="btn btn-sm btn-primary"
                                         href="/creativeWorks/movie/$id$/update">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                        data-identifier="$identifier$">
-                                        <span>追加特性</span>
-                                    </a>
                                 </td>
-                                <% } %>
                             </tr>
                         </tbody>
                     </table>
