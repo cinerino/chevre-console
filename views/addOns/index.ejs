@@ -26,7 +26,7 @@ PO-01
 
             <div class="form-group bmd-form-group">
                 <label for="id" class="bmd-label-static">
-                    オファーID
+                    ID
                 </label>
                 <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
             </div>
@@ -96,11 +96,11 @@ PO-01
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>オファーコード</th>
+                                <th>コード</th>
                                 <th>名称</th>
-                                <th>発生金額<br>適用単位</th>
+                                <th>発生金額</th>
                                 <th>アイテム</th>
-                                <th></th>
+                                <th>追加特性</th>
                             </tr>
                         </thead>
 
@@ -109,6 +109,7 @@ PO-01
                                 <td name="id__identifier">
                                     <a target="_blank" href="/addOns/$id$/update">
                                         $identifier$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                     </a>
                                 <td name="name.ja">$name.ja$</td>
                                 <td name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value"
@@ -117,13 +118,9 @@ PO-01
                                     $referenceQuantity.value$
                                 </td>
                                 <td name="itemOffered.name.ja">$itemOffered.name.ja$</td>
-                                <td name="id__id__id" class="text-center">
-                                    <a target="_blank" class="btn btn-sm btn-primary" href="/addOns/$id$/update">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
+                                <td name="id__additionalProperty">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                        <span>表示</span>
                                     </a>
                                 </td>
                             </tr>

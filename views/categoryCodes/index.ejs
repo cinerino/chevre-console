@@ -22,7 +22,7 @@ CC-00
             <div class="form-row">
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="inCodeSet[identifier]" class="bmd-label-static">
-                        区分分類
+                        分類
                     </label>
                     <select class="form-control" name="inCodeSet[identifier]">
                         <option value="" selected>未選択</option>
@@ -56,7 +56,7 @@ CC-00
                 </div>
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="codeValue[$eq]" class="bmd-label-static">
-                        区分コード
+                        コード
                     </label>
                     <input type="text" class="form-control" name="codeValue[$eq]" id="codeValue[$eq]" placeholder=""
                         maxlength=64 value="">
@@ -95,8 +95,8 @@ CC-00
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>区分分類</th>
-                                <th>区分コード</th>
+                                <th>分類</th>
+                                <th>コード</th>
                                 <th>名称</th>
                             </tr>
                         </thead>
@@ -104,7 +104,10 @@ CC-00
                             <tr id="templateRow">
                                 <td name="inCodeSet.identifier">$inCodeSet.identifier$</td>
                                 <td name="id__codeValue">
-                                    <a target="_blank" href="/categoryCodes/$id$/update">$codeValue$</a>
+                                    <a target="_blank" href="/categoryCodes/$id$/update">
+                                        $codeValue$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
                                 </td>
                                 <td name="name.ja">
                                     $name.ja$

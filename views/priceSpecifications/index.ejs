@@ -22,7 +22,7 @@ PS-02
             <div class="form-row">
                 <div class="form-group bmd-form-group col-md-4">
                     <label for="typeOf" class="bmd-label-static">
-                        価格仕様タイプ
+                        仕様タイプ
                     </label>
                     <select class="form-control" name="typeOf">
                         <option value="" selected>選択してください</option>
@@ -101,7 +101,8 @@ PS-02
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>価格仕様タイプ</th>
+                                <th>仕様タイプ</th>
+                                <th>ID</th>
                                 <th>名称</th>
                                 <th>適用カテゴリー</th>
                                 <th>適用ムビチケ券種区分</th>
@@ -110,8 +111,14 @@ PS-02
                         </thead>
                         <tbody>
                             <tr id="templateRow">
-                                <td name="id__typeOf">
-                                    <a target="_blank" href="/priceSpecifications/$id$/update">$typeOf$</a>
+                                <td name="typeOf">
+                                    <span class="badge badge-secondary">$typeOf$</span>
+                                </td>
+                                <td name="id__id">
+                                    <a target="_blank" href="/priceSpecifications/$id$/update">
+                                        $id$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
                                 </td>
                                 <td name="name.ja">$name.ja$</td>
                                 <td name="appliesToCategoryCode.inCodeSet.identifier__appliesToCategoryCode.codeValue">
