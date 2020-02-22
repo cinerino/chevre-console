@@ -143,8 +143,11 @@ $(function () {
                     ]);
                 var tbody = $('<tbody>')
                     .append(data.results.map(function (result) {
+                        var screeningRoomId = movieTheater.branchCode + ':' + result.branchCode;
+                        var editScreenUrl = '/places/screeningRoom/' + screeningRoomId + '/update';
+
                         return $('<tr>').append([
-                            $('<th>').text(result.branchCode),
+                            $('<td>').html('<a target="_blank" href="' + editScreenUrl + '">' + result.branchCode + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
                             $('<td>').text(result.name),
                             $('<td>').attr('align', 'right')
                                 .text(result.containsPlace.length),

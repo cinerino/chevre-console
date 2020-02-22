@@ -53,40 +53,42 @@ Aa-12
                         <thead class="text-primary">
                             <tr>
                                 <th>コード</th>
-                                <th>名称<br>英語名称<br>カナ</th>
-                                <th>属性</th>
-                                <th>座席購入上限数<br>販売開始日<br>上映後販売終了時間</th>
-                                <th></th>
+                                <th>名称</th>
+                                <th>電話番号</th>
+                                <th>販売条件</th>
+                                <th>スクリーン</th>
+                                <th>追加特性</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" identifier="">
-                                <td name="id__branchCode"><a target="_blank"
-                                        href="/places/movieTheater/$id$/update">$branchCode$</a>
+                                <td name="id__branchCode">
+                                    <a target="_blank" href="/places/movieTheater/$id$/update">
+                                        $branchCode$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
                                 </td>
-                                <td name="name.ja__name.en__kanaName">
+                                <td name="name.ja__name.en">
                                     $name.ja$<br>
-                                    $name.en$<br>
-                                    $kanaName$<br>
+                                    $name.en$
                                 </td>
                                 <td name="telephone">
                                     <p>$telephone$</p>
                                 </td>
                                 <td
                                     name="offers.eligibleQuantity.maxValue__availabilityStartsGraceTimeInDays__availabilityEndsGraceTimeInMinutes">
-                                    $offers.eligibleQuantity.maxValue$枚
-                                    <br>$availabilityStartsGraceTimeInDays$日前
-                                    <br>$availabilityEndsGraceTimeInMinutes$
+                                    $offers.eligibleQuantity.maxValue$ 席まで
+                                    <br>$availabilityStartsGraceTimeInDays$日前から$availabilityEndsGraceTimeInMinutes$まで販売
                                 </td>
-                                <td name="branchCode__id" class="text-center">
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                        data-branchCode="$branchCode$">
-                                        <span>追加特性</span>
+                                <td name="id" class="">
+                                    <a href="javascript:void(0)" class="showContainsPlace" data-id="$id$">
+                                        <span>表示</span>
                                     </a>
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-secondary showContainsPlace" data-id="$id$">
-                                        <span>スクリーン</span>
+                                </td>
+                                <td name="branchCode" class="">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty"
+                                        data-branchCode="$branchCode$">
+                                        <span>表示</span>
                                     </a>
                                 </td>
                             </tr>

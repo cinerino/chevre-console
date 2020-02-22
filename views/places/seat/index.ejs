@@ -19,27 +19,29 @@ ST-01
             <div class="menu-group">
             </div>
 
-            <div class="form-group bmd-form-group">
-                <label for="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]"
-                    class="bmd-label-static">
-                    劇場
-                </label>
-                <select class="form-control"
-                    name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]">
-                    <option value="">選択してください</option>
-                    <% for (const movieTheater of movieTheaters) { %>
-                    <option value="<%= movieTheater.branchCode %>">
-                        <%= movieTheater.name.ja %>
-                    </option>
-                    <% } %>
-                </select>
-            </div>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label for="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]"
+                        class="bmd-label-static">
+                        劇場
+                    </label>
+                    <select class="form-control"
+                        name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]">
+                        <option value="">選択してください</option>
+                        <% for (const movieTheater of movieTheaters) { %>
+                        <option value="<%= movieTheater.branchCode %>">
+                            <%= movieTheater.name.ja %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
 
-            <div class="form-group bmd-form-group">
-                <label for="branchCode[$eq]" class="bmd-label-static">
-                    座席コード
-                </label>
-                <input class="form-control" name="branchCode[$eq]">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label for="branchCode[$eq]" class="bmd-label-static">
+                        コード
+                    </label>
+                    <input class="form-control" name="branchCode[$eq]">
+                </div>
             </div>
 
             <div>
@@ -49,8 +51,6 @@ ST-01
                 <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
             </div>
         </form>
-    </div>
-    <div class="card-footer ">
     </div>
 </div>
 
@@ -73,44 +73,39 @@ ST-01
                                 <th>スクリーン</th>
                                 <th>セクション</th>
                                 <th>座席タイプ</th>
-                                <th></th>
+                                <th>追加特性</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" identifier="">
                                 <td
-                                    name="typeOf__containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
-                                    <span class="badge badge-secondary">$typeOf$</span><br>
+                                    name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
                                     <a target="_blank"
-                                        href="/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">$branchCode$</a>
+                                        href="/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
+                                        $branchCode$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
                                 </td>
                                 <td
-                                    name="containedInPlace.containedInPlace.containedInPlace.typeOf__containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja">
-                                    <span
-                                        class="badge badge-secondary">$containedInPlace.containedInPlace.containedInPlace.typeOf$</span><br>
+                                    name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja">
                                     $containedInPlace.containedInPlace.containedInPlace.branchCode$<br>
                                     $containedInPlace.containedInPlace.containedInPlace.name.ja$<br>
                                 </td>
                                 <td
-                                    name="containedInPlace.containedInPlace.typeOf__containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja">
-                                    <span
-                                        class="badge badge-secondary">$containedInPlace.containedInPlace.typeOf$</span><br>
+                                    name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja">
                                     $containedInPlace.containedInPlace.branchCode$<br>
                                     $containedInPlace.containedInPlace.name.ja$<br>
                                 </td>
-                                <td
-                                    name="containedInPlace.typeOf__containedInPlace.branchCode__containedInPlace.name.ja">
-                                    <span class="badge badge-secondary">$containedInPlace.typeOf$</span><br>
+                                <td name="containedInPlace.branchCode__containedInPlace.name.ja">
                                     $containedInPlace.branchCode$<br>
                                     $containedInPlace.name.ja$<br>
                                 </td>
                                 <td name="seatingTypeStr">
                                     $seatingTypeStr$<br>
                                 </td>
-                                <td name="id" class="text-center">
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty" data-id="$id$">
-                                        <span>追加特性</span>
+                                <td name="id" class="">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                        <span>表示</span>
                                     </a>
                                 </td>
                             </tr>

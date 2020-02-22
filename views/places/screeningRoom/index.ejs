@@ -63,17 +63,18 @@ SR-01
                                 <th>名称</th>
                                 <th>アドレス</th>
                                 <th>自由席</th>
-                                <th></th>
+                                <th>追加特性</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow" identifier="">
                                 <td name="containedInPlace.branchCode__branchCode__branchCode"><a target="_blank"
-                                        href="/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">$branchCode$</a>
+                                        href="/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">
+                                        $branchCode$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                    </a>
                                 </td>
-                                <td
-                                    name="containedInPlace.typeOf__containedInPlace.branchCode__containedInPlace.name.ja">
-                                    <span class="badge badge-secondary">$containedInPlace.typeOf$</span><br>
+                                <td name="containedInPlace.branchCode__containedInPlace.name.ja">
                                     $containedInPlace.branchCode$<br>
                                     $containedInPlace.name.ja$<br>
                                 </td>
@@ -88,11 +89,10 @@ SR-01
                                 <td name="openSeatingAllowed">
                                     $openSeatingAllowed$<br>
                                 </td>
-                                <td name="branchCode__id" class="text-center">
-                                    <a href="javascript:void(0)"
-                                        class="btn btn-sm btn-outline-primary showAdditionalProperty"
+                                <td name="branchCode__id" class="">
+                                    <a href="javascript:void(0)" class="showAdditionalProperty"
                                         data-branchCode="$branchCode$">
-                                        <span>追加特性</span>
+                                        <span>表示</span>
                                     </a>
                                 </td>
                             </tr>

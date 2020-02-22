@@ -23,7 +23,7 @@ Aa-6
             <div class="form-row">
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="identifier" class="bmd-label-static">
-                        券種コード
+                        コード
                     </label>
                     <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
                         maxlength=64>
@@ -51,7 +51,7 @@ Aa-6
 
                 <div class="form-group bmd-form-group col-md-3">
                     <label for="category[codeValue]" class="bmd-label-static">
-                        オファーカテゴリー
+                        カテゴリー
                     </label>
                     <select class="form-control" name="category[codeValue]">
                         <option value="">---</option>
@@ -131,7 +131,8 @@ Aa-6
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>券種コード<br>利用状況</th>
+                                <th>コード<br>利用状況</th>
+                                <th>カテゴリー</th>
                                 <th>名称</th>
                                 <th>発生金額<br>売上金額</th>
                                 <th>適用条件</th>
@@ -149,10 +150,10 @@ Aa-6
                                     </a><br>
                                     <span class="badge badge-secondary">$availability$</span>
                                 </td>
-                                <td name="name.ja__name.en">
-                                    $name.ja$<br>$name.en$</td>
+                                <td name="category.codeValue">$category.codeValue$</td>
+                                <td name="name.ja__name.en">$name.ja$<br>$name.en$</td>
                                 <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
-                                    style="text-align:right;">
+                                    class="text-right">
                                     $priceSpecification.price$ $priceSpecification.priceCurrency$ /
                                     $referenceQuantity.value$<br>
                                     $priceSpecification.accounting.accountsReceivable$
