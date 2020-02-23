@@ -105,14 +105,14 @@ PS-02
                                 <th>ID</th>
                                 <th>名称</th>
                                 <th>適用カテゴリー</th>
-                                <th>適用ムビチケ券種区分</th>
+                                <th>適用ムビチケ</th>
                                 <th>金額</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr id="templateRow">
                                 <td name="typeOf">
-                                    <span class="badge badge-secondary">$typeOf$</span>
+                                    <span class="text-muted">$typeOf$</span>
                                 </td>
                                 <td name="id__id">
                                     <a target="_blank" href="/priceSpecifications/$id$/update">
@@ -125,7 +125,7 @@ PS-02
                                     $appliesToCategoryCode.inCodeSet.identifier$
                                     $appliesToCategoryCode.codeValue$</td>
                                 <td name="appliesToMovieTicketType__appliesToMovieTicket.name__appliesToVideoFormat">
-                                    $appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>$appliesToVideoFormat$
+                                    $appliesToMovieTicketType$ $appliesToMovieTicket.name$ / $appliesToVideoFormat$
                                 </td>
                                 <td name="price__priceCurrency">$price$ $priceCurrency$</td>
                             </tr>

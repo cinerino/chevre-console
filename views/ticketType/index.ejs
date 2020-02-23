@@ -131,7 +131,8 @@ Aa-6
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>コード<br>利用状況</th>
+                                <th>コード</th>
+                                <th>利用状況</th>
                                 <th>カテゴリー</th>
                                 <th>名称</th>
                                 <th>発生金額<br>売上金額</th>
@@ -146,12 +147,14 @@ Aa-6
 
                         <tbody>
                             <tr id="templateRow" _id="$id$">
-                                <td name="id__identifier__availability">
+                                <td name="id__identifier">
                                     <a target="_blank" href="/ticketTypes/$id$/update">
                                         $identifier$
                                         <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                     </a><br>
-                                    <span class="badge badge-secondary">$availability$</span>
+                                </td>
+                                <td name="availability">
+                                    <span class="text-muted">$availability$</span>
                                 </td>
                                 <td name="category.codeValue">$category.codeValue$</td>
                                 <td name="name.ja|slice__name.en|slice">$name.ja$<br>$name.en$</td>

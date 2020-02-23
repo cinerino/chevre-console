@@ -236,7 +236,9 @@ Aa-11
                     <table class="table">
                         <thead class="text-primary">
                             <tr>
-                                <th>ID<br>予約番号<br>ステータス<br>予約日時</th>
+                                <th>ID<br>予約番号</th>
+                                <th>予約日時</th>
+                                <th>ステータス</th>
                                 <th>イベント</th>
                                 <th>チケット</th>
                                 <th>チケット<br>ホルダー</th>
@@ -245,30 +247,34 @@ Aa-11
                         </thead>
                         <tbody>
                             <tr id="templateRow" _id="$id$">
-                                <td name="typeOf__id__reservationNumber__reservationStatus__bookingTime">
-                                    <span class="badge badge-secondary">$typeOf$</span><br>
+                                <td name="id__reservationNumber">
                                     $id$<br>
                                     $reservationNumber$<br>
-                                    <span class="badge badge-success">$reservationStatus$</span><br>
-                                    $bookingTime$
+                                </td>
+                                <td name="bookingTime|parseDateTime">
+                                    <span class="text-muted">$bookingTime$</span><br>
+                                </td>
+                                <td name="reservationStatus">
+                                    <span class="text-muted">$reservationStatus$</span><br>
                                 </td>
                                 <td
-                                    name="reservationFor.typeOf__reservationFor.id__reservationFor.superEvent.id__reservationFor.superEvent.name.ja__reservationFor.name.ja__reservationFor.startDate__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
-                                    <span class="badge badge-secondary">$reservationFor.typeOf$</span><br>
-                                    $reservationFor.id$<br>
+                                    name="reservationFor.typeOf__reservationFor.id__reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice__reservationFor.name.ja|slice__reservationFor.startDate|parseDateTime__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
+                                    <span class="text-muted">$reservationFor.id$</span><br>
                                     <a target="_blank"
-                                        href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$</a><br>
+                                        href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$
+                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
+                                    /
                                     <span class="font-weight-bold">$reservationFor.name.ja$</span><br>
                                     $reservationFor.startDate$<br>
-                                    <span class="font-italic">$reservationFor.superEvent.location.name.ja$</span><br>
+                                    <span class="font-italic">$reservationFor.superEvent.location.name.ja$</span>
                                     <span class="font-italic">$reservationFor.location.name.ja$</span>
                                 </td>
                                 <td
                                     name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__reservedTicket.ticketType.category.codeValue__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
-                                    <span class="badge badge-secondary">$reservedTicket.typeOf$</span><br>
                                     <span class="font-weight-bold"><a target="_blank"
                                             href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
-                                            <br>$reservedTicket.ticketType.name.en$</a></span><br>
+                                            <i class="material-icons"
+                                                style="font-size: 1.2em;">open_in_new</i></a></span><br>
                                     $unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$
                                     $unitPriceSpec.priceCurrency$<br>
                                     $ticketedSeat$<br>

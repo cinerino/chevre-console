@@ -211,6 +211,12 @@ body {
   flex: 0 0 100%;
   max-width: 100%; }
 
+.table thead tr th {
+  font-size: inherit; }
+
+.table tbody tr td, .table tbody tr th, .table tfoot tr td, .table tfoot tr th, .table thead tr td, .table thead tr th {
+  padding: 6px 4px; }
+
 .scheduler {
   margin: 0 auto;
   overflow: auto;

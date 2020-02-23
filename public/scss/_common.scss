@@ -228,4 +228,25 @@ body {
             max-width: 100%;
         }
     }
-} 
+}
+
+.table {
+    thead {
+        tr {
+            th {
+             font-size: inherit;
+            }
+        }
+
+    }
+}
+
+.table {
+    tbody, tfoot, thead {
+        tr {
+            td,th {
+                padding: 6px 4px;
+            }
+        }
+    }
+}

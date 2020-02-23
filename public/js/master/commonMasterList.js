@@ -124,8 +124,8 @@ $(function () {
                         } else if (fieldId.indexOf('|slice') > -1) {
                             fieldId = fieldId.replace('|slice', '');
                             value = $.fn.getStringValue(data, fieldId, "");
-                            if (typeof value === 'string' && value.length > 10) {
-                                value = value.slice(0, 10) + '...';
+                            if (typeof value === 'string' && value.length > 20) {
+                                value = value.slice(0, 20) + '...';
                             }
                         } else {
                             value = $.fn.getStringValue(data, fieldId, '');
