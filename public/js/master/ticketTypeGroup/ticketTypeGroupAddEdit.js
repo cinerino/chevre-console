@@ -136,11 +136,13 @@ function priceChange() {
                         appliesToMovieTicketType = ticketType[i].priceSpecification.appliesToMovieTicketType;
                     }
                     $('#sortable1').append(
-                        '<li class="ui-state-default" uid=' + ticketType[i].id
+                        '<li class="list-group-item p-0" uid=' + ticketType[i].id
                         + ' appliesToMovieTicketType="' + appliesToMovieTicketType + '"'
                         + '>'
+                        + '<span class="btn btn-primary btn-block">'
                         + ticketType[i].alternateName.ja
                         + '(' + Math.floor(ticketType[i].priceSpecification.price / ticketType[i].priceSpecification.referenceQuantity.value) + ')'
+                        + '</span>'
                         + '</li>'
                     );
                 }

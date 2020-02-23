@@ -62,7 +62,7 @@
                 券種売上金額
             </span>
             <div class="row">
-                <div class="col-md-8">
+                <div class="col-md-6">
                     <input type="number" class="form-control" name="price" id="price" placeholder="" maxlength=10>
                     <p class="error message text-danger">
                         <% if (errors && errors.ticketTypes) { %>
@@ -70,19 +70,23 @@
                         <% } %>
                     </p>
                 </div>
-                <div class=""></div>
-                <div id="price-list" class="mx-auto">
-                    <ul id="sortable1" class="connectedSortable">
+                <div class="col-md-6"></div>
+            </div>
+            <div class="row">
+                <div class="mx-auto">
+                    <ul id="sortable1" class="float-left connectedSortable list-group m-3 p-3">
 
                     </ul>
-                    <ul id="sortable2" class="connectedSortable">
+                    <ul id="sortable2" class="float-left connectedSortable list-group m-3 p-3">
                         <% ticketTypes.forEach((ticketType) => { %>
-                        <li class="ui-state-highlight" uid="<%= ticketType.id %>"
+                        <li class="list-group-item p-0" uid="<%= ticketType.id %>"
                             appliesToMovieTicketType="<%= ticketType.priceSpecification.appliesToMovieTicketType %>"
                             accountsReceivable="<%= ticketType.priceSpecification.accounting.accountsReceivable %>">
-                            <%= ticketType.alternateName.ja %>
-                            <%= `(${Math.floor(ticketType.priceSpecification.price / ticketType.priceSpecification.referenceQuantity.value)})` %>
-                            <%= (ticketType.priceSpecification.appliesToMovieTicketType !== undefined) ? `(${ticketType.priceSpecification.appliesToMovieTicketType})` : '' %>
+                            <span class="btn btn-primary btn-block">
+                                <%= ticketType.alternateName.ja %>
+                                <%= `(${Math.floor(ticketType.priceSpecification.price / ticketType.priceSpecification.referenceQuantity.value)})` %>
+                                <%= (ticketType.priceSpecification.appliesToMovieTicketType !== undefined) ? `(${ticketType.priceSpecification.appliesToMovieTicketType})` : '' %>
+                            </span>
                         </li>
                         <% }) %>
                     </ul>
