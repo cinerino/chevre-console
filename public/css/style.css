@@ -217,6 +217,9 @@ body {
 .table tbody tr td, .table tbody tr th, .table tfoot tr td, .table tfoot tr th, .table thead tr td, .table thead tr th {
   padding: 6px 4px; }
 
+.card .card-body .form-group {
+  margin: 1rem 0 0; }
+
 .scheduler {
   margin: 0 auto;
   overflow: auto;

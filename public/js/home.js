@@ -137,7 +137,7 @@ function updateLatestReservations(cb) {
             var html = '<td>' + reservation.reservationNumber + '</td>'
                 + '<td>' + moment(reservation.modifiedTime).format('MM/DD HH:mm') + '</td>'
                 + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>'
-                + '<td><span class="badge badge-secondary">' + reservation.reservationStatus + '</span></td>';
+                + '<td><span class="text-muted">' + reservation.reservationStatus + '</span></td>';
             $('<tr>').html(html)
                 .appendTo('#latestReservations tbody');
         });
@@ -164,7 +164,7 @@ function updateEventsWithAggregation(cb) {
     ).done(function (data) {
         $('.eventsWithAggregation tbody').empty();
 
-        // $('.eventsCount').text(data.totalCount);
+        $('.eventsCount').text(data.totalCount);
 
         $.each(data.data, function (_, event) {
             var name = '?';

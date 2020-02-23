@@ -55,11 +55,6 @@ ST-01
 </div>
 
 <div class="form-container search">
-    <p id="resultStats" style="display:none;">
-    </p>
-    <!-- <p class="mb-3" id="searchedCount" style="display:none;">
-        検索結果 $searched_count$件
-    </p> -->
     <div id="list" style="display:none;">
 
         <div class="card">
@@ -88,12 +83,14 @@ ST-01
                                 </td>
                                 <td
                                     name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja|slice">
-                                    <span class="font-italic text-muted">$containedInPlace.containedInPlace.containedInPlace.branchCode$</span>
+                                    <span
+                                        class="font-italic text-muted">$containedInPlace.containedInPlace.containedInPlace.branchCode$</span>
                                     $containedInPlace.containedInPlace.containedInPlace.name.ja$
                                 </td>
                                 <td
                                     name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja|slice">
-                                    <span class="font-italic text-muted">$containedInPlace.containedInPlace.branchCode$</span>
+                                    <span
+                                        class="font-italic text-muted">$containedInPlace.containedInPlace.branchCode$</span>
                                     $containedInPlace.containedInPlace.name.ja$
                                 </td>
                                 <td name="containedInPlace.branchCode__containedInPlace.name.ja|slice">
@@ -112,11 +109,11 @@ ST-01
                         </tbody>
                     </table>
                 </div>
+                <div id="pager" class="div_pager_parent"></div>
             </div>
         </div>
 
     </div>
-    <div id="pager" class="div_pager_parent"></div>
 </div>
 
 <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
