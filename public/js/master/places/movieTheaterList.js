@@ -159,11 +159,6 @@ $(function () {
                     .append([thead, tbody]);
 
                 var div = $('<div>').addClass('')
-                    .css({
-                        'max-height': '500px',
-                        'overflow': 'auto',
-                        'display': 'block'
-                    })
                     .append(table);
 
                 body.empty().append(div);

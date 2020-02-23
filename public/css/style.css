@@ -49,9 +49,7 @@ html, body {
 
 body {
   text-size-adjust: 100%;
-  background-attachment: fixed;
-  font-size: 14px;
-  color: #333; }
+  background-attachment: fixed; }
 
 .pointer {
   cursor: pointer; }
@@ -130,10 +128,6 @@ body {
 .border-light-gray {
   border-color: #EEE !important; }
 
-.table thead th, .table thead td, .table tbody th, .table tbody td {
-  vertical-align: middle;
-  line-height: 1.6; }
-
 .scroll-horizontal .table {
   min-width: 736px; }
 
@@ -155,6 +149,9 @@ body {
 .simple-pagination ul li.disabled a, .simple-pagination ul li.disabled span {
   background-color: #666;
   border-color: #666; }
+
+.modal {
+  overflow-y: auto !important; }
 
 #loadingModal .modal-content {
   box-shadow: none; }

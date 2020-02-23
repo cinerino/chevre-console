@@ -24,8 +24,6 @@ html, body {
 body {
     text-size-adjust: 100%;
     background-attachment: fixed;
-    font-size: 14px;
-    color: #333;
 }
 
 .pointer {
@@ -112,15 +110,6 @@ body {
     border-color: $light-gray !important;
 }
 
-.table {
-    thead, tbody {
-        th, td {
-            vertical-align: middle;
-            line-height: 1.6;
-        }
-    }
-}
-
 .scroll-horizontal .table {
     min-width: 736px;
 }
@@ -157,6 +146,9 @@ body {
     }
 }
 
+.modal {
+    overflow-y: auto !important;
+}
 
 // loading
 #loadingModal {
