@@ -15,13 +15,7 @@ AT-01
 <div class="form-container search mb-3 searchAccountTitle">
     <form method="post" class="p-3 bg-light-gray">
         <%- include('../common/master/_hidden') %>
-        <div class="menu-group">
-            <% if (forms.message !== undefined) { %>
-            <p class="error message text-danger panel-body bg-danger">
-                <%= forms.message %>
-            </p>
-            <% } %>
-        </div>
+
         <div class="form-group">
             <label for="inCodeSet[inCodeSet][codeValue]" class="">
                 科目分類
