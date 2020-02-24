@@ -25,10 +25,7 @@ $(function () {
         search(1);
     });
 
-    // 検索条件クリア
-    $(document).on('click', '.reset-condition', function () {
-        $.fn.clearFormValue('form');
-    });
+    $('.btn-ok').click();
 
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;

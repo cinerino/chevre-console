@@ -12,136 +12,78 @@ PO-01
 <%- contentFor('body') %>
 
 <div class="card">
-    <div class="card-body search">
-        <form method="post">
-            <%- include('../common/master/_hidden') %>
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/addOns/new">
+                <i class="material-icons">add</i>登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i>更新</a>
+        </div>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../common/master/_hidden') %>
 
-            <div class="menu-group">
-                <% if (message !== '') { %>
-                <p class="error message text-danger panel-body bg-danger">
-                    <%= message %>
-                </p>
-                <% } %>
-            </div>
-
-            <div class="form-group bmd-form-group">
-                <label for="id" class="bmd-label-static">
-                    ID
-                </label>
-                <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
-            </div>
-
-            <!-- <div class="form-group">
-                <label for="name" class="">
-                    名称
-                </label>
-                <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
-            </div> -->
-
-            <!-- <div class="form-group">
-                <label for="" class="">
-                    単価
-                </label>
-                <div class="input-group">
-                    <select class="form-control" name="priceSpecification[referenceQuantity][value]">
-                        <option value="">---</option>
-                        <% for (let i = 1; i <= 1; i++) { %>
-                        <option value="<%= i %>">
-                            <%= i %>
-                        </option>
-                        <% } %>
-                    </select>
-    
-                    <div class="input-group-append">
-                        <span class="input-group-text">枚あたり</span>
-                    </div>
-    
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[minPrice]"
-                        id="priceSpecification[minPrice]" value="" />
-    
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以上</span>
-                    </div>
-    
-                    <input class="form-control" placeholder="" maxlength=10 name="priceSpecification[maxPrice]"
-                        id="priceSpecification[maxPrice]" value="" />
-    
-                    <div class="input-group-append">
-                        <span class="input-group-text">円以下</span>
+                            <div class="form-group bmd-form-group">
+                                <label for="id" class="bmd-label-static">
+                                    ID
+                                </label>
+                                <input type="text" class="form-control" name="id" id="id" placeholder="" maxlength=64>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div> -->
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>コード</th>
+                                    <th>名称</th>
+                                    <th>発生金額</th>
+                                    <th>アイテム</th>
+                                    <th>追加特性</th>
+                                </tr>
+                            </thead>
 
-            <div class="panel-body">
-                <a class="btn btn-primary" role="button" href="/addOns/new">
-                    <i class=" fa fa-plus"></i> 登録</a>
-
-                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="search">
-    <div id="list" style="display:none;">
-        <div class="card">
-            <div class="card-body">
-                <div class="material-datatables">
-                    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                        <div class="row">
+                            <tbody>
+                                <tr id="templateRow">
+                                    <td name="id__identifier">
+                                        <a target="_blank" href="/addOns/$id$/update">
+                                            $identifier$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    <td name="name.ja">$name.ja$</td>
+                                    <td name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value"
+                                        style="text-align:right;">
+                                        $priceSpecification.price$ $priceSpecification.priceCurrency$ /
+                                        $referenceQuantity.value$
+                                    </td>
+                                    <td name="itemOffered.name.ja">$itemOffered.name.ja$</td>
+                                    <td name="id__additionalProperty">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
                         </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
-                                    cellspacing="0" width="100%" style="width: 100%;" role="grid"
-                                    aria-describedby="datatables_info">
-                                    <thead class="text-primary">
-                                        <tr>
-                                            <th>コード</th>
-                                            <th>名称</th>
-                                            <th>発生金額</th>
-                                            <th>アイテム</th>
-                                            <th>追加特性</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <tr id="templateRow">
-                                            <td name="id__identifier">
-                                                <a target="_blank" href="/addOns/$id$/update">
-                                                    $identifier$
-                                                    <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                                </a>
-                                            <td name="name.ja">$name.ja$</td>
-                                            <td name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value"
-                                                style="text-align:right;">
-                                                $priceSpecification.price$ $priceSpecification.priceCurrency$ /
-                                                $referenceQuantity.value$
-                                            </td>
-                                            <td name="itemOffered.name.ja">$itemOffered.name.ja$</td>
-                                            <td name="id__additionalProperty">
-                                                <a href="javascript:void(0)" class="showAdditionalProperty"
-                                                    data-id="$id$">
-                                                    <span>表示</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
                         </div>
-                        <div class="row">
-                            <div class="col-sm-12 col-md-5">
-                                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-md-7">
-                                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
-                                </div>
-                                <div id="pager" class="div_pager_parent float-right"></div>
-                            </div>
-                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
                     </div>
                 </div>
             </div>

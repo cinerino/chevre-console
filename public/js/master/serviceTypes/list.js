@@ -26,10 +26,8 @@ $(function () {
         search(1);
     });
 
-    // 検索条件クリア
-    $(document).on('click', '.reset-condition', function () {
-        $.fn.clearFormValue('form');
-    });
+    $('.btn-ok').click();
+
     //--------------------------------
     // 検索API呼び出し
     //--------------------------------

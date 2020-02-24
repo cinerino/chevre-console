@@ -218,6 +218,9 @@ body {
         }
     }
 }
+.card {
+    margin-top: 0;
+}
 .card  {
     .card-body {
         .form-group {
@@ -226,20 +229,7 @@ body {
     }
 }
 .card {
-    .toolbar {
-        .btn {
-            font-weight: 500;
-            padding: 0.5rem 0.8rem;
-        }
-    }
-}
-.card {
-    .toolbar {
-        .btn {
-            .material-icons {
-                // font-size: 1.4rem;
-                // margin: -2px 2px 0 0;
-            }
-        }
+    .material-datatables {
+        margin-top: 1rem;
     }
 }

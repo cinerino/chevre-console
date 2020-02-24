@@ -47,11 +47,6 @@ $(function () {
         open(url);
     });
 
-    // 検索条件クリア
-    $(document).on('click', '.reset-condition', function () {
-        $.fn.clearFormValue('form');
-    });
-
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;

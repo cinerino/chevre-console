@@ -14,82 +14,82 @@ Aa-10
 
 <div class="card">
     <div class="card-body">
-        <form method="post">
-            <%- include('../../common/master/_hidden') %>
-
-            <div class="form-row">
-                <div class="form-group bmd-form-group col-md-6">
-                    <label for="identifier" class="bmd-label-static">
-                        コード
-                    </label>
-                    <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
-                        maxlength=64 value="">
-                </div>
-
-                <div class="form-group bmd-form-group col-md-6">
-                    <label for="name" class="bmd-label-static">
-                        名称
-                    </label>
-                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group bmd-form-group col-md-6">
-                    <label for="datePublishedThrough" class="bmd-label-static">
-                        公開日(From - To)
-                    </label>
-
-                    <div class="input-group">
-                        <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedFrom"
-                            id="datePublishedFrom" value="" />
-                        <div class="input-group-append">
-                            <span class="input-group-text">から</span>
-                        </div>
-                        <input class="form-control datepicker" placeholder="" maxlength=10 name="datePublishedThrough"
-                            id="datePublishedThrough" value="" />
-                        <div class="input-group-append">
-                            <span class="input-group-text">まで</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group bmd-form-group col-md-6">
-                    <label for="availableThrough" class="bmd-label-static">
-                        興行期間(From - To)
-                    </label>
-
-                    <div class="input-group">
-                        <input class="form-control datepicker" placeholder="" maxlength=10 name="availableFrom"
-                            id="availableFrom" value="" />
-                        <div class="input-group-append">
-                            <span class="input-group-text">から</span>
-                        </div>
-                        <input class="form-control datepicker" placeholder="" maxlength=10 name="availableThrough"
-                            id="availableThrough" value="" />
-                        <div class="input-group-append">
-                            <span class="input-group-text">まで</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel-body">
-                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                <a class="btn btn-primary" role="button" href="/creativeWorks/movie/add">
-                    <i class=" fa fa-plus"></i> 登録</a>
-                <% } %>
-
-                <button type="button" class="reset-condition btn btn-secondary float-right">検索内容リセット</button>
-                <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-            </div>
-        </form>
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/creativeWorks/movie/add">
+                <i class="material-icons">add</i>登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i>更新</a>
+        </div>
         <div class="material-datatables">
             <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
                 <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../../common/master/_hidden') %>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label for="identifier" class="bmd-label-static">
+                                        コード
+                                    </label>
+                                    <input type="text" class="form-control" name="identifier" id="identifier"
+                                        placeholder="" maxlength=64 value="">
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label for="name" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64
+                                        value="">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label for="datePublishedThrough" class="bmd-label-static">
+                                        公開日(From - To)
+                                    </label>
+
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="datePublishedFrom" id="datePublishedFrom" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">から</span>
+                                        </div>
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="datePublishedThrough" id="datePublishedThrough" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">まで</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label for="availableThrough" class="bmd-label-static">
+                                        興行期間(From - To)
+                                    </label>
+
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="availableFrom" id="availableFrom" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">から</span>
+                                        </div>
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="availableThrough" id="availableThrough" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">まで</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div id="list" style="display:none;" class="row">
-                    <div class="col-sm-12">
+                    <div class="col-sm-12 table-responsive">
                         <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
                             cellspacing="0" width="100%" style="width: 100%;" role="grid"
                             aria-describedby="datatables_info">
