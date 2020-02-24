@@ -50,56 +50,68 @@ Aa-8
                 <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
             </div>
         </form>
-    </div>
-</div>
-
-<div class="form-container search">
-    <div id="list" style="display:none;">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="text-primary">
-                            <tr>
-                                <th>コード</th>
-                                <th>名称</th>
-                                <th>券種</th>
-                                <th>興行区分</th>
-                                <th>追加特性</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="templateRow" _id="$id$">
-                                <td name="id__identifier">
-                                    <a target="_blank" href="/ticketTypeGroups/$id$/update">
-                                        $identifier$
-                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                    </a>
-                                </td>
-                                <td name="name.ja|slice">$name.ja$</td>
-                                <td name="offerCount__id" class="text-center">
-                                    <a href="javascript:void(0)" class="popupListTicketType" data-id="$id$">
-                                        $offerCount$ 券種
-                                    </a>
-                                </td>
-                                <td name="itemOffered.serviceType.codeValue">$itemOffered.serviceType.codeValue$</td>
-                                <td name="id__additionalProperty">
-                                    <a href="javascript:void(0)" class=" showAdditionalProperty" data-id="$id$">
-                                        <span>表示</span>
-                                    </a>
-                                </td>
-                                <td name="id">
-                                    <a target="_blank" href="/ticketTypeGroups/$id$/update">
-                                        編集
-                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
                 </div>
-                <div id="pager" class="div_pager_parent"></div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>コード</th>
+                                    <th>名称</th>
+                                    <th>券種</th>
+                                    <th>興行区分</th>
+                                    <th>追加特性</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow" _id="$id$">
+                                    <td name="id__identifier">
+                                        <a target="_blank" href="/ticketTypeGroups/$id$/update">
+                                            $identifier$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td name="name.ja|slice">$name.ja$</td>
+                                    <td name="offerCount__id" class="text-center">
+                                        <a href="javascript:void(0)" class="popupListTicketType" data-id="$id$">
+                                            $offerCount$ 券種
+                                        </a>
+                                    </td>
+                                    <td name="itemOffered.serviceType.codeValue">
+                                        $itemOffered.serviceType.codeValue$</td>
+                                    <td name="id__additionalProperty">
+                                        <a href="javascript:void(0)" class=" showAdditionalProperty" data-id="$id$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
+                                    <td name="id">
+                                        <a target="_blank" href="/ticketTypeGroups/$id$/update">
+                                            編集
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

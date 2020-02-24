@@ -114,89 +114,99 @@ Aa-6
                 <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
             </div>
         </form>
-    </div>
-</div>
-
-<% /* 一覧 */ %>
-<div class="form-container search">
-    <div id="list" style="display:none;">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="text-primary">
-                            <tr>
-                                <th>コード</th>
-                                <th>利用状況</th>
-                                <th>カテゴリー</th>
-                                <th>名称</th>
-                                <th>発生金額<br>売上金額</th>
-                                <th>適用条件</th>
-                                <th>有効性</th>
-                                <th>アドオン</th>
-                                <th>追加特性</th>
-                                <th>関連グループ</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            <tr id="templateRow" _id="$id$">
-                                <td name="id__identifier">
-                                    <a target="_blank" href="/ticketTypes/$id$/update">
-                                        $identifier$
-                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                    </a><br>
-                                </td>
-                                <td name="availability">
-                                    <span class="text-muted">$availability$</span>
-                                </td>
-                                <td name="category.codeValue">$category.codeValue$</td>
-                                <td name="name.ja|slice__name.en|slice">$name.ja$<br>$name.en$</td>
-                                <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
-                                    class="text-right">
-                                    $priceSpecification.price$ $priceSpecification.priceCurrency$ /
-                                    $referenceQuantity.value$<br>
-                                    $priceSpecification.accounting.accountsReceivable$
-                                    $priceSpecification.priceCurrency$
-                                </td>
-                                <td
-                                    name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
-                                    ムビ: $priceSpecification.appliesToMovieTicketType$ $appliesToMovieTicket.name$<br>
-                                    座席: $eligibleSeatingType.0.codeValue$ /
-                                    口座: $eligibleMonetaryAmount.0.value$
-                                    $eligibleMonetaryAmount.0.currency$
-                                </td>
-                                <td name="validFrom|parseDateTime__validThrough|parseDateTime__validRateLimitStr">
-                                    $validFrom$ ~ $validThrough$<br>
-                                    $validRateLimitStr$
-                                </td>
-                                <td name="availableAddOnNames">$availableAddOnNames$
-                                </td>
-                                <td name="id__additionalProperty">
-                                    <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
-                                        <span>表示</span>
-                                    </a>
-                                </td>
-                                <td name="id__ticketTypeGroups" class="text-center">
-                                    <a href="javascript:void(0)" data-id="$id$" class="popupListTicketTypeGroup">
-                                        表示
-                                    </a>
-                                </td>
-                                <td name="id">
-                                    <a target="_blank" href="/ticketTypes/$id$/update">
-                                        編集
-                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
                 </div>
-                <div id="pager" class="div_pager_parent"></div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>コード</th>
+                                    <th>利用状況</th>
+                                    <th>カテゴリー</th>
+                                    <th>名称</th>
+                                    <th>発生金額<br>売上金額</th>
+                                    <th>適用条件</th>
+                                    <th>有効性</th>
+                                    <th>アドオン</th>
+                                    <th>追加特性</th>
+                                    <th>関連グループ</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr id="templateRow" _id="$id$">
+                                    <td name="id__identifier">
+                                        <a target="_blank" href="/ticketTypes/$id$/update">
+                                            $identifier$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a><br>
+                                    </td>
+                                    <td name="availability">
+                                        <span class="text-muted">$availability$</span>
+                                    </td>
+                                    <td name="category.codeValue">$category.codeValue$</td>
+                                    <td name="name.ja|slice__name.en|slice">$name.ja$<br>$name.en$</td>
+                                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
+                                        class="text-right">
+                                        $priceSpecification.price$ $priceSpecification.priceCurrency$ /
+                                        $referenceQuantity.value$<br>
+                                        $priceSpecification.accounting.accountsReceivable$
+                                        $priceSpecification.priceCurrency$
+                                    </td>
+                                    <td
+                                        name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
+                                        ムビ: $priceSpecification.appliesToMovieTicketType$
+                                        $appliesToMovieTicket.name$<br>
+                                        座席: $eligibleSeatingType.0.codeValue$ /
+                                        口座: $eligibleMonetaryAmount.0.value$
+                                        $eligibleMonetaryAmount.0.currency$
+                                    </td>
+                                    <td name="validFrom|parseDateTime__validThrough|parseDateTime__validRateLimitStr">
+                                        $validFrom$ ~ $validThrough$<br>
+                                        $validRateLimitStr$
+                                    </td>
+                                    <td name="availableAddOnNames">$availableAddOnNames$
+                                    </td>
+                                    <td name="id__additionalProperty">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
+                                    <td name="id__ticketTypeGroups" class="text-center">
+                                        <a href="javascript:void(0)" data-id="$id$" class="popupListTicketTypeGroup">
+                                            表示
+                                        </a>
+                                    </td>
+                                    <td name="id">
+                                        <a target="_blank" href="/ticketTypes/$id$/update">
+                                            編集
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
 

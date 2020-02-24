@@ -218,79 +218,91 @@ Aa-11
                 <button type="button" class="reset-condition btn btn-danger">検索内容リセット</button>
             </div>
         </form>
-    </div>
-</div>
-
-<div class="form-container search">
-    <div id="list" style="display:none;">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="text-primary">
-                            <tr>
-                                <th>ID<br>予約番号</th>
-                                <th>予約日時</th>
-                                <th>ステータス</th>
-                                <th>イベント</th>
-                                <th>チケット</th>
-                                <th>チケット<br>ホルダー</th>
-                                <th>発券<br>入場</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="templateRow" _id="$id$">
-                                <td name="id__reservationNumber">
-                                    $id$<br>
-                                    $reservationNumber$<br>
-                                </td>
-                                <td name="bookingTime|parseDateTime">
-                                    <span class="text-muted">$bookingTime$</span><br>
-                                </td>
-                                <td name="reservationStatus">
-                                    <span class="text-muted">$reservationStatus$</span><br>
-                                </td>
-                                <td
-                                    name="reservationFor.typeOf__reservationFor.id__reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice__reservationFor.name.ja|slice__reservationFor.startDate|parseDateTime__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
-                                    <span class="text-muted">$reservationFor.id$</span><br>
-                                    <a target="_blank"
-                                        href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$
-                                        <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
-                                    /
-                                    <span class="font-weight-bold">$reservationFor.name.ja$</span><br>
-                                    $reservationFor.startDate$<br>
-                                    <span class="font-italic">$reservationFor.superEvent.location.name.ja$</span>
-                                    <span class="font-italic">$reservationFor.location.name.ja$</span>
-                                </td>
-                                <td
-                                    name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__reservedTicket.ticketType.category.codeValue__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
-                                    <span class="font-weight-bold"><a target="_blank"
-                                            href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
-                                            <i class="material-icons"
-                                                style="font-size: 1.2em;">open_in_new</i></a></span><br>
-                                    $unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$
-                                    $unitPriceSpec.priceCurrency$<br>
-                                    $ticketedSeat$<br>
-                                </td>
-                                <td
-                                    name="underName.typeOf__underName.name__underName.email__underName.name__underName.id__underName.telephone__underName.identifier">
-                                    <span class="badge badge-secondary">$underName.typeOf$</span><br>
-                                    $underName.id$<br>
-                                    $underName.name$<br>
-                                    $underName.email$<br>
-                                    $underName.telephone$<br>
-                                    $underName.identifier$
-                                </td>
-                                <td name="checkedIn__attended">
-                                    $checkedIn$<br>$attended$
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
                 </div>
-                <div id="pager" class="div_pager_parent"></div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>ID<br>予約番号</th>
+                                    <th>予約日時</th>
+                                    <th>ステータス</th>
+                                    <th>イベント</th>
+                                    <th>チケット</th>
+                                    <th>チケット<br>ホルダー</th>
+                                    <th>発券<br>入場</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow" _id="$id$">
+                                    <td name="id__reservationNumber">
+                                        $id$<br>
+                                        $reservationNumber$<br>
+                                    </td>
+                                    <td name="bookingTime|parseDateTime">
+                                        <span class="text-muted">$bookingTime$</span><br>
+                                    </td>
+                                    <td name="reservationStatus">
+                                        <span class="text-muted">$reservationStatus$</span><br>
+                                    </td>
+                                    <td
+                                        name="reservationFor.typeOf__reservationFor.id__reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice__reservationFor.name.ja|slice__reservationFor.startDate|parseDateTime__reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
+                                        <span class="text-muted">$reservationFor.id$</span><br>
+                                        <a target="_blank"
+                                            href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
+                                        /
+                                        <span class="font-weight-bold">$reservationFor.name.ja$</span><br>
+                                        $reservationFor.startDate$<br>
+                                        <span class="font-italic">$reservationFor.superEvent.location.name.ja$</span>
+                                        <span class="font-italic">$reservationFor.location.name.ja$</span>
+                                    </td>
+                                    <td
+                                        name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__reservedTicket.ticketType.name.en__reservedTicket.ticketType.category.codeValue__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency__ticketedSeat">
+                                        <span class="font-weight-bold"><a target="_blank"
+                                                href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
+                                                <i class="material-icons"
+                                                    style="font-size: 1.2em;">open_in_new</i></a></span><br>
+                                        $unitPriceSpec.price$ / $unitPriceSpec.referenceQuantity.value$
+                                        $unitPriceSpec.priceCurrency$<br>
+                                        $ticketedSeat$<br>
+                                    </td>
+                                    <td
+                                        name="underName.typeOf__underName.name__underName.email__underName.name__underName.id__underName.telephone__underName.identifier">
+                                        <span class="badge badge-secondary">$underName.typeOf$</span><br>
+                                        $underName.id$<br>
+                                        $underName.name$<br>
+                                        $underName.email$<br>
+                                        $underName.telephone$<br>
+                                        $underName.identifier$
+                                    </td>
+                                    <td name="checkedIn__attended">
+                                        $checkedIn$<br>$attended$
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <%- include('../common/master/_loading') %>

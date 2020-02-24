@@ -4,7 +4,7 @@ $(function () {
         _listTableBodySelector: "",
         _templateRowSelector: "#templateRow",
         _searchedCountAreaSelector: "#searchedCount",
-        _resultStatsSelector: "#resultStats",
+        _resultStatsSelector: "#datatables_info",
         _searchedCountText: null,
         _startTag: '',
         _endTag: '',
@@ -94,8 +94,8 @@ $(function () {
             resultStats.text(this.createResultStatsText(pageNumber, datas.length));
             resultStats.show();
 
-            if (!countData) { return; }
-            if (countData <= 0) { return; }
+            // if (!countData) { return; }
+            // if (countData <= 0) { return; }
 
             var startTag = this._startTag;
             var endTag = this._endTag;
@@ -162,7 +162,7 @@ $(function () {
          * 検索結果文字列を作成する
          */
         createResultStatsText: function (page, countFileterd) {
-            var text = page + 'ページ目';
+            var text = page + 'ページ目を表示しています';
 
             if (page <= 1 && countFileterd <= 0) {
                 text = 'マッチするデータが見つかりませんでした';

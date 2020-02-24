@@ -114,38 +114,6 @@ body {
     min-width: 736px;
 }
 
-// simple-pagination
-.simple-pagination {
-    ul {
-        li {
-            a, span {
-                padding: 0.5rem;
-                line-height: 1;
-                background-image: none;
-                background-color: $light-gray;
-                border-color: $gray;
-                box-shadow: none;
-                &:hover {
-                    background-color: transparent;
-                    border-color: $gray;
-                }
-            }
-            &.active {
-                a, span {
-                    background-color: $primary;
-                    border-color: $primary;
-                }     
-            }
-            &.disabled {
-                a, span {
-                    background-color: $dark-gray;
-                    border-color: $dark-gray;
-                } 
-            }
-        }
-    }
-}
-
 .modal {
     overflow-y: auto !important;
 }
