@@ -12,9 +12,19 @@ Aa-4
 
 <div class="card">
     <div class="card-body search">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <button type="button" class="btn btn-primary add-button"><i class="material-icons">add</i>登録</button>
+            <% if (process.env.USE_COA === '1') { %>
+            <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
+                <i class="material-icons">add</i>COAからインポート</a>
+            <% } %>
+            <a class="btn btn-primary search btn-ok search-button" href="#">
+                <i class="material-icons">refresh</i>検索</a>
+        </div>
         <form>
             <div class="form-row">
-                <div class="form-group bmd-form-group col-md-3">
+                <div class="form-group bmd-form-group col-md-2">
                     <label class="bmd-label-static">劇場 <span class="text-danger">＊</span></label>
 
                     <div class="input-group">
@@ -33,23 +43,23 @@ Aa-4
                     </div>
                 </div>
 
-                <div class="form-group bmd-form-group col-md-3">
+                <div class="form-group bmd-form-group col-md-2">
                     <label class="bmd-label-static">シアター</label>
                     <select class="form-control" name="screen">
                         <option value="">劇場を選択してください</option>
                     </select>
                 </div>
 
-                <div class="form-group bmd-form-group col-md-6">
+                <div class="form-group bmd-form-group col-md-4">
                     <label class="bmd-label-static">上映日 <span class="text-danger">＊</span></label>
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <input autocomplete="off" class="form-control datepicker" name="date" placeholder="選択してください"
                                 maxlength="10">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-8">
                             <div class="form-check form-check-radio form-check-inline">
                                 <label class="form-check-label">
                                     <input class="form-check-input" type="radio" name="days" id="radio-days-1" value="1"
@@ -80,29 +90,19 @@ Aa-4
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="form-group bmd-form-group">
-                <div class="form-check">
-                    <label class="form-check-label" for="onlyReservedSeatsAvailable">
-                        <input class="form-check-input" type="checkbox" name="onlyReservedSeatsAvailable"
-                            id="onlyReservedSeatsAvailable" value="1">
-                        座席指定有のみ
-                        <span class="form-check-sign">
-                            <span class="check"></span>
-                        </span>
-                    </label>
+                <div class="form-group bmd-form-group col-md-4">
+                    <div class="form-check">
+                        <label class="form-check-label" for="onlyReservedSeatsAvailable">
+                            <input class="form-check-input" type="checkbox" name="onlyReservedSeatsAvailable"
+                                id="onlyReservedSeatsAvailable" value="1">
+                            座席指定有のみ
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                    </div>
                 </div>
-            </div>
-
-            <div class="panel-body">
-                <button type="button" class="btn btn-primary add-button"><i class=" fa fa-plus"></i> 登録</button>
-                <% if (process.env.USE_COA === '1') { %>
-                <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
-                    <i class=" fa fa-plus"></i> COAからインポート</a>
-                <% } %>
-
-                <button type="button" class="btn search btn-ok btn-success search-button float-right">検索</button>
             </div>
         </form>
     </div>

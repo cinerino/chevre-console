@@ -18,18 +18,9 @@ ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
 ticketTypeMasterRouter.get(
     '',
     async (req, res) => {
-        const offerService = new chevre.service.Offer({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
-        });
-
-        const ticketTypeGroupsList = await offerService.searchTicketTypeGroups({
-            limit: 100,
-            project: { ids: [req.project.id] }
         });
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -41,7 +32,6 @@ ticketTypeMasterRouter.get(
         // 券種マスタ画面遷移
         res.render('ticketType/index', {
             message: '',
-            ticketTypeGroupsList: ticketTypeGroupsList.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data
         });
     }
