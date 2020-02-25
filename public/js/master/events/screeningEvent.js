@@ -854,7 +854,7 @@ function createScheduler() {
                 var saleStartTime = (performance.offers === undefined)
                     ? '' : moment(performance.offers.validFrom).tz('Asia/Tokyo').format('HH:mm');
                 if (saleStartDate !== '' && saleStartTime !== '') {
-                    modal.find('input[name=saleStartDate]').val(saleStartDate);
+                    modal.find('input[name=saleStartDate]').datepicker('update', saleStartDate);
                     modal.find('input[name=saleStartTime]').val(saleStartTime);
                 } else {
                     modal.find('input[name=saleStartDate]').val('');
