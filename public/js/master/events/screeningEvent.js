@@ -81,16 +81,16 @@ $(function () {
     }, 500));
 
     var target = [
-        'select[name="doorTime"]',
-        'select[name="startTime"]',
-        'select[name="endTime"]',
+        'input[name="doorTime"]',
+        'input[name="startTime"]',
+        'input[name="endTime"]',
         'select[name="ticketTypeGroup"]'
     ];
     $(document).on(
         'change',
         target.join(', '),
         function () {
-            $(this).parents('tr').attr('data-dirty', true);
+            $(this).parents('.timeTable').attr('data-dirty', true);
         }
     );
 
@@ -240,7 +240,7 @@ function getWeekDayData() {
  * @function getTableData
  */
 function getTableData() {
-    var timeTableData = $('#newModal tr[data-dirty="true"]');
+    var timeTableData = $('#newModal .timeTable[data-dirty="true"]');
     if (timeTableData.length === 0) {
         // 何も入力していない=>NG
         return {
@@ -592,7 +592,7 @@ function deletePerformance() {
  */
 function modalInit(theater, date, ticketGroups) {
     var ticketGroupDom = [];
-    ticketGroupDom.push('<option value="">選択してください</option>');
+    ticketGroupDom.push('<option value="">券種グループを選択</option>');
     for (var i = 0; i < ticketGroups.length; i++) {
         var ticketGroup = ticketGroups[i];
         ticketGroupDom.push('<option value="' + ticketGroup._id + '">' + ticketGroup.name.ja + '</option>')
@@ -637,6 +637,8 @@ function add() {
 
     modal.find('input[name=screeningDateStart]').datepicker('update', new Date());
     modal.find('input[name=screeningDateThrough]').datepicker('update', new Date());
+
+    modal.find('.mvtk').show();
 
     $('#newModal').modal();
 }
