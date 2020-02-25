@@ -607,6 +607,7 @@ function modalInit(theater, date, ticketGroups) {
 
     var editModal = $('#editModal');
     editModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
+    editModal.find('.theater input').val($('.search select[name=theater] option[value=' + theater + ']').text());
     editModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 }
 
@@ -818,6 +819,7 @@ function createScheduler() {
 
                 var modal = $('#editModal');
                 modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
+                modal.find('.day input').val(moment(day).format('YYYY年MM月DD日(ddd)'));
                 // チェックstartTime削除ボタン表示
                 if (moment(day).isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
                     modal.find('.delete-button').show();
@@ -834,6 +836,7 @@ function createScheduler() {
                 modal.find('input[name=reservedSeatsAvailable]').val((this.isReservedSeatsAvailable(performance)) ? '1' : '0');
                 modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
                 modal.find('.film span').text(performance.name.ja);
+                modal.find('.film input').val(performance.name.ja);
 
                 // 上映時間
                 var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HH:mm');

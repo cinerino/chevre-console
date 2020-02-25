@@ -8,151 +8,128 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="panel-body">
-                    <form class="">
-                        <ul class="list-group mb-3">
-                            <li class="list-group-item film">作品 : <span></span></li>
-                            <li class="list-group-item theater">劇場 : <span></span></li>
-                            <li class="list-group-item day">上映日 : <span></span></li>
-                        </ul>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="doorTime">開場時刻</label>
-                                <div class="col-md-9 form-inline">
-                                    <%- include('../../common/part/_timeSelector', {
-                                        name: 'doorTime',
-                                        hourName: 'doorTimeHour',
-                                        minuteName: 'doorTimeMinutes'
-                                    }) %>
+                <div class="card mb-0">
+                    <div class="card-body">
+                        <form>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4 film">
+                                    <label class="bmd-label-static" for="doorTime">作品</label>
+                                    <input class="form-control" disabled type="text">
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="startTime">開始時刻</label>
-                                <div class="col-md-9 form-inline">
-                                    <%- include('../../common/part/_timeSelector', {
-                                        name: 'startTime',
-                                        hourName: 'startTimeHour',
-                                        minuteName: 'startTimeMinutes'
-                                    }) %>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4 theater">
+                                    <label class="bmd-label-static" for="startTime">劇場</label>
+                                    <input class="form-control" disabled type="text">
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="endTime">終了時刻</label>
-                                <div class="col-md-9 form-inline">
-                                    <%- include('../../common/part/_timeSelector', {
-                                        name: 'endTime',
-                                        hourName: 'endTimeHour',
-                                        minuteName: 'endTimeMinutes'
-                                    }) %>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="screen">スクリーン</label>
-                                <div class="col-md-9">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="screen">スクリーン</label>
                                     <select class="form-control" name="screen"></select>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="ticketTypeGroup">券種グループ</label>
-                                <div class="col-md-9">
-                                    <select class="form-control" name="ticketTypeGroup">
-                                        <option value="">選択してください</option>
-                                        <% for (ticketType of ticketGroups) { %>
-                                        <option value="<%= ticketType.id %>">
-                                            <%= ticketType.name.ja %>
-                                        </option>
-                                        <% } %>
-                                    </select>
+                                <div class="form-group bmd-form-group col-md-4">
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="saleStartDate">販売開始日</label>
-                                <div class="col-md-9 form-inline">
-                                    <input class="form-control datepicker" name="saleStartDate" placeholder="YYYY/MM/DD"
-                                        maxlength=10>
-                                    日
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4 day">
+                                    <label class="bmd-label-static" for="endTime">上映日</label>
+                                    <input class="form-control" disabled type="text">
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label class="bmd-label-static" for="doorTime">開場時刻</label>
                                     <%- include('../../common/part/_timeSelector', {
-                                        name: 'saleStartTime',
-                                        hourName: 'saleStartDateHour',
-                                        minuteName: 'saleStartDateMinutes'
+                                        name: 'doorTime'
                                     }) %>
                                 </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label class="bmd-label-static" for="startTime">開始時刻</label>
+                                    <%- include('../../common/part/_timeSelector', {
+                                        name: 'startTime'
+                                    }) %>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label class="bmd-label-static" for="endTime">終了時刻</label>
+                                    <%- include('../../common/part/_timeSelector', {
+                                        name: 'endTime'
+                                    }) %>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="onlineDisplayStartDate">オンライン表示開始日</label>
-                                <div class="col-md-9 form-inline">
+
+                            <div class="form-group bmd-form-group">
+                                <label class="bmd-label-static" for="ticketTypeGroup">券種グループ</label>
+                                <select class="form-control" name="ticketTypeGroup">
+                                    <option value="">選択してください</option>
+                                    <% for (ticketType of ticketGroups) { %>
+                                    <option value="<%= ticketType.id %>">
+                                        <%= ticketType.name.ja %>
+                                    </option>
+                                    <% } %>
+                                </select>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label class="bmd-label-static" for="saleStartDate">販売開始日</label>
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" name="saleStartDate"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                        <%- include('../../common/part/_timeSelector', {
+                                            name: 'saleStartTime',
+                                            hourName: 'saleStartDateHour',
+                                            minuteName: 'saleStartDateMinutes'
+                                        }) %>
+                                    </div>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日</label>
                                     <input class="form-control datepicker" name="onlineDisplayStartDate"
                                         placeholder="YYYY/MM/DD" maxlength=10>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="maxSeatNumber">上限枚数</label>
-                                <div class="col-md-9">
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="bmd-label-static" for="maxSeatNumber">上限枚数</label>
                                     <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="mvtkExcludeFlg">
-                                </label>
-                                <div class="col-md-9 form-check">
-                                    <label class="form-check-label" for="mvtkExcludeFlg">
-                                        <input class="form-check-input" type="checkbox" name="mvtkExcludeFlg" value="1"
-                                            id="mvtkExcludeFlg">
-                                        ムビチケ対象外
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">
-                                </label>
-                                <div class="col-md-9 form-check">
-                                    <input type="hidden" value="1" name="reservedSeatsAvailable">
-                                    <label class="form-check-label" for="reservedSeatsAvailable">
-                                        <input disabled class="form-check-input" type="checkbox"
-                                            name="reservedSeatsAvailableDisabled" value="1"
-                                            id="reservedSeatsAvailableDisabled">
-                                        座席指定あり
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-3 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">追加特性</label>
-                                <div class="col-md-9 form-check">
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="mvtkExcludeFlg">ムビチケ
+                                    </label>
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="mvtkExcludeFlg">
+                                            <input class="form-check-input" type="checkbox" name="mvtkExcludeFlg"
+                                                value="1" id="mvtkExcludeFlg">
+                                            ムビチケ対象外
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static">座席指定
+                                    </label>
+                                    <div class="form-check">
+                                        <input type="hidden" value="1" name="reservedSeatsAvailable">
+                                        <label class="form-check-label" for="reservedSeatsAvailable">
+                                            <input disabled class="form-check-input" type="checkbox"
+                                                name="reservedSeatsAvailableDisabled" value="1"
+                                                id="reservedSeatsAvailableDisabled">
+                                            座席指定あり
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group bmd-form-group">
+                                <label class="bmd-label-static">追加特性</label>
+                                <div class="form-check">
                                     <% for (let i=0; i < 10; i++) { %>
                                     <div class="row mb-1 px-3">
                                         <!-- <span class="input-group-addon">Name:Value</span> -->
@@ -170,17 +147,18 @@
                                     <% } %>
                                 </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
+
             <input type="hidden" name="screeningEventId" value="">
             <input type="hidden" name="performance" value="">
             <input type="hidden" name="film" value="">
             <input type="hidden" name="theater" value="">
             <input type="hidden" name="day" value="">
-            <div class="modal-footer">
 
+            <div class="modal-footer">
                 <button type="button" class="btn btn-primary update-button">更新</button>
                 <button type="button" class="btn btn-danger delete-button">削除</button>
                 <button type="button" class="btn bg-dark-gray text-white" data-dismiss="modal">閉じる</button>
