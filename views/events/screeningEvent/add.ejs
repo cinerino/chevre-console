@@ -9,14 +9,13 @@
             </div>
 
             <div class="modal-body">
-                <div class="panel-body form-container">
-                    <form class="">
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="theater">劇場<font
-                                        color="red">＊</font>
-                                </label>
-                                <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form class="">
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="theater">劇場<font color="red">＊</font>
+                                    </label>
                                     <select class="form-control" name="theater">
                                         <option value="0" disabled selected> 選択してください</option>
                                         <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
@@ -40,64 +39,43 @@
                                         <% } %>
                                     </select>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">作品 <span
-                                        class="text-danger">＊</span></label>
-                                <div class="col-md-8">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="screen">作品
+                                        <span class="text-danger">＊</span></label>
                                     <select class="form-control" name="screeningEventSeriesId">
                                         <option value="">劇場を選択してください</option>
                                     </select>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0" for="screen">スクリーン <span
-                                        class="text-danger">＊</span></label>
-                                <div class="col-md-8">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="screen">スクリーン
+                                        <span class="text-danger">＊</span></label>
                                     <select class="form-control" name="screen">
                                         <option value="">劇場を選択してください</option>
                                     </select>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（from） <span
-                                        class="text-danger">＊</span></label>
-                                <div class="col-md-8">
-                                    <div class="form-inline">
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label class="bmd-label-static">登録期間<span class="text-danger">＊</span></label>
+                                    <div class="input-group">
                                         <input class="form-control datepicker" name="screeningDateStart"
                                             placeholder="YYYY/MM/DD" maxlength=10>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0">登録期間（Through） <span
-                                        class="text-danger">＊</span></label>
-                                <div class="col-md-8">
-                                    <div class="form-inline">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">から</span>
+                                        </div>
                                         <input class="form-control datepicker" name="screeningDateThrough"
                                             placeholder="YYYY/MM/DD" maxlength=10>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">まで</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row align-items-center">
-                                <label class="col-md-4 text-md-right mb-2 mb-md-0">曜日 <span
-                                        class="text-danger">＊</span></label>
-                                <div class="col-md-8">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label class="bmd-label-static">曜日 <span class="text-danger">＊</span></label>
                                     <div class="form-check form-check-inline">
                                         <label class="form-check-label"><input class="form-check-input" type="checkbox"
                                                 value="1" name="weekDay" checked>月
@@ -149,64 +127,55 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="saleStartDate">販売開始日</label>
-                                <div class="col-md-8">
-                                    <div class="form-check form-check-radio form-check-inline">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="radio" name="saleStartDateType"
-                                                id="inlineRadio1" value="default" checked>劇場設定に従う
-                                            <span class="circle">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check form-check-radio form-check-inline">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="radio" name="saleStartDateType"
-                                                id="inlineRadio1" value="absolute">絶対
-                                            <span class="circle">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                    <div class="form-check form-check-radio form-check-inline">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="radio" name="saleStartDateType"
-                                                id="inlineRadio1" value="relative">相対
-                                            <span class="circle">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label class="bmd-label-static" for="saleStartDate">販売開始日</label>
+                                    <div class="checkbox-radios">
+                                        <div class="form-check form-check-radio form-check-inline">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="radio" name="saleStartDateType"
+                                                    id="inlineRadio1" value="default" checked>劇場設定に従う
+                                                <span class="circle">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-radio form-check-inline">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="radio" name="saleStartDateType"
+                                                    id="inlineRadio1" value="absolute">絶対
+                                                <span class="circle">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-radio form-check-inline">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="radio" name="saleStartDateType"
+                                                    id="inlineRadio1" value="relative">相対
+                                                <span class="circle">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <div class="form-inline d-none input-type" data-input-type="absolute">
                                         <input class="form-control datepicker" name="saleStartDateAbsolute"
-                                            placeholder="YYYY/MM/DD" maxlength=10>
-                                        日
+                                            placeholder="YYYY/MM/DD" maxlength=10>&nbsp;&nbsp;
                                         <%- include('../../common/part/_timeSelector', {
-                                                hourName: 'saleStartDateHour',
-                                                minuteName: 'saleStartDateMinutes'
-                                            }) %>
+                                            name: 'saleStartTime'
+                                        }) %>
                                     </div>
                                     <div class="form-inline d-none input-type" data-input-type="relative">
                                         <input type="text" class="form-control" name="saleStartDateRelative"
                                             placeholder="上映日からn日" maxlength=10>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"
-                                    for="onlineDisplayStartDate">オンライン表示開始日</label>
-                                <div class="col-md-8">
-
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日</label>
                                     <div class="form-check form-check-radio form-check-inline">
                                         <label class="form-check-label">
                                             <input class="form-check-input" type="radio" name="onlineDisplayType"
@@ -235,13 +204,9 @@
                                             placeholder="上映日からn日" maxlength=10>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="row">
-                                <label class="col-md-4 pt-0 pt-md-3 text-md-right mb-2 mb-md-0"></label>
-                                <div class="col-md-8">
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="bmd-label-static">座席指定</label>
                                     <div class="form-check form-check-inline">
                                         <label class="form-check-label">
                                             <input class="form-check-input" type="checkbox" value="1"
@@ -253,86 +218,64 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="scroll-horizontal">
-                            <table class="table table-bordered text-small">
-                                <thead>
-                                    <th class="text-center">No</th>
-                                    <th class="text-center">開場時刻<br>開始時刻<br>終了時刻</th>
-                                    <th class="text-center">券種グループ</th>
-                                    <th class="text-center mvtk" style="max-width: 80px">ムビチケ<br>対象外</th>
-                                </thead>
-                                <tbody>
-                                    <% for (let i = 1; i <= 6; i++) { %>
-                                    <tr>
-                                        <td class="text-center">
-                                            <%= i %>
-                                        </td>
-                                        <td class="d-flex justify-content-center align-items-center">
-                                            <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'doorTimeHour',
-                                            minuteName: 'doorTimeMinute'
-                                        }) %>
-                                        </td>
-                                        <td class="d-flex justify-content-center align-items-center">
-                                            <%- include('../../common/part/_timeSelector', {
-                                                hourName: 'startTimeHour',
-                                                minuteName: 'startTimeMinute'
-                                            }) %>
-                                        </td>
-                                        <td class="d-flex justify-content-center align-items-center">
-                                            <%- include('../../common/part/_timeSelector', {
-                                                hourName: 'endTimeHour',
-                                                minuteName: 'endTimeMinute'
-                                            }) %>
-                                        </td>
-                                        <td>
-                                            <select class="form-control" name="ticketTypeGroup">
-                                                <option value="" disabled selected>選択してください</option>
-                                                <% for (ticketType of ticketGroups) { %>
-                                                <option value="<%= ticketType.id %>">
-                                                    <%= ticketType.name.ja %>
-                                                </option>
-                                                <% } %>
-                                            </select>
-                                        </td>
-                                        <td class="text-center mvtk">
-                                            <div class="form-check form-check-inline">
-                                                <label class="form-check-label"><input class="form-check-input"
-                                                        type="checkbox" name="mvtkExcludeFlg">
-                                                    <span class="form-check-sign">
-                                                        <span class="check"></span>
-                                                    </span></label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                        <!-- <div class="form-group row">
-                            <%- include('../../common/part/_timeSelector', {
-                                label: '開場時刻',
-                                hourName: 'doorTimeHour',
-                                minuteName: 'doorTimeMinutes'
-                            }) %>
-                        </div>
-                        <div class="form-group row">
-                            <%- include('../../common/part/_timeSelector', {
-                                label: '開始時刻',
-                                hourName: 'startTimeHour',
-                                minuteName: 'startTimeMinutes'
-                            }) %>
-                        </div>
-                        <div class="form-group row">
-                            <%- include('../../common/part/_timeSelector', {
-                                label: '終了時刻',
-                                hourName: 'endTimeHour',
-                                minuteName: 'endTimeMinutes'
-                            }) %>
-                        </div> -->
-                    </form>
+                            <div class="scroll-horizontal table-responsible">
+                                <table class="table">
+                                    <thead>
+                                        <th>No</th>
+                                        <th>開場</th>
+                                        <th>開始</th>
+                                        <th>終了時刻</th>
+                                        <th>券種グループ</th>
+                                        <th class="mvtk text-center">ムビチケ対象外</th>
+                                    </thead>
+                                    <tbody>
+                                        <% for (let i = 1; i <= 6; i++) { %>
+                                        <tr>
+                                            <td>
+                                                <%= i %>
+                                            </td>
+                                            <td width="60">
+                                                <%- include('../../common/part/_timeSelector', {
+                                                    name: 'doorTime'
+                                                }) %>
+                                            </td>
+                                            <td width="60">
+                                                <%- include('../../common/part/_timeSelector', {
+                                                    name: 'startTime'
+                                                }) %>
+                                            </td>
+                                            <td width="60">
+                                                <%- include('../../common/part/_timeSelector', {
+                                                    name: 'endTime'
+                                                }) %>
+                                            </td>
+                                            <td>
+                                                <select class="form-control" name="ticketTypeGroup">
+                                                    <option value="" disabled selected>選択してください</option>
+                                                    <% for (ticketType of ticketGroups) { %>
+                                                    <option value="<%= ticketType.id %>">
+                                                        <%= ticketType.name.ja %>
+                                                    </option>
+                                                    <% } %>
+                                                </select>
+                                            </td>
+                                            <td class="mvtk text-center">
+                                                <div class="form-check form-check-inline">
+                                                    <label class="form-check-label"><input class="form-check-input"
+                                                            type="checkbox" name="mvtkExcludeFlg">
+                                                        <span class="form-check-sign">
+                                                            <span class="check"></span>
+                                                        </span></label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
             <input type="hidden" name="maxSeatNumber" value="">

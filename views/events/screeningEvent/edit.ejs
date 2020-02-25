@@ -21,9 +21,10 @@
                                     for="doorTime">開場時刻</label>
                                 <div class="col-md-9 form-inline">
                                     <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'doorTimeHour',
-                                            minuteName: 'doorTimeMinutes'
-                                        }) %>
+                                        name: 'doorTime',
+                                        hourName: 'doorTimeHour',
+                                        minuteName: 'doorTimeMinutes'
+                                    }) %>
                                 </div>
                             </div>
                         </div>
@@ -33,9 +34,10 @@
                                     for="startTime">開始時刻</label>
                                 <div class="col-md-9 form-inline">
                                     <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'startTimeHour',
-                                            minuteName: 'startTimeMinutes'
-                                        }) %>
+                                        name: 'startTime',
+                                        hourName: 'startTimeHour',
+                                        minuteName: 'startTimeMinutes'
+                                    }) %>
                                 </div>
                             </div>
                         </div>
@@ -45,9 +47,10 @@
                                     for="endTime">終了時刻</label>
                                 <div class="col-md-9 form-inline">
                                     <%- include('../../common/part/_timeSelector', {
-                                            hourName: 'endTimeHour',
-                                            minuteName: 'endTimeMinutes'
-                                        }) %>
+                                        name: 'endTime',
+                                        hourName: 'endTimeHour',
+                                        minuteName: 'endTimeMinutes'
+                                    }) %>
                                 </div>
                             </div>
                         </div>
@@ -85,6 +88,7 @@
                                         maxlength=10>
                                     日
                                     <%- include('../../common/part/_timeSelector', {
+                                        name: 'saleStartTime',
                                         hourName: 'saleStartDateHour',
                                         minuteName: 'saleStartDateMinutes'
                                     }) %>
