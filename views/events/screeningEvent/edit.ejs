@@ -128,23 +128,30 @@
                             </div>
 
                             <div class="form-group bmd-form-group">
-                                <label class="bmd-label-static">追加特性</label>
-                                <div class="form-check">
-                                    <% for (let i=0; i < 10; i++) { %>
-                                    <div class="row mb-1 px-3">
-                                        <!-- <span class="input-group-addon">Name:Value</span> -->
-                                        <div class="form-group bmd-form-group col-6">
-                                            <!-- <label class="bmd-label-floating">name</label> -->
-                                            <input class="form-control" name="additionalProperty[<%= i %>][name]"
-                                                id="additionalProperty[<%= i %>][name]" maxlength=64 value="">
+                                <label class="bmd-label-static">追加特性
+                                </label>
+                                <a class="d-block pt-1" data-toggle="collapse" href="#editAdditionalProperty"
+                                    role="button" aria-expanded="false" aria-controls="editAdditionalProperty">
+                                    表示する
+                                </a>
+                                <div id="editAdditionalProperty" class="collapse">
+                                    <div class="form-check">
+                                        <% for (let i=0; i < 10; i++) { %>
+                                        <div class="row mb-1 px-3">
+                                            <!-- <span class="input-group-addon">Name:Value</span> -->
+                                            <div class="form-group bmd-form-group col-6">
+                                                <!-- <label class="bmd-label-floating">name</label> -->
+                                                <input class="form-control" name="additionalProperty[<%= i %>][name]"
+                                                    id="additionalProperty[<%= i %>][name]" maxlength=64 value="">
+                                            </div>
+                                            <div class="form-group bmd-form-group col-6">
+                                                <!-- <label class="bmd-label-floating">value</label> -->
+                                                <input class="form-control" name="additionalProperty[<%= i %>][value]"
+                                                    id="additionalProperty[<%= i %>][value]" maxlength=64 value="">
+                                            </div>
                                         </div>
-                                        <div class="form-group bmd-form-group col-6">
-                                            <!-- <label class="bmd-label-floating">value</label> -->
-                                            <input class="form-control" name="additionalProperty[<%= i %>][value]"
-                                                id="additionalProperty[<%= i %>][value]" maxlength=64 value="">
-                                        </div>
+                                        <% } %>
                                     </div>
-                                    <% } %>
                                 </div>
                             </div>
                         </form>
