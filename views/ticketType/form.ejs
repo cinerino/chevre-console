@@ -250,7 +250,7 @@
                             && forms.eligibleMonetaryAmount.length > 0
                             && accountType.codeValue === forms.eligibleMonetaryAmount[0].currency;
                         %>
-                        <option value="<%= accountType.id %>" <% if (selected) { %> selected<% } %>>
+                        <option value="<%= accountType.codeValue %>" <% if (selected) { %> selected<% } %>>
                             <%= accountType.codeValue %> <%= accountType.name.ja %>
                         </option>
                         <% }) %>

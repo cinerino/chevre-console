@@ -548,6 +548,12 @@ function getList(req, res) {
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
+            const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+            });
+            const offerCategoryTypes = searchOfferCategoryTypesResult.data;
             // 券種グループ取得
             let ticketTypeIds = [];
             if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
@@ -613,17 +619,27 @@ function getList(req, res) {
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 // tslint:disable-next-line:cyclomatic-complexity
                 results: data.map((t) => {
-                    const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => {
-                        return t.priceSpecification !== undefined
-                            && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
-                    });
+                    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+                    const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
+                    const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => { var _a; return movieTicketType.codeValue === ((_a = t.priceSpecification) === null || _a === void 0 ? void 0 : _a.appliesToMovieTicketType); });
+                    const appliesToMovieTicketName = (_c = (_b = mvtkType) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja;
+                    const eligibleSeatingTypeCodeValue = (_e = (_d = t.eligibleSeatingType) === null || _d === void 0 ? void 0 : _d.slice(0, 1)[0]) === null || _e === void 0 ? void 0 : _e.codeValue;
+                    const eligibleMonetaryAmountValue = (_g = (_f = t.eligibleMonetaryAmount) === null || _f === void 0 ? void 0 : _f.slice(0, 1)[0]) === null || _g === void 0 ? void 0 : _g.value;
+                    const eligibleConditions = [];
+                    if (typeof appliesToMovieTicketName === 'string') {
+                        eligibleConditions.push(`ムビチケ: ${(_h = mvtkType) === null || _h === void 0 ? void 0 : _h.codeValue} ${appliesToMovieTicketName}`);
+                    }
+                    if (typeof eligibleSeatingTypeCodeValue === 'string') {
+                        eligibleConditions.push(`座席: ${eligibleSeatingTypeCodeValue}`);
+                    }
+                    if (typeof eligibleMonetaryAmountValue === 'number') {
+                        eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_k = (_j = t.eligibleMonetaryAmount) === null || _j === void 0 ? void 0 : _j.slice(0, 1)[0]) === null || _k === void 0 ? void 0 : _k.currency}`);
+                    }
                     return Object.assign(Object.assign({ appliesToMovieTicket: {
-                            name: (t.priceSpecification !== undefined
-                                && t.priceSpecification.appliesToMovieTicketType !== undefined
-                                && mvtkType !== undefined)
-                                ? mvtkType.name.ja
-                                : undefined
-                        } }, t), { eligibleQuantity: {
+                            name: appliesToMovieTicketName
+                        } }, t), { categoryName: (typeof categoryCode === 'string')
+                            ? ((_l = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _l === void 0 ? void 0 : _l.name).ja
+                            : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined
                                 && t.priceSpecification.eligibleQuantity !== undefined
                                 && t.priceSpecification.eligibleQuantity.minValue !== undefined)

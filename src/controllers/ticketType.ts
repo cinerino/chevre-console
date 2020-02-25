@@ -641,6 +641,13 @@ export async function getList(req: Request, res: Response): Promise<void> {
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
 
+        const searchOfferCategoryTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
+        const offerCategoryTypes = searchOfferCategoryTypesResult.data;
+
         // 券種グループ取得
         let ticketTypeIds: string[] = [];
         if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
@@ -708,22 +715,38 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             // tslint:disable-next-line:cyclomatic-complexity
             results: data.map((t) => {
+
+                const categoryCode = t.category?.codeValue;
+
                 const mvtkType = searchMovieTicketTypesResult.data.find(
-                    (movieTicketType) => {
-                        return t.priceSpecification !== undefined
-                            && movieTicketType.codeValue === t.priceSpecification.appliesToMovieTicketType;
-                    }
+                    (movieTicketType) => movieTicketType.codeValue === t.priceSpecification?.appliesToMovieTicketType
                 );
+                const appliesToMovieTicketName = (<chevre.factory.multilingualString>mvtkType?.name)?.ja;
+                const eligibleSeatingTypeCodeValue = t.eligibleSeatingType?.slice(0, 1)[0]?.codeValue;
+                const eligibleMonetaryAmountValue = t.eligibleMonetaryAmount?.slice(0, 1)[0]?.value;
+
+                const eligibleConditions: string[] = [];
+                if (typeof appliesToMovieTicketName === 'string') {
+                    eligibleConditions.push(`ムビチケ: ${mvtkType?.codeValue} ${appliesToMovieTicketName}`);
+                }
+                if (typeof eligibleSeatingTypeCodeValue === 'string') {
+                    eligibleConditions.push(`座席: ${eligibleSeatingTypeCodeValue}`);
+                }
+                if (typeof eligibleMonetaryAmountValue === 'number') {
+                    eligibleConditions.push(
+                        `口座: ${eligibleMonetaryAmountValue} ${t.eligibleMonetaryAmount?.slice(0, 1)[0]?.currency}`
+                    );
+                }
 
                 return {
                     appliesToMovieTicket: {
-                        name: (t.priceSpecification !== undefined
-                            && t.priceSpecification.appliesToMovieTicketType !== undefined
-                            && mvtkType !== undefined)
-                            ? (<any>mvtkType.name).ja
-                            : undefined
+                        name: appliesToMovieTicketName
                     },
                     ...t,
+                    categoryName: (typeof categoryCode === 'string')
+                        ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name).ja
+                        : '',
+                    eligibleConditions: eligibleConditions.join(' / '),
                     eligibleQuantity: {
                         minValue: (t.priceSpecification !== undefined
                             && t.priceSpecification.eligibleQuantity !== undefined

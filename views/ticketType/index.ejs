@@ -135,21 +135,14 @@ Aa-6
                                     <td name="availability">
                                         <span class="text-muted">$availability$</span>
                                     </td>
-                                    <td name="category.codeValue">$category.codeValue$</td>
+                                    <td name="categoryName">$categoryName$</td>
                                     <td name="name.ja|slice">$name.ja$</td>
                                     <td
                                         name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value">
                                         $priceSpecification.price$ $priceSpecification.priceCurrency$ /
                                         $referenceQuantity.value$
                                     </td>
-                                    <td
-                                        name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
-                                        ムビ: $priceSpecification.appliesToMovieTicketType$
-                                        $appliesToMovieTicket.name$ /
-                                        座席: $eligibleSeatingType.0.codeValue$ /
-                                        口座: $eligibleMonetaryAmount.0.value$
-                                        $eligibleMonetaryAmount.0.currency$
-                                    </td>
+                                    <td name="eligibleConditions">$eligibleConditions$</td>
                                     <td name="validFrom|parseDateTime__validThrough|parseDateTime__validRateLimitStr">
                                         $validFrom$ ~ $validThrough$<br>
                                         $validRateLimitStr$
