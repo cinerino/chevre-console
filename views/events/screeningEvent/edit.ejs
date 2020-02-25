@@ -58,56 +58,21 @@
                                 </div>
                             </div>
 
-                            <div class="form-group bmd-form-group">
-                                <label class="bmd-label-static" for="ticketTypeGroup">券種グループ</label>
-                                <select class="form-control" name="ticketTypeGroup">
-                                    <option value="">選択してください</option>
-                                    <% for (ticketType of ticketGroups) { %>
-                                    <option value="<%= ticketType.id %>">
-                                        <%= ticketType.name.ja %>
-                                    </option>
-                                    <% } %>
-                                </select>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-6">
-                                    <label class="bmd-label-static" for="saleStartDate">販売開始日</label>
-                                    <div class="input-group">
-                                        <input class="form-control datepicker" name="saleStartDate"
-                                            placeholder="YYYY/MM/DD" maxlength=10>
-                                        <%- include('../../common/part/_timeSelector', {
-                                            name: 'saleStartTime',
-                                            hourName: 'saleStartDateHour',
-                                            minuteName: 'saleStartDateMinutes'
-                                        }) %>
-                                    </div>
-                                </div>
-                                <div class="form-group bmd-form-group col-md-3">
-                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日</label>
-                                    <input class="form-control datepicker" name="onlineDisplayStartDate"
-                                        placeholder="YYYY/MM/DD" maxlength=10>
-                                </div>
-                                <div class="form-group bmd-form-group col-md-3">
-                                    <label class="bmd-label-static" for="maxSeatNumber">上限枚数</label>
-                                    <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
-                                </div>
-                            </div>
-
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static" for="mvtkExcludeFlg">ムビチケ
-                                    </label>
-                                    <div class="form-check">
-                                        <label class="form-check-label" for="mvtkExcludeFlg">
-                                            <input class="form-check-input" type="checkbox" name="mvtkExcludeFlg"
-                                                value="1" id="mvtkExcludeFlg">
-                                            ムビチケ対象外
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
+                                    <label class="bmd-label-static" for="ticketTypeGroup">券種グループ</label>
+                                    <select class="form-control" name="ticketTypeGroup">
+                                        <option value="">選択してください</option>
+                                        <% for (ticketType of ticketGroups) { %>
+                                        <option value="<%= ticketType.id %>">
+                                            <%= ticketType.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="maxSeatNumber">上限枚数</label>
+                                    <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
                                     <label class="bmd-label-static">座席指定
@@ -127,30 +92,70 @@
                                 </div>
                             </div>
 
-                            <div class="form-group bmd-form-group">
-                                <label class="bmd-label-static">追加特性
-                                </label>
-                                <a class="d-block pt-1" data-toggle="collapse" href="#editAdditionalProperty"
-                                    role="button" aria-expanded="false" aria-controls="editAdditionalProperty">
-                                    表示する
-                                </a>
-                                <div id="editAdditionalProperty" class="collapse">
-                                    <div class="form-check">
-                                        <% for (let i=0; i < 10; i++) { %>
-                                        <div class="row mb-1 px-3">
-                                            <!-- <span class="input-group-addon">Name:Value</span> -->
-                                            <div class="form-group bmd-form-group col-6">
-                                                <!-- <label class="bmd-label-floating">name</label> -->
-                                                <input class="form-control" name="additionalProperty[<%= i %>][name]"
-                                                    id="additionalProperty[<%= i %>][name]" maxlength=64 value="">
-                                            </div>
-                                            <div class="form-group bmd-form-group col-6">
-                                                <!-- <label class="bmd-label-floating">value</label> -->
-                                                <input class="form-control" name="additionalProperty[<%= i %>][value]"
-                                                    id="additionalProperty[<%= i %>][value]" maxlength=64 value="">
-                                            </div>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="saleStartDate">販売開始日</label>
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" name="saleStartDate"
+                                            placeholder="YYYY/MM/DD" maxlength=10>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text"> </span>
                                         </div>
-                                        <% } %>
+                                        <%- include('../../common/part/_timeSelector', {
+                                            name: 'saleStartTime',
+                                            hourName: 'saleStartDateHour',
+                                            minuteName: 'saleStartDateMinutes'
+                                        }) %>
+                                    </div>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日</label>
+                                    <input class="form-control datepicker" name="onlineDisplayStartDate"
+                                        placeholder="YYYY/MM/DD" maxlength=10>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="mvtkExcludeFlg">ムビチケ
+                                    </label>
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="mvtkExcludeFlg">
+                                            <input class="form-check-input" type="checkbox" name="mvtkExcludeFlg"
+                                                value="1" id="mvtkExcludeFlg">
+                                            ムビチケ対象外
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-12">
+                                    <label class="bmd-label-static">追加特性</label>
+                                    <a class="d-block pt-1" data-toggle="collapse" href="#editAdditionalProperty"
+                                        role="button" aria-expanded="false" aria-controls="editAdditionalProperty">
+                                        表示する
+                                    </a>
+                                    <div id="editAdditionalProperty" class="collapse">
+                                        <div class="form-check">
+                                            <% for (let i=0; i < 10; i++) { %>
+                                            <div class="row mb-1 px-3">
+                                                <!-- <span class="input-group-addon">Name:Value</span> -->
+                                                <div class="form-group bmd-form-group col-6">
+                                                    <!-- <label class="bmd-label-floating">name</label> -->
+                                                    <input class="form-control"
+                                                        name="additionalProperty[<%= i %>][name]"
+                                                        id="additionalProperty[<%= i %>][name]" maxlength=64 value="">
+                                                </div>
+                                                <div class="form-group bmd-form-group col-6">
+                                                    <!-- <label class="bmd-label-floating">value</label> -->
+                                                    <input class="form-control"
+                                                        name="additionalProperty[<%= i %>][value]"
+                                                        id="additionalProperty[<%= i %>][value]" maxlength=64 value="">
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
