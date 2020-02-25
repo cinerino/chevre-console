@@ -619,7 +619,7 @@ function getList(req, res) {
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 // tslint:disable-next-line:cyclomatic-complexity
                 results: data.map((t) => {
-                    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+                    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
                     const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                     const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => { var _a; return movieTicketType.codeValue === ((_a = t.priceSpecification) === null || _a === void 0 ? void 0 : _a.appliesToMovieTicketType); });
                     const appliesToMovieTicketName = (_c = (_b = mvtkType) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja;
@@ -638,8 +638,7 @@ function getList(req, res) {
                     return Object.assign(Object.assign({ appliesToMovieTicket: {
                             name: appliesToMovieTicketName
                         } }, t), { categoryName: (typeof categoryCode === 'string')
-                            ? ((_l = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _l === void 0 ? void 0 : _l.name).ja
-                            : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
+                            ? (_m = (_l = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _l === void 0 ? void 0 : _l.name) === null || _m === void 0 ? void 0 : _m.ja : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined
                                 && t.priceSpecification.eligibleQuantity !== undefined
                                 && t.priceSpecification.eligibleQuantity.minValue !== undefined)
@@ -666,7 +665,8 @@ function getList(req, res) {
                                 : '--'
                         }, availableAddOnNames: (Array.isArray(t.addOn))
                             ? t.addOn.map((a) => {
-                                return (a.name !== undefined) ? a.name.ja : a.id;
+                                var _a;
+                                return (a.name !== undefined) ? (_a = a.name) === null || _a === void 0 ? void 0 : _a.ja : a.id;
                             }).join('\n')
                             : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                             ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`

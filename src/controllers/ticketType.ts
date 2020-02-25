@@ -744,7 +744,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     },
                     ...t,
                     categoryName: (typeof categoryCode === 'string')
-                        ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name).ja
+                        ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                         : '',
                     eligibleConditions: eligibleConditions.join(' / '),
                     eligibleQuantity: {
@@ -777,7 +777,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     },
                     availableAddOnNames: (Array.isArray(t.addOn))
                         ? t.addOn.map((a) => {
-                            return (a.name !== undefined) ? (<any>a.name).ja : a.id;
+                            return (a.name !== undefined) ? (<any>a.name)?.ja : a.id;
                         }).join('\n')
                         : '',
                     validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
