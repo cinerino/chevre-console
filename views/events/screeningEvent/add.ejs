@@ -225,7 +225,7 @@
                                         <th>No</th>
                                         <th>開場</th>
                                         <th>開始</th>
-                                        <th>終了時刻</th>
+                                        <th>終了</th>
                                         <th>券種グループ</th>
                                         <th class="mvtk text-center">ムビチケ対象外</th>
                                     </thead>
@@ -245,10 +245,20 @@
                                                     name: 'startTime'
                                                 }) %>
                                             </td>
-                                            <td width="60">
-                                                <%- include('../../common/part/_timeSelector', {
-                                                    name: 'endTime'
-                                                }) %>
+                                            <td width="260">
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">開始から</span>
+                                                    </div>
+                                                    <input type="text" class="form-control" name="endDayRelative"
+                                                        value="0" maxlength="2">
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">日後の</span>
+                                                    </div>
+                                                    <%- include('../../common/part/_timeSelector', {
+                                                        name: 'endTime'
+                                                    }) %>
+                                                </div>
                                             </td>
                                             <td>
                                                 <select class="form-control" name="ticketTypeGroup">

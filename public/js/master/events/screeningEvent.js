@@ -852,7 +852,6 @@ function createScheduler() {
                 var startTime = moment(performance.startDate).tz('Asia/Tokyo').format('HH:mm');
                 var endDay = moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD');
                 var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HH:mm');
-                console.log('endDay:', endDay);
                 modal.find('input[name=doorTime]').val(doorTime);
                 modal.find('input[name=startTime]').val(startTime);
                 modal.find('input[name=endTime]').val(endTime);
