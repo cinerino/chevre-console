@@ -33,7 +33,7 @@
 
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-4 day">
-                                    <label class="bmd-label-static" for="endTime">上映日</label>
+                                    <label class="bmd-label-static" for="">開始日</label>
                                     <input class="form-control" disabled type="text">
                                 </div>
                                 <div class="form-group bmd-form-group col-md-2">
@@ -47,6 +47,16 @@
                                     <%- include('../../common/part/_timeSelector', {
                                         name: 'startTime'
                                     }) %>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-4">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4 day">
+                                    <label class="bmd-label-static" for="endDay">終了日</label>
+                                    <input class="form-control datepicker" name="endDay" placeholder="YYYY/MM/DD"
+                                        maxlength=10>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-2">
                                     <label class="bmd-label-static" for="endTime">終了時刻</label>

@@ -81,12 +81,9 @@ $(function () {
     }, 500));
 
     var target = [
-        'select[name="doorTimeHour"]',
-        'select[name="doorTimeMinute"]',
-        'select[name="startTimeHour"]',
-        'select[name="startTimeMinute"]',
-        'select[name="endTimeHour"]',
-        'select[name="endTimeMinute"]',
+        'select[name="doorTime"]',
+        'select[name="startTime"]',
+        'select[name="endTime"]',
         'select[name="ticketTypeGroup"]'
     ];
     $(document).on(
@@ -462,6 +459,7 @@ function update() {
     var modal = $('#editModal');
     var theater = modal.find('input[name=theater]').val();
     var day = modal.find('input[name=day]').val();
+    var endDay = modal.find('input[name=endDay]').val();
     var screeningEventId = modal.find('input[name=screeningEventId]').val();
     var performance = modal.find('input[name=performance]').val();
     var screen = modal.find('select[name=screen]').val();
@@ -489,6 +487,7 @@ function update() {
         || doorTime === ''
         || startTime === ''
         || endTime === ''
+        || endDay === ''
         || ticketTypeGroup === ''
         || saleStartDate === ''
         || saleStartTime === ''
@@ -521,6 +520,7 @@ function update() {
                 theater: theater,
                 screen: screen,
                 day: day,
+                endDay: endDay,
                 screeningEventId: screeningEventId,
                 doorTime: doorTime,
                 startTime: startTime,
@@ -777,17 +777,26 @@ function createScheduler() {
              */
             getPerformanceStyle: function (performance) {
                 var start = {
+                    day: moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD'),
                     hour: moment(performance.doorTime).tz('Asia/Tokyo').format('HH'),
                     minutes: moment(performance.doorTime).tz('Asia/Tokyo').format('mm')
                 };
                 var end = {
+                    day: moment(performance.endDate).tz('Asia/Tokyo').format('YYYYMMDD'),
                     hour: moment(performance.endDate).tz('Asia/Tokyo').format('HH'),
                     minutes: moment(performance.endDate).tz('Asia/Tokyo').format('mm')
                 };
+
                 var hour = 60;
                 var top = (start.hour * this.HOUR_HEIGHT) + (start.minutes * this.HOUR_HEIGHT / hour);
                 var left = 0;
+
                 var height = ((end.hour - start.hour) * this.HOUR_HEIGHT) + ((end.minutes - start.minutes) * this.HOUR_HEIGHT / hour);
+                // 日本時間で日またぎの場合
+                if (Number(end.day) > Number(start.day)) {
+                    height = ((24 - start.hour) * this.HOUR_HEIGHT) + ((0 - start.minutes) * this.HOUR_HEIGHT / hour);
+                }
+
                 return {
                     top: top + 'px',
                     left: left + 'px',
@@ -841,10 +850,13 @@ function createScheduler() {
                 // 上映時間
                 var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HH:mm');
                 var startTime = moment(performance.startDate).tz('Asia/Tokyo').format('HH:mm');
+                var endDay = moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD');
                 var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HH:mm');
+                console.log('endDay:', endDay);
                 modal.find('input[name=doorTime]').val(doorTime);
                 modal.find('input[name=startTime]').val(startTime);
                 modal.find('input[name=endTime]').val(endTime);
+                modal.find('input[name=endDay]').datepicker('update', endDay);
                 modal.find('select[name=screen]').val(performance.location.branchCode);
                 modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
 

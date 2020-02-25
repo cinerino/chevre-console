@@ -362,7 +362,9 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         offersValidAfterStart = DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
     }
 
+    const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
     const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
+    const endDate = moment(`${body.endDay}T${body.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
     const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
     const salesEndDate = moment(startDate).add(offersValidAfterStart, 'minutes').toDate();
 
@@ -430,9 +432,9 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     return {
         project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEvent,
-        doorTime: moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+        doorTime: doorTime,
         startDate: startDate,
-        endDate: moment(`${body.day}T${body.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+        endDate: endDate,
         workPerformed: screeningEventSeries.workPerformed,
         location: {
             project: req.project,
