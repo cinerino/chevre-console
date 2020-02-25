@@ -114,7 +114,7 @@ Aa-6
                                     <th>利用状況</th>
                                     <th>カテゴリー</th>
                                     <th>名称</th>
-                                    <th>発生金額<br>売上金額</th>
+                                    <th>発生金額</th>
                                     <th>適用条件</th>
                                     <th>有効性</th>
                                     <th>アドオン</th>
@@ -136,18 +136,16 @@ Aa-6
                                         <span class="text-muted">$availability$</span>
                                     </td>
                                     <td name="category.codeValue">$category.codeValue$</td>
-                                    <td name="name.ja|slice__name.en|slice">$name.ja$<br>$name.en$</td>
-                                    <td name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.accounting.accountsReceivable__priceSpecification.priceCurrency__referenceQuantity.value"
-                                        class="text-right">
+                                    <td name="name.ja|slice">$name.ja$</td>
+                                    <td
+                                        name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value">
                                         $priceSpecification.price$ $priceSpecification.priceCurrency$ /
-                                        $referenceQuantity.value$<br>
-                                        $priceSpecification.accounting.accountsReceivable$
-                                        $priceSpecification.priceCurrency$
+                                        $referenceQuantity.value$
                                     </td>
                                     <td
                                         name="eligibleMonetaryAmount.0.currency__eligibleMonetaryAmount.0.value__eligibleSeatingType.0.codeValue__priceSpecification.appliesToMovieTicketType__appliesToMovieTicket.name">
                                         ムビ: $priceSpecification.appliesToMovieTicketType$
-                                        $appliesToMovieTicket.name$<br>
+                                        $appliesToMovieTicket.name$ /
                                         座席: $eligibleSeatingType.0.codeValue$ /
                                         口座: $eligibleMonetaryAmount.0.value$
                                         $eligibleMonetaryAmount.0.currency$
@@ -163,7 +161,7 @@ Aa-6
                                             <span>表示</span>
                                         </a>
                                     </td>
-                                    <td name="id__ticketTypeGroups" class="text-center">
+                                    <td name="id__ticketTypeGroups">
                                         <a href="javascript:void(0)" data-id="$id$" class="popupListTicketTypeGroup">
                                             表示
                                         </a>
