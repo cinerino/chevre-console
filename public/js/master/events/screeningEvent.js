@@ -617,8 +617,6 @@ function modalInit(theater, date, ticketGroups) {
  * @returns {void}
  */
 function add() {
-    // var theater = $('select[name=theater]').val();
-    // var date = $('input[name=date]').val();
     var modal = $('#newModal');
     modal.find('select[name=theater]').val('');
     modal.find('input[name=weekDay]').prop('checked', true);
@@ -626,20 +624,19 @@ function add() {
         .html('<option selected disabled>劇場を選択してください</option>');
     modal.find('select[name=screen]')
         .html('<option selected disabled>劇場を選択してください</option>');
-    modal.find('select[name=doorTimeHour]').val('');
-    modal.find('select[name=doorTimeMinute]').val('');
-    modal.find('select[name=startTimeHour]').val('');
-    modal.find('select[name=startTimeMinute]').val('');
+    modal.find('input[name=doorTime]').val('');
+    modal.find('input[name=startTime]').val('');
+    modal.find('input[name=endTime]').val('');
+    modal.find('select[name=endDayRelative]').val('0');
     modal.find('input[name=mvtkExcludeFlg]').removeAttr('checked');
-    modal.find('select[name=endTimeHour]').val('');
-    modal.find('select[name=endTimeMinute]').val('');
     modal.find('select[name=ticketTypeGroup]').val('');
-    modal.find('input[name=onlineDisplayStartDate]').datepicker('update', new Date());
+    modal.find('input[name=onlineDisplayStartDateRelative]').val('');
+    modal.find('input[name=onlineDisplayStartDateAbsolute]').datepicker('update', '');
+    modal.find('input[name=onlineDisplayStartDate]').datepicker('update', '');
+    modal.find('input[name=maxSeatNumber]').val('');
+
     modal.find('input[name=screeningDateStart]').datepicker('update', new Date());
     modal.find('input[name=screeningDateThrough]').datepicker('update', new Date());
-    // modal.find('input[name=saleStartDate]').val('');
-    // modal.find('input[name=onlineDisplayStartDate]').val('');
-    // modal.find('input[name=maxSeatNumber]').val('');
 
     $('#newModal').modal();
 }
@@ -824,7 +821,6 @@ function createScheduler() {
 
                 var fix = function (time) { return ('0' + (parseInt(time / 5) * 5)).slice(-2); };
                 var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
-
 
                 var modal = $('#editModal');
                 modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));

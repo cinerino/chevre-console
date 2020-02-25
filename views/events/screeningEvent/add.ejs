@@ -219,45 +219,42 @@
                                 </div>
                             </div>
 
-                            <div class="scroll-horizontal table-responsible">
+                            <div class="table-responsible">
                                 <table class="table">
-                                    <thead>
-                                        <th>No</th>
-                                        <th>開場</th>
-                                        <th>開始</th>
-                                        <th>終了</th>
+                                    <thead class="text-primary">
+                                        <th>開場 / 開始 ~ 終了</th>
                                         <th>券種グループ</th>
-                                        <th class="mvtk text-center">ムビチケ対象外</th>
+                                        <th class="mvtk">ムビチケ対象外</th>
                                     </thead>
                                     <tbody>
                                         <% for (let i = 1; i <= 6; i++) { %>
                                         <tr>
-                                            <td>
-                                                <%= i %>
-                                            </td>
-                                            <td width="60">
-                                                <%- include('../../common/part/_timeSelector', {
-                                                    name: 'doorTime'
-                                                }) %>
-                                            </td>
-                                            <td width="60">
-                                                <%- include('../../common/part/_timeSelector', {
-                                                    name: 'startTime'
-                                                }) %>
-                                            </td>
-                                            <td width="260">
+                                            <td width="50%">
                                                 <div class="input-group">
-                                                    <div class="input-group-prepend">
-                                                        <span class="input-group-text">開始から</span>
-                                                    </div>
-                                                    <input type="text" class="form-control" name="endDayRelative"
-                                                        value="0" maxlength="2">
+                                                    <%- include('../../common/part/_timeSelector', {
+                                                            name: 'doorTime'
+                                                        }) %>
                                                     <div class="input-group-append">
-                                                        <span class="input-group-text">日後の</span>
+                                                        <span class="input-group-text">/</span>
                                                     </div>
                                                     <%- include('../../common/part/_timeSelector', {
-                                                        name: 'endTime'
-                                                    }) %>
+                                                            name: 'startTime'
+                                                        }) %>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">~</span>
+                                                    </div>
+                                                    <select class="form-control" name="endDayRelative">
+                                                        <option value="0">開始当日</option>
+                                                        <option value="1">1日後</option>
+                                                        <option value="2">2日後</option>
+                                                        <option value="3">3日後</option>
+                                                    </select>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">の</span>
+                                                    </div>
+                                                    <%- include('../../common/part/_timeSelector', {
+                                                            name: 'endTime'
+                                                        }) %>
                                                 </div>
                                             </td>
                                             <td>
@@ -270,7 +267,7 @@
                                                     <% } %>
                                                 </select>
                                             </td>
-                                            <td class="mvtk text-center">
+                                            <td class="mvtk">
                                                 <div class="form-check form-check-inline">
                                                     <label class="form-check-label"><input class="form-check-input"
                                                             type="checkbox" name="mvtkExcludeFlg">
