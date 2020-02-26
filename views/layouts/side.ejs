@@ -66,6 +66,35 @@
                 </ul>
             </div>
         </li>
+
+        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#services">
+                <i class="material-icons">local_drink</i>
+                <p> プロダクト<span class="badge badge-secondary ml-2">Preview</span>
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse" id="services">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/services/membershipProgram">
+                            <span class="sidebar-mini"><i class="icon far fa-calendar-alt"></i></span>
+                            <span class="sidebar-normal">会員プログラム</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
+                        <a class="nav-link" href="/products">
+                            <span class="sidebar-mini"><i class="material-icons">local_drink</i></span>
+                            <span class="sidebar-normal">その他</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <% } %>
+
         <!-- <li class="nav-item <%= (displayId === 'AT-01') ? 'active': ''; %>">
             <a class="nav-link" href="/accountTitles">
                 <i class="icon fa fa-table"></i>
@@ -134,15 +163,6 @@
                 <p>価格仕様<span class="badge badge-secondary ml-2">Preview</span></p>
             </a>
         </li>
-
-        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
-        <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
-            <a class="nav-link" href="/products">
-                <i class="material-icons">local_drink</i>
-                <p>プロダクト<span class="badge badge-secondary ml-2">Preview</span></p>
-            </a>
-        </li>
-        <% } %>
 
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
             <a class="nav-link" href="/reservations">

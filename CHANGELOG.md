@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 券種の高度な名称編集を追加
 - スクリーン管理を追加
 - 座席管理を追加
+- 会員プログラム管理を追加
 
 ### Changed
 
