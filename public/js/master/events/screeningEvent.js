@@ -257,6 +257,7 @@ function getTableData() {
             doorTime: $(row).find('input[name="doorTime"]').val(),
             startTime: $(row).find('input[name="startTime"]').val(),
             endTime: $(row).find('input[name="endTime"]').val(),
+            endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
             ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
             mvtkExcludeFlg: mvtkExcludeFlg
         };
@@ -266,12 +267,13 @@ function getTableData() {
             o.doorTime == null ||
             o.startTime == null ||
             o.endTime == null ||
+            o.endDayRelative == null ||
             o.ticketTypeGroup == null
         ) {
             return false;
         }
 
-        if (o.doorTime > o.startTime || o.startTime > o.endTime) {
+        if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
             alert('開場/開始/終了時刻を確認してください');
             return false;
         }
@@ -283,7 +285,8 @@ function getTableData() {
         return {
             doorTime: data.doorTime.replace(':', ''),
             startTime: data.startTime.replace(':', ''),
-            endTime: data.endTime.replace(':', '')
+            endTime: data.endTime.replace(':', ''),
+            endDayRelative: Number(data.endDayRelative)
         }
     });
     var ticketData = tempData.map(function (data) {
@@ -330,7 +333,6 @@ function regist() {
         // ? modal.find('select[name=saleStartDateHour]').val() + modal.find('select[name=saleStartDateMinutes]').val()
         ? modal.find('input[name=saleStartTime]').val().replace(':', '')
         : 'default';
-    console.log('saleStartTime:', saleStartTime);
 
     var onlineDisplayType = modal.find('input[name=onlineDisplayType]:checked').val();
     var onlineDisplayStartDate = (onlineDisplayType === 'absolute')

@@ -505,7 +505,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const weekDays: string[] = body.weekDayData;
     const ticketTypeIds: string[] = body.ticketData;
     const mvtkExcludeFlgs: string[] = body.mvtkExcludeFlgData;
-    const timeData: { doorTime: string; startTime: string; endTime: string }[] = body.timeData;
+    const timeData: { doorTime: string; startTime: string; endTime: string; endDayRelative: string }[] = body.timeData;
 
     const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
         limit: 100,
@@ -523,6 +523,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const attributes: chevre.factory.event.screeningEvent.IAttributes[] = [];
     for (let date = startDate; date <= toDate; date = date.add(1, 'day')) {
         const formattedDate = date.format('YYYY/MM/DD');
+
         const day = date.get('day').toString();
         if (weekDays.indexOf(day) >= 0) {
             // tslint:disable-next-line:max-func-body-length
@@ -532,6 +533,14 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
                 const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
                 const salesEndDate = moment(eventStartDate).add(offersValidAfterStart, 'minutes').toDate();
+                const endDayRelative = Number(data.endDayRelative);
+                // tslint:disable-next-line:no-magic-numbers
+                if (endDayRelative < 0 || endDayRelative > 3) {
+                    throw new Error('終了日の相対設定が不適切です');
+                }
+                const formattedEndDate = date
+                    .add(endDayRelative, 'days')
+                    .format('YYYY/MM/DD');
 
                 // 販売開始日時は、劇場設定 or 絶対指定 or 相対指定
                 let salesStartDate: Date;
@@ -621,9 +630,9 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 attributes.push({
                     project: req.project,
                     typeOf: chevre.factory.eventType.ScreeningEvent,
-                    doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+                    doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate(),
                     startDate: eventStartDate,
-                    endDate: moment(`${formattedDate}T${data.endTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate(),
+                    endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate(),
                     workPerformed: screeningEventSeries.workPerformed,
                     location: {
                         project: req.project,
