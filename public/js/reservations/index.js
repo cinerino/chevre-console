@@ -61,4 +61,44 @@ $(function () {
             $('#loadingModal').modal('hide');
         });
     }
+
+    $(document).on('click', '.showUnderName', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing underName...id:', id);
+
+        showUnderName(id);
+    });
+
+    function showUnderName(id) {
+        var reservation = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (reservation === undefined) {
+            alert('予約' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-reservation');
+        var title = 'Reservation `' + reservation.id + '` Under Name';
+
+        var underName = reservation.underName;
+        var body = $('<dl>');
+        if (underName !== undefined && underName !== null) {
+            body.append($('<dt>').text('typeOf'))
+                .append($('<dd>').html(underName.typeOf))
+                .append($('<dt>').text('id'))
+                .append($('<dd>').html(underName.id))
+                .append($('<dt>').text('name'))
+                .append($('<dd>').html(underName.name))
+                .append($('<dt>').text('email'))
+                .append($('<dd>').html(underName.email))
+                .append($('<dt>').text('telephone'))
+                .append($('<dd>').html(underName.telephone));
+        }
+
+        modal.find('.modal-title').html(title);
+        modal.find('.modal-body').html(body);
+        modal.modal();
+    }
 });
