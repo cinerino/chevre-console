@@ -59,7 +59,7 @@ $(function () {
             type: 'GET',
             data: conditions,
             beforeSend: function () {
-                $('.loading').modal();
+                $('#loadingModal').modal({ backdrop: 'static' });
             }
         }).done(function (data) {
             if (data.success) {
@@ -77,7 +77,7 @@ $(function () {
         }).fail(function (jqxhr, textStatus, error) {
             alert("fail");
         }).always(function (data) {
-            $('.loading').modal('hide');
+            $('#loadingModal').modal('hide');
         });
     }
 

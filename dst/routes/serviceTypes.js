@@ -169,7 +169,7 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 function validate(req, checkType) {
     let colName = '';
     if (checkType === 'add') {
-        colName = '興行区分コード';
+        colName = '区分コード';
         req.checkBody('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', colName))

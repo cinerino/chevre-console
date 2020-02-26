@@ -201,7 +201,7 @@ function validate(req: Request, checkType: string): void {
     let colName: string = '';
 
     if (checkType === 'add') {
-        colName = '興行区分コード';
+        colName = '区分コード';
         req.checkBody('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', colName))
