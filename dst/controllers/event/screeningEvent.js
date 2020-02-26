@@ -537,7 +537,7 @@ function createMultipleEventFromBody(req, user) {
                     if (endDayRelative < 0 || endDayRelative > 3) {
                         throw new Error('終了日の相対設定が不適切です');
                     }
-                    const formattedEndDate = date
+                    const formattedEndDate = moment(date)
                         .add(endDayRelative, 'days')
                         .format('YYYY/MM/DD');
                     // 販売開始日時は、劇場設定 or 絶対指定 or 相対指定

@@ -538,7 +538,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 if (endDayRelative < 0 || endDayRelative > 3) {
                     throw new Error('終了日の相対設定が不適切です');
                 }
-                const formattedEndDate = date
+                const formattedEndDate = moment(date)
                     .add(endDayRelative, 'days')
                     .format('YYYY/MM/DD');
 
