@@ -233,9 +233,9 @@ body {
         margin-top: 1rem;
     }
 }
-.form-control {
+.input-group-text {
     font-size: inherit;
 }
-.input-group-text {
+.bmd-form-group .form-control, .bmd-form-group input::placeholder {
     font-size: inherit;
 }

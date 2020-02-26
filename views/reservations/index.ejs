@@ -16,8 +16,11 @@ Aa-11
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary search btn-ok" href="#">
+            <a class="btn btn-primary btn-ok" href="#">
                 <i class="material-icons">refresh</i>更新</a>
+            <a class="btn btn-primary btn-link" data-toggle="collapse" href=".advanced" role="button"
+                aria-expanded="false">
+                <i class="material-icons">filter_list</i>高度な検索</a>
         </div>
         <div class="material-datatables">
             <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
@@ -27,6 +30,26 @@ Aa-11
                             <%- include('../common/master/_hidden') %>
 
                             <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="reservationFor[superEvent][location][id]" class="bmd-label-static">
+                                        劇場
+                                    </label>
+                                    <select class="form-control" name="reservationFor[superEvent][location][id]">
+                                        <option value="">劇場選択</option>
+                                        <% for (let movieTheater of movieTheaters) { %>
+                                        <option value="<%= movieTheater.id %>">
+                                            <%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="reservationFor[id]" class="bmd-label-static">
+                                        イベントID
+                                    </label>
+                                    <input type="text" class="form-control" name="reservationFor[id]"
+                                        id="reservationFor[id]" placeholder="イベントID" />
+                                </div>
                                 <div class="form-group bmd-form-group col-md-2">
                                     <label for="reservationNumber" class="bmd-label-static">
                                         予約番号
@@ -65,150 +88,146 @@ Aa-11
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-4">
-                                    <label for="modifiedFrom" class="bmd-label-static">
-                                        更新日(From - To)
-                                    </label>
-
-                                    <div class="input-group">
-                                        <input class="form-control datepicker" placeholder="" maxlength=10
-                                            name="modifiedFrom" id="modifiedFrom" value="" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">から</span>
-                                        </div>
-                                        <input class="form-control datepicker" placeholder="" maxlength=10
-                                            name="modifiedThrough" id="modifiedThrough" valufe="" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">まで</span>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="reservationFor[id]" class="bmd-label-static">
-                                        イベントID
-                                    </label>
-                                    <input type="text" class="form-control" name="reservationFor[id]"
-                                        id="reservationFor[id]" placeholder="イベントID" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="reservationFor[superEvent][id]" class="bmd-label-static">
-                                        劇場上映作品ID
-                                    </label>
-                                    <input type="text" class="form-control" name="reservationFor[superEvent][id]"
-                                        id="reservationFor[superEvent][id]" placeholder="劇場上映作品ID" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-4">
-                                    <label for="reservationFor[startFrom]" class="bmd-label-static">
-                                        イベント開始日時(From - To)
-                                    </label>
-
-                                    <div class="input-group">
-                                        <input class="form-control datepicker" placeholder="" maxlength=10
-                                            name="reservationFor[startFrom]" id="reservationFor[startFrom]" value="" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">から</span>
-                                        </div>
-                                        <input class="form-control datepicker" placeholder="" maxlength=10
-                                            name="reservationFor[startThrough]" id="reservationFor[startThrough]"
-                                            valufe="" />
-                                        <div class="input-group-append">
-                                            <span class="input-group-text">まで</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
-                                        座席コード
-                                    </label>
-                                    <input class="form-control" placeholder="座席コード"
-                                        name="reservedTicket[ticketedSeat][seatNumber]"
-                                        id="reservedTicket[ticketedSeat][seatNumber]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
-                                        券種コード
-                                    </label>
-                                    <input class="form-control" placeholder="券種コード"
-                                        name="reservedTicket[ticketType][id]" id="reservedTicket[ticketType][id]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
-                                        オファーカテゴリー
-                                    </label>
-                                    <select class="form-control" name="reservedTicket[ticketType][category][id]">
-                                        <option value="">オファーカテゴリー選択</option>
-                                        <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-                                        <option value="<%= ticketTypeCategory.id %>">
-                                            <%= ticketTypeCategory.name.ja %>
-                                        </option>
-                                        <% } %>
-                                    </select>
-                                </div>
-                                <div class="form-group bmd-form-group col-md-3">
-                                </div>
-                            </div>
-
-                            <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="underName[id]" class="bmd-label-static">
-                                        チケットホルダーID
-                                    </label>
-                                    <input class="form-control" placeholder="ID" name="underName[id]"
-                                        id="underName[id]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="underName[name]" class="bmd-label-static">
-                                        チケットホルダー名称
-                                    </label>
-                                    <input class="form-control" placeholder="Name" name="underName[name]"
-                                        id="underName[name]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="underName[email]" class="bmd-label-static">
-                                        チケットホルダーEmail
-                                    </label>
-                                    <input class="form-control" placeholder="Email" name="underName[email]"
-                                        id="underName[email]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label for="underName[telephone]" class="bmd-label-static">
-                                        チケットホルダーTEL
-                                    </label>
-                                    <input class="form-control" placeholder="Telephone" name="underName[telephone]"
-                                        id="underName[telephone]" />
-                                </div>
-                                <div class="form-group bmd-form-group col-md-1">
-                                    <label for="checkedIn" class="bmd-label-static">
-                                    </label>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" name="checkedIn" value="1"
-                                                id="checkedIn">
-                                            発券済
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
+                            <div class="advanced collapse">
+                                <div class="form-row">
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="reservationFor[superEvent][id]" class="bmd-label-static">
+                                            劇場上映作品ID
                                         </label>
+                                        <input type="text" class="form-control" name="reservationFor[superEvent][id]"
+                                            id="reservationFor[superEvent][id]" placeholder="劇場上映作品ID" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-4">
+                                        <label for="reservationFor[startFrom]" class="bmd-label-static">
+                                            イベント開始日時(From - To)
+                                        </label>
+
+                                        <div class="input-group">
+                                            <input class="form-control datepicker" placeholder="" maxlength=10
+                                                name="reservationFor[startFrom]" id="reservationFor[startFrom]"
+                                                value="" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">から</span>
+                                            </div>
+                                            <input class="form-control datepicker" placeholder="" maxlength=10
+                                                name="reservationFor[startThrough]" id="reservationFor[startThrough]"
+                                                valufe="" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">まで</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-4">
+                                        <label for="modifiedFrom" class="bmd-label-static">
+                                            更新日(From - To)
+                                        </label>
+
+                                        <div class="input-group">
+                                            <input class="form-control datepicker" placeholder="" maxlength=10
+                                                name="modifiedFrom" id="modifiedFrom" value="" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">から</span>
+                                            </div>
+                                            <input class="form-control datepicker" placeholder="" maxlength=10
+                                                name="modifiedThrough" id="modifiedThrough" valufe="" />
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">まで</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-1">
-                                    <label for="attended" class="bmd-label-static">
-                                    </label>
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" name="attended" value="1"
-                                                id="attended">
-                                            入場済
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
+
+                                <div class="form-row">
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
+                                            座席コード
                                         </label>
+                                        <input class="form-control" placeholder="座席コード"
+                                            name="reservedTicket[ticketedSeat][seatNumber]"
+                                            id="reservedTicket[ticketedSeat][seatNumber]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
+                                            券種コード
+                                        </label>
+                                        <input class="form-control" placeholder="券種コード"
+                                            name="reservedTicket[ticketType][id]" id="reservedTicket[ticketType][id]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
+                                            オファーカテゴリー
+                                        </label>
+                                        <select class="form-control" name="reservedTicket[ticketType][category][id]">
+                                            <option value="">オファーカテゴリー選択</option>
+                                            <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+                                            <option value="<%= ticketTypeCategory.id %>">
+                                                <%= ticketTypeCategory.name.ja %>
+                                            </option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-3">
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="underName[id]" class="bmd-label-static">
+                                            チケットホルダーID
+                                        </label>
+                                        <input class="form-control" placeholder="ID" name="underName[id]"
+                                            id="underName[id]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="underName[name]" class="bmd-label-static">
+                                            チケットホルダー名称
+                                        </label>
+                                        <input class="form-control" placeholder="Name" name="underName[name]"
+                                            id="underName[name]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="underName[email]" class="bmd-label-static">
+                                            チケットホルダーEmail
+                                        </label>
+                                        <input class="form-control" placeholder="Email" name="underName[email]"
+                                            id="underName[email]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-2">
+                                        <label for="underName[telephone]" class="bmd-label-static">
+                                            チケットホルダーTEL
+                                        </label>
+                                        <input class="form-control" placeholder="Telephone" name="underName[telephone]"
+                                            id="underName[telephone]" />
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-1">
+                                        <label for="checkedIn" class="bmd-label-static">
+                                        </label>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" name="checkedIn"
+                                                    value="1" id="checkedIn">
+                                                発券済
+                                                <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group bmd-form-group col-md-1">
+                                        <label for="attended" class="bmd-label-static">
+                                        </label>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                                <input class="form-check-input" type="checkbox" name="attended"
+                                                    value="1" id="attended">
+                                                入場済
+                                                <span class="form-check-sign">
+                                                    <span class="check"></span>
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +266,7 @@ Aa-11
                                         $reservationStatus$
                                     </td>
                                     <td
-                                        name="reservationFor.id__reservationFor.name.ja__reservationFor.startDate|parseDateTime">
+                                        name="reservationFor.id__reservationFor.name.ja|slice__reservationFor.startDate|parseDateTime">
                                         <a href="#$reservationFor.id$">$reservationFor.name.ja$</a><br>
                                         $reservationFor.startDate$
                                     </td>
@@ -257,12 +276,12 @@ Aa-11
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
                                     <td
-                                        name="reservationFor.superEvent.location.name.ja__reservationFor.location.name.ja">
+                                        name="reservationFor.superEvent.location.name.ja|slice__reservationFor.location.name.ja">
                                         $reservationFor.superEvent.location.name.ja$<br>
                                         $reservationFor.location.name.ja$
                                     </td>
                                     <td
-                                        name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency">
+                                        name="reservedTicket.typeOf__reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja|slice__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency">
                                         <span class="font-weight-bold"><a target="_blank"
                                                 href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
                                                 <i class="material-icons"
@@ -273,7 +292,7 @@ Aa-11
                                     <td name="ticketedSeat">
                                         $ticketedSeat$<br>
                                     </td>
-                                    <td name="underName.name__id">
+                                    <td name="underName.name|slice__id">
                                         $underName.name$<br>
                                         <a href="javascript:void(0)" class="showUnderName" data-id="$id$">
                                             <span>表示</span>

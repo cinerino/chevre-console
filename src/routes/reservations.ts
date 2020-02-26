@@ -17,6 +17,10 @@ reservationsRouter.get(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 100,
@@ -24,10 +28,16 @@ reservationsRouter.get(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
 
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+            limit: 100,
+            project: { ids: [req.project.id] }
+        });
+
         res.render('reservations/index', {
             message: '',
             reservationStatusType: chevre.factory.reservationStatusType,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
+            movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
@@ -67,7 +77,13 @@ reservationsRouter.get(
                             && req.query.reservationFor.superEvent.id !== undefined
                             && req.query.reservationFor.superEvent.id !== '')
                             ? [String(req.query.reservationFor.superEvent.id)]
-                            : undefined
+                            : undefined,
+                        location: {
+                            ids: (typeof req.query.reservationFor?.superEvent?.location?.id === 'string'
+                                && req.query.reservationFor?.superEvent?.location?.id.length > 0)
+                                ? [req.query.reservationFor?.superEvent?.location?.id]
+                                : undefined
+                        }
                     },
                     startFrom: (req.query.reservationFor !== undefined
                         && req.query.reservationFor.startFrom !== undefined

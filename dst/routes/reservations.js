@@ -22,20 +22,30 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const placeService = new chevre.service.Place({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
+    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+        limit: 100,
+        project: { ids: [req.project.id] }
+    });
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data
+        ticketTypeCategories: searchOfferCategoryTypesResult.data,
+        movieTheaters: searchMovieTheatersResult.data
     });
 }));
 reservationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
@@ -66,7 +76,13 @@ reservationsRouter.get('/search',
                         && req.query.reservationFor.superEvent.id !== undefined
                         && req.query.reservationFor.superEvent.id !== '')
                         ? [String(req.query.reservationFor.superEvent.id)]
-                        : undefined
+                        : undefined,
+                    location: {
+                        ids: (typeof ((_c = (_b = (_a = req.query.reservationFor) === null || _a === void 0 ? void 0 : _a.superEvent) === null || _b === void 0 ? void 0 : _b.location) === null || _c === void 0 ? void 0 : _c.id) === 'string'
+                            && ((_f = (_e = (_d = req.query.reservationFor) === null || _d === void 0 ? void 0 : _d.superEvent) === null || _e === void 0 ? void 0 : _e.location) === null || _f === void 0 ? void 0 : _f.id.length) > 0)
+                            ? [(_j = (_h = (_g = req.query.reservationFor) === null || _g === void 0 ? void 0 : _g.superEvent) === null || _h === void 0 ? void 0 : _h.location) === null || _j === void 0 ? void 0 : _j.id]
+                            : undefined
+                    }
                 },
                 startFrom: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.startFrom !== undefined
