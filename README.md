@@ -1,4 +1,4 @@
-# Chevre Backend Application
+# Chevre Console
 
 [![CircleCI](https://circleci.com/gh/chevre-jp/backend.svg?style=svg)](https://circleci.com/gh/chevre-jp/backend)
 

@@ -13,7 +13,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/api-nodejs-client": "3.0.0-alpha.12",
+    "@chevre/api-nodejs-client": "3.0.0-alpha.13",
     "@cinerino/api-nodejs-client": "2.0.0-alpha.69",
     "@json-editor/json-editor": "^1.4.0-beta.0",
     "body-parser": "^1.19.0",
@@ -38,7 +38,7 @@
     "serve-favicon": "^2.4.3",
     "underscore": "^1.8.3"
   },
-  "description": "Chevre Backend Application",
+  "description": "Chevre Console",
   "devDependencies": {
     "@types/body-parser": "0.0.34",
     "@types/connect-redis": "0.0.5",
