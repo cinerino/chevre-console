@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - スクリーン管理を追加
 - 座席管理を追加
 - 会員プログラム管理を追加
+- オファー管理を追加
 
 ### Changed
 
