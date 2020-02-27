@@ -97,44 +97,15 @@ offersRouter.all('/add',
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
-    // ムビチケ券種区分検索
-    const searchMovieTicketTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-    });
-    // 座席タイプ検索
-    const searchSeatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-    });
-    // 口座タイプ検索
-    const searchAccountTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
-    });
     const searchAccountTitlesResult = yield accountTitleService.search({
         project: { ids: [req.project.id] }
-    });
-    const searchProductOffersResult = yield offerService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        itemOffered: {
-            typeOf: { $eq: 'Product' }
-        }
     });
     res.render('offers/add', {
         message: message,
         errors: errors,
         forms: forms,
-        movieTicketTypes: searchMovieTicketTypesResult.data,
-        seatingTypes: searchSeatingTypesResult.data,
-        accountTypes: searchAccountTypesResult.data,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        accountTitles: searchAccountTitlesResult.data,
-        productOffers: searchProductOffersResult.data
+        accountTitles: searchAccountTitlesResult.data
     });
 }));
 offersRouter.all('/:id/update', 
@@ -216,6 +187,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -240,7 +212,8 @@ offersRouter.get('/getlist',
             project: { id: { $eq: req.project.id } },
             itemOffered: {
                 typeOf: {
-                    $eq: 'Service'
+                    $eq: (typeof ((_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'string' && ((_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf.length) > 0)
+                        ? (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf : undefined
                 }
             },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
@@ -339,6 +312,7 @@ offersRouter.get('/getlist',
 }));
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
         const categoryCodeService = new chevre.service.CategoryCode({
@@ -346,12 +320,12 @@ function createFromBody(req, isNew) {
             auth: req.user.authClient
         });
         let offerCategory;
-        if (typeof body.category === 'string' && body.category.length > 0) {
+        if (typeof ((_a = body.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && ((_b = body.category) === null || _b === void 0 ? void 0 : _b.codeValue.length) > 0) {
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-                codeValue: { $eq: body.category }
+                codeValue: { $eq: (_c = body.category) === null || _c === void 0 ? void 0 : _c.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
                 throw new Error('オファーカテゴリーが見つかりません');
@@ -363,7 +337,7 @@ function createFromBody(req, isNew) {
         const referenceQuantity = {
             typeOf: 'QuantitativeValue',
             value: referenceQuantityValue,
-            unitCode: chevre.factory.unitCode.C62
+            unitCode: body.priceSpecification.referenceQuantity.unitCode
         };
         const eligibleQuantityMinValue = (body.priceSpecification !== undefined
             && body.priceSpecification.eligibleQuantity !== undefined
@@ -449,11 +423,25 @@ function createFromBody(req, isNew) {
             eligibleQuantity: eligibleQuantity,
             eligibleTransactionVolume: eligibleTransactionVolume
         };
-        return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, itemOffered: {
-                project: req.project,
-                typeOf: 'Service',
-                serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
-            }, 
+        let itemOffered;
+        switch ((_d = body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) {
+            case 'Product':
+                itemOffered = {
+                    project: req.project,
+                    typeOf: 'Product'
+                };
+                break;
+            case 'Service':
+                itemOffered = {
+                    project: req.project,
+                    typeOf: 'Service',
+                    serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
+                };
+                break;
+            default:
+                throw new Error(`${(_e = body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
+        }
+        return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: priceSpec, additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
@@ -496,8 +484,12 @@ function validateFormAdd(req) {
     colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = '適用数';
+    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.unitCode', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     colName = '発生金額';
     req.checkBody('priceSpecification.price').notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))

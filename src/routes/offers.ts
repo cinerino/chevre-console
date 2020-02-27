@@ -111,48 +111,16 @@ offersRouter.all(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
 
-        // ムビチケ券種区分検索
-        const searchMovieTicketTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
-
-        // 座席タイプ検索
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-        });
-
-        // 口座タイプ検索
-        const searchAccountTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
-        });
-
         const searchAccountTitlesResult = await accountTitleService.search({
             project: { ids: [req.project.id] }
-        });
-        const searchProductOffersResult = await offerService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: {
-                typeOf: { $eq: 'Product' }
-            }
         });
 
         res.render('offers/add', {
             message: message,
             errors: errors,
             forms: forms,
-            movieTicketTypes: searchMovieTicketTypesResult.data,
-            seatingTypes: searchSeatingTypesResult.data,
-            accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data,
-            productOffers: searchProductOffersResult.data
+            accountTitles: searchAccountTitlesResult.data
         });
     }
 );
@@ -281,7 +249,9 @@ offersRouter.get(
                 project: { id: { $eq: req.project.id } },
                 itemOffered: {
                     typeOf: {
-                        $eq: 'Service'
+                        $eq: (typeof req.query.itemOffered?.typeOf === 'string' && req.query.itemOffered?.typeOf.length > 0)
+                            ? req.query.itemOffered?.typeOf
+                            : undefined
                     }
                 },
                 identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
@@ -406,12 +376,12 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;
 
-    if (typeof body.category === 'string' && body.category.length > 0) {
+    if (typeof body.category?.codeValue === 'string' && body.category?.codeValue.length > 0) {
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 1,
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-            codeValue: { $eq: body.category }
+            codeValue: { $eq: body.category?.codeValue }
         });
         if (searchOfferCategoryTypesResult.data.length === 0) {
             throw new Error('オファーカテゴリーが見つかりません');
@@ -425,7 +395,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
         value: referenceQuantityValue,
-        unitCode: chevre.factory.unitCode.C62
+        unitCode: body.priceSpecification.referenceQuantity.unitCode
     };
 
     const eligibleQuantityMinValue: number | undefined = (body.priceSpecification !== undefined
@@ -520,6 +490,27 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         eligibleTransactionVolume: eligibleTransactionVolume
     };
 
+    let itemOffered;
+    switch (body.itemOffered?.typeOf) {
+        case 'Product':
+            itemOffered = {
+                project: req.project,
+                typeOf: 'Product'
+            };
+            break;
+
+        case 'Service':
+            itemOffered = {
+                project: req.project,
+                typeOf: 'Service',
+                serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
+            };
+            break;
+
+        default:
+            throw new Error(`${body.itemOffered?.typeOf} not implemented`);
+    }
+
     return {
         project: req.project,
         typeOf: chevre.factory.offerType.Offer,
@@ -534,11 +525,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         availability: availability,
-        itemOffered: {
-            project: req.project,
-            typeOf: 'Service',
-            serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
-        },
+        itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: priceSpec,
         additionalProperty: (Array.isArray(body.additionalProperty))
@@ -593,8 +580,13 @@ function validateFormAdd(req: Request): void {
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
 
+    colName = '適用数';
+    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+
     colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.unitCode', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '発生金額';
     req.checkBody('priceSpecification.price').notEmpty()
