@@ -214,7 +214,15 @@ export async function update(req: Request, res: Response): Promise<void> {
 async function createFromBody(req: Request): Promise<chevre.factory.ticketType.ITicketTypeGroup> {
     const body = req.body;
 
-    const ticketTypes = (Array.isArray(body.ticketTypes)) ? <string[]>body.ticketTypes : [<string>body.ticketTypes];
+    let ticketTypes = (Array.isArray(body.ticketTypes)) ? <string[]>body.ticketTypes : [<string>body.ticketTypes];
+    ticketTypes = [...new Set(ticketTypes)]; // 念のため券種IDをユニークに
+
+    const itemListElement = ticketTypes.map((offerId) => {
+        return {
+            typeOf: chevre.factory.offerType.Offer,
+            id: offerId
+        };
+    });
 
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
@@ -239,9 +247,12 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
-        ticketTypes: [...new Set(ticketTypes)], // 念のため券種IDをユニークに
+        ticketTypes: ticketTypes,
         itemOffered: {
-            serviceType: serviceType
+            serviceType: serviceType,
+            ...{
+                typeOf: 'EventService' // 後にオファーカタログへ統合するため
+            }
         },
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
@@ -251,7 +262,10 @@ async function createFromBody(req: Request): Promise<chevre.factory.ticketType.I
                         value: String(p.value)
                     };
                 })
-            : undefined
+            : undefined,
+        ...{
+            itemListElement: itemListElement // 後にオファーカタログへ統合するため
+        }
     };
 }
 

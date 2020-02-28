@@ -295,8 +295,10 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
             },
             project: { id: { $eq: req.project.id } },
             priceSpecification: {
-                maxPrice: Number(req.query.price),
-                minPrice: Number(req.query.price)
+                price: {
+                    $gte: Number(req.query.price),
+                    $lte: Number(req.query.price)
+                }
                 // 売上金額で検索
                 // accounting: {
                 //     minAccountsReceivable: Number(req.query.price),

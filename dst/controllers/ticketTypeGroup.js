@@ -203,7 +203,14 @@ exports.update = update;
 function createFromBody(req) {
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
-        const ticketTypes = (Array.isArray(body.ticketTypes)) ? body.ticketTypes : [body.ticketTypes];
+        let ticketTypes = (Array.isArray(body.ticketTypes)) ? body.ticketTypes : [body.ticketTypes];
+        ticketTypes = [...new Set(ticketTypes)]; // 念のため券種IDをユニークに
+        const itemListElement = ticketTypes.map((offerId) => {
+            return {
+                typeOf: chevre.factory.offerType.Offer,
+                id: offerId
+            };
+        });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -218,18 +225,9 @@ function createFromBody(req) {
         if (serviceType === undefined) {
             throw new Error('興行区分が見つかりません');
         }
-        return {
-            project: req.project,
-            id: body.id,
-            identifier: req.body.identifier,
-            name: body.name,
-            description: body.description,
-            alternateName: body.alternateName,
-            ticketTypes: [...new Set(ticketTypes)],
-            itemOffered: {
-                serviceType: serviceType
-            },
-            additionalProperty: (Array.isArray(body.additionalProperty))
+        return Object.assign({ project: req.project, id: body.id, identifier: req.body.identifier, name: body.name, description: body.description, alternateName: body.alternateName, ticketTypes: ticketTypes, itemOffered: Object.assign({ serviceType: serviceType }, {
+                typeOf: 'EventService' // 後にオファーカタログへ統合するため
+            }), additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -237,8 +235,9 @@ function createFromBody(req) {
                         value: String(p.value)
                     };
                 })
-                : undefined
-        };
+                : undefined }, {
+            itemListElement: itemListElement // 後にオファーカタログへ統合するため
+        });
     });
 }
 /**

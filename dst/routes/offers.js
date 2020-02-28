@@ -223,23 +223,27 @@ offersRouter.get('/getlist',
             //     ? req.query.name
             //     : undefined,
             priceSpecification: {
-                minPrice: (req.query.priceSpecification !== undefined
-                    && req.query.priceSpecification.minPrice !== undefined
-                    && req.query.priceSpecification.minPrice !== '')
-                    ? Number(req.query.priceSpecification.minPrice)
-                    : undefined,
-                maxPrice: (req.query.priceSpecification !== undefined
-                    && req.query.priceSpecification.maxPrice !== undefined
-                    && req.query.priceSpecification.maxPrice !== '')
-                    ? Number(req.query.priceSpecification.maxPrice)
-                    : undefined,
-                referenceQuantity: {
-                    value: (req.query.priceSpecification !== undefined
-                        && req.query.priceSpecification.referenceQuantity !== undefined
-                        && req.query.priceSpecification.referenceQuantity.value !== undefined
-                        && req.query.priceSpecification.referenceQuantity.value !== '')
-                        ? Number(req.query.priceSpecification.referenceQuantity.value)
+                price: {
+                    $gte: (req.query.priceSpecification !== undefined
+                        && req.query.priceSpecification.minPrice !== undefined
+                        && req.query.priceSpecification.minPrice !== '')
+                        ? Number(req.query.priceSpecification.minPrice)
+                        : undefined,
+                    $lte: (req.query.priceSpecification !== undefined
+                        && req.query.priceSpecification.maxPrice !== undefined
+                        && req.query.priceSpecification.maxPrice !== '')
+                        ? Number(req.query.priceSpecification.maxPrice)
                         : undefined
+                },
+                referenceQuantity: {
+                    value: {
+                        $eq: (req.query.priceSpecification !== undefined
+                            && req.query.priceSpecification.referenceQuantity !== undefined
+                            && req.query.priceSpecification.referenceQuantity.value !== undefined
+                            && req.query.priceSpecification.referenceQuantity.value !== '')
+                            ? Number(req.query.priceSpecification.referenceQuantity.value)
+                            : undefined
+                    }
                 }
             },
             category: {
