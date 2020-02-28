@@ -246,6 +246,7 @@ offerCatalogsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
     });
 }));
 offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f;
     try {
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
@@ -256,9 +257,16 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         const { data } = yield offerCatalogService.search({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             identifier: req.query.identifier,
-            name: req.query.name
+            name: req.query.name,
+            itemListElement: {},
+            itemOffered: {
+                typeOf: {
+                    $eq: (typeof ((_b = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === null || _b === void 0 ? void 0 : _b.$eq) === 'string' && ((_d = (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq.length) > 0)
+                        ? (_f = (_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq : undefined
+                }
+            }
         });
         res.json({
             success: true,
@@ -295,15 +303,15 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
             },
             project: { id: { $eq: req.project.id } },
             priceSpecification: {
-                price: {
-                    $gte: Number(req.query.price),
-                    $lte: Number(req.query.price)
-                }
-                // 売上金額で検索
-                // accounting: {
-                //     minAccountsReceivable: Number(req.query.price),
-                //     maxAccountsReceivable: Number(req.query.price)
+                // price: {
                 // }
+                // 売上金額で検索
+                accounting: {
+                    accountsReceivable: {
+                        $gte: Number(req.query.price),
+                        $lte: Number(req.query.price)
+                    }
+                }
             }
         });
         res.json({
@@ -322,6 +330,7 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
     }
 }));
 function createFromBody(req) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
         const itemListElement = (Array.isArray(body.itemListElement)) ? body.itemListElement : [];
@@ -334,7 +343,7 @@ function createFromBody(req) {
             alternateName: body.alternateName,
             itemListElement: [...new Set(itemListElement)],
             itemOffered: {
-                typeOf: 'Service'
+                typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf
             },
             additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')

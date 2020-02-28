@@ -307,9 +307,17 @@ offerCatalogsRouter.get(
             const { data } = await offerCatalogService.search({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 identifier: req.query.identifier,
-                name: req.query.name
+                name: req.query.name,
+                itemListElement: {},
+                itemOffered: {
+                    typeOf: {
+                        $eq: (typeof req.query.itemOffered?.typeOf?.$eq === 'string' && req.query.itemOffered?.typeOf?.$eq.length > 0)
+                            ? req.query.itemOffered?.typeOf?.$eq
+                            : undefined
+                    }
+                }
             });
 
             res.json({
@@ -354,15 +362,15 @@ offerCatalogsRouter.get(
                 },
                 project: { id: { $eq: req.project.id } },
                 priceSpecification: {
-                    price: {
-                        $gte: Number(req.query.price),
-                        $lte: Number(req.query.price)
-                    }
-                    // 売上金額で検索
-                    // accounting: {
-                    //     minAccountsReceivable: Number(req.query.price),
-                    //     maxAccountsReceivable: Number(req.query.price)
+                    // price: {
                     // }
+                    // 売上金額で検索
+                    accounting: {
+                        accountsReceivable: {
+                            $gte: Number(req.query.price),
+                            $lte: Number(req.query.price)
+                        }
+                    }
                 }
             });
 
@@ -396,7 +404,7 @@ async function createFromBody(req: Request): Promise<any> {
         alternateName: body.alternateName,
         itemListElement: [...new Set(itemListElement)], // 念のため券種IDをユニークに
         itemOffered: {
-            typeOf: 'Service'
+            typeOf: body.itemOffered?.typeOf
         },
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')

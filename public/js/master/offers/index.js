@@ -93,4 +93,61 @@ $(function () {
         body.append(html);
         modal.modal();
     }
+
+    // カタログ表示
+    $(document).on('click', '.showCatalogs', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        showCatalogs(id);
+    });
+
+    function showCatalogs(id) {
+        console.log('requesting...', id);
+        $.ajax({
+            dataType: 'json',
+            url: '/offers/' + id + '/catalogs',
+            cache: false,
+            type: 'GET',
+            // data: conditions,
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            if (data.success) {
+                var modal = $('#offerCatalogs');
+
+                var body = $('<p>').text('データが見つかりませんでした');
+                var tbody = $('<tbody>');
+                if (data.results.length > 0) {
+                    data.results.forEach(function (offerCatalog) {
+                        var href = '/offerCatalogs/' + offerCatalog.id + '/update';
+                        var identifier = $('<a>').attr({ 'href': href, target: '_blank' }).text(offerCatalog.identifier);
+                        tbody.append(
+                            $('<tr>')
+                                .append($('<td>').html(identifier))
+                                .append($('<td>').text(offerCatalog.name.ja))
+                        );
+                    });
+                    var thead = $('<thead>').addClass('text-primary')
+                        .append(
+                            $('<tr>')
+                                .append($('<th>').text('コード'))
+                                .append($('<th>').text('名称'))
+                        );
+                    var table = $('<table>').addClass('table table-sm')
+                        .append(thead)
+                        .append(tbody)
+                    var body = $('<div>').addClass('table-responsive')
+                        .append(table)
+                }
+
+                modal.find('.modal-body').html(body);
+                modal.modal();
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert(error);
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
+    }
 });

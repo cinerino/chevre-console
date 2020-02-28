@@ -168,6 +168,39 @@ offersRouter.all('/:id/update',
         accountTitles: searchAccountTitlesResult.data
     });
 }));
+offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const limit = 100;
+        const page = 1;
+        const { data } = yield offerCatalogService.search({
+            limit: limit,
+            page: page,
+            project: { id: { $eq: req.project.id } },
+            itemListElement: {
+                id: { $in: [req.params.id] }
+            }
+        });
+        res.json({
+            success: true,
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
+        });
+    }
+    catch (err) {
+        res.json({
+            success: false,
+            message: err.message,
+            count: 0,
+            results: []
+        });
+    }
+}));
 offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
@@ -382,7 +415,7 @@ function createFromBody(req, isNew) {
         const accounting = {
             typeOf: 'Accounting',
             operatingRevenue: undefined,
-            accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+            accountsReceivable: Number(body.priceSpecification.price) // とりあえず発生金額に同じ
         };
         if (body.accountTitle !== undefined && body.accountTitle !== '') {
             accounting.operatingRevenue = {
@@ -428,17 +461,18 @@ function createFromBody(req, isNew) {
             eligibleTransactionVolume: eligibleTransactionVolume
         };
         let itemOffered;
-        switch ((_d = body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) {
+        const itemOfferedTypeOf = (_d = body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
+        switch (itemOfferedTypeOf) {
             case 'Product':
                 itemOffered = {
                     project: req.project,
-                    typeOf: 'Product'
+                    typeOf: itemOfferedTypeOf
                 };
                 break;
-            case 'Service':
+            case 'MembershipService':
                 itemOffered = {
                     project: req.project,
-                    typeOf: 'Service',
+                    typeOf: itemOfferedTypeOf,
                     serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
                 };
                 break;

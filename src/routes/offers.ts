@@ -56,20 +56,20 @@ offersRouter.all(
                     const { data } = await offerService.searchTicketTypes({
                         limit: 1,
                         project: { ids: [req.project.id] },
-                        identifier: { $eq: (<any>offer).identifier }
+                        identifier: { $eq: <string>offer.identifier }
                     });
                     if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${(<any>offer).identifier}`);
+                        throw new Error(`既に存在するコードです: ${<string>offer.identifier}`);
                     }
 
                     // オファーコード重複確認
                     const searchOffersResult = await offerService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
-                        identifier: { $eq: (<any>offer).identifier }
+                        identifier: { $eq: <string>offer.identifier }
                     });
                     if (searchOffersResult.data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${(<any>offer).identifier}`);
+                        throw new Error(`既に存在するコードです: ${<string>offer.identifier}`);
                     }
 
                     offer = await offerService.create(offer);
@@ -194,6 +194,44 @@ offersRouter.all(
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data
         });
+    }
+);
+
+offersRouter.get(
+    '/:id/catalogs',
+    async (req, res) => {
+        try {
+            const offerCatalogService = new chevre.service.OfferCatalog({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const limit = 100;
+            const page = 1;
+            const { data } = await offerCatalogService.search({
+                limit: limit,
+                page: page,
+                project: { id: { $eq: req.project.id } },
+                itemListElement: {
+                    id: { $in: [req.params.id] }
+                }
+            });
+
+            res.json({
+                success: true,
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
+            });
+        } catch (err) {
+            res.json({
+                success: false,
+                message: err.message,
+                count: 0,
+                results: []
+            });
+        }
     }
 );
 
@@ -445,7 +483,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const accounting = {
         typeOf: <'Accounting'>'Accounting',
         operatingRevenue: <any>undefined,
-        accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+        accountsReceivable: Number(body.priceSpecification.price) // とりあえず発生金額に同じ
     };
     if (body.accountTitle !== undefined && body.accountTitle !== '') {
         accounting.operatingRevenue = {
@@ -495,18 +533,19 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     };
 
     let itemOffered;
-    switch (body.itemOffered?.typeOf) {
+    const itemOfferedTypeOf = body.itemOffered?.typeOf;
+    switch (itemOfferedTypeOf) {
         case 'Product':
             itemOffered = {
                 project: req.project,
-                typeOf: 'Product'
+                typeOf: itemOfferedTypeOf
             };
             break;
 
-        case 'Service':
+        case 'MembershipService':
             itemOffered = {
                 project: req.project,
-                typeOf: 'Service',
+                typeOf: itemOfferedTypeOf,
                 serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
             };
             break;
