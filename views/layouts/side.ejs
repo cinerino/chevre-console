@@ -95,19 +95,13 @@
                         </a>
                     </li>
                     <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
-                    <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/addOns">
-                            <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">アドオン <span class="badge badge-secondary">Preview</span></span>
-                        </a>
-                    </li>
-                    <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
+                    <li class="nav-item <%= (displayId === 'OF-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/offers">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
                             <span class="sidebar-normal">オファー <span class="badge badge-secondary">Preview</span></span>
                         </a>
                     </li>
-                    <li class="nav-item <%= (displayId === 'PO-01') ? 'active': ''; %>">
+                    <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/offerCatalogs">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
                             <span class="sidebar-normal">オファーカタログ <span
