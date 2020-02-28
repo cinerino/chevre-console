@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -185,29 +184,12 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
 }));
 offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // 削除して問題ない券種グループかどうか検証
-        const searchEventsResult = yield eventService.search({
-            limit: 1,
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            project: { ids: [req.project.id] },
-            offers: {
-                ids: [req.params.id]
-            },
-            sort: { endDate: chevre.factory.sortType.Descending }
-        });
-        if (searchEventsResult.data.length > 0) {
-            if (moment(searchEventsResult.data[0].endDate) >= moment()) {
-                throw new Error('終了していないスケジュールが存在します');
-            }
-        }
+        // tslint:disable-next-line:no-suspicious-comment
+        // TODO 削除して問題ないカタログかどうか検証
         yield offerCatalogService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT).end();
     }

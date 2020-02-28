@@ -19,6 +19,11 @@ membershipServiceRouter.all(
         let message = '';
         let errors: any = {};
 
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -32,7 +37,7 @@ membershipServiceRouter.all(
             // 検証
             if (validatorResult.isEmpty()) {
                 try {
-                    let product = createFromBody(req);
+                    let product = createFromBody(req, true);
                     product = await productService.create(product);
                     req.flash('message', '登録しました');
                     res.redirect(`/services/membershipService/${product.id}`);
@@ -65,10 +70,17 @@ membershipServiceRouter.all(
             }));
         }
 
+        const searchOfferCatalogsResult = await offerCatalogService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+        });
+
         res.render('services/membershipService/new', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
 );
@@ -124,6 +136,11 @@ membershipServiceRouter.all(
             let message = '';
             let errors: any = {};
 
+            const offerCatalogService = new chevre.service.OfferCatalog({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
@@ -137,7 +154,7 @@ membershipServiceRouter.all(
                 errors = req.validationErrors(true);
                 if (validatorResult.isEmpty()) {
                     try {
-                        product = createFromBody(req);
+                        product = createFromBody(req, false);
                         await productService.update(product);
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
@@ -159,10 +176,17 @@ membershipServiceRouter.all(
                 ...product
             };
 
+            const searchOfferCatalogsResult = await offerCatalogService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+            });
+
             res.render('services/membershipService/update', {
                 message: message,
                 errors: errors,
-                forms: forms
+                forms: forms,
+                offerCatalogs: searchOfferCatalogsResult.data
             });
         } catch (err) {
             next(err);
@@ -179,8 +203,16 @@ membershipServiceRouter.get(
     }
 );
 
-function createFromBody(req: Request): any {
+function createFromBody(req: Request, isNew: boolean): any {
     const body = req.body;
+
+    let hasOfferCatalog: any;
+    if (typeof body.hasOfferCatalog?.id === 'string' && body.hasOfferCatalog?.id.length > 0) {
+        hasOfferCatalog = {
+            typeOf: 'OfferCatalog',
+            id: body.hasOfferCatalog?.id
+        };
+    }
 
     return {
         project: req.project,
@@ -188,9 +220,14 @@ function createFromBody(req: Request): any {
         id: req.params.id,
         // identifier: body.identifier,
         name: body.name,
-        serviceOutput: {
-            typeOf: chevre.factory.programMembership.ProgramMembershipType
-        }
+        ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined
+                }
+            }
+            : undefined
     };
 }
 

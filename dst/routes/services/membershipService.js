@@ -23,6 +23,10 @@ const membershipServiceRouter = express_1.Router();
 membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const offerCatalogService = new chevre.service.OfferCatalog({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -35,7 +39,7 @@ membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
         // 検証
         if (validatorResult.isEmpty()) {
             try {
-                let product = createFromBody(req);
+                let product = createFromBody(req, true);
                 product = yield productService.create(product);
                 req.flash('message', '登録しました');
                 res.redirect(`/services/membershipService/${product.id}`);
@@ -57,10 +61,16 @@ membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
             return {};
         }));
     }
+    const searchOfferCatalogsResult = yield offerCatalogService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+    });
     res.render('services/membershipService/new', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        offerCatalogs: searchOfferCatalogsResult.data
     });
 }));
 membershipServiceRouter.get('/search', 
@@ -106,6 +116,10 @@ membershipServiceRouter.all('/:id',
     try {
         let message = '';
         let errors = {};
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -118,7 +132,7 @@ membershipServiceRouter.all('/:id',
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    product = createFromBody(req);
+                    product = createFromBody(req, false);
                     yield productService.update(product);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -136,10 +150,16 @@ membershipServiceRouter.all('/:id',
             return;
         }
         const forms = Object.assign({}, product);
+        const searchOfferCatalogsResult = yield offerCatalogService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+        });
         res.render('services/membershipService/update', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
     catch (err) {
@@ -151,18 +171,23 @@ membershipServiceRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, f
         message: ''
     });
 }));
-function createFromBody(req) {
+function createFromBody(req, isNew) {
+    var _a, _b, _c;
     const body = req.body;
-    return {
-        project: req.project,
-        typeOf: SERVICE_TYPE,
-        id: req.params.id,
+    let hasOfferCatalog;
+    if (typeof ((_a = body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
+        hasOfferCatalog = {
+            typeOf: 'OfferCatalog',
+            id: (_c = body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
+        };
+    }
+    return Object.assign(Object.assign({ project: req.project, typeOf: SERVICE_TYPE, id: req.params.id, 
         // identifier: body.identifier,
-        name: body.name,
-        serviceOutput: {
-            typeOf: chevre.factory.programMembership.ProgramMembershipType
+        name: body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
+        ? {
+            $unset: Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined)
         }
-    };
+        : undefined);
 }
 function validate(req) {
     let colName = '';
