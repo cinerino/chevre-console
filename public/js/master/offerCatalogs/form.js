@@ -72,21 +72,23 @@ function submit() {
     $('form').submit();
 }
 
-function searchOffersByPrice(price) {
+function searchOffersByPrice(price, itemOfferedType) {
     var options = {
         dataType: 'json',
         url: '/offerCatalogs/searchOffersByPrice',
         cache: false,
         type: 'GET',
         data: {
-            price: Number(price)
+            price: Number(price),
+            itemOffered: { typeOf: itemOfferedType }
         }
     };
+
     return $.ajax(options);
 }
 
 /**
- * 券種売上金額変更
+ * オファー売上金額変更
  */
 function priceChange() {
     var price = $(this).val();
@@ -102,7 +104,14 @@ function priceChange() {
         selectedOfferIds.push(uid);
     });
     $('#sortable1').empty();
-    searchOffersByPrice(form.price)
+
+    // アイテム選択済かどうか
+    const itemOfferedType = $('select[name="itemOffered[typeOf]"]').val();
+    if (typeof itemOfferedType !== 'string' || itemOfferedType.length <= 0) {
+        alert('アイテムを選択してください');
+    }
+
+    searchOffersByPrice(form.price, itemOfferedType)
         .then(function (data) {
             var offers = data.results;
             if (data.success) {

@@ -41,38 +41,40 @@
                         selected<% } %>>アドオン</option>
                 </select>
                 <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors['itemOffered[typeOf]']) { %>
-                    <%- errors['itemOffered[typeOf'].msg %>
+                    <% if (errors && errors['itemOffered.typeOf']) { %>
+                    <%- errors['itemOffered.typeOf'].msg %>
                     <% } %>
                 </span>
             </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="name[ja]" class="bmd-label-static">
-                名称<span class="text-danger">＊</span>
-            </label>
-            <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
-                value="<%= forms.name.ja %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors['name.ja']) { %>
-                <%- errors['name.ja'].msg %>
-                <% } %>
-            </span>
-        </div>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="name[ja]" class="bmd-label-static">
+                    名称<span class="text-danger">＊</span>
+                </label>
+                <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
+                    value="<%= forms.name.ja %>">
+                <span class="bmd-help">全角64文字以内でご入力ください</span>
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors['name.ja']) { %>
+                    <%- errors['name.ja'].msg %>
+                    <% } %>
+                </span>
+            </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="name[en]" class="bmd-label-static">
-                名称英<span class="text-danger">＊</span>
-            </label>
-            <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
-                value="<%= forms.name.en %>">
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors['name.en']) { %>
-                <%- errors['name.en'].msg %>
-                <% } %>
-            </span>
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="name[en]" class="bmd-label-static">
+                    名称英<span class="text-danger">＊</span>
+                </label>
+                <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
+                    value="<%= forms.name.en %>">
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors['name.en']) { %>
+                    <%- errors['name.en'].msg %>
+                    <% } %>
+                </span>
+            </div>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -115,31 +117,33 @@
             </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="description.ja" class="bmd-label-static">
-                補足説明
-            </label>
-            <input type="text" class="form-control" name="description[ja]" id="description.ja" placeholder=""
-                maxlength=64 value="<%= forms.description.ja %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors['description.ja']) { %>
-                <%- errors['description.ja'].msg %>
-                <% } %>
-            </span>
-        </div>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="description.ja" class="bmd-label-static">
+                    補足説明
+                </label>
+                <input type="text" class="form-control" name="description[ja]" id="description.ja" placeholder=""
+                    maxlength=64 value="<%= forms.description.ja %>">
+                <span class="bmd-help">全角64文字以内でご入力ください</span>
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors['description.ja']) { %>
+                    <%- errors['description.ja'].msg %>
+                    <% } %>
+                </span>
+            </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="description.en" class="bmd-label-static">
-                補足説明英
-            </label>
-            <input type="text" class="form-control" name="description[en]" id="description.en" placeholder=""
-                maxlength=64 value="<%= forms.description.en %>">
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors['description.en']) { %>
-                <%- errors['description.en'].msg %>
-                <% } %>
-            </span>
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="description.en" class="bmd-label-static">
+                    補足説明英
+                </label>
+                <input type="text" class="form-control" name="description[en]" id="description.en" placeholder=""
+                    maxlength=64 value="<%= forms.description.en %>">
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors['description.en']) { %>
+                    <%- errors['description.en'].msg %>
+                    <% } %>
+                </span>
+            </div>
         </div>
     </div>
 </div>

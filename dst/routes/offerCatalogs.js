@@ -95,30 +95,26 @@ offerCatalogsRouter.all('/add',
             return {};
         }));
     }
-    // 券種マスタから取得
-    let ticketTypes = [];
-    if (typeof forms.ticketTypes === 'string') {
-        forms.ticketTypes = [forms.ticketTypes];
-    }
-    if (forms.ticketTypes.length > 0) {
-        const searchTicketTypesResult = yield offerService.searchTicketTypes({
-            // sort: {
-            //     'priceSpecification.price': chevre.factory.sortType.Descending
-            // },
-            project: { ids: [req.project.id] },
-            ids: forms.ticketTypes
+    // オファー検索
+    let offers = [];
+    if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
+        const searchOffersResult = yield offerService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            id: {
+                $in: forms.itemListElement.map((element) => element.id)
+            }
         });
-        ticketTypes = searchTicketTypesResult.data;
-        // 券種を登録順にソート
-        ticketTypes = ticketTypes.sort((a, b) => forms.ticketTypes.indexOf(a.id) - forms.ticketTypes.indexOf(b.id));
+        // 登録順にソート
+        const itemListElementIds = forms.itemListElement.map((element) => element.id);
+        offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
     }
     res.render('offerCatalogs/add', {
         message: message,
         errors: errors,
-        ticketTypes: ticketTypes,
         forms: forms,
         serviceTypes: searchServiceTypesResult.data,
-        offers: []
+        offers: offers
     });
 }));
 offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -164,16 +160,14 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     if (forms.itemListElement.length > 0) {
         const searchOffersResult = yield offerService.search({
             limit: 100,
-            // sort: {
-            //     'priceSpecification.price': chevre.factory.sortType.Descending
-            // },
             project: { id: { $eq: req.project.id } },
             id: {
                 $in: forms.itemListElement.map((element) => element.id)
             }
         });
         // 登録順にソート
-        offers = searchOffersResult.data.sort((a, b) => offerCatalog.itemListElement.indexOf(a.id) - offerCatalog.itemListElement.indexOf(b.id));
+        const itemListElementIds = forms.itemListElement.map((element) => element.id);
+        offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
     }
     res.render('offerCatalogs/update', {
         message: message,
@@ -219,7 +213,8 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             }
         });
         // 登録順にソート
-        const offers = data.sort((a, b) => offerCatalog.itemListElement.indexOf(a.id) - offerCatalog.itemListElement.indexOf(b.id));
+        const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
+        const offers = data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
         res.json({
             success: true,
             count: (offers.length === Number(limit))
@@ -283,6 +278,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
     }
 }));
 offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _g;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -298,9 +294,8 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
                 'priceSpecification.price': chevre.factory.sortType.Descending
             },
             project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: (_g = req.query.itemOffered) === null || _g === void 0 ? void 0 : _g.typeOf } },
             priceSpecification: {
-                // price: {
-                // }
                 // 売上金額で検索
                 accounting: {
                     accountsReceivable: {
@@ -329,7 +324,15 @@ function createFromBody(req) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
-        const itemListElement = (Array.isArray(body.itemListElement)) ? body.itemListElement : [];
+        let itemListElement = [];
+        if (Array.isArray(body.itemListElement)) {
+            itemListElement = body.itemListElement.map((element) => {
+                return {
+                    typeOf: chevre.factory.offerType.Offer,
+                    id: element.id
+                };
+            });
+        }
         return {
             project: req.project,
             id: body.id,
@@ -337,7 +340,7 @@ function createFromBody(req) {
             name: body.name,
             description: body.description,
             alternateName: body.alternateName,
-            itemListElement: [...new Set(itemListElement)],
+            itemListElement: itemListElement,
             itemOffered: {
                 typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf
             },
@@ -364,6 +367,9 @@ function validate(req) {
     req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     // tslint:disable-next-line:no-magic-numbers
     req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
+    colName = 'アイテム';
+    req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     colName = '対象オファー';
     req.checkBody('itemListElement', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
