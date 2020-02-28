@@ -1,5 +1,5 @@
 /**
- * 会員プログラム管理ルーター
+ * 会員サービス管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
@@ -9,10 +9,11 @@ import * as _ from 'underscore';
 import * as Message from '../../common/Const/Message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
+const SERVICE_TYPE = 'MembershipService';
 
-const membershipProgramRouter = Router();
+const membershipServiceRouter = Router();
 
-membershipProgramRouter.all(
+membershipServiceRouter.all(
     '/new',
     async (req, res) => {
         let message = '';
@@ -34,7 +35,7 @@ membershipProgramRouter.all(
                     let product = createFromBody(req);
                     product = await productService.create(product);
                     req.flash('message', '登録しました');
-                    res.redirect(`/services/membershipProgram/${product.id}`);
+                    res.redirect(`/services/membershipService/${product.id}`);
 
                     return;
                 } catch (error) {
@@ -64,7 +65,7 @@ membershipProgramRouter.all(
             }));
         }
 
-        res.render('services/membershipProgram/new', {
+        res.render('services/membershipService/new', {
             message: message,
             errors: errors,
             forms: forms
@@ -72,7 +73,7 @@ membershipProgramRouter.all(
     }
 );
 
-membershipProgramRouter.get(
+membershipServiceRouter.get(
     '/search',
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
@@ -88,7 +89,7 @@ membershipProgramRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: 'Service' },
+                typeOf: { $eq: SERVICE_TYPE },
                 serviceOutput: { typeOf: { $eq: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership } }
             };
             const { data } = await productService.search(searchConditions);
@@ -115,7 +116,7 @@ membershipProgramRouter.get(
     }
 );
 
-membershipProgramRouter.all(
+membershipServiceRouter.all(
     '/:id',
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
@@ -158,7 +159,7 @@ membershipProgramRouter.all(
                 ...product
             };
 
-            res.render('services/membershipProgram/update', {
+            res.render('services/membershipService/update', {
                 message: message,
                 errors: errors,
                 forms: forms
@@ -169,10 +170,10 @@ membershipProgramRouter.all(
     }
 );
 
-membershipProgramRouter.get(
+membershipServiceRouter.get(
     '',
     async (__, res) => {
-        res.render('services/membershipProgram/index', {
+        res.render('services/membershipService/index', {
             message: ''
         });
     }
@@ -183,7 +184,7 @@ function createFromBody(req: Request): any {
 
     return {
         project: req.project,
-        typeOf: 'Service',
+        typeOf: SERVICE_TYPE,
         id: req.params.id,
         // identifier: body.identifier,
         name: body.name,
@@ -216,4 +217,4 @@ function validate(req: Request): void {
         .withMessage(Message.Common.getMaxLength(colName, 30));
 }
 
-export default membershipProgramRouter;
+export default membershipServiceRouter;

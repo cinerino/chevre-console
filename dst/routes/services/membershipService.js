@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 会員プログラム管理ルーター
+ * 会員サービス管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
@@ -18,8 +18,9 @@ const http_status_1 = require("http-status");
 const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
-const membershipProgramRouter = express_1.Router();
-membershipProgramRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const SERVICE_TYPE = 'MembershipService';
+const membershipServiceRouter = express_1.Router();
+membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
@@ -37,7 +38,7 @@ membershipProgramRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
                 let product = createFromBody(req);
                 product = yield productService.create(product);
                 req.flash('message', '登録しました');
-                res.redirect(`/services/membershipProgram/${product.id}`);
+                res.redirect(`/services/membershipService/${product.id}`);
                 return;
             }
             catch (error) {
@@ -56,13 +57,13 @@ membershipProgramRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
             return {};
         }));
     }
-    res.render('services/membershipProgram/new', {
+    res.render('services/membershipService/new', {
         message: message,
         errors: errors,
         forms: forms
     });
 }));
-membershipProgramRouter.get('/search', 
+membershipServiceRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -76,7 +77,7 @@ membershipProgramRouter.get('/search',
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: 'Service' },
+            typeOf: { $eq: SERVICE_TYPE },
             serviceOutput: { typeOf: { $eq: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership } }
         };
         const { data } = yield productService.search(searchConditions);
@@ -99,7 +100,7 @@ membershipProgramRouter.get('/search',
         });
     }
 }));
-membershipProgramRouter.all('/:id', 
+membershipServiceRouter.all('/:id', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -135,7 +136,7 @@ membershipProgramRouter.all('/:id',
             return;
         }
         const forms = Object.assign({}, product);
-        res.render('services/membershipProgram/update', {
+        res.render('services/membershipService/update', {
             message: message,
             errors: errors,
             forms: forms
@@ -145,8 +146,8 @@ membershipProgramRouter.all('/:id',
         next(err);
     }
 }));
-membershipProgramRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.render('services/membershipProgram/index', {
+membershipServiceRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('services/membershipService/index', {
         message: ''
     });
 }));
@@ -154,7 +155,7 @@ function createFromBody(req) {
     const body = req.body;
     return {
         project: req.project,
-        typeOf: 'Service',
+        typeOf: SERVICE_TYPE,
         id: req.params.id,
         // identifier: body.identifier,
         name: body.name,
@@ -182,4 +183,4 @@ function validate(req) {
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));
 }
-exports.default = membershipProgramRouter;
+exports.default = membershipServiceRouter;

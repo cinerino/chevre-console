@@ -30,7 +30,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/services/membershipProgram/search';
+        var url = '/services/membershipService/search';
 
         $.ajax({
             dataType: 'json',

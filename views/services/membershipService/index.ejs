@@ -1,14 +1,14 @@
 <%- contentFor('title') %>
-会員プログラム検索
+会員サービス検索
 <%- contentFor('displayId') %>
-PR-00
+MS-00
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
-<script src="/js/master/services/membershipProgram/index.js"></script>
+<script src="/js/master/services/membershipService/index.js"></script>
 
 <%- contentFor('body') %>
 
@@ -16,7 +16,7 @@ PR-00
     <div class="card-body search searchProducts">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/services/membershipProgram/new">
+            <a class="btn btn-primary" href="/services/membershipService/new">
                 <i class="material-icons">add</i>登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i>更新</a>
@@ -52,7 +52,7 @@ PR-00
                             <tbody>
                                 <tr id="templateRow">
                                     <td name="id__id">
-                                        <a target="_blank" href="/products/$id$">
+                                        <a target="_blank" href="/services/membershipService/$id$">
                                             $id$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

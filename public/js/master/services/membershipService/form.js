@@ -11,11 +11,11 @@ $(function () {
         if (window.confirm('元には戻せません。本当に削除しますか？')) {
             $.ajax({
                 dataType: 'json',
-                url: '/services/membershipProgram/' + productId,
+                url: '/services/membershipService/' + productId,
                 type: 'DELETE'
             }).done(function () {
                 alert('削除しました');
-                location.href = '/services/membershipProgram';
+                location.href = '/services/membershipService';
             }).fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {

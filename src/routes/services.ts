@@ -3,10 +3,10 @@
  */
 import * as express from 'express';
 
-import membershipProgramRouter from './services/membershipProgram';
+import membershipServiceRouter from './services/membershipService';
 
 const servicesRouter = express.Router();
 
-servicesRouter.use('/membershipProgram', membershipProgramRouter);
+servicesRouter.use('/membershipService', membershipServiceRouter);
 
 export default servicesRouter;
