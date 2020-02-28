@@ -24,12 +24,18 @@ const NAME_MAX_LENGTH_CODE = 64;
 // 券種グループ名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const offerCatalogsRouter = express_1.Router();
-offerCatalogsRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.all('/add', 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
     const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -43,18 +49,26 @@ offerCatalogsRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, 
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = '';
-                let ticketTypeGroup = yield createFromBody(req);
-                // 券種グループコード重複確認
+                let offerCatalog = yield createFromBody(req);
+                // コード重複確認
                 const { data } = yield offerService.searchTicketTypeGroups({
                     project: { ids: [req.project.id] },
-                    identifier: { $eq: ticketTypeGroup.identifier }
+                    identifier: { $eq: offerCatalog.identifier }
                 });
                 if (data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${ticketTypeGroup.identifier}`);
+                    throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
                 }
-                ticketTypeGroup = yield offerService.createTicketTypeGroup(ticketTypeGroup);
+                // コード重複確認
+                const searchOfferCatalogsResult = yield offerCatalogService.search({
+                    project: { id: { $eq: req.project.id } },
+                    identifier: { $eq: offerCatalog.identifier }
+                });
+                if (searchOfferCatalogsResult.data.length > 0) {
+                    throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
+                }
+                offerCatalog = yield offerCatalogService.create(offerCatalog);
                 req.flash('message', '登録しました');
-                res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+                res.redirect(`/offerCatalogs/${offerCatalog.id}/update`);
                 return;
             }
             catch (error) {
@@ -104,7 +118,8 @@ offerCatalogsRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, 
         errors: errors,
         ticketTypes: ticketTypes,
         forms: forms,
-        serviceTypes: searchServiceTypesResult.data
+        serviceTypes: searchServiceTypesResult.data,
+        offers: []
     });
 }));
 offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -174,18 +189,17 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const offerService = new chevre.service.Offer({
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const ticketTypeGroupId = req.params.id;
         // 削除して問題ない券種グループかどうか検証
         const searchEventsResult = yield eventService.search({
             limit: 1,
             typeOf: chevre.factory.eventType.ScreeningEvent,
             project: { ids: [req.project.id] },
             offers: {
-                ids: [ticketTypeGroupId]
+                ids: [req.params.id]
             },
             sort: { endDate: chevre.factory.sortType.Descending }
         });
@@ -194,7 +208,7 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
                 throw new Error('終了していないスケジュールが存在します');
             }
         }
-        yield offerService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
+        yield offerCatalogService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT).end();
     }
     catch (error) {

@@ -20,12 +20,18 @@ const offerCatalogsRouter = Router();
 
 offerCatalogsRouter.all(
     '/add',
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -40,20 +46,29 @@ offerCatalogsRouter.all(
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = '';
-                    let ticketTypeGroup = await createFromBody(req);
+                    let offerCatalog = await createFromBody(req);
 
-                    // 券種グループコード重複確認
+                    // コード重複確認
                     const { data } = await offerService.searchTicketTypeGroups({
                         project: { ids: [req.project.id] },
-                        identifier: { $eq: ticketTypeGroup.identifier }
+                        identifier: { $eq: offerCatalog.identifier }
                     });
                     if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${ticketTypeGroup.identifier}`);
+                        throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
                     }
 
-                    ticketTypeGroup = await offerService.createTicketTypeGroup(ticketTypeGroup);
+                    // コード重複確認
+                    const searchOfferCatalogsResult = await offerCatalogService.search({
+                        project: { id: { $eq: req.project.id } },
+                        identifier: { $eq: offerCatalog.identifier }
+                    });
+                    if (searchOfferCatalogsResult.data.length > 0) {
+                        throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
+                    }
+
+                    offerCatalog = await offerCatalogService.create(offerCatalog);
                     req.flash('message', '登録しました');
-                    res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
+                    res.redirect(`/offerCatalogs/${offerCatalog.id}/update`);
 
                     return;
                 } catch (error) {
@@ -115,7 +130,8 @@ offerCatalogsRouter.all(
             errors: errors,
             ticketTypes: ticketTypes,
             forms: forms,
-            serviceTypes: searchServiceTypesResult.data
+            serviceTypes: searchServiceTypesResult.data,
+            offers: []
         });
     }
 );
@@ -205,12 +221,10 @@ offerCatalogsRouter.delete(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const offerService = new chevre.service.Offer({
+            const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-
-            const ticketTypeGroupId: string = req.params.id;
 
             // 削除して問題ない券種グループかどうか検証
             const searchEventsResult = await eventService.search({
@@ -218,7 +232,7 @@ offerCatalogsRouter.delete(
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 project: { ids: [req.project.id] },
                 offers: {
-                    ids: [ticketTypeGroupId]
+                    ids: [req.params.id]
                 },
                 sort: { endDate: chevre.factory.sortType.Descending }
             });
@@ -228,7 +242,7 @@ offerCatalogsRouter.delete(
                 }
             }
 
-            await offerService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
+            await offerCatalogService.deleteById({ id: req.params.id });
             res.status(NO_CONTENT).end();
         } catch (error) {
             res.status(BAD_REQUEST).json({ error: { message: error.message } });

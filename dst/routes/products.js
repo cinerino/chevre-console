@@ -18,11 +18,16 @@ const http_status_1 = require("http-status");
 const _ = require("underscore");
 const Message = require("../common/Const/Message");
 const NUM_ADDITIONAL_PROPERTY = 10;
+const PRODUCT_TYPE = 'Product';
 const productsRouter = express_1.Router();
 productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -34,7 +39,7 @@ productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, funct
         // 検証
         if (validatorResult.isEmpty()) {
             try {
-                let product = createFromBody(req);
+                let product = createFromBody(req, true);
                 product = yield productService.create(product);
                 req.flash('message', '登録しました');
                 res.redirect(`/products/${product.id}`);
@@ -56,10 +61,16 @@ productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, funct
             return {};
         }));
     }
+    const searchOfferCatalogsResult = yield offerCatalogService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+    });
     res.render('products/new', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        offerCatalogs: searchOfferCatalogsResult.data
     });
 }));
 productsRouter.get('/search', 
@@ -77,7 +88,7 @@ productsRouter.get('/search',
             page: page,
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: 'Product' }
+            typeOf: { $eq: PRODUCT_TYPE }
         };
         const { data } = yield productService.search(searchConditions);
         res.json({
@@ -109,6 +120,10 @@ productsRouter.all('/:id',
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         let product = yield productService.findById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
@@ -117,7 +132,7 @@ productsRouter.all('/:id',
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    product = createFromBody(req);
+                    product = createFromBody(req, false);
                     yield productService.update(product);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -135,10 +150,16 @@ productsRouter.all('/:id',
             return;
         }
         const forms = Object.assign({}, product);
+        const searchOfferCatalogsResult = yield offerCatalogService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+        });
         res.render('products/update', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
     catch (err) {
@@ -150,15 +171,23 @@ productsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* 
         message: ''
     });
 }));
-function createFromBody(req) {
+function createFromBody(req, isNew) {
+    var _a, _b, _c;
     const body = req.body;
-    return {
-        project: req.project,
-        typeOf: 'Product',
-        id: req.params.id,
+    let hasOfferCatalog;
+    if (typeof ((_a = body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
+        hasOfferCatalog = {
+            typeOf: 'OfferCatalog',
+            id: (_c = body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
+        };
+    }
+    return Object.assign(Object.assign({ project: req.project, typeOf: PRODUCT_TYPE, id: req.params.id, 
         // identifier: body.identifier,
-        name: body.name
-    };
+        name: body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
+        ? {
+            $unset: Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined)
+        }
+        : undefined);
 }
 function validate(req) {
     let colName = '';

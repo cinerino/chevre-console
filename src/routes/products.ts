@@ -9,6 +9,7 @@ import * as _ from 'underscore';
 import * as Message from '../common/Const/Message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
+const PRODUCT_TYPE = 'Product';
 
 const productsRouter = Router();
 
@@ -23,6 +24,11 @@ productsRouter.all(
             auth: req.user.authClient
         });
 
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
         if (req.method === 'POST') {
             // 検証
             validate(req);
@@ -31,7 +37,7 @@ productsRouter.all(
             // 検証
             if (validatorResult.isEmpty()) {
                 try {
-                    let product = createFromBody(req);
+                    let product = createFromBody(req, true);
                     product = await productService.create(product);
                     req.flash('message', '登録しました');
                     res.redirect(`/products/${product.id}`);
@@ -64,10 +70,17 @@ productsRouter.all(
             }));
         }
 
+        const searchOfferCatalogsResult = await offerCatalogService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+        });
+
         res.render('products/new', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
 );
@@ -89,7 +102,7 @@ productsRouter.get(
                 page: page,
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: 'Product' }
+                typeOf: { $eq: PRODUCT_TYPE }
             };
             const { data } = await productService.search(searchConditions);
 
@@ -127,6 +140,12 @@ productsRouter.all(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+
+            const offerCatalogService = new chevre.service.OfferCatalog({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
             let product = await productService.findById({ id: req.params.id });
 
             if (req.method === 'POST') {
@@ -136,7 +155,7 @@ productsRouter.all(
                 errors = req.validationErrors(true);
                 if (validatorResult.isEmpty()) {
                     try {
-                        product = createFromBody(req);
+                        product = createFromBody(req, false);
                         await productService.update(product);
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
@@ -158,10 +177,17 @@ productsRouter.all(
                 ...product
             };
 
+            const searchOfferCatalogsResult = await offerCatalogService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+            });
+
             res.render('products/update', {
                 message: message,
                 errors: errors,
-                forms: forms
+                forms: forms,
+                offerCatalogs: searchOfferCatalogsResult.data
             });
         } catch (err) {
             next(err);
@@ -178,15 +204,31 @@ productsRouter.get(
     }
 );
 
-function createFromBody(req: Request): any {
+function createFromBody(req: Request, isNew: boolean): any {
     const body = req.body;
+
+    let hasOfferCatalog: any;
+    if (typeof body.hasOfferCatalog?.id === 'string' && body.hasOfferCatalog?.id.length > 0) {
+        hasOfferCatalog = {
+            typeOf: 'OfferCatalog',
+            id: body.hasOfferCatalog?.id
+        };
+    }
 
     return {
         project: req.project,
-        typeOf: 'Product',
+        typeOf: PRODUCT_TYPE,
         id: req.params.id,
         // identifier: body.identifier,
-        name: body.name
+        name: body.name,
+        ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined
+                }
+            }
+            : undefined
     };
 }
 

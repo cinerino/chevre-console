@@ -38,7 +38,7 @@ function remove() {
             type: 'DELETE'
         }).done(function () {
             alert('削除しました');
-            location.href = '/ticketTypeGroups';
+            location.href = '/offerCatalogs';
         }).fail(function (jqxhr, textStatus, error) {
             var message = '削除できませんでした';
             if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {

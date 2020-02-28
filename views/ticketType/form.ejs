@@ -7,7 +7,7 @@
     <div class="card-body">
         <div class="form-group bmd-form-group">
             <label for="identifier" class="bmd-label-static">
-                券種コード<span class="text-danger">＊</span>
+                コード<span class="text-danger">＊</span>
             </label>
             <% if (isNew) { %>
             <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64 value="<%= forms.identifier
@@ -15,7 +15,7 @@
             <span class="bmd-help">半角64文字以内でご入力ください</span>
             <% } else { %>
             <label for="identifier" class="bmd-label-static">
-                券種コード<span class="text-danger">＊</span>
+                コード<span class="text-danger">＊</span>
             </label>
             <input type="text" disabled class="form-control" value="<%= forms.identifier %>">
             <input type="hidden" name="identifier" value="<%= forms.identifier %>">
@@ -507,11 +507,11 @@
             </label>
             <select class="form-control" name="availableAddOn">
                 <option value="" selected>なし</option>
-                <% for (let productOffer of productOffers) { %>
-                <option value="<%= productOffer.id %>"
-                    <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].id === productOffer.id) { %>
+                <% for (let addOn of addOns) { %>
+                <option value="<%= addOn.id %>"
+                    <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].itemOffered.id === addOn.id) { %>
                     selected <% } %>>
-                    <%= productOffer.id %> <%= productOffer.name.ja %>
+                    <%= addOn.name.ja %>
                 </option>
                 <% } %>
             </select>

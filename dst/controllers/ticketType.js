@@ -46,6 +46,10 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const productService = new chevre.service.Product({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         if (req.method === 'POST') {
             // 検証
             validateFormAdd(req);
@@ -112,12 +116,10 @@ function add(req, res) {
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] }
         });
-        const searchProductOffersResult = yield offerService.search({
+        const searchAddOnsResult = yield productService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: {
-                typeOf: { $eq: 'Product' }
-            }
+            typeOf: { $eq: 'Product' }
         });
         res.render('ticketType/add', {
             message: message,
@@ -128,7 +130,7 @@ function add(req, res) {
             accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
-            productOffers: searchProductOffersResult.data
+            addOns: searchAddOnsResult.data
         });
     });
 }
@@ -142,6 +144,10 @@ function update(req, res) {
         let message = '';
         let errors = {};
         const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -247,12 +253,10 @@ function update(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
         });
-        const searchProductOffersResult = yield offerService.search({
+        const searchAddOnsResult = yield productService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: {
-                typeOf: { $eq: 'Product' }
-            }
+            typeOf: { $eq: 'Product' }
         });
         res.render('ticketType/update', {
             message: message,
@@ -263,7 +267,7 @@ function update(req, res) {
             accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
-            productOffers: searchProductOffersResult.data
+            addOns: searchAddOnsResult.data
         });
     });
 }
@@ -272,7 +276,7 @@ exports.update = update;
 function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
-        const offerService = new chevre.service.Offer({
+        const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -294,27 +298,19 @@ function createFromBody(req, isNew) {
             offerCategory = searchOfferCategoryTypesResult.data[0];
         }
         const availableAddOn = [];
-        if (req.body.availableAddOn !== undefined && req.body.availableAddOn !== '') {
-            const searchProductOffersResult = yield offerService.search({
-                limit: 1,
-                id: { $eq: req.body.availableAddOn },
-                project: { id: { $eq: req.project.id } },
-                itemOffered: {
-                    typeOf: { $eq: 'Product' }
-                }
+        if (typeof req.body.availableAddOn === 'string' && req.body.availableAddOn.length > 0) {
+            const addOn = yield productService.findById({
+                id: req.body.availableAddOn
             });
-            const productOffer = searchProductOffersResult.data.shift();
-            if (productOffer === undefined) {
-                throw new Error(`Product Offer ${req.body.availableAddOn} Not Found`);
+            if (addOn.hasOfferCatalog === undefined) {
+                throw new Error(`アドオン '${addOn.name.ja}' にはオファーカタログが登録されていません`);
             }
             availableAddOn.push({
-                project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: productOffer.typeOf,
-                id: productOffer.id,
-                name: productOffer.name,
-                itemOffered: productOffer.itemOffered,
-                priceCurrency: productOffer.priceCurrency,
-                priceSpecification: productOffer.priceSpecification
+                project: addOn.project,
+                typeOf: chevre.factory.offerType.Offer,
+                name: addOn.name,
+                itemOffered: addOn,
+                priceCurrency: chevre.factory.priceCurrency.JPY
             });
         }
         let availability = chevre.factory.itemAvailability.OutOfStock;
