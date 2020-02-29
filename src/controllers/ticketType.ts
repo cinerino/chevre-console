@@ -808,7 +808,7 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
         const { data } = await offerService.searchTicketTypeGroups({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             ticketTypes: [req.params.ticketTypeId]
         });
 

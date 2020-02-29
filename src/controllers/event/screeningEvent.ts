@@ -43,7 +43,8 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
         }
 
         const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: 'EventService' } }
         });
 
         res.render('events/screeningEvent/index', {
@@ -134,7 +135,8 @@ export async function search(req: Request, res: Response): Promise<void> {
             screens = movieTheater.containsPlace;
         }
         const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: 'EventService' } }
         });
 
         res.json({
@@ -338,16 +340,23 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     }
 
     const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
+    if (typeof ticketTypeGroup.id !== 'string') {
+        throw new Error('Offer Catalog ID undefined');
+    }
 
-    const searchServiceTypesResult = await categoryCodeService.search({
-        limit: 1,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
-        codeValue: { $eq: ticketTypeGroup.itemOffered.serviceType.codeValue }
-    });
-    const serviceType = searchServiceTypesResult.data.shift();
-    if (serviceType === undefined) {
-        throw new Error('興行区分が見つかりません');
+    let serviceType: chevre.factory.serviceType.IServiceType | undefined;
+    const offerCatagoryServiceTypeCode = ticketTypeGroup.itemOffered.serviceType?.codeValue;
+    if (typeof offerCatagoryServiceTypeCode === 'string') {
+        const searchServiceTypesResult = await categoryCodeService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+            codeValue: { $eq: offerCatagoryServiceTypeCode }
+        });
+        serviceType = searchServiceTypesResult.data.shift();
+        if (serviceType === undefined) {
+            throw new Error('興行区分が見つかりません');
+        }
     }
 
     let offersValidAfterStart: number;
@@ -509,7 +518,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
     const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
         limit: 100,
-        project: { ids: [req.project.id] }
+        project: { id: { $eq: req.project.id } },
+        itemOffered: { typeOf: { $eq: 'EventService' } }
     });
     const ticketTypeGroups = searchTicketTypeGroupsResult.data;
 
@@ -586,9 +596,17 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 if (ticketTypeGroup === undefined) {
                     throw new Error('Ticket Type Group');
                 }
-                const serviceType = serviceTypes.find((t) => t.codeValue === ticketTypeGroup.itemOffered.serviceType.codeValue);
-                if (serviceType === undefined) {
-                    throw new chevre.factory.errors.NotFound('興行区分');
+                if (typeof ticketTypeGroup.id !== 'string') {
+                    throw new Error('Offer Catalog ID undefined');
+                }
+
+                let serviceType: chevre.factory.serviceType.IServiceType | undefined;
+                const offerCatagoryServiceTypeCode = ticketTypeGroup.itemOffered.serviceType?.codeValue;
+                if (typeof offerCatagoryServiceTypeCode === 'string') {
+                    serviceType = serviceTypes.find((t) => t.codeValue === offerCatagoryServiceTypeCode);
+                    if (serviceType === undefined) {
+                        throw new chevre.factory.errors.NotFound('サービス区分');
+                    }
                 }
 
                 const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')

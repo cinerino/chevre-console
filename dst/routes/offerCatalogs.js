@@ -51,7 +51,7 @@ offerCatalogsRouter.all('/add',
                 let offerCatalog = yield createFromBody(req);
                 // コード重複確認
                 const { data } = yield offerService.searchTicketTypeGroups({
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     identifier: { $eq: offerCatalog.identifier }
                 });
                 if (data.length > 0) {
@@ -202,6 +202,7 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             auth: req.user.authClient
         });
         const offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
+        const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
         const limit = 100;
         const page = 1;
         const { data } = yield offerService.search({
@@ -209,11 +210,10 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             page: page,
             project: { id: { $eq: req.project.id } },
             id: {
-                $in: offerCatalog.itemListElement.map((element) => element.id)
+                $in: itemListElementIds
             }
         });
         // 登録順にソート
-        const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
         const offers = data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
         res.json({
             success: true,
@@ -248,6 +248,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         const { data } = yield offerCatalogService.search({
             limit: limit,
             page: page,
+            sort: { identifier: chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             identifier: req.query.identifier,
             name: req.query.name,
@@ -340,6 +341,7 @@ function createFromBody(req) {
             name: body.name,
             description: body.description,
             alternateName: body.alternateName,
+            ticketTypes: [],
             itemListElement: itemListElement,
             itemOffered: {
                 typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf

@@ -49,7 +49,7 @@ offerCatalogsRouter.all(
 
                     // コード重複確認
                     const { data } = await offerService.searchTicketTypeGroups({
-                        project: { ids: [req.project.id] },
+                        project: { id: { $eq: req.project.id } },
                         identifier: { $eq: offerCatalog.identifier }
                     });
                     if (data.length > 0) {
@@ -111,7 +111,7 @@ offerCatalogsRouter.all(
             const searchOffersResult = await offerService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                id: <any>{
+                id: {
                     $in: forms.itemListElement.map((element: any) => element.id)
                 }
             });
@@ -187,7 +187,7 @@ offerCatalogsRouter.all(
             const searchOffersResult = await offerService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                id: <any>{
+                id: {
                     $in: forms.itemListElement.map((element: any) => element.id)
                 }
             });
@@ -242,6 +242,7 @@ offerCatalogsRouter.get(
             });
 
             const offerCatalog = await offerCatalogService.findById({ id: req.params.id });
+            const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
 
             const limit = 100;
             const page = 1;
@@ -249,15 +250,14 @@ offerCatalogsRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
-                id: <any>{
-                    $in: offerCatalog.itemListElement.map((element: any) => element.id)
+                id: {
+                    $in: itemListElementIds
                 }
             });
 
             // 登録順にソート
-            const itemListElementIds = offerCatalog.itemListElement.map((element: any) => element.id);
             const offers = data.sort(
-                (a: any, b: any) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
+                (a, b) => itemListElementIds.indexOf(<string>a.id) - itemListElementIds.indexOf(<string>b.id)
             );
 
             res.json({
@@ -300,6 +300,7 @@ offerCatalogsRouter.get(
             const { data } = await offerCatalogService.search({
                 limit: limit,
                 page: page,
+                sort: { identifier: chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
                 identifier: req.query.identifier,
                 name: req.query.name,
@@ -382,7 +383,7 @@ offerCatalogsRouter.get(
     }
 );
 
-async function createFromBody(req: Request): Promise<any> {
+async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog.IOfferCatalog> {
     const body = req.body;
 
     let itemListElement = [];
@@ -402,6 +403,7 @@ async function createFromBody(req: Request): Promise<any> {
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
+        ticketTypes: [],
         itemListElement: itemListElement,
         itemOffered: {
             typeOf: body.itemOffered?.typeOf

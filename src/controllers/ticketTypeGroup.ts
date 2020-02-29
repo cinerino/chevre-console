@@ -53,7 +53,7 @@ export async function add(req: Request, res: Response): Promise<void> {
 
                 // 券種グループコード重複確認
                 const { data } = await offerService.searchTicketTypeGroups({
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     identifier: { $eq: ticketTypeGroup.identifier }
                 });
                 if (data.length > 0) {
@@ -173,7 +173,8 @@ export async function update(req: Request, res: Response): Promise<void> {
     const forms = {
         additionalProperty: [],
         ...ticketGroup,
-        serviceType: ticketGroup.itemOffered.serviceType.codeValue,
+        serviceType: ticketGroup.itemOffered.serviceType?.codeValue,
+        ticketTypes: ticketGroup.itemListElement.map((e) => e.id),
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -211,7 +212,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 
-async function createFromBody(req: Request): Promise<chevre.factory.ticketType.ITicketTypeGroup> {
+async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog.IOfferCatalog> {
     const body = req.body;
 
     let ticketTypes = (Array.isArray(body.ticketTypes)) ? <string[]>body.ticketTypes : [<string>body.ticketTypes];
@@ -284,9 +285,18 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const { data } = await offerService.searchTicketTypeGroups({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            sort: { identifier: chevre.factory.sortType.Ascending },
+            project: { id: { $eq: req.project.id } },
             identifier: req.query.identifier,
-            name: req.query.name
+            name: req.query.name,
+            itemListElement: {},
+            itemOffered: {
+                typeOf: {
+                    $eq: (typeof req.query.itemOffered?.typeOf?.$eq === 'string' && req.query.itemOffered?.typeOf?.$eq.length > 0)
+                        ? req.query.itemOffered?.typeOf?.$eq
+                        : undefined
+                }
+            }
         });
         res.json({
             success: true,
@@ -319,6 +329,7 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
         });
         // 券種グループ取得
         const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.query.id });
+        const offerIds = ticketGroup.itemListElement.map((e) => e.id);
 
         const limit = 100;
         const page = 1;
@@ -326,11 +337,11 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
             limit: limit,
             page: page,
             project: { ids: [req.project.id] },
-            ids: ticketGroup.ticketTypes
+            ids: offerIds
         });
 
         // 券種を登録順にソート
-        const ticketTypes = data.sort((a, b) => ticketGroup.ticketTypes.indexOf(a.id) - ticketGroup.ticketTypes.indexOf(b.id));
+        const ticketTypes = data.sort((a, b) => offerIds.indexOf(a.id) - offerIds.indexOf(b.id));
 
         res.json({
             success: true,
@@ -432,13 +443,13 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
  */
 function validate(req: Request): void {
     // 券種グループコード
-    let colName: string = '券種グループコード';
+    let colName: string = 'コード';
     req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
-    colName = 'サイト表示用券種グループ名';
+    colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '券種グループ名(英)';
+    colName = '名称英';
     req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     // tslint:disable-next-line:no-magic-numbers
     req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
@@ -446,6 +457,6 @@ function validate(req: Request): void {
     colName = '興行区分';
     req.checkBody('serviceType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     //対象券種名
-    colName = '対象券種名';
+    colName = 'オファーリスト';
     req.checkBody('ticketTypes', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
 }

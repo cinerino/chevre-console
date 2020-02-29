@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ムビチケ券種区分をカテゴリーコードとして管理
 - オファーカテゴリー管理を追加
 - オファー適用条件拡張
+- 券種グループをオファーカテゴリーに統合
 
 ### Deprecated
 

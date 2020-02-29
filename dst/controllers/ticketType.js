@@ -696,7 +696,7 @@ function getTicketTypeGroupList(req, res) {
             const { data } = yield offerService.searchTicketTypeGroups({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 ticketTypes: [req.params.ticketTypeId]
             });
             res.json({

@@ -47,7 +47,8 @@ function index(req, res, next) {
                 throw new Error('劇場が見つかりません');
             }
             const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
-                project: { ids: [req.project.id] }
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: 'EventService' } }
             });
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
@@ -136,7 +137,8 @@ function search(req, res) {
                 screens = movieTheater.containsPlace;
             }
             const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
-                project: { ids: [req.project.id] }
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: 'EventService' } }
             });
             res.json({
                 validation: null,
@@ -319,6 +321,7 @@ exports.cancelPerformance = cancelPerformance;
  */
 // tslint:disable-next-line:max-func-body-length
 function createEventFromBody(req) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const body = req.body;
         const user = req.user;
@@ -350,15 +353,22 @@ function createEventFromBody(req) {
             throw new Error('上映スクリーン名が見つかりません');
         }
         const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-        const searchServiceTypesResult = yield categoryCodeService.search({
-            limit: 1,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
-            codeValue: { $eq: ticketTypeGroup.itemOffered.serviceType.codeValue }
-        });
-        const serviceType = searchServiceTypesResult.data.shift();
-        if (serviceType === undefined) {
-            throw new Error('興行区分が見つかりません');
+        if (typeof ticketTypeGroup.id !== 'string') {
+            throw new Error('Offer Catalog ID undefined');
+        }
+        let serviceType;
+        const offerCatagoryServiceTypeCode = (_a = ticketTypeGroup.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue;
+        if (typeof offerCatagoryServiceTypeCode === 'string') {
+            const searchServiceTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+                codeValue: { $eq: offerCatagoryServiceTypeCode }
+            });
+            serviceType = searchServiceTypesResult.data.shift();
+            if (serviceType === undefined) {
+                throw new Error('興行区分が見つかりません');
+            }
         }
         let offersValidAfterStart;
         if (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '') {
@@ -511,7 +521,8 @@ function createMultipleEventFromBody(req, user) {
         const timeData = body.timeData;
         const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
             limit: 100,
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: 'EventService' } }
         });
         const ticketTypeGroups = searchTicketTypeGroupsResult.data;
         const searchServiceTypesResult = yield categoryCodeService.search({
@@ -527,6 +538,7 @@ function createMultipleEventFromBody(req, user) {
             if (weekDays.indexOf(day) >= 0) {
                 // tslint:disable-next-line:max-func-body-length
                 timeData.forEach((data, i) => {
+                    var _a;
                     const offersValidAfterStart = (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '')
                         ? Number(body.endSaleTimeAfterScreening)
                         : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
@@ -579,9 +591,16 @@ function createMultipleEventFromBody(req, user) {
                     if (ticketTypeGroup === undefined) {
                         throw new Error('Ticket Type Group');
                     }
-                    const serviceType = serviceTypes.find((t) => t.codeValue === ticketTypeGroup.itemOffered.serviceType.codeValue);
-                    if (serviceType === undefined) {
-                        throw new chevre.factory.errors.NotFound('興行区分');
+                    if (typeof ticketTypeGroup.id !== 'string') {
+                        throw new Error('Offer Catalog ID undefined');
+                    }
+                    let serviceType;
+                    const offerCatagoryServiceTypeCode = (_a = ticketTypeGroup.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue;
+                    if (typeof offerCatagoryServiceTypeCode === 'string') {
+                        serviceType = serviceTypes.find((t) => t.codeValue === offerCatagoryServiceTypeCode);
+                        if (serviceType === undefined) {
+                            throw new chevre.factory.errors.NotFound('サービス区分');
+                        }
                     }
                     const serviceOutput = (body.reservedSeatsAvailable === '1')
                         ? {
