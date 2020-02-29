@@ -697,7 +697,9 @@ function getTicketTypeGroupList(req, res) {
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
-                ticketTypes: [req.params.ticketTypeId]
+                itemListElement: {
+                    id: { $in: [req.params.ticketTypeId] }
+                }
             });
             res.json({
                 success: true,

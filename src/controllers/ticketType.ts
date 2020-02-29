@@ -809,7 +809,9 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
-            ticketTypes: [req.params.ticketTypeId]
+            itemListElement: {
+                id: { $in: [req.params.ticketTypeId] }
+            }
         });
 
         res.json({
