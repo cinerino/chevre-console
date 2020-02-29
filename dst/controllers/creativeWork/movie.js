@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const moment = require("moment-timezone");
-const _ = require("underscore");
 const Message = require("../../common/Const/Message");
 const debug = createDebug('chevre-backend:controllers');
 const NUM_ADDITIONAL_PROPERTY = 5;
@@ -40,13 +39,13 @@ function add(req, res) {
         });
         if (req.method === 'POST') {
             // バリデーション
-            validate(req, 'add');
+            validate(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = '';
-                    let movie = createMovieFromBody(req);
+                    let movie = createFromBody(req, true);
                     const { data } = yield creativeWorkService.searchMovies({
                         limit: 1,
                         project: { ids: [req.project.id] },
@@ -84,6 +83,7 @@ exports.add = add;
  * 編集
  */
 function update(req, res) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -96,14 +96,14 @@ function update(req, res) {
         });
         if (req.method === 'POST') {
             // バリデーション
-            validate(req, 'update');
+            validate(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
                     req.body.id = req.params.id;
-                    movie = createMovieFromBody(req);
+                    movie = createFromBody(req, false);
                     debug('saving an movie...', movie);
                     yield creativeWorkService.updateMovie(movie);
                     req.flash('message', '更新しました');
@@ -115,12 +115,12 @@ function update(req, res) {
                 }
             }
         }
-        const forms = Object.assign(Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, movie), { distribution: (movie.distributor !== undefined) ? movie.distributor.id : '' }), req.body), { duration: (_.isEmpty(req.body.duration))
+        const forms = Object.assign(Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, movie), { distribution: (movie.distributor !== undefined) ? movie.distributor.id : '' }), req.body), { duration: (typeof req.body.duration !== 'string')
                 ? (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : ''
-                : req.body.duration, datePublished: (_.isEmpty(req.body.datePublished)) ?
-                (movie.datePublished !== undefined) ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
-                req.body.datePublished, offers: (_.isEmpty(req.body.offers)) ?
-                (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
+                : req.body.duration, datePublished: (typeof req.body.datePublished !== 'string')
+                ? (movie.datePublished !== undefined) ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD') : ''
+                : req.body.datePublished, offers: (typeof ((_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) !== 'string')
+                ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                     ? {
                         availabilityEnds: moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
                     }
@@ -140,27 +140,37 @@ function update(req, res) {
     });
 }
 exports.update = update;
-function createMovieFromBody(req) {
+// tslint:disable-next-line:cyclomatic-complexity
+function createFromBody(req, isNew) {
+    var _a;
     const body = req.body;
-    const movie = {
-        project: req.project,
-        typeOf: chevre.factory.creativeWorkType.Movie,
-        id: body.id,
-        identifier: body.identifier,
-        name: body.name,
-        duration: (body.duration !== '') ? moment.duration(Number(body.duration), 'm').toISOString() : null,
-        contentRating: (body.contentRating !== '') ? body.contentRating : null,
-        headline: body.headline,
-        datePublished: (!_.isEmpty(body.datePublished)) ?
-            moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-        offers: {
+    let contentRating;
+    if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
+        contentRating = body.contentRating;
+    }
+    let duration;
+    if (typeof body.duration === 'string' && body.duration.length > 0) {
+        duration = moment.duration(Number(body.duration), 'm')
+            .toISOString();
+    }
+    let headline;
+    if (typeof body.headline === 'string' && body.headline.length > 0) {
+        headline = body.headline;
+    }
+    const availabilityEnds = (_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds;
+    const movie = Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, datePublished: (typeof body.datePublished === 'string' && body.datePublished.length > 0)
+            ? moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate()
+            : undefined, offers: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.offerType.Offer,
             priceCurrency: chevre.factory.priceCurrency.JPY,
-            availabilityEnds: (!_.isEmpty(body.offers) && !_.isEmpty(body.offers.availabilityEnds)) ?
-                moment(`${body.offers.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate() : undefined
-        },
-        additionalProperty: (Array.isArray(body.additionalProperty))
+            availabilityEnds: (typeof availabilityEnds === 'string' && availabilityEnds.length > 0)
+                ? moment(`${availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .add(1, 'day')
+                    .toDate()
+                : undefined
+        }, additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
@@ -168,8 +178,11 @@ function createMovieFromBody(req) {
                     value: String(p.value)
                 };
             })
-            : undefined
-    };
+            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (!isNew)
+        ? {
+            $unset: Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined)
+        }
+        : undefined);
     if (movie.offers !== undefined
         && movie.offers.availabilityEnds !== undefined
         && movie.datePublished !== undefined
@@ -181,22 +194,33 @@ function createMovieFromBody(req) {
 /**
  * 作品マスタ新規登録画面検証
  */
-function validate(req, checkType) {
+function validate(req) {
     let colName = '';
-    if (checkType === 'add') {
-        colName = '作品コード';
-        req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-        req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
-    }
+    req.checkBody('identifier')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .isAlphanumeric()
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
-    colName = '作品名';
+    colName = '名称';
     req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
     colName = '上映時間';
     if (req.body.duration !== '') {
-        req.checkBody('duration', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_NAME_MINUTES)).optional()
-            .isNumeric().len({ max: NAME_MAX_LENGTH_NAME_MINUTES });
+        req.checkBody('duration', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_NAME_MINUTES))
+            .optional()
+            .isNumeric()
+            .len({ max: NAME_MAX_LENGTH_NAME_MINUTES });
     }
     colName = 'サブタイトル';
     req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = '公開日';
+    req.checkBody('datePublished')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    colName = '興行終了予定日';
+    req.checkBody('offers.availabilityEnds')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
 }

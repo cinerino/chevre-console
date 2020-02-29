@@ -57,11 +57,16 @@ movieRouter.all(
                     ...movie,
                     durationAsMinutes: (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : '',
                     dayPublished: (movie.datePublished !== undefined)
-                        ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD')
-                        : '未指定',
+                        ? moment(movie.datePublished)
+                            .tz('Asia/Tokyo')
+                            .format('YYYY/MM/DD')
+                        : '',
                     dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
-                        ? moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
-                        : '未指定'
+                        ? moment(movie.offers.availabilityEnds)
+                            .add(-1, 'day')
+                            .tz('Asia/Tokyo')
+                            .format('YYYY/MM/DD')
+                        : ''
                 };
             });
 
