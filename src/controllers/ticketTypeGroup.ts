@@ -442,10 +442,15 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
  * 券種グループマスタ新規登録画面検証
  */
 function validate(req: Request): void {
-    // 券種グループコード
+    // コード
     let colName: string = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .matches(/^[0-9a-zA-Z]+$/)
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
+
     colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });

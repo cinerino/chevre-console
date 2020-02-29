@@ -835,10 +835,16 @@ export async function getTicketTypeGroupList(req: Request, res: Response): Promi
  * 券種マスタ新規登録画面検証
  */
 function validateFormAdd(req: Request): void {
-    // 券種コード
-    let colName: string = '券種コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    // コード
+    let colName: string = 'コード';
+    req.checkBody('identifier')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        // .isAlphanumeric()
+        .matches(/^[0-9a-zA-Z\-_]+$/)
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
+
     // 名称
     colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();

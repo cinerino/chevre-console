@@ -253,11 +253,11 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
  * 作品マスタ新規登録画面検証
  */
 function validate(req: Request): void {
-    let colName: string = '';
+    let colName: string = 'コード';
     req.checkBody('identifier')
         .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .isAlphanumeric()
+        .matches(/^[0-9a-zA-Z]+$/)
         .len({ max: NAME_MAX_LENGTH_CODE })
         .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),

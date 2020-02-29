@@ -201,10 +201,11 @@ function validate(req: Request, checkType: string): void {
     let colName: string = '';
 
     if (checkType === 'add') {
-        colName = '区分コード';
+        colName = 'コード';
         req.checkBody('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', colName))
+            .matches(/^[0-9a-zA-Z\+]+$/)
             .len({ max: NAME_MAX_LENGTH_CODE })
             .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     }

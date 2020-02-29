@@ -169,10 +169,11 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 function validate(req, checkType) {
     let colName = '';
     if (checkType === 'add') {
-        colName = '区分コード';
+        colName = 'コード';
         req.checkBody('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', colName))
+            .matches(/^[0-9a-zA-Z\+]+$/)
             .len({ max: NAME_MAX_LENGTH_CODE })
             .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     }
