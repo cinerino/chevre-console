@@ -37,6 +37,10 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -71,10 +75,16 @@ function add(req, res) {
                 return {};
             }));
         }
+        const searchContentRatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+        });
         res.render('creativeWorks/movie/add', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            contentRatingTypes: searchContentRatingTypesResult.data
         });
     });
 }
@@ -86,6 +96,10 @@ function update(req, res) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -131,11 +145,17 @@ function update(req, res) {
                 return {};
             }));
         }
+        const searchContentRatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+        });
         debug('errors:', errors);
         res.render('creativeWorks/movie/edit', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            contentRatingTypes: searchContentRatingTypesResult.data
         });
     });
 }

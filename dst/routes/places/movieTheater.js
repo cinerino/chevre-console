@@ -179,11 +179,13 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
                     : '', numSeats: numSeats });
         });
         screeningRooms.sort((screen1, screen2) => {
-            if (screen1.name > screen2.name) {
-                return 1;
-            }
-            if (screen1.name < screen2.name) {
-                return -1;
+            if (typeof screen1.name === 'string' && screen2.name === 'strring') {
+                if (screen1.name > screen2.name) {
+                    return 1;
+                }
+                if (screen1.name < screen2.name) {
+                    return -1;
+                }
             }
             return 0;
         });

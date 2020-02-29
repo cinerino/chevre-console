@@ -158,11 +158,12 @@ function validate(req) {
     colName = '区分分類';
     req.checkBody('inCodeSet.identifier').notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = '区分コード';
+    colName = 'コード';
     req.checkBody('codeValue')
         .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .isAlphanumeric()
+        // .isAlphanumeric()
+        .matches(/^[0-9a-zA-Z\+]+$/)
         .len({ max: 20 })
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 20));

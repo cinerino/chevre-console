@@ -79,18 +79,10 @@
                 <label for="contentRating" class="bmd-label-static">
                     レイティング
                 </label>
-                <%
-                        let ratings = [
-                            {code: '', name: {ja: 'なし', en:'None'}},
-                            {code: 'G', name: {ja: 'General', en:'General'}},
-                            {code: 'PG12', name: {ja: 'PG-12指定', en:'PG-12'}},
-                            {code: 'R15+', name: {ja: 'R-15指定', en:'R-15'}},
-                            {code: 'R18+', name: {ja: 'R-18指定', en:'R-18'}}
-                        ];
-                    %>
                 <select name="contentRating" id="contentRating" class="form-control">
-                    <% for (let rating of ratings) { %>
-                    <option value="<%= rating.code %>" <% if (forms.contentRating===rating.code) { %>
+                    <option value="">なし</option>
+                    <% for (let rating of contentRatingTypes) { %>
+                    <option value="<%= rating.codeValue %>" <% if (forms.contentRating === rating.codeValue) { %>
                         selected="selected" <% } %>>
                         <%- rating.name.ja %>
                     </option>

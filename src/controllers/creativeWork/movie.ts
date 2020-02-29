@@ -33,6 +33,11 @@ export async function add(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
 
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -74,10 +79,17 @@ export async function add(req: Request, res: Response): Promise<void> {
         }));
     }
 
+    const searchContentRatingTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+    });
+
     res.render('creativeWorks/movie/add', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        contentRatingTypes: searchContentRatingTypesResult.data
     });
 }
 
@@ -89,6 +101,12 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
     let message = '';
     let errors: any = {};
     let movie = await creativeWorkService.findMovieById({
@@ -141,11 +159,18 @@ export async function update(req: Request, res: Response): Promise<void> {
         }));
     }
 
+    const searchContentRatingTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+    });
+
     debug('errors:', errors);
     res.render('creativeWorks/movie/edit', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        contentRatingTypes: searchContentRatingTypesResult.data
     });
 }
 

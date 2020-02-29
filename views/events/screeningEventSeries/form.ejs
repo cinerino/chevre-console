@@ -6,190 +6,209 @@
     </div>
 
     <div class="card-body">
-        <div class="form-group bmd-form-group">
-            <label for="locationId" class="bmd-label-static">
-                劇場<span class="text-danger">＊</span>
-            </label>
-            <select class="form-control" name="locationId">
-                <option value="">選択してください</option>
-                <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                <% for (const movieTheater of movieTheaters) { %>
-                <option value="<%= movieTheater.id %>" <% if (forms.locationId === movieTheater.id) {
-                            %> selected <% } %>>
-                    <%= movieTheater.name.ja %>
-                </option>
-                <% } %>
-                <% } else { %>
-                <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                <% } %>
-                <% } %>
-            </select>
-        </div>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="locationId" class="bmd-label-static">
+                    劇場<span class="text-danger">＊</span>
+                </label>
+                <select class="form-control" name="locationId">
+                    <option value="">選択してください</option>
+                    <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                    <% for (const movieTheater of movieTheaters) { %>
+                    <option value="<%= movieTheater.id %>" <% if (forms.locationId === movieTheater.id) {
+                                %> selected <% } %>>
+                        <%= movieTheater.name.ja %>
+                    </option>
+                    <% } %>
+                    <% } else { %>
+                    <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                    <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
+                    <% } %>
+                    <% } %>
+                </select>
+            </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="workPerformed[identifier]" class="bmd-label-static">
-                作品<span class="text-danger">＊</span>
-            </label>
-            <select class="form-control" name="workPerformed[identifier]" id="workPerformed[identifier]">
-                <option value="">選択してください</option>
-                <% for (const movie of movies) { %>
-                <option value="<%= movie.identifier %>" data-name="<%= movie.name %>"
-                    data-headline="<%= movie.headline %>" data-availabilityEnds="<%= movie.offers.availabilityEnds %>" <% if (forms.workPerformed.identifier===movie.identifier)
-                        { %> selected <% } %>>
-                    <%= movie.name %>
-                </option>
-                <% } %>
-            </select>
-            <span class="bmd-help text-danger d-block">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="workPerformed[identifier]" class="bmd-label-static">
+                    作品<span class="text-danger">＊</span>
+                </label>
+                <select class="form-control" name="workPerformed[identifier]" id="workPerformed[identifier]">
+                    <option value="">選択してください</option>
+                    <% for (const movie of movies) { %>
+                    <option value="<%= movie.identifier %>" data-name="<%= movie.name %>"
+                        data-headline="<%= movie.headline %>"
+                        data-availabilityEnds="<%= movie.offers.availabilityEnds %>" <% if (forms.workPerformed.identifier===movie.identifier)
+                            { %> selected <% } %>>
+                        <%= movie.name %>
+                    </option>
+                    <% } %>
+                </select>
                 <% if (errors && errors['workPerformed.identifier']) { %>
-                <%- errors['workPerformed.identifier'].msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors['workPerformed.identifier'].msg %>
+                </span>
                 <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="nameJa" class="bmd-label-static">
-                上映作品名<span class="text-danger">＊</span>
-            </label>
-            <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64
-                value="<%= forms.nameJa %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="nameJa" class="bmd-label-static">
+                    名称<span class="text-danger">＊</span>
+                </label>
+                <input class="form-control" name="nameJa" id="nameJa" placeholder="" maxlength=64
+                    value="<%= forms.nameJa %>">
+                <span class="bmd-help">全角64文字以内でご入力ください</span>
                 <% if (errors && errors.nameJa) { %>
-                <%- errors.nameJa.msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.nameJa.msg %>
+                </span>
                 <% } %>
-            </span>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="kanaName" class="bmd-label-static">
-                上映作品名カナ
-            </label>
-            <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64
-                value="<%= forms.kanaName %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors.kanaName) { %>
-                <%- errors.kanaName.msg %>
-                <% } %>
-            </span>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="nameEn" class="bmd-label-static">
-                上映作品名英
-            </label>
-            <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128
-                value="<%- forms.nameEn %>">
-            <span class="bmd-help">半角128文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
+            </div>
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="nameEn" class="bmd-label-static">
+                    名称英
+                </label>
+                <input class="form-control" name="nameEn" id="nameEn" placeholder="" maxlength=128
+                    value="<%- forms.nameEn %>">
+                <span class="bmd-help">半角128文字以内でご入力ください</span>
                 <% if (errors && errors.nameEn) { %>
-                <%- errors.nameEn.msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.nameEn.msg %>
+                </span>
                 <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="headline[ja]" class="bmd-label-static">
-                上映作品サブタイトル名
-            </label>
-            <input class="form-control" name="headline[ja]" id="headline[ja]" placeholder="" maxlength=64
-                value="<%- forms.headline.ja %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="kanaName" class="bmd-label-static">
+                    名称カナ
+                </label>
+                <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength=64
+                    value="<%= forms.kanaName %>">
+                <span class="bmd-help">全角64文字以内でご入力ください</span>
+                <% if (errors && errors.kanaName) { %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.kanaName.msg %>
+                </span>
+                <% } %>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="headline[ja]" class="bmd-label-static">
+                    サブタイトル
+                </label>
+                <input class="form-control" name="headline[ja]" id="headline[ja]" placeholder="" maxlength=64
+                    value="<%- forms.headline.ja %>">
+                <span class="bmd-help">全角64文字以内でご入力ください</span>
                 <% if (errors && errors['headline.ja']) { %>
-                <%- errors['headline.ja'].msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors['headline.ja'].msg %>
+                </span>
                 <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="startDate" class="bmd-label-static">
-                上映開始日<span class="text-danger">＊</span>
-            </label>
-            <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;"
-                name="startDate" id="startDate" placeholder="" maxlength=10 value="<%= forms.startDate %>">
-            <span class="bmd-help text-danger d-block">
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="startDate" class="bmd-label-static">
+                    上映開始日<span class="text-danger">＊</span>
+                </label>
+                <input autocomplete="off" class="form-control datepicker" name="startDate" id="startDate" placeholder=""
+                    maxlength=10 value="<%= forms.startDate %>">
                 <% if (errors && errors.startDate) { %>
-                <%- errors.startDate.msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.startDate.msg %>
+                </span>
                 <% } %>
-            </span>
-        </div>
+            </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="endDate" class="bmd-label-static">
-                上映終了日<span class="text-danger">＊</span>
-            </label>
-            <input autocomplete="off" class="form-control datepicker" style="width:30%;display:inline-block;"
-                name="endDate" id="endDate" placeholder="" maxlength=10 value="<%= forms.endDate %>">
-            <span class="bmd-help text-danger d-block">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="endDate" class="bmd-label-static">
+                    上映終了日<span class="text-danger">＊</span>
+                </label>
+                <input autocomplete="off" class="form-control datepicker" name="endDate" id="endDate" placeholder=""
+                    maxlength=10 value="<%= forms.endDate %>">
                 <% if (errors && errors.endDate) { %>
-                <%- errors.endDate.msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.endDate.msg %>
+                </span>
                 <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="contentRating" class="bmd-label-static">
-                レイティング<span class="text-danger">＊</span>
-            </label>
-            <%
-                    let ratings = [
-                        {code: 'G', name: {ja: 'なし', en:'General Audience'}},
-                        {code: 'PG12', name: {ja: 'PG-12指定', en:'PG-12'}},
-                        {code: 'R15+', name: {ja: 'R-15指定', en:'R-15'}},
-                        {code: 'R18+', name: {ja: 'R-18指定', en:'R-18'}}
-                    ];
-                %>
-            <select name="contentRating" id="contentRating" class="form-control" disabled>
-                <% for (let rating of ratings) { %>
-                <option value="<%= rating.code %>" <% if (forms.workPerformed.contentRating===rating.code) { %>
-                    selected="selected" <% } %>>
-                    <%- rating.name.ja %>
-                </option>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-12">
+                <label for="description" class="bmd-label-static">
+                    補足説明
+                </label>
+                <input class="form-control" name="description" id="description" placeholder="" maxlength=30
+                    value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
+                <span class="bmd-help">全角30文字以内でご入力ください</span>
+                <% if (errors && errors.description) { %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.description.msg %>
+                </span>
                 <% } %>
-            </select>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors.contentRating) { %>
-                <%- errors.contentRating.msg %>
-                <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="translationType" class="bmd-label-static">
-                字幕/吹替
-            </label>
-            <%
-                    let subtitles = [
-                        {code: '0', name: {ja: '字幕', en:'subtitle'}},
-                        {code: '1', name: {ja: '吹替', en:'dubbing'}}
-                    ];
-                %>
-            <select name="translationType" id="translationType" class="form-control">
-                <option value="">---</option>
-                <% for (let subtitle of subtitles) { %>
-                <option value="<%= subtitle.code %>" <% if (forms.translationType===subtitle.code) { %>
-                    selected="selected" <% } %>>
-                    <%- subtitle.name.ja %>
-                </option>
-                <% } %>
-            </select>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="contentRating" class="bmd-label-static">
+                    レイティング<span class="text-danger">＊</span>
+                </label>
+                <select name="contentRating" id="contentRating" class="form-control" disabled>
+                    <option value="">なし</option>
+                    <% for (let rating of contentRatingTypes) { %>
+                    <option value="<%= rating.codeValue %>"
+                        <% if (forms.workPerformed.contentRating === rating.codeValue) { %> selected="selected" <% } %>>
+                        <%- rating.name.ja %>
+                    </option>
+                    <% } %>
+                </select>
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors.contentRating) { %>
+                    <%- errors.contentRating.msg %>
+                    <% } %>
+                </span>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-6">
+                <label for="translationType" class="bmd-label-static">
+                    字幕/吹替
+                </label>
+                <%
+                        let subtitles = [
+                            {code: '0', name: {ja: '字幕', en:'subtitle'}},
+                            {code: '1', name: {ja: '吹替', en:'dubbing'}}
+                        ];
+                    %>
+                <select name="translationType" id="translationType" class="form-control">
+                    <option value="">---</option>
+                    <% for (let subtitle of subtitles) { %>
+                    <option value="<%= subtitle.code %>" <% if (forms.translationType===subtitle.code) { %>
+                        selected="selected" <% } %>>
+                        <%- subtitle.name.ja %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="videoFormatType[]" class="bmd-label-static">
-                上映方式<span class="text-danger">＊</span>
-            </label>
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-12">
+                <label for="videoFormatType[]" class="bmd-label-static">
+                    上映方式<span class="text-danger">＊</span>
+                </label>
 
-            <div class="row pt-2 pb-2 px-3">
                 <% videoFormatTypes.forEach((videoFormatType, key) => { %>
                 <div class="form-check form-check-inline">
                     <label class="form-check-label">
                         <input class="form-check-input" type="checkbox" id="videoFormatType[]<%= key %>"
                             name="videoFormatType[]" value="<%= videoFormatType.codeValue %>" <% if
-                            (forms.videoFormatType.indexOf(videoFormatType.codeValue)>= 0) { %> checked="checked"
+                                (forms.videoFormatType.indexOf(videoFormatType.codeValue)>= 0) { %> checked="checked"
                             <% } %>>
                         <%= videoFormatType.name.ja %>
                         <span class="form-check-sign">
@@ -198,25 +217,24 @@
                     </label>
                 </div>
                 <% }) %>
-            </div>
 
-            <span class="bmd-help text-danger d-block">
                 <% if (errors && errors.videoFormatType) { %>
-                <%- errors.videoFormatType.msg %>
+                <span class="bmd-help text-danger d-block">
+                    <%- errors.videoFormatType.msg %>
+                </span>
                 <% } %>
-            </span>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="mvtkFlg" class="bmd-label-static">
-                ムビチケ利用
-            </label>
-
-            <div class="row pt-2 pb-2 px-3">
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-12">
+                <label for="mvtkFlg" class="bmd-label-static">
+                    決済方法
+                </label>
                 <div class="form-check form-check-inline">
                     <label class="form-check-label">
                         <input class="form-check-input" type="checkbox" <% if (String(forms.mvtkFlg) === '1') { %>
-                            checked="checked" <% } %> value="1" name="mvtkFlg">
+                            checked="checked" <% } %> value="1" name="mvtkFlg">ムビチケ利用可
                         <span class="form-check-sign">
                             <span class="check"></span>
                         </span>
@@ -224,21 +242,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="description" class="bmd-label-static">
-                補足説明
-            </label>
-            <input class="form-control" name="description" id="description" placeholder="" maxlength=30
-                value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
-            <span class="bmd-help">全角30文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors.description) { %>
-                <%- errors.description.msg %>
-                <% } %>
-            </span>
-        </div>
-
     </div>
 </div>
 <!-- end card -->

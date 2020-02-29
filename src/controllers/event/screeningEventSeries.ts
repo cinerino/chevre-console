@@ -65,6 +65,12 @@ export async function add(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
     });
 
+    const searchContentRatingTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+    });
+
     let message = '';
     let errors: any = {};
     if (req.method === 'POST') {
@@ -86,7 +92,7 @@ export async function add(req: Request, res: Response): Promise<void> {
 
                 const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
                 req.body.contentRating = movie.contentRating;
-                const attributes = createEventFromBody(req, movie, movieTheater);
+                const attributes = createEventFromBody(req, movie, movieTheater, true);
                 debug('saving an event...', attributes);
                 const events = await eventService.create(attributes);
                 debug('event created', events[0]);
@@ -125,7 +131,8 @@ export async function add(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: movies,
         movieTheaters: searchMovieTheatersResult.data,
-        videoFormatTypes: searchVideoFormatTypesResult.data
+        videoFormatTypes: searchVideoFormatTypesResult.data,
+        contentRatingTypes: searchContentRatingTypesResult.data
     });
 }
 /**
@@ -170,6 +177,12 @@ export async function update(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
     });
 
+    const searchContentRatingTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+    });
+
     let message = '';
     let errors: any = {};
     const eventId = req.params.eventId;
@@ -196,7 +209,7 @@ export async function update(req: Request, res: Response): Promise<void> {
 
                 const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
                 req.body.contentRating = movie.contentRating;
-                const attributes = createEventFromBody(req, movie, movieTheater);
+                const attributes = createEventFromBody(req, movie, movieTheater, false);
                 debug('saving an event...', attributes);
                 await eventService.update({
                     id: eventId,
@@ -262,7 +275,8 @@ export async function update(req: Request, res: Response): Promise<void> {
         forms: forms,
         movies: searchMoviesResult.data,
         movieTheaters: searchMovieTheatersResult.data,
-        videoFormatTypes: searchVideoFormatTypesResult.data
+        videoFormatTypes: searchVideoFormatTypesResult.data,
+        contentRatingTypes: searchContentRatingTypesResult.data
     });
 }
 
@@ -300,11 +314,12 @@ export async function getRating(req: Request, res: Response): Promise<void> {
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createEventFromBody(
     req: Request,
     movie: chevre.factory.creativeWork.movie.ICreativeWork,
-    movieTheater: chevre.factory.place.movieTheater.IPlace
+    movieTheater: chevre.factory.place.movieTheater.IPlace,
+    isNew: boolean
 ): chevre.factory.event.screeningEventSeries.IAttributes {
     const body = req.body;
 
@@ -337,12 +352,12 @@ function createEventFromBody(
         acceptedPaymentMethod: acceptedPaymentMethod
     };
 
-    let subtitleLanguage: chevre.factory.language.ILanguage | null = null;
+    let subtitleLanguage: chevre.factory.language.ILanguage | undefined;
     if (body.translationType === '0') {
         subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
 
-    let dubLanguage: chevre.factory.language.ILanguage | null = null;
+    let dubLanguage: chevre.factory.language.ILanguage | undefined;
     if (body.translationType === '1') {
         dubLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
@@ -351,13 +366,22 @@ function createEventFromBody(
         throw new Error('作品の上映時間が未登録です');
     }
 
+    let description: chevre.factory.multilingualString | undefined;
+    if (typeof body.description === 'string' && body.description.length > 0) {
+        description = { ja: body.description };
+    }
+
+    let headline: chevre.factory.multilingualString | undefined;
+    if (typeof body.headline?.ja === 'string' && body.headline?.ja.length > 0) {
+        headline = { ja: body.headline?.ja };
+    }
+
     return {
         project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
             ja: body.nameJa,
-            en: body.nameEn,
-            kr: ''
+            ...(typeof body.nameEn === 'string' && body.nameEn.length > 0) ? { en: body.nameEn } : undefined
         },
         kanaName: body.kanaName,
         location: {
@@ -375,19 +399,15 @@ function createEventFromBody(
         // },
         videoFormat: videoFormat,
         soundFormat: soundFormat,
-        subtitleLanguage: subtitleLanguage,
-        dubLanguage: dubLanguage,
         workPerformed: movie,
         duration: movie.duration,
-        startDate: (!_.isEmpty(body.startDate)) ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-        endDate: (!_.isEmpty(body.endDate))
+        startDate: (typeof body.startDate === 'string' && body.startDate.length > 0)
+            ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+            : undefined,
+        endDate: (typeof body.endDate === 'string' && body.endDate.length > 0)
             ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
             : undefined,
         eventStatus: chevre.factory.eventStatusType.EventScheduled,
-        headline: {
-            ja: <string>body.headline.ja,
-            en: ''
-        },
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
@@ -398,11 +418,20 @@ function createEventFromBody(
                 })
             : undefined,
         offers: offers,
-        description: {
-            ja: body.description,
-            en: '',
-            kr: ''
-        }
+        ...(subtitleLanguage !== undefined) ? { subtitleLanguage } : undefined,
+        ...(dubLanguage !== undefined) ? { dubLanguage } : undefined,
+        ...(headline !== undefined) ? { headline } : undefined,
+        ...(description !== undefined) ? { description } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(subtitleLanguage === undefined) ? { subtitleLanguage: 1 } : undefined,
+                    ...(dubLanguage === undefined) ? { dubLanguage: 1 } : undefined,
+                    ...(headline === undefined) ? { headline: 1 } : undefined,
+                    ...(description === undefined) ? { description: 1 } : undefined
+                }
+            }
+            : undefined
     };
 }
 
@@ -471,16 +500,18 @@ export async function search(req: Request, res: Response): Promise<void> {
                 mvtkFlg: mvtkFlg
             };
         });
-        results.sort((event1, event2) => {
-            if (event1.filmNameJa > event2.filmNameJa) {
-                return 1;
-            }
-            if (event1.filmNameJa < event2.filmNameJa) {
-                return -1;
-            }
 
-            return 0;
-        });
+        // results.sort((event1, event2) => {
+        //     if (event1.filmNameJa > event2.filmNameJa) {
+        //         return 1;
+        //     }
+        //     if (event1.filmNameJa < event2.filmNameJa) {
+        //         return -1;
+        //     }
+
+        //     return 0;
+        // });
+
         res.json({
             success: true,
             count: (data.length === Number(limit))
@@ -548,16 +579,13 @@ export async function getList(req: Request, res: Response): Promise<void> {
         const results = data.map((event) => {
             return {
                 ...event,
-                subtitleLanguage: (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null)
-                    ? event.subtitleLanguage.name : '---',
-                dubLanguage: (event.dubLanguage !== undefined && event.dubLanguage !== null)
-                    ? event.dubLanguage.name : '---',
+                // subtitleLanguage: (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null)
+                //     ? event.subtitleLanguage.name : '---',
+                // dubLanguage: (event.dubLanguage !== undefined && event.dubLanguage !== null)
+                //     ? event.dubLanguage.name : '---',
                 startDay: (event.startDate !== undefined) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '未指定',
                 endDay: (event.endDate !== undefined) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '未指定',
-                videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : '未指定',
-                acceptedPaymentMethod: (event.offers !== undefined && event.offers.acceptedPaymentMethod !== undefined)
-                    ? event.offers.acceptedPaymentMethod.join('<br>')
-                    : '未指定'
+                videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : '未指定'
             };
         });
 
@@ -593,22 +621,19 @@ export async function index(req: Request, res: Response): Promise<void> {
     });
 }
 
-/**
- * 作品マスタ新規登録画面検証
- */
 function validate(req: Request): void {
     let colName: string = '';
-    colName = '作品コード';
+    colName = 'コード';
     req.checkBody('workPerformed.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('workPerformed.identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
     //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
 
-    colName = '作品名';
+    colName = '名称';
     req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
     req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
 
-    colName = '作品名カナ';
+    colName = '名称カナ';
     req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).optional()
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
     // .regex(/^[ァ-ロワヲンーa-zA-Z]*$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
@@ -619,7 +644,7 @@ function validate(req: Request): void {
     colName = '上映終了日';
     req.checkBody('endDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
 
-    colName = '上映作品サブタイトル名';
+    colName = 'サブタイトル';
     req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 

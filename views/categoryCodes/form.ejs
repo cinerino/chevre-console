@@ -23,6 +23,10 @@
                     && forms.inCodeSet.identifier === CategorySetIdentifier.DistributorType) { %> selected<% } %>>
                     配給区分
                 </option>
+                <option value="<%= CategorySetIdentifier.ContentRatingType %>" <% if (forms.inCodeSet !== undefined
+                    && forms.inCodeSet.identifier === CategorySetIdentifier.ContentRatingType) { %> selected<% } %>>
+                    レイティング区分
+                </option>
                 <option value="<%= CategorySetIdentifier.OfferCategoryType %>" <% if (forms.inCodeSet !== undefined
                     && forms.inCodeSet.identifier === CategorySetIdentifier.OfferCategoryType) { %> selected<% } %>>
                     オファーカテゴリー
