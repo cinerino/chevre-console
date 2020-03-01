@@ -108,7 +108,6 @@ movieTheaterRouter.get(
 
                 return {
                     ...movieTheater,
-                    screenCount: (Array.isArray(movieTheater.containsPlace)) ? movieTheater.containsPlace.length : '--',
                     availabilityStartsGraceTimeInDays:
                         (movieTheater.offers !== undefined
                             && movieTheater.offers.availabilityStartsGraceTime !== undefined

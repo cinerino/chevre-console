@@ -54,27 +54,12 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
                         .toDate() : undefined
             }
         });
-        const results = data.map((movie) => {
-            return Object.assign(Object.assign({}, movie), { durationAsMinutes: (typeof movie.duration === 'string')
-                    ? moment.duration(movie.duration)
-                        .asMinutes()
-                    : '', dayPublished: (movie.datePublished !== undefined)
-                    ? moment(movie.datePublished)
-                        .tz('Asia/Tokyo')
-                        .format('YYYY/MM/DD')
-                    : '', dayAvailabilityEnds: (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
-                    ? moment(movie.offers.availabilityEnds)
-                        .add(-1, 'day')
-                        .tz('Asia/Tokyo')
-                        .format('YYYY/MM/DD')
-                    : '' });
-        });
         res.json({
             success: true,
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: results
+            results: data
         });
     }
     catch (error) {

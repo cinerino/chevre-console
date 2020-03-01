@@ -111,25 +111,84 @@ $(function () {
                 //alert(JSON.stringify(data));
                 var tempRow = [];
                 var cntCol = 0;
+
                 // 1行分のcell作成
                 $.each(listCols, function (key, outerHtml) {
-                    var fieldIds = key.split("__");
+                    var fieldIds = key.split('__');
                     var temp = outerHtml;
                     var value = '';
+
                     $.each(fieldIds, function (index, fieldId) {
-                        if (fieldId.indexOf('|parseDateTime') > -1) {
-                            fieldId = fieldId.replace('|parseDateTime', '');
-                            value = $.fn.getStringValue(data, fieldId, "");
-                            if (value) value = moment(value).format('YY-MM-DD HH:mm:ss');
-                        } else if (fieldId.indexOf('|slice') > -1) {
-                            fieldId = fieldId.replace('|slice', '');
-                            value = $.fn.getStringValue(data, fieldId, "");
-                            if (typeof value === 'string' && value.length > 20) {
-                                value = value.slice(0, 20) + '...';
+                        var splittedField = fieldId.split('|');
+                        var transformer = splittedField[1];
+                        var transformType;
+                        var arguments = [];
+
+                        if (typeof transformer === 'string' && transformer.length > 0) {
+                            fieldId = splittedField[0];
+
+                            transformType = transformer.split(':', 2)[0];
+                            if (transformer.length > transformType.length) {
+                                arguments = [transformer.slice(transformType.length + 1)];
                             }
                         } else {
-                            value = $.fn.getStringValue(data, fieldId, '');
+                            fieldId = splittedField[0];
                         }
+                        console.log('transforming...', fieldId, transformType, arguments);
+
+                        value = $.fn.getStringValue(data, fieldId, '');
+
+                        switch (transformType) {
+                            case 'parseDateTime':
+                                if (value) {
+                                    value = moment(value)
+                                        .tz('Asia/Tokyo')
+                                        .format('YY-MM-DD HH:mm:ss');
+                                }
+
+                                break;
+
+                            case 'date':
+                                if (value) {
+                                    var dateObject = moment(value)
+                                        .tz('Asia/Tokyo');
+                                    value = dateObject.format.apply(dateObject, arguments);
+                                }
+
+                                break;
+
+                            case 'duration':
+                                if (value) {
+                                    var dateObject = moment.duration(value);
+                                    if (arguments.length > 0) {
+                                        value = dateObject.as.apply(dateObject, arguments) + ' ' + arguments[0] + 's';
+                                    } else {
+                                        value = dateObject.humanize();
+                                    }
+                                }
+
+                                break;
+
+                            case 'slice':
+                                if (arguments.length === 0) {
+                                    arguments = [0, 20];
+                                } else {
+                                    arguments = [0, arguments[0]];
+                                }
+
+                                var sliced = value.slice.apply(value, arguments);
+                                if (sliced.length < value.length) {
+                                    value = sliced + '...';
+                                } else {
+                                    value = sliced;
+                                }
+
+                                break;
+
+                            default:
+                                break;
+                        }
+
                         temp = temp.replace("\$" + fieldId + "\$", value);
                     });
                     tempRow[cntCol++] = temp;
