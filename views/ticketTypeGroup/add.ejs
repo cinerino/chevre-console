@@ -9,17 +9,11 @@ Aa-7
 <script src="/js/master/ticketTypeGroup/ticketTypeGroupAddEdit.js"></script>
 
 <%- contentFor('body') %>
-<div class="form-container">
-    <form method="post" class="p-3 bg-light-gray" id="ticketTypeGroupsForm">
-        <div class="menu-group">
-            <%- include('../common/errorMessage') %>
-            <%- include('../common/successMessage') %>
-        </div>
+<form method="post" id="ticketTypeGroupsForm">
+    <%- include('../common/errorMessage') %>
+    <%- include('../common/successMessage') %>
 
-        <%- include('form', { forms: forms, isNew: true }) %>
+    <%- include('form', { forms: forms, isNew: true }) %>
 
-        <div class="btn-area panel-body">
-            <button type="button" class="btn btn-ok btn-primary">登録する</button>
-        </div>
-    </form>
-</div>
+    <button type="button" class="btn btn-ok btn-primary">登録する</button>
+</form>

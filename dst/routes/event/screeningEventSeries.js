@@ -1,14 +1,64 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 上映イベントシリーズマスタ管理ルーター
  */
+const chevre = require("@chevre/api-nodejs-client");
+// import * as createDebug from 'debug';
 const express_1 = require("express");
+// import * as Message from '../../message';
 const ScreeningEventSeriesController = require("../../controllers/event/screeningEventSeries");
 const screeningEventSeriesRouter = express_1.Router();
 screeningEventSeriesRouter.all('/add', ScreeningEventSeriesController.add);
 screeningEventSeriesRouter.all('', ScreeningEventSeriesController.index);
-screeningEventSeriesRouter.all('/getlist', ScreeningEventSeriesController.getList);
+screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const { data } = yield eventService.search({
+            limit: limit,
+            page: page,
+            sort: { startDate: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] },
+            name: req.query.name,
+            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
+            location: {
+                branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
+            },
+            workPerformed: {
+                identifiers: (req.query.movieIdentifier !== '') ? [req.query.movieIdentifier] : undefined
+            }
+        });
+        res.json({
+            success: true,
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
+        });
+    }
+    catch (error) {
+        res.json({
+            success: false,
+            count: 0,
+            results: error
+        });
+    }
+}));
 screeningEventSeriesRouter.all('/getrating', ScreeningEventSeriesController.getRating);
 screeningEventSeriesRouter.get('/search', ScreeningEventSeriesController.search);
 screeningEventSeriesRouter.all('/:eventId/update', ScreeningEventSeriesController.update);

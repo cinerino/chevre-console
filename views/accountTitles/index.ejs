@@ -12,8 +12,8 @@ AT-01
 
 <%- contentFor('body') %>
 
-<div class="form-container search mb-3 searchAccountTitle">
-    <form method="post" class="p-3 bg-light-gray">
+<div class="search mb-3 searchAccountTitle">
+    <form method="post">
         <%- include('../common/master/_hidden') %>
 
         <div class="form-group">
@@ -52,20 +52,18 @@ AT-01
                 value="">
         </div>
 
-        <div class="panel-body">
-            <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleCategory/new">
-                <i class=" fa fa-plus"></i> 科目分類登録</a>
-            <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleSet/new">
-                <i class=" fa fa-plus"></i> 科目登録</a>
-            <a class="btn btn-primary" role="button" href="/accountTitles/new">
-                <i class=" fa fa-plus"></i> 細目登録</a>
+        <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleCategory/new">
+            <i class=" fa fa-plus"></i> 科目分類登録</a>
+        <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleSet/new">
+            <i class=" fa fa-plus"></i> 科目登録</a>
+        <a class="btn btn-primary" role="button" href="/accountTitles/new">
+            <i class=" fa fa-plus"></i> 細目登録</a>
 
-            <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
-        </div>
+        <button type="button" class="btn search btn-ok btn-success float-right">検索</button>
     </form>
 </div>
 
-<div class="form-container search">
+<div class="search">
     <div id="list" style="display:none;">
         <table class="table table-bordered table-striped mb-0">
             <thead>

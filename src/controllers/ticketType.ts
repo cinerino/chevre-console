@@ -738,51 +738,17 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 }
 
                 return {
-                    appliesToMovieTicket: {
-                        name: appliesToMovieTicketName
-                    },
                     ...t,
                     categoryName: (typeof categoryCode === 'string')
                         ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                         : '',
                     eligibleConditions: eligibleConditions.join(' / '),
-                    eligibleQuantity: {
-                        minValue: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleQuantity !== undefined
-                            && t.priceSpecification.eligibleQuantity.minValue !== undefined)
-                            ? t.priceSpecification.eligibleQuantity.minValue
-                            : '--',
-                        maxValue: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleQuantity !== undefined
-                            && t.priceSpecification.eligibleQuantity.maxValue !== undefined)
-                            ? t.priceSpecification.eligibleQuantity.maxValue
-                            : '--'
-                    },
-                    eligibleTransactionVolume: {
-                        price: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume.price !== undefined)
-                            ? t.priceSpecification.eligibleTransactionVolume.price
-                            : '--',
-                        priceCurrency: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume !== undefined)
-                            ? t.priceSpecification.eligibleTransactionVolume.priceCurrency
-                            : '--'
-                    },
-                    referenceQuantity: {
-                        value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
-                            ? t.priceSpecification.referenceQuantity.value
-                            : '--'
-                    },
-                    availableAddOnNames: (Array.isArray(t.addOn))
-                        ? t.addOn.map((a) => {
-                            return (a.name !== undefined) ? (<any>a.name)?.ja : a.id;
-                        })
-                            .join('\n')
-                        : '',
                     validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
                         ? `1 ${(<any>t).validRateLimit.scope} / ${(<any>t).validRateLimit.unitInSeconds} s`
-                        : ''
+                        : '',
+                    addOnCount: (Array.isArray(t.addOn))
+                        ? t.addOn.length
+                        : 0
                 };
             })
         });

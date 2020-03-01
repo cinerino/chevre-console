@@ -52,11 +52,7 @@ categoryCodesRouter.get(
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-                results: data.map((d) => {
-                    return {
-                        ...d
-                    };
-                })
+                results: data
             });
         } catch (error) {
             res.json({

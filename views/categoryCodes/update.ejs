@@ -8,22 +8,17 @@ PS-01
 <script src="/js/master/categoryCodes/form.js"></script>
 
 <%- contentFor('body') %>
-<div class="form-container">
-    <% /* フォーム */ %>
-    <form method="post" class="p-3 bg-light-gray">
-        <div class="menu-group">
-            <%- include('../common/errorMessage') %>
-            <%- include('../common/successMessage') %>
-        </div>
+<% /* フォーム */ %>
+<form method="post">
+    <%- include('../common/errorMessage') %>
+    <%- include('../common/successMessage') %>
 
-        <%- include('form', { forms: forms, isNew: false }) %>
+    <%- include('form', { forms: forms, isNew: false }) %>
 
-        <% /* 更新ボタン */ %>
-        <div class="btn-area panel-body">
-            <button type="button" class="btn btn-ok btn-primary">更新する</button>
-        </div>
-    </form>
-</div>
+    <% /* 更新ボタン */ %>
+    <button type="button" class="btn btn-ok btn-primary">更新する</button>
+</form>
+
 <script>
     $(function () {
         $('.btn-ok').on('click', function () {

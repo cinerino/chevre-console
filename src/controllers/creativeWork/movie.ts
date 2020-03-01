@@ -202,7 +202,25 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
         headline = body.headline;
     }
 
-    const availabilityEnds = body.offers?.availabilityEnds;
+    let datePublished: Date | undefined;
+    if (typeof body.datePublished === 'string' && body.datePublished.length > 0) {
+        datePublished = moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .toDate();
+    }
+
+    let availabilityEnds: Date | undefined;
+    if (typeof body.offers?.availabilityEnds === 'string' && body.offers?.availabilityEnds.length > 0) {
+        availabilityEnds = moment(`${body.offers?.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .add(1, 'day')
+            .toDate();
+    }
+
+    const offers: chevre.factory.creativeWork.movie.IOffer = {
+        project: { typeOf: req.project.typeOf, id: req.project.id },
+        typeOf: chevre.factory.offerType.Offer,
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        ...(availabilityEnds !== undefined) ? { availabilityEnds } : undefined
+    };
 
     const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
         project: req.project,
@@ -210,20 +228,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
         id: body.id,
         identifier: body.identifier,
         name: body.name,
-        datePublished: (typeof body.datePublished === 'string' && body.datePublished.length > 0)
-            ? moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate()
-            : undefined,
-        offers: {
-            project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: chevre.factory.offerType.Offer,
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            availabilityEnds: (typeof availabilityEnds === 'string' && availabilityEnds.length > 0)
-                ? moment(`${availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                    .add(1, 'day')
-                    .toDate()
-                : undefined
-        },
+        offers: offers,
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
@@ -236,12 +241,14 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
         ...(contentRating !== undefined) ? { contentRating } : undefined,
         ...(duration !== undefined) ? { duration } : undefined,
         ...(headline !== undefined) ? { headline } : undefined,
+        ...(datePublished !== undefined) ? { datePublished } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
                     ...(contentRating === undefined) ? { contentRating: 1 } : undefined,
                     ...(duration === undefined) ? { duration: 1 } : undefined,
-                    ...(headline === undefined) ? { headline: 1 } : undefined
+                    ...(headline === undefined) ? { headline: 1 } : undefined,
+                    ...(datePublished === undefined) ? { datePublished: 1 } : undefined
                 }
             }
             : undefined
@@ -287,13 +294,13 @@ function validate(req: Request): void {
     req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
-    colName = '公開日';
-    req.checkBody('datePublished')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // colName = '公開日';
+    // req.checkBody('datePublished')
+    //     .notEmpty()
+    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-    colName = '興行終了予定日';
-    req.checkBody('offers.availabilityEnds')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // colName = '興行終了予定日';
+    // req.checkBody('offers.availabilityEnds')
+    //     .notEmpty()
+    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
 }

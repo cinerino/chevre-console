@@ -113,6 +113,13 @@ $(function () {
         showAdditionalProperty(id);
     });
 
+    $(document).on('click', '.showAddOn', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing addOn...id:', id);
+
+        showAddOn(id);
+    });
+
     /**
      * 追加特性を見る
      */
@@ -121,18 +128,38 @@ $(function () {
             return data.id === id
         });
         if (movieTheater === undefined) {
-            alert('券種' + branchCode + 'が見つかりません');
+            alert('券種' + id + 'が見つかりません');
 
             return;
         }
 
-        var modal = $('#modal-additionalProperty');
+        var modal = $('#modal-offer');
         var body = modal.find('.modal-body');
         body.empty()
         var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
             + JSON.stringify(movieTheater.additionalProperty, null, '\t')
             + '</textarea>'
+        modal.find('.modal-title').text('追加特性');
         body.append(html);
+        modal.modal();
+    }
+
+    function showAddOn(id) {
+        var offer = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (offer === undefined) {
+            alert('券種' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-offer');
+        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+            + JSON.stringify(offer.addOn, null, '\t')
+            + '</textarea>'
+        modal.find('.modal-title').text('アドオン');
+        modal.find('.modal-body').html(html);
         modal.modal();
     }
 

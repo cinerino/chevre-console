@@ -45,9 +45,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data.map((d) => {
-                return Object.assign({}, d);
-            })
+            results: data
         });
     }
     catch (error) {

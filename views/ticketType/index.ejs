@@ -8,7 +8,7 @@ Aa-6
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
-<script src="/js/master/ticketTypeList.js"></script>
+<script src="/js/master/ticketTypes/index.js"></script>
 <%- contentFor('body') %>
 <% /* フォーム */ %>
 
@@ -138,9 +138,9 @@ Aa-6
                                     <td name="categoryName">$categoryName$</td>
                                     <td name="name.ja|slice">$name.ja$</td>
                                     <td
-                                        name="priceSpecification.price__priceSpecification.priceCurrency__referenceQuantity.value">
+                                        name="priceSpecification.price__priceSpecification.priceCurrency__priceSpecification.referenceQuantity.value">
                                         $priceSpecification.price$ $priceSpecification.priceCurrency$ /
-                                        $referenceQuantity.value$
+                                        $priceSpecification.referenceQuantity.value$
                                     </td>
                                     <td name="eligibleConditions">$eligibleConditions$</td>
                                     <td
@@ -148,8 +148,10 @@ Aa-6
                                         $validFrom$ ~ $validThrough$<br>
                                         $validRateLimitStr$
                                     </td>
-                                    <td name="availableAddOnNames">$availableAddOnNames$
-                                    </td>
+                                    <td name="id__addOnCount">
+                                        <a href="javascript:void(0)" class="showAddOn" data-id="$id$">
+                                            <span>$addOnCount$</span>
+                                        </a></td>
                                     <td name="id__additionalProperty">
                                         <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                             <span>表示</span>
@@ -187,15 +189,14 @@ Aa-6
     </div>
 </div>
 
-<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+<div class="modal fade" id="modal-offer" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
-                <h4 class="modal-title">券種の追加特性</h4>
+                <h4 class="modal-title"></h4>
             </div>
-            <div class="modal-body">
-            </div>
+            <div class="modal-body"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
             </div>

@@ -7,21 +7,14 @@ Aa-5
 <%- contentFor('scripts') %>
 <script src="/js/tinycolor-min.js"></script>
 <script src="/js/bootstrap.colorpickersliders.js"></script>
-<script src="/js/master/ticketTypeAdd.js"></script>
+<script src="/js/master/ticketTypes/form.js"></script>
 
 <%- contentFor('body') %>
+<form method="post">
+    <%- include('../common/errorMessage') %>
+    <%- include('../common/successMessage') %>
 
-<div class="form-container">
-    <form method="post">
-        <div class="menu-group">
-            <%- include('../common/errorMessage') %>
-            <%- include('../common/successMessage') %>
-        </div>
+    <%- include('form', { forms: forms, isNew: false }) %>
 
-        <%- include('form', { forms: forms, isNew: false }) %>
-
-        <div class="btn-area panel-body">
-            <button type="button" class="btn btn-ok btn-primary">更新する</button>
-        </div>
-    </form>
-</div>
+    <button type="button" class="btn btn-ok btn-primary">更新する</button>
+</form>

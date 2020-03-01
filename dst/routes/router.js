@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const authentication_1 = require("../middlewares/authentication");
 const accountTitles_1 = require("./accountTitles");
-const addOns_1 = require("./addOns");
 const auth_1 = require("./auth");
 const categoryCode_1 = require("./categoryCode");
 const movie_1 = require("./creativeWork/movie");
@@ -47,7 +46,6 @@ router.use((req, res, next) => {
 });
 router.use('/home', home_1.default);
 router.use('/accountTitles', accountTitles_1.default);
-router.use('/addOns', addOns_1.default);
 router.use('/categoryCodes', categoryCode_1.default);
 router.use('/creativeWorks/movie', movie_1.default);
 router.use('/events/screeningEvent', screeningEvent_1.default);

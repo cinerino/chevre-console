@@ -170,7 +170,7 @@ function update(req, res) {
 exports.update = update;
 // tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {
-    var _a;
+    var _a, _b, _c;
     const body = req.body;
     let contentRating;
     if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
@@ -185,20 +185,19 @@ function createFromBody(req, isNew) {
     if (typeof body.headline === 'string' && body.headline.length > 0) {
         headline = body.headline;
     }
-    const availabilityEnds = (_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds;
-    const movie = Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, datePublished: (typeof body.datePublished === 'string' && body.datePublished.length > 0)
-            ? moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate()
-            : undefined, offers: {
-            project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: chevre.factory.offerType.Offer,
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            availabilityEnds: (typeof availabilityEnds === 'string' && availabilityEnds.length > 0)
-                ? moment(`${availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                    .add(1, 'day')
-                    .toDate()
-                : undefined
-        }, additionalProperty: (Array.isArray(body.additionalProperty))
+    let datePublished;
+    if (typeof body.datePublished === 'string' && body.datePublished.length > 0) {
+        datePublished = moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .toDate();
+    }
+    let availabilityEnds;
+    if (typeof ((_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) === 'string' && ((_b = body.offers) === null || _b === void 0 ? void 0 : _b.availabilityEnds.length) > 0) {
+        availabilityEnds = moment(`${(_c = body.offers) === null || _c === void 0 ? void 0 : _c.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .add(1, 'day')
+            .toDate();
+    }
+    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
+    const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
@@ -206,9 +205,9 @@ function createFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (!isNew)
+            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (!isNew)
         ? {
-            $unset: Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined)
+            $unset: Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined)
         }
         : undefined);
     if (movie.offers !== undefined
@@ -245,12 +244,12 @@ function validate(req) {
     colName = 'サブタイトル';
     req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '公開日';
-    req.checkBody('datePublished')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = '興行終了予定日';
-    req.checkBody('offers.availabilityEnds')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // colName = '公開日';
+    // req.checkBody('datePublished')
+    //     .notEmpty()
+    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // colName = '興行終了予定日';
+    // req.checkBody('offers.availabilityEnds')
+    //     .notEmpty()
+    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
 }
