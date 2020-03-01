@@ -56,6 +56,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
         next(err);
     }
 }
+// tslint:disable-next-line:max-func-body-length
 export async function search(req: Request, res: Response): Promise<void> {
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
@@ -83,8 +84,11 @@ export async function search(req: Request, res: Response): Promise<void> {
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEvent,
             eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
-            inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
-            inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(days, 'day').toDate(),
+            inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                .toDate(),
+            inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                .add(days, 'day')
+                .toDate(),
             superEvent: {
                 locationBranchCodes: [movieTheater.branchCode]
             },
@@ -114,8 +118,11 @@ export async function search(req: Request, res: Response): Promise<void> {
                     project: { ids: [req.project.id] },
                     typeOf: chevre.factory.eventType.ScreeningEvent,
                     eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
-                    inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate(),
-                    inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').add(days, 'day').toDate(),
+                    inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                        .toDate(),
+                    inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                        .add(days, 'day')
+                        .toDate(),
                     superEvent: {
                         locationBranchCodes: [movieTheater.branchCode]
                     },
@@ -140,8 +147,7 @@ export async function search(req: Request, res: Response): Promise<void> {
         });
 
         res.json({
-            validation: null,
-            error: null,
+            error: undefined,
             performances: data,
             screens,
             ticketGroups: searchTicketTypeGroupsResult.data
@@ -149,7 +155,6 @@ export async function search(req: Request, res: Response): Promise<void> {
     } catch (err) {
         debug('search error', err);
         res.json({
-            validation: null,
             error: err.message
         });
     }
@@ -174,14 +179,12 @@ export async function searchScreeningEventSeries(req: Request, res: Response): P
             }
         });
         res.json({
-            validation: null,
-            error: null,
+            error: undefined,
             screeningEventSeries: searchResult.data
         });
     } catch (err) {
         debug('searchScreeningEvent error', err);
         res.json({
-            validation: null,
             error: err.message
         });
     }
@@ -197,14 +200,9 @@ export async function regist(req: Request, res: Response): Promise<void> {
         });
         addValidation(req);
         const validatorResult = await req.getValidationResult();
-        const validations = req.validationErrors(true);
+        // const validations = req.validationErrors(true);
         if (!validatorResult.isEmpty()) {
-            res.json({
-                validation: validations,
-                error: null
-            });
-
-            return;
+            throw new Error('Invalid');
         }
 
         debug('saving screening event...', req.body);
@@ -212,17 +210,16 @@ export async function regist(req: Request, res: Response): Promise<void> {
         const events = await eventService.create(attributes);
         debug(events.length, 'events created', events.map((e) => e.id));
         res.json({
-            validation: null,
-            error: null
+            error: undefined
         });
     } catch (err) {
         debug('regist error', err);
         const obj = {
-            validation: null,
             error: err.message
         };
         if (err.code === BAD_REQUEST) {
-            res.status(err.code).json(obj);
+            res.status(err.code)
+                .json(obj);
         } else {
             res.json(obj);
         }
@@ -239,14 +236,9 @@ export async function update(req: Request, res: Response): Promise<void> {
         });
         updateValidation(req);
         const validatorResult = await req.getValidationResult();
-        const validations = req.validationErrors(true);
+        // const validations = req.validationErrors(true);
         if (!validatorResult.isEmpty()) {
-            res.json({
-                validation: validations,
-                error: null
-            });
-
-            return;
+            throw new Error('Invalid');
         }
         debug('saving screening event...', req.body);
         const attributes = await createEventFromBody(req);
@@ -255,13 +247,11 @@ export async function update(req: Request, res: Response): Promise<void> {
             attributes: attributes
         });
         res.json({
-            validation: null,
-            error: null
+            error: undefined
         });
     } catch (err) {
         debug('update error', err);
         res.json({
-            validation: null,
             error: err.message
         });
     }
@@ -277,26 +267,31 @@ export async function cancelPerformance(req: Request, res: Response): Promise<vo
             auth: req.user.authClient
         });
         const event = await eventService.findById({ id: req.params.eventId });
-        if (moment(event.startDate).tz('Asia/Tokyo').isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
+        if (moment(event.startDate)
+            .tz('Asia/Tokyo')
+            .isSameOrAfter(
+                moment()
+                    .tz('Asia/Tokyo'),
+                'day'
+            )
+        ) {
             event.eventStatus = chevre.factory.eventStatusType.EventCancelled;
             await eventService.update({ id: event.id, attributes: event });
 
             res.json({
-                validation: null,
-                error: null
+                error: undefined
             });
         } else {
             res.json({
-                validation: null,
                 error: '開始日時'
             });
         }
     } catch (err) {
         debug('delete error', err);
-        res.status(NO_CONTENT).json({
-            validation: null,
-            error: err.message
-        });
+        res.status(NO_CONTENT)
+            .json({
+                error: err.message
+            });
     }
 }
 
@@ -371,31 +366,41 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         offersValidAfterStart = DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
     }
 
-    const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
-    const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ').toDate();
-    const endDate = moment(`${body.endDay}T${body.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
-    const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
-    const salesEndDate = moment(startDate).add(offersValidAfterStart, 'minutes').toDate();
+    const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ')
+        .toDate();
+    const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ')
+        .toDate();
+    const endDate = moment(`${body.endDay}T${body.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+        .toDate();
+    const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+        .toDate();
+    const salesEndDate = moment(startDate)
+        .add(offersValidAfterStart, 'minutes')
+        .toDate();
 
     // オンライン表示開始日時は、絶対指定or相対指定
     const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
-        ? moment(`${moment(startDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+        ? moment(`${moment(startDate)
+            .tz('Asia/Tokyo')
+            .format('YYYY-MM-DD')}T00:00:00+09:00`)
             .add(Number(body.onlineDisplayStartDate) * -1, 'days')
             .toDate()
-        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate();
+        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            .toDate();
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
     // ムビチケ除外の場合は対応決済方法を追加
     if (body.mvtkExcludeFlg === '1') {
-        Object.keys(chevre.factory.paymentMethodType).forEach((key) => {
-            if (acceptedPaymentMethod === undefined) {
-                acceptedPaymentMethod = [];
-            }
-            const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
-            if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
-                acceptedPaymentMethod.push(paymentMethodType);
-            }
-        });
+        Object.keys(chevre.factory.paymentMethodType)
+            .forEach((key) => {
+                if (acceptedPaymentMethod === undefined) {
+                    acceptedPaymentMethod = [];
+                }
+                const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
+                if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
+                    acceptedPaymentMethod.push(paymentMethodType);
+                }
+            });
     }
 
     const serviceOutput: chevre.factory.event.screeningEvent.IServiceOutput = (body.reservedSeatsAvailable === '1')
@@ -509,8 +514,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         throw new Error('上映スクリーン名が見つかりません');
     }
 
-    const startDate = moment(`${body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ').tz('Asia/Tokyo');
-    const toDate = moment(`${body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ').tz('Asia/Tokyo');
+    const startDate = moment(`${body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
+        .tz('Asia/Tokyo');
+    const toDate = moment(`${body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
+        .tz('Asia/Tokyo');
     const weekDays: string[] = body.weekDayData;
     const ticketTypeIds: string[] = body.ticketData;
     const mvtkExcludeFlgs: string[] = body.mvtkExcludeFlgData;
@@ -534,15 +541,19 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     for (let date = startDate; date <= toDate; date = date.add(1, 'day')) {
         const formattedDate = date.format('YYYY/MM/DD');
 
-        const day = date.get('day').toString();
+        const day = date.get('day')
+            .toString();
         if (weekDays.indexOf(day) >= 0) {
             // tslint:disable-next-line:max-func-body-length
             timeData.forEach((data, i) => {
                 const offersValidAfterStart = (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '')
                     ? Number(body.endSaleTimeAfterScreening)
                     : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
-                const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate();
-                const salesEndDate = moment(eventStartDate).add(offersValidAfterStart, 'minutes').toDate();
+                const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+                    .toDate();
+                const salesEndDate = moment(eventStartDate)
+                    .add(offersValidAfterStart, 'minutes')
+                    .toDate();
                 const endDayRelative = Number(data.endDayRelative);
                 // tslint:disable-next-line:no-magic-numbers
                 if (endDayRelative < 0 || endDayRelative > 3) {
@@ -561,35 +572,42 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         break;
 
                     case SaleStartDateType.Relative:
-                        salesStartDate = moment(`${moment(eventStartDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+                        salesStartDate = moment(`${moment(eventStartDate)
+                            .tz('Asia/Tokyo')
+                            .format('YYYY-MM-DD')}T00:00:00+09:00`)
                             .add(Number(body.saleStartDate) * -1, 'days')
                             .toDate();
                         break;
 
                     default:
                         salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYY/MM/DDTHHmmZ')
-                            .add(parseInt(body.saleStartDays, 10) * -1, 'day').toDate();
+                            .add(parseInt(body.saleStartDays, 10) * -1, 'day')
+                            .toDate();
                 }
 
                 // オンライン表示開始日時は、絶対指定or相対指定
                 const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
-                    ? moment(`${moment(eventStartDate).tz('Asia/Tokyo').format('YYYY-MM-DD')}T00:00:00+09:00`)
+                    ? moment(`${moment(eventStartDate)
+                        .tz('Asia/Tokyo')
+                        .format('YYYY-MM-DD')}T00:00:00+09:00`)
                         .add(Number(body.onlineDisplayStartDate) * -1, 'days')
                         .toDate()
-                    : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate();
+                    : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                        .toDate();
 
                 let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
                 // ムビチケ除外の場合は対応決済方法を追加
                 if (mvtkExcludeFlgs[i] === '1') {
-                    Object.keys(chevre.factory.paymentMethodType).forEach((key) => {
-                        if (acceptedPaymentMethod === undefined) {
-                            acceptedPaymentMethod = [];
-                        }
-                        const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
-                        if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
-                            acceptedPaymentMethod.push(paymentMethodType);
-                        }
-                    });
+                    Object.keys(chevre.factory.paymentMethodType)
+                        .forEach((key) => {
+                            if (acceptedPaymentMethod === undefined) {
+                                acceptedPaymentMethod = [];
+                            }
+                            const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
+                            if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
+                                acceptedPaymentMethod.push(paymentMethodType);
+                            }
+                        });
                 }
 
                 const ticketTypeGroup = ticketTypeGroups.find((t) => t.id === ticketTypeIds[i]);
@@ -648,9 +666,11 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 attributes.push({
                     project: req.project,
                     typeOf: chevre.factory.eventType.ScreeningEvent,
-                    doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate(),
+                    doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+                        .toDate(),
                     startDate: eventStartDate,
-                    endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ').toDate(),
+                    endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+                        .toDate(),
                     workPerformed: screeningEventSeries.workPerformed,
                     location: {
                         project: req.project,
@@ -679,24 +699,39 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
  * 新規登録バリデーション
  */
 function addValidation(req: Request): void {
-    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
-    req.checkBody('startDate', '上映日が未選択です').notEmpty();
-    req.checkBody('toDate', '上映日が未選択です').notEmpty();
-    req.checkBody('weekDayData', '曜日が未選択です').notEmpty();
-    req.checkBody('screen', 'スクリーンが未選択です').notEmpty();
-    req.checkBody('theater', '劇場が未選択です').notEmpty();
-    req.checkBody('timeData', '時間情報が未選択です').notEmpty();
-    req.checkBody('ticketData', '券種グループが未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です')
+        .notEmpty();
+    req.checkBody('startDate', '上映日が未選択です')
+        .notEmpty();
+    req.checkBody('toDate', '上映日が未選択です')
+        .notEmpty();
+    req.checkBody('weekDayData', '曜日が未選択です')
+        .notEmpty();
+    req.checkBody('screen', 'スクリーンが未選択です')
+        .notEmpty();
+    req.checkBody('theater', '劇場が未選択です')
+        .notEmpty();
+    req.checkBody('timeData', '時間情報が未選択です')
+        .notEmpty();
+    req.checkBody('ticketData', '券種グループが未選択です')
+        .notEmpty();
 }
 /**
  * 編集バリデーション
  */
 function updateValidation(req: Request): void {
-    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です').notEmpty();
-    req.checkBody('day', '上映日が未選択です').notEmpty();
-    req.checkBody('doorTime', '開場時刻が未選択です').notEmpty();
-    req.checkBody('startTime', '開始時刻が未選択です').notEmpty();
-    req.checkBody('endTime', '終了時刻が未選択です').notEmpty();
-    req.checkBody('screen', 'スクリーンが未選択です').notEmpty();
-    req.checkBody('ticketTypeGroup', '券種グループが未選択です').notEmpty();
+    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です')
+        .notEmpty();
+    req.checkBody('day', '上映日が未選択です')
+        .notEmpty();
+    req.checkBody('doorTime', '開場時刻が未選択です')
+        .notEmpty();
+    req.checkBody('startTime', '開始時刻が未選択です')
+        .notEmpty();
+    req.checkBody('endTime', '終了時刻が未選択です')
+        .notEmpty();
+    req.checkBody('screen', 'スクリーンが未選択です')
+        .notEmpty();
+    req.checkBody('ticketTypeGroup', '券種グループが未選択です')
+        .notEmpty();
 }

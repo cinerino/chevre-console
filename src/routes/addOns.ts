@@ -6,7 +6,7 @@ import { Request, Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -90,6 +90,7 @@ addOnsRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -266,6 +267,7 @@ addOnsRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -354,21 +356,28 @@ const CHAGE_MAX_LENGTH = 10;
 
 function validate(req: Request): void {
     let colName: string = 'オファーコード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
 
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = 'アイテム';
-    req.checkBody('itemOffered.id', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('itemOffered.id', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '発生金額';
-    req.checkBody('priceSpecification.price').notEmpty()
+    req.checkBody('priceSpecification.price')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         .isNumeric()
         .len({ max: CHAGE_MAX_LENGTH })

@@ -21,7 +21,9 @@ app.set('port', port);
  */
 
 const options = {
+    // tslint:disable-next-line:non-literal-fs-path
     key: fs.readFileSync(`${__dirname}/../../ssl/server.key`),
+    // tslint:disable-next-line:non-literal-fs-path
     cert: fs.readFileSync(`${__dirname}/../../ssl/server.crt`)
 };
 const server = https.createServer(options, app);

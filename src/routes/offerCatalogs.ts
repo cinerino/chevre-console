@@ -6,7 +6,7 @@ import { Request, Router } from 'express';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -100,6 +100,7 @@ offerCatalogsRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -176,6 +177,7 @@ offerCatalogsRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -221,9 +223,11 @@ offerCatalogsRouter.delete(
             // TODO 削除して問題ないカタログかどうか検証
 
             await offerCatalogService.deleteById({ id: req.params.id });
-            res.status(NO_CONTENT).end();
+            res.status(NO_CONTENT)
+                .end();
         } catch (error) {
-            res.status(BAD_REQUEST).json({ error: { message: error.message } });
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
         }
     }
 );
@@ -422,17 +426,23 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
 
 function validate(req: Request): void {
     let colName: string = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
 
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     // tslint:disable-next-line:no-magic-numbers
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128))
+        .len({ max: 128 });
 
     colName = 'アイテム';
     req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))

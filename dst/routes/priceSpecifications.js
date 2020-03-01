@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
-const Message = require("../common/Const/Message");
+const Message = require("../message");
 const priceSpecificationsRouter = express_1.Router();
 priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -279,10 +279,12 @@ function createMovieFromBody(req, isNew) {
 function validate(req) {
     let colName = '';
     colName = '価格仕様タイプ';
-    req.checkBody('typeOf', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('typeOf', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     // req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
     colName = '名称';
-    req.checkBody('name.ja').notEmpty()
+    req.checkBody('name.ja')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));

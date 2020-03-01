@@ -16,7 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const _ = require("underscore");
-const Message = require("../../common/Const/Message");
+const Message = require("../../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const SERVICE_TYPE = 'MembershipService';
 const membershipServiceRouter = express_1.Router();
@@ -57,6 +57,7 @@ membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
             accounting: {}
         }, itemOffered: { name: {} }, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -203,7 +204,8 @@ function validate(req) {
     //     // tslint:disable-next-line:no-magic-numbers
     //     .withMessage(Message.Common.getMaxLength(colName, 20));
     colName = '名称';
-    req.checkBody('name.ja').notEmpty()
+    req.checkBody('name.ja')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));

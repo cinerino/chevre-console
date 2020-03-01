@@ -64,15 +64,17 @@ homeRouter.get(
                 method: 'GET',
                 // tslint:disable-next-line:no-magic-numbers
                 expectedStatusCodes: [200]
-            }).then(async (response) => {
-                return response.json();
-            });
+            })
+                .then(async (response) => {
+                    return response.json();
+                });
 
             res.json(stats);
         } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
         }
     }
 );
@@ -90,20 +92,22 @@ homeRouter.get(
                 method: 'GET',
                 // tslint:disable-next-line:no-magic-numbers
                 expectedStatusCodes: [200]
-            }).then(async (response) => {
-                const version = response.headers.get('X-API-Version');
+            })
+                .then(async (response) => {
+                    const version = response.headers.get('X-API-Version');
 
-                return {
-                    version: version,
-                    status: await response.text()
-                };
-            });
+                    return {
+                        version: version,
+                        status: await response.text()
+                    };
+                });
 
             res.json(stats);
         } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
         }
     }
 );
@@ -119,16 +123,20 @@ homeRouter.get(
             const result = await taskService.search({
                 limit: 1,
                 project: { ids: [req.project.id] },
-                runsFrom: moment().add(-1, 'day').toDate(),
-                runsThrough: moment().toDate(),
+                runsFrom: moment()
+                    .add(-1, 'day')
+                    .toDate(),
+                runsThrough: moment()
+                    .toDate(),
                 statuses: [chevre.factory.taskStatus.Ready]
             });
 
             res.json(result);
         } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
         }
     }
 );
@@ -151,14 +159,17 @@ homeRouter.get(
                     chevre.factory.reservationStatusType.ReservationConfirmed,
                     chevre.factory.reservationStatusType.ReservationPending
                 ],
-                modifiedFrom: moment().add(-1, 'day').toDate()
+                modifiedFrom: moment()
+                    .add(-1, 'day')
+                    .toDate()
             });
 
             res.json(result);
         } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
         }
     }
 );
@@ -177,15 +188,21 @@ homeRouter.get(
                 page: 1,
                 sort: { startDate: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
-                inSessionFrom: moment().add().toDate(),
-                inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+                inSessionFrom: moment()
+                    .add()
+                    .toDate(),
+                inSessionThrough: moment()
+                    .tz('Asia/Tokyo')
+                    .endOf('day')
+                    .toDate()
             });
 
             res.json(result);
         } catch (error) {
-            res.status(INTERNAL_SERVER_ERROR).json({
-                error: { message: error.message }
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
         }
     }
 );

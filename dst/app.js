@@ -49,7 +49,8 @@ app.use(bodyParser.json({ limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 // for parsing multipart/form-data
 const storage = multer.memoryStorage();
-app.use(multer({ storage: storage }).any());
+app.use(multer({ storage: storage })
+    .any());
 app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
 app.use('/node_modules', express.static(`${__dirname}/../node_modules`));

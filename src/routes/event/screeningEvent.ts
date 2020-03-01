@@ -28,9 +28,12 @@ screeningEventRouter.post(
                 auth: req.user.authClient
             });
 
-            const importFrom = moment().toDate();
-            // tslint:disable-next-line:no-magic-numbers
-            const importThrough = moment(importFrom).add(2, 'months').toDate();
+            const importFrom = moment()
+                .toDate();
+            const importThrough = moment(importFrom)
+                // tslint:disable-next-line:no-magic-numbers
+                .add(2, 'months')
+                .toDate();
             const taskAttributes = [{
                 project: req.project,
                 name: <chevre.factory.taskName.ImportEventsFromCOA>chevre.factory.taskName.ImportEventsFromCOA,

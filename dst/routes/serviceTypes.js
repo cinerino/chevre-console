@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
-const Message = require("../common/Const/Message");
+const Message = require("../message");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 10;
 const serviceTypesRouter = express_1.Router();
@@ -48,6 +48,7 @@ serviceTypesRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     const forms = Object.assign({ additionalProperty: [] }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -130,6 +131,7 @@ serviceTypesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, vo
     }
     const forms = Object.assign(Object.assign({ additionalProperty: [] }, serviceType), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));

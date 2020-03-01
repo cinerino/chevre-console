@@ -7,7 +7,7 @@ import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -95,6 +95,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -178,6 +179,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -433,9 +435,11 @@ export async function deleteById(req: Request, res: Response): Promise<void> {
         }
 
         await offerService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
-        res.status(NO_CONTENT).end();
+        res.status(NO_CONTENT)
+            .end();
     } catch (error) {
-        res.status(BAD_REQUEST).json({ error: { message: error.message } });
+        res.status(BAD_REQUEST)
+            .json({ error: { message: error.message } });
     }
 }
 /**
@@ -452,16 +456,22 @@ function validate(req: Request): void {
         .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
 
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     colName = '名称英';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     // tslint:disable-next-line:no-magic-numbers
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128))
+        .len({ max: 128 });
     // 興行区分
     colName = '興行区分';
-    req.checkBody('serviceType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('serviceType', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     //対象券種名
     colName = 'オファーリスト';
-    req.checkBody('ticketTypes', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('ticketTypes', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 }

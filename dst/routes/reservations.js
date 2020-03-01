@@ -87,7 +87,8 @@ reservationsRouter.get('/search',
                 startFrom: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.startFrom !== undefined
                     && req.query.reservationFor.startFrom !== '')
-                    ? moment(`${String(req.query.reservationFor.startFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+                    ? moment(`${String(req.query.reservationFor.startFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                        .toDate()
                     : undefined,
                 startThrough: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.startThrough !== undefined
@@ -98,7 +99,8 @@ reservationsRouter.get('/search',
                     : undefined
             },
             modifiedFrom: (req.query.modifiedFrom !== '')
-                ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+                ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate()
                 : undefined,
             modifiedThrough: (req.query.modifiedThrough !== '')
                 ? moment(`${String(req.query.modifiedThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
@@ -106,7 +108,8 @@ reservationsRouter.get('/search',
                     .toDate()
                 : undefined,
             bookingFrom: (req.query.bookingFrom !== '')
-                ? moment(`${String(req.query.bookingFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+                ? moment(`${String(req.query.bookingFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate()
                 : undefined,
             bookingThrough: (req.query.bookingThrough !== '')
                 ? moment(`${String(req.query.bookingThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')

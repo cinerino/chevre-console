@@ -6,7 +6,7 @@ import { Request, Router } from 'express';
 import { NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
-import * as Message from '../../common/Const/Message';
+import * as Message from '../../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 const SERVICE_TYPE = 'MembershipService';
@@ -65,6 +65,7 @@ membershipServiceRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -248,7 +249,8 @@ function validate(req: Request): void {
     //     .withMessage(Message.Common.getMaxLength(colName, 20));
 
     colName = '名称';
-    req.checkBody('name.ja').notEmpty()
+    req.checkBody('name.ja')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));

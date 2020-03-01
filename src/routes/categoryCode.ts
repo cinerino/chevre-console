@@ -4,7 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const categoryCodesRouter = Router();
 
@@ -194,7 +194,8 @@ function validate(req: Request): void {
     let colName: string = '';
 
     colName = '区分分類';
-    req.checkBody('inCodeSet.identifier').notEmpty()
+    req.checkBody('inCodeSet.identifier')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
     colName = 'コード';
@@ -208,7 +209,8 @@ function validate(req: Request): void {
         .withMessage(Message.Common.getMaxLength(colName, 20));
 
     colName = '名称';
-    req.checkBody('name.ja').notEmpty()
+    req.checkBody('name.ja')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));

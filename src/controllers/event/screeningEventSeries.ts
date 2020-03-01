@@ -8,7 +8,7 @@ import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
-import * as Message from '../../common/Const/Message';
+import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:controllers');
 
@@ -118,6 +118,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -249,19 +250,26 @@ export async function update(req: Request, res: Response): Promise<void> {
         ...req.body,
         nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
         nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
-        duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration).asMinutes() : req.body.duration,
+        duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
+            .asMinutes() : req.body.duration,
         locationId: event.location.id,
         translationType: translationType,
         videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
         startDate: (_.isEmpty(req.body.startDate)) ?
-            (event.startDate !== null) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '' :
+            (event.startDate !== null) ? moment(event.startDate)
+                .tz('Asia/Tokyo')
+                .format('YYYY/MM/DD') : '' :
             req.body.startDate,
         endDate: (_.isEmpty(req.body.endDate)) ?
-            (event.endDate !== null) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '' :
+            (event.endDate !== null) ? moment(event.endDate)
+                .tz('Asia/Tokyo')
+                .add(-1, 'day')
+                .format('YYYY/MM/DD') : '' :
             req.body.endDate,
         mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -332,18 +340,19 @@ function createEventFromBody(
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
     // ムビチケ除外の場合は対応決済方法を追加
-    Object.keys(chevre.factory.paymentMethodType).forEach((key) => {
-        if (acceptedPaymentMethod === undefined) {
-            acceptedPaymentMethod = [];
-        }
+    Object.keys(chevre.factory.paymentMethodType)
+        .forEach((key) => {
+            if (acceptedPaymentMethod === undefined) {
+                acceptedPaymentMethod = [];
+            }
 
-        const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
-        if (body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
-            return;
-        }
+            const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
+            if (body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
+                return;
+            }
 
-        acceptedPaymentMethod.push(paymentMethodType);
-    });
+            acceptedPaymentMethod.push(paymentMethodType);
+        });
 
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -402,10 +411,13 @@ function createEventFromBody(
         workPerformed: movie,
         duration: movie.duration,
         startDate: (typeof body.startDate === 'string' && body.startDate.length > 0)
-            ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate()
+            ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate()
             : undefined,
         endDate: (typeof body.endDate === 'string' && body.endDate.length > 0)
-            ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate()
+            ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .add(1, 'day')
+                .toDate()
             : undefined,
         eventStatus: chevre.factory.eventStatusType.EventScheduled,
         additionalProperty: (Array.isArray(body.additionalProperty))
@@ -466,8 +478,14 @@ export async function search(req: Request, res: Response): Promise<void> {
             page: page,
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
-            inSessionFrom: (fromDate !== undefined) ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : new Date(),
-            inSessionThrough: (toDate !== undefined) ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ').toDate() : undefined,
+            inSessionFrom: (fromDate !== undefined)
+                ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .toDate()
+                : new Date(),
+            inSessionThrough: (toDate !== undefined)
+                ? moment(`${toDate}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .toDate()
+                : undefined,
             location: {
                 branchCodes: [branchCode]
             }
@@ -493,7 +511,8 @@ export async function search(req: Request, res: Response): Promise<void> {
                 filmNameJa: event.name.ja,
                 filmNameEn: event.name.en,
                 kanaName: event.kanaName,
-                duration: moment.duration(event.duration).humanize(),
+                duration: moment.duration(event.duration)
+                    .humanize(),
                 contentRating: event.workPerformed.contentRating,
                 translationType: translationType,
                 videoFormat: event.videoFormat,
@@ -544,7 +563,8 @@ export async function searchScreeningEvents(req: Request, res: Response) {
         });
         res.json(searchScreeningEventsResult);
     } catch (error) {
-        res.status(INTERNAL_SERVER_ERROR).json({ error: { message: error.message } });
+        res.status(INTERNAL_SERVER_ERROR)
+            .json({ error: { message: error.message } });
     }
 }
 
@@ -583,9 +603,20 @@ export async function getList(req: Request, res: Response): Promise<void> {
                 //     ? event.subtitleLanguage.name : '---',
                 // dubLanguage: (event.dubLanguage !== undefined && event.dubLanguage !== null)
                 //     ? event.dubLanguage.name : '---',
-                startDay: (event.startDate !== undefined) ? moment(event.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD') : '未指定',
-                endDay: (event.endDate !== undefined) ? moment(event.endDate).tz('Asia/Tokyo').add(-1, 'day').format('YYYY/MM/DD') : '未指定',
-                videoFormat: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf).join(' ') : '未指定'
+                startDay: (event.startDate !== undefined)
+                    ? moment(event.startDate)
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD')
+                    : '未指定',
+                endDay: (event.endDate !== undefined)
+                    ? moment(event.endDate)
+                        .tz('Asia/Tokyo')
+                        .add(-1, 'day')
+                        .format('YYYY/MM/DD') : '未指定',
+                videoFormat: (Array.isArray(event.videoFormat))
+                    ? event.videoFormat.map((f) => f.typeOf)
+                        .join(' ')
+                    : '未指定'
             };
         });
 
@@ -624,30 +655,37 @@ export async function index(req: Request, res: Response): Promise<void> {
 function validate(req: Request): void {
     let colName: string = '';
     colName = 'コード';
-    req.checkBody('workPerformed.identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('workPerformed.identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('workPerformed.identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
-    //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
 
     colName = '名称';
-    req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '名称カナ';
-    req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).optional()
+    req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
+        .optional()
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // .regex(/^[ァ-ロワヲンーa-zA-Z]*$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
 
     colName = '上映開始日';
-    req.checkBody('startDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+    req.checkBody('startDate')
+        .isDate()
+        .withMessage('日付を入力してください');
 
     colName = '上映終了日';
-    req.checkBody('endDate', Message.Common.invalidDateFormat.replace('$fieldName$', colName)).isDate();
+    req.checkBody('endDate')
+        .isDate()
+        .withMessage('日付を入力してください');
 
     colName = 'サブタイトル';
     req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '上映方式';
-    req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 }

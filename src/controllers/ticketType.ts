@@ -6,7 +6,7 @@ import { Request, Response } from 'express';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -94,6 +94,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -262,6 +263,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             : req.body.accountTitle
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -775,7 +777,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     availableAddOnNames: (Array.isArray(t.addOn))
                         ? t.addOn.map((a) => {
                             return (a.name !== undefined) ? (<any>a.name)?.ja : a.id;
-                        }).join('\n')
+                        })
+                            .join('\n')
                         : '',
                     validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
                         ? `1 ${(<any>t).validRateLimit.scope} / ${(<any>t).validRateLimit.unitInSeconds} s`
@@ -847,32 +850,41 @@ function validateFormAdd(req: Request): void {
 
     // 名称
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     // 名称(英)
     colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN))
+        .len({ max: NAME_MAX_LENGTH_NAME_EN });
 
     colName = '代替名称';
-    req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     // 購入席単位追加
     colName = '購入席単位追加';
-    req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '発生金額';
-    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('price', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
         .isNumeric()
         .len({ max: CHAGE_MAX_LENGTH });
 
     colName = '売上金額';
-    req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
-        .isNumeric().len({ max: CHAGE_MAX_LENGTH });
+        .isNumeric()
+        .len({ max: CHAGE_MAX_LENGTH });
 
     colName = '適用口座条件';
     if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0

@@ -60,13 +60,15 @@ homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, funct
             method: 'GET',
             // tslint:disable-next-line:no-magic-numbers
             expectedStatusCodes: [200]
-        }).then((response) => __awaiter(void 0, void 0, void 0, function* () {
+        })
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
             return response.json();
         }));
         res.json(stats);
     }
     catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             error: { message: error.message }
         });
     }
@@ -82,7 +84,8 @@ homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, functi
             method: 'GET',
             // tslint:disable-next-line:no-magic-numbers
             expectedStatusCodes: [200]
-        }).then((response) => __awaiter(void 0, void 0, void 0, function* () {
+        })
+            .then((response) => __awaiter(void 0, void 0, void 0, function* () {
             const version = response.headers.get('X-API-Version');
             return {
                 version: version,
@@ -92,7 +95,8 @@ homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json(stats);
     }
     catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             error: { message: error.message }
         });
     }
@@ -106,14 +110,18 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, fu
         const result = yield taskService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            runsFrom: moment().add(-1, 'day').toDate(),
-            runsThrough: moment().toDate(),
+            runsFrom: moment()
+                .add(-1, 'day')
+                .toDate(),
+            runsThrough: moment()
+                .toDate(),
             statuses: [chevre.factory.taskStatus.Ready]
         });
         res.json(result);
     }
     catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             error: { message: error.message }
         });
     }
@@ -134,12 +142,15 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
                 chevre.factory.reservationStatusType.ReservationConfirmed,
                 chevre.factory.reservationStatusType.ReservationPending
             ],
-            modifiedFrom: moment().add(-1, 'day').toDate()
+            modifiedFrom: moment()
+                .add(-1, 'day')
+                .toDate()
         });
         res.json(result);
     }
     catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             error: { message: error.message }
         });
     }
@@ -156,13 +167,19 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
             page: 1,
             sort: { startDate: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
-            inSessionFrom: moment().add().toDate(),
-            inSessionThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
+            inSessionFrom: moment()
+                .add()
+                .toDate(),
+            inSessionThrough: moment()
+                .tz('Asia/Tokyo')
+                .endOf('day')
+                .toDate()
         });
         res.json(result);
     }
     catch (error) {
-        res.status(http_status_1.INTERNAL_SERVER_ERROR).json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             error: { message: error.message }
         });
     }

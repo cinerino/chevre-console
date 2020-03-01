@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const moment = require("moment-timezone");
 const _ = require("underscore");
-const Message = require("../common/Const/Message");
+const Message = require("../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -86,6 +86,7 @@ function add(req, res) {
                 accounting: {}
             }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -226,6 +227,7 @@ function update(req, res) {
                     ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
                 : req.body.accountTitle });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -615,26 +617,26 @@ function getList(req, res) {
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 // tslint:disable-next-line:cyclomatic-complexity
                 results: data.map((t) => {
-                    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+                    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
                     const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                     const mvtkType = searchMovieTicketTypesResult.data.find((movieTicketType) => { var _a; return movieTicketType.codeValue === ((_a = t.priceSpecification) === null || _a === void 0 ? void 0 : _a.appliesToMovieTicketType); });
-                    const appliesToMovieTicketName = (_c = (_b = mvtkType) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja;
-                    const eligibleSeatingTypeCodeValue = (_e = (_d = t.eligibleSeatingType) === null || _d === void 0 ? void 0 : _d.slice(0, 1)[0]) === null || _e === void 0 ? void 0 : _e.codeValue;
-                    const eligibleMonetaryAmountValue = (_g = (_f = t.eligibleMonetaryAmount) === null || _f === void 0 ? void 0 : _f.slice(0, 1)[0]) === null || _g === void 0 ? void 0 : _g.value;
+                    const appliesToMovieTicketName = (_b = mvtkType === null || mvtkType === void 0 ? void 0 : mvtkType.name) === null || _b === void 0 ? void 0 : _b.ja;
+                    const eligibleSeatingTypeCodeValue = (_d = (_c = t.eligibleSeatingType) === null || _c === void 0 ? void 0 : _c.slice(0, 1)[0]) === null || _d === void 0 ? void 0 : _d.codeValue;
+                    const eligibleMonetaryAmountValue = (_f = (_e = t.eligibleMonetaryAmount) === null || _e === void 0 ? void 0 : _e.slice(0, 1)[0]) === null || _f === void 0 ? void 0 : _f.value;
                     const eligibleConditions = [];
                     if (typeof appliesToMovieTicketName === 'string') {
-                        eligibleConditions.push(`ムビチケ: ${(_h = mvtkType) === null || _h === void 0 ? void 0 : _h.codeValue} ${appliesToMovieTicketName}`);
+                        eligibleConditions.push(`ムビチケ: ${mvtkType === null || mvtkType === void 0 ? void 0 : mvtkType.codeValue} ${appliesToMovieTicketName}`);
                     }
                     if (typeof eligibleSeatingTypeCodeValue === 'string') {
                         eligibleConditions.push(`座席: ${eligibleSeatingTypeCodeValue}`);
                     }
                     if (typeof eligibleMonetaryAmountValue === 'number') {
-                        eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_k = (_j = t.eligibleMonetaryAmount) === null || _j === void 0 ? void 0 : _j.slice(0, 1)[0]) === null || _k === void 0 ? void 0 : _k.currency}`);
+                        eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_h = (_g = t.eligibleMonetaryAmount) === null || _g === void 0 ? void 0 : _g.slice(0, 1)[0]) === null || _h === void 0 ? void 0 : _h.currency}`);
                     }
                     return Object.assign(Object.assign({ appliesToMovieTicket: {
                             name: appliesToMovieTicketName
                         } }, t), { categoryName: (typeof categoryCode === 'string')
-                            ? (_m = (_l = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _l === void 0 ? void 0 : _l.name) === null || _m === void 0 ? void 0 : _m.ja : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
+                            ? (_k = (_j = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _j === void 0 ? void 0 : _j.name) === null || _k === void 0 ? void 0 : _k.ja : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
                             minValue: (t.priceSpecification !== undefined
                                 && t.priceSpecification.eligibleQuantity !== undefined
                                 && t.priceSpecification.eligibleQuantity.minValue !== undefined)
@@ -663,7 +665,8 @@ function getList(req, res) {
                             ? t.addOn.map((a) => {
                                 var _a;
                                 return (a.name !== undefined) ? (_a = a.name) === null || _a === void 0 ? void 0 : _a.ja : a.id;
-                            }).join('\n')
+                            })
+                                .join('\n')
                             : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                             ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                             : '' });
@@ -735,28 +738,37 @@ function validateFormAdd(req) {
         .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
     // 名称
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     // 名称(英)
     colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN)).len({ max: NAME_MAX_LENGTH_NAME_EN });
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN))
+        .len({ max: NAME_MAX_LENGTH_NAME_EN });
     colName = '代替名称';
-    req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
     // 購入席単位追加
     colName = '購入席単位追加';
-    req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     colName = '発生金額';
-    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('price', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
         .isNumeric()
         .len({ max: CHAGE_MAX_LENGTH });
     colName = '売上金額';
-    req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
-        .isNumeric().len({ max: CHAGE_MAX_LENGTH });
+        .isNumeric()
+        .len({ max: CHAGE_MAX_LENGTH });
     colName = '適用口座条件';
     if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
         && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {

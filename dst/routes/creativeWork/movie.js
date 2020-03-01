@@ -37,19 +37,28 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             project: { ids: [req.project.id] },
             identifier: req.query.identifier,
             name: req.query.name,
-            datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom)) ?
-                moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
-            datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough)) ?
-                moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+            datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
+                ? moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate() : undefined,
+            datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough))
+                ? moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate()
+                : undefined,
             offers: {
-                availableFrom: (!_.isEmpty(req.query.availableFrom)) ?
-                    moment(`${req.query.availableFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined,
+                availableFrom: (!_.isEmpty(req.query.availableFrom))
+                    ? moment(`${req.query.availableFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                        .toDate()
+                    : undefined,
                 availableThrough: (!_.isEmpty(req.query.availableThrough)) ?
-                    moment(`${req.query.availableThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').toDate() : undefined
+                    moment(`${req.query.availableThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                        .toDate() : undefined
             }
         });
         const results = data.map((movie) => {
-            return Object.assign(Object.assign({}, movie), { durationAsMinutes: (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : '', dayPublished: (movie.datePublished !== undefined)
+            return Object.assign(Object.assign({}, movie), { durationAsMinutes: (typeof movie.duration === 'string')
+                    ? moment.duration(movie.duration)
+                        .asMinutes()
+                    : '', dayPublished: (movie.datePublished !== undefined)
                     ? moment(movie.datePublished)
                         .tz('Asia/Tokyo')
                         .format('YYYY/MM/DD')

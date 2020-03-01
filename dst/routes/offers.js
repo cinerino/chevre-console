@@ -16,7 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const _ = require("underscore");
-const Message = require("../common/Const/Message");
+const Message = require("../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -88,6 +88,7 @@ offersRouter.all('/add',
             accounting: {}
         }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -151,6 +152,7 @@ offersRouter.all('/:id/update',
     }
     const forms = Object.assign(Object.assign({}, offer), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -517,11 +519,15 @@ function createFromBody(req, isNew) {
 }
 function validateFormAdd(req) {
     let colName = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     colName = '適用数';
     req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
@@ -529,7 +535,8 @@ function validateFormAdd(req) {
     req.checkBody('priceSpecification.referenceQuantity.unitCode', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
     colName = '発生金額';
-    req.checkBody('priceSpecification.price').notEmpty()
+    req.checkBody('priceSpecification.price')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         .isNumeric()
         .len({ max: CHAGE_MAX_LENGTH })

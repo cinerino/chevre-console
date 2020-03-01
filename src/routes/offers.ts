@@ -7,7 +7,7 @@ import { Request, Router } from 'express';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -100,6 +100,7 @@ offersRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -176,6 +177,7 @@ offersRouter.all(
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -616,12 +618,16 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
 function validateFormAdd(req: Request): void {
     let colName: string = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_CODE });
 
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '適用数';
     req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
@@ -632,7 +638,8 @@ function validateFormAdd(req: Request): void {
         .notEmpty();
 
     colName = '発生金額';
-    req.checkBody('priceSpecification.price').notEmpty()
+    req.checkBody('priceSpecification.price')
+        .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         .isNumeric()
         .len({ max: CHAGE_MAX_LENGTH })

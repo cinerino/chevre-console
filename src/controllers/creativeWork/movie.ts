@@ -6,7 +6,7 @@ import * as createDebug from 'debug';
 import { Request, Response } from 'express';
 import * as moment from 'moment-timezone';
 
-import * as Message from '../../common/Const/Message';
+import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:controllers');
 
@@ -74,6 +74,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -140,20 +141,27 @@ export async function update(req: Request, res: Response): Promise<void> {
         distribution: (movie.distributor !== undefined) ? movie.distributor.id : '',
         ...req.body,
         duration: (typeof req.body.duration !== 'string')
-            ? (typeof movie.duration === 'string') ? moment.duration(movie.duration).asMinutes() : ''
+            ? (typeof movie.duration === 'string') ? moment.duration(movie.duration)
+                .asMinutes() : ''
             : req.body.duration,
         datePublished: (typeof req.body.datePublished !== 'string')
-            ? (movie.datePublished !== undefined) ? moment(movie.datePublished).tz('Asia/Tokyo').format('YYYY/MM/DD') : ''
+            ? (movie.datePublished !== undefined) ? moment(movie.datePublished)
+                .tz('Asia/Tokyo')
+                .format('YYYY/MM/DD') : ''
             : req.body.datePublished,
         offers: (typeof req.body.offers?.availabilityEnds !== 'string')
             ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                 ? {
-                    availabilityEnds: moment(movie.offers.availabilityEnds).add(-1, 'day').tz('Asia/Tokyo').format('YYYY/MM/DD')
+                    availabilityEnds: moment(movie.offers.availabilityEnds)
+                        .add(-1, 'day')
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD')
                 }
                 : undefined
             : req.body.offers
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -260,11 +268,12 @@ function validate(req: Request): void {
         .matches(/^[0-9a-zA-Z]+$/)
         .len({ max: NAME_MAX_LENGTH_CODE })
         .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
-    //.regex(/^[ -\~]+$/, req.__('Message.invalid{{fieldName}}', { fieldName: '%s' })),
 
     colName = '名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '上映時間';
     if (req.body.duration !== '') {
@@ -275,7 +284,8 @@ function validate(req: Request): void {
     }
 
     colName = 'サブタイトル';
-    req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
 
     colName = '公開日';
     req.checkBody('datePublished')

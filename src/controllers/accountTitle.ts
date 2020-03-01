@@ -6,7 +6,7 @@ import * as createDebug from 'debug';
 import { Request, Response } from 'express';
 import * as _ from 'underscore';
 
-import * as Message from '../common/Const/Message';
+import * as Message from '../message';
 
 const debug = createDebug('chevre-backend:controllers');
 
@@ -251,12 +251,14 @@ export async function index(req: Request, res: Response): Promise<void> {
 function validateAccountTitleCategory(req: Request): void {
     // 科目分類コード
     let colName: string = '科目分類コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
     // 科目分類名称
     colName = '科目分類名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 }
@@ -458,15 +460,18 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
  */
 function validateAccountTitleSet(req: Request): void {
     let colName: string = '科目分類';
-    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '科目コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
 
     colName = '科目名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 }
@@ -534,6 +539,7 @@ export async function createAccountTitle(req: Request, res: Response): Promise<v
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -619,6 +625,7 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -637,15 +644,18 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
  */
 function validateAccountTitle(req: Request): void {
     let colName: string = '科目分類';
-    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 
     colName = '科目コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
 
     colName = '科目名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
         .len({ max: NAME_MAX_LENGTH_NAME_JA });
 }

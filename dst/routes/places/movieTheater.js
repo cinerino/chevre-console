@@ -53,6 +53,7 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, f
     }
     const forms = Object.assign({ additionalProperty: [], name: {} }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
@@ -146,8 +147,13 @@ movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, vo
             }
         }
     }
-    const forms = Object.assign(Object.assign({ additionalProperty: [], offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater), req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [], 
+        // tslint:disable-next-line:no-null-keyword
+        offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', 
+        // tslint:disable-next-line:no-null-keyword
+        containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t') }, movieTheater), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));

@@ -16,7 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const _ = require("underscore");
-const Message = require("../common/Const/Message");
+const Message = require("../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種グループコード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -93,6 +93,7 @@ function add(req, res) {
         }
         const forms = Object.assign({ additionalProperty: [], id: (_.isEmpty(req.body.id)) ? '' : req.body.id, name: (_.isEmpty(req.body.name)) ? {} : req.body.name, ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? [] : ticketTypeIds, description: (_.isEmpty(req.body.description)) ? {} : req.body.description, alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName }, req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -169,6 +170,7 @@ function update(req, res) {
         const ticketGroup = yield offerService.findTicketTypeGroupById({ id: req.params.id });
         const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, ticketGroup), { serviceType: (_a = ticketGroup.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue, ticketTypes: ticketGroup.itemListElement.map((e) => e.id) }), req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
@@ -405,10 +407,12 @@ function deleteById(req, res) {
                 }
             }
             yield offerService.deleteTicketTypeGroup({ id: ticketTypeGroupId });
-            res.status(http_status_1.NO_CONTENT).end();
+            res.status(http_status_1.NO_CONTENT)
+                .end();
         }
         catch (error) {
-            res.status(http_status_1.BAD_REQUEST).json({ error: { message: error.message } });
+            res.status(http_status_1.BAD_REQUEST)
+                .json({ error: { message: error.message } });
         }
     });
 }
@@ -426,16 +430,22 @@ function validate(req) {
         .len({ max: NAME_MAX_LENGTH_CODE })
         .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
+    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA });
     colName = '名称英';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     // tslint:disable-next-line:no-magic-numbers
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128)).len({ max: 128 });
+    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128))
+        .len({ max: 128 });
     // 興行区分
     colName = '興行区分';
-    req.checkBody('serviceType', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('serviceType', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
     //対象券種名
     colName = 'オファーリスト';
-    req.checkBody('ticketTypes', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+    req.checkBody('ticketTypes', Message.Common.required.replace('$fieldName$', colName))
+        .notEmpty();
 }
