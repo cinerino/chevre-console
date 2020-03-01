@@ -139,15 +139,6 @@ $(function () {
                         value = $.fn.getStringValue(data, fieldId, '');
 
                         switch (transformType) {
-                            case 'parseDateTime':
-                                if (value) {
-                                    value = moment(value)
-                                        .tz('Asia/Tokyo')
-                                        .format('YY-MM-DD HH:mm:ss');
-                                }
-
-                                break;
-
                             case 'date':
                                 if (value) {
                                     var dateObject = moment(value)

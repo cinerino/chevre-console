@@ -259,14 +259,14 @@ Aa-11
                                     <td name="reservationNumber">
                                         $reservationNumber$
                                     </td>
-                                    <td name="bookingTime|parseDateTime">
+                                    <td name="bookingTime|date:YY-MM-DD HH:mm:ss">
                                         $bookingTime$
                                     </td>
                                     <td name="reservationStatus">
                                         $reservationStatus$
                                     </td>
                                     <td
-                                        name="reservationFor.id__reservationFor.name.ja|slice__reservationFor.startDate|parseDateTime">
+                                        name="reservationFor.id__reservationFor.name.ja|slice__reservationFor.startDate|date:YY-MM-DD HH:mm">
                                         <a href="#$reservationFor.id$">$reservationFor.name.ja$</a><br>
                                         $reservationFor.startDate$
                                     </td>
