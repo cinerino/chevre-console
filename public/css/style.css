@@ -213,6 +213,9 @@ body {
 .bmd-form-group .form-control, .bmd-form-group input::placeholder {
   font-size: inherit; }
 
+.select2 {
+  margin-top: .4375rem; }
+
 .scheduler {
   margin: 0 auto;
   overflow: auto;

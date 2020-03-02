@@ -4,7 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 // import * as createDebug from 'debug';
 import { Router } from 'express';
-// import { INTERNAL_SERVER_ERROR } from 'http-status';
+import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as _ from 'underscore';
 
 // import * as Message from '../../message';
@@ -60,7 +60,37 @@ screeningEventSeriesRouter.get(
     }
 );
 
-screeningEventSeriesRouter.all('/getrating', ScreeningEventSeriesController.getRating);
+/**
+ * 名前から作品候補を検索する
+ */
+screeningEventSeriesRouter.get(
+    '/searchMovies',
+    async (req, res) => {
+        try {
+            const creativeWorkService = new chevre.service.CreativeWork({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const searchMovieResult = await creativeWorkService.searchMovies({
+                limit: 100,
+                sort: { identifier: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] },
+                offers: {
+                    availableFrom: new Date()
+                },
+                name: req.query.q
+            });
+
+            res.json(searchMovieResult);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
+        }
+    }
+);
+
 screeningEventSeriesRouter.get('/search', ScreeningEventSeriesController.search);
 screeningEventSeriesRouter.all('/:eventId/update', ScreeningEventSeriesController.update);
 screeningEventSeriesRouter.get('/:eventId/screeningEvents', ScreeningEventSeriesController.searchScreeningEvents);

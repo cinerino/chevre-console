@@ -32,15 +32,13 @@
                 <label for="workPerformed[identifier]" class="bmd-label-static">
                     作品<span class="text-danger">＊</span>
                 </label>
-                <select class="form-control" name="workPerformed[identifier]" id="workPerformed[identifier]">
-                    <option value="">選択してください</option>
-                    <% for (const movie of movies) { %>
-                    <option value="<%= movie.identifier %>" data-name="<%= movie.name %>"
-                        data-headline="<%= movie.headline %>"
-                        data-availabilityEnds="<%= movie.offers.availabilityEnds %>" <% if (forms.workPerformed.identifier===movie.identifier)
-                            { %> selected <% } %>>
-                        <%= movie.name %>
-                    </option>
+                <% if (movie !== undefined) { %>
+                <textarea class="d-none" name="movie"><%= JSON.stringify(movie, null, '\t') %></textarea>
+                <% } %>
+                <select class="form-control" name="workPerformed[identifier]" id="workPerformed[identifier]"
+                    style="width: 100%;">
+                    <% if (movie !== undefined) { %>
+                    <option value="<%= movie.identifier %>" selected="selected"><%= movie.name %></option>
                     <% } %>
                 </select>
                 <% if (errors && errors['workPerformed.identifier']) { %>

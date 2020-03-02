@@ -48,14 +48,6 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchMoviesResult = yield creativeWorkService.searchMovies({
-            sort: { identifier: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
-            offers: {
-                availableFrom: new Date()
-            }
-        });
-        const movies = searchMoviesResult.data;
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
         });
@@ -121,7 +113,7 @@ function add(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            movies: movies,
+            movie: undefined,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             contentRatingTypes: searchContentRatingTypesResult.data
@@ -151,13 +143,6 @@ function update(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchMoviesResult = yield creativeWorkService.searchMovies({
-            sort: { identifier: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
-            offers: {
-                availableFrom: new Date()
-            }
-        });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
         });
@@ -178,6 +163,14 @@ function update(req, res) {
         const event = yield eventService.findById({
             id: eventId
         });
+        let searchMovieResult = yield creativeWorkService.searchMovies({
+            project: { ids: [req.project.id] },
+            identifier: { $eq: event.workPerformed.identifier }
+        });
+        let movie = searchMovieResult.data.shift();
+        if (movie === undefined) {
+            throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+        }
         if (req.method === 'POST') {
             // バリデーション
             validate(req);
@@ -186,11 +179,11 @@ function update(req, res) {
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
-                    const searchMovieResult = yield creativeWorkService.searchMovies({
+                    searchMovieResult = yield creativeWorkService.searchMovies({
                         project: { ids: [req.project.id] },
                         identifier: { $eq: req.body.workPerformed.identifier }
                     });
-                    const movie = searchMovieResult.data.shift();
+                    movie = searchMovieResult.data.shift();
                     if (movie === undefined) {
                         throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                     }
@@ -250,7 +243,7 @@ function update(req, res) {
             message: message,
             errors: errors,
             forms: forms,
-            movies: searchMoviesResult.data,
+            movie: movie,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             contentRatingTypes: searchContentRatingTypesResult.data
@@ -258,40 +251,6 @@ function update(req, res) {
     });
 }
 exports.update = update;
-/**
- * 作品 - レイティング
- */
-function getRating(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const creativeWorkService = new chevre.service.CreativeWork({
-                endpoint: process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const searchMovieResult = yield creativeWorkService.searchMovies({
-                sort: { identifier: chevre.factory.sortType.Ascending },
-                project: { ids: [req.project.id] },
-                identifier: { $eq: req.query.identifier }
-            });
-            const movie = searchMovieResult.data.shift();
-            if (movie === undefined) {
-                throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
-            }
-            res.json({
-                success: true,
-                results: movie.contentRating
-            });
-        }
-        catch (error) {
-            res.json({
-                success: false,
-                count: 0,
-                results: []
-            });
-        }
-    });
-}
-exports.getRating = getRating;
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */

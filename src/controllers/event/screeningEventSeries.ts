@@ -43,15 +43,6 @@ export async function add(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
 
-    const searchMoviesResult = await creativeWorkService.searchMovies({
-        sort: { identifier: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] },
-        offers: {
-            availableFrom: new Date()
-        }
-    });
-    const movies = searchMoviesResult.data;
-
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
         project: { ids: [req.project.id] }
     });
@@ -128,12 +119,13 @@ export async function add(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
-        movies: movies,
+        movie: undefined,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         contentRatingTypes: searchContentRatingTypesResult.data
     });
 }
+
 /**
  * 編集
  */
@@ -156,13 +148,6 @@ export async function update(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
 
-    const searchMoviesResult = await creativeWorkService.searchMovies({
-        sort: { identifier: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] },
-        offers: {
-            availableFrom: new Date()
-        }
-    });
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
         project: { ids: [req.project.id] }
     });
@@ -187,6 +172,15 @@ export async function update(req: Request, res: Response): Promise<void> {
         id: eventId
     });
 
+    let searchMovieResult = await creativeWorkService.searchMovies({
+        project: { ids: [req.project.id] },
+        identifier: { $eq: event.workPerformed.identifier }
+    });
+    let movie = searchMovieResult.data.shift();
+    if (movie === undefined) {
+        throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+    }
+
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -195,11 +189,11 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                const searchMovieResult = await creativeWorkService.searchMovies({
+                searchMovieResult = await creativeWorkService.searchMovies({
                     project: { ids: [req.project.id] },
                     identifier: { $eq: req.body.workPerformed.identifier }
                 });
-                const movie = searchMovieResult.data.shift();
+                movie = searchMovieResult.data.shift();
                 if (movie === undefined) {
                     throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                 }
@@ -277,43 +271,11 @@ export async function update(req: Request, res: Response): Promise<void> {
         message: message,
         errors: errors,
         forms: forms,
-        movies: searchMoviesResult.data,
+        movie: movie,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         contentRatingTypes: searchContentRatingTypesResult.data
     });
-}
-
-/**
- * 作品 - レイティング
- */
-export async function getRating(req: Request, res: Response): Promise<void> {
-    try {
-        const creativeWorkService = new chevre.service.CreativeWork({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchMovieResult = await creativeWorkService.searchMovies({
-            sort: { identifier: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
-            identifier: { $eq: req.query.identifier }
-        });
-        const movie = searchMovieResult.data.shift();
-        if (movie === undefined) {
-            throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
-        }
-
-        res.json({
-            success: true,
-            results: movie.contentRating
-        });
-    } catch (error) {
-        res.json({
-            success: false,
-            count: 0,
-            results: []
-        });
-    }
 }
 
 /**
