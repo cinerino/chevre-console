@@ -49,9 +49,7 @@ function add(req, res) {
             auth: req.user.authClient
         });
         const searchMoviesResult = yield creativeWorkService.searchMovies({
-            sort: {
-                datePublished: chevre.factory.sortType.Descending
-            },
+            sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             offers: {
                 availableFrom: new Date()
@@ -154,9 +152,7 @@ function update(req, res) {
             auth: req.user.authClient
         });
         const searchMoviesResult = yield creativeWorkService.searchMovies({
-            sort: {
-                datePublished: chevre.factory.sortType.Descending
-            },
+            sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             offers: {
                 availableFrom: new Date()
@@ -273,6 +269,7 @@ function getRating(req, res) {
                 auth: req.user.authClient
             });
             const searchMovieResult = yield creativeWorkService.searchMovies({
+                sort: { identifier: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
                 identifier: { $eq: req.query.identifier }
             });

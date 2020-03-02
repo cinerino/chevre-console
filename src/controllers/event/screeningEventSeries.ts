@@ -44,9 +44,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     });
 
     const searchMoviesResult = await creativeWorkService.searchMovies({
-        sort: {
-            datePublished: chevre.factory.sortType.Descending
-        },
+        sort: { identifier: chevre.factory.sortType.Ascending },
         project: { ids: [req.project.id] },
         offers: {
             availableFrom: new Date()
@@ -159,9 +157,7 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 
     const searchMoviesResult = await creativeWorkService.searchMovies({
-        sort: {
-            datePublished: chevre.factory.sortType.Descending
-        },
+        sort: { identifier: chevre.factory.sortType.Ascending },
         project: { ids: [req.project.id] },
         offers: {
             availableFrom: new Date()
@@ -298,6 +294,7 @@ export async function getRating(req: Request, res: Response): Promise<void> {
             auth: req.user.authClient
         });
         const searchMovieResult = await creativeWorkService.searchMovies({
+            sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             identifier: { $eq: req.query.identifier }
         });

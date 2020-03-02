@@ -37,6 +37,7 @@ movieRouter.all(
             const { data } = await creativeWorkService.searchMovies({
                 limit: limit,
                 page: page,
+                sort: { identifier: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
                 identifier: req.query.identifier,
                 name: req.query.name,

@@ -34,6 +34,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
         const { data } = yield creativeWorkService.searchMovies({
             limit: limit,
             page: page,
+            sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             identifier: req.query.identifier,
             name: req.query.name,
