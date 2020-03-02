@@ -69,6 +69,9 @@ function submit() {
             .appendTo('#ticketTypeGroupsForm');
     });
 
+    $('.btn-ok').prop('disabled', true)
+        .text('processing...');
+
     $('form').submit();
 }
 

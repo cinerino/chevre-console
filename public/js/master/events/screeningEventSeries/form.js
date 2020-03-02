@@ -80,6 +80,9 @@ $(function () {
             }
         }
 
+        $('.btn-ok').prop('disabled', true)
+            .text('processing...');
+
         $('form').submit();
     }
 

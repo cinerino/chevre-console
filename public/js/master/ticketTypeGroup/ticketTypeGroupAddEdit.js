@@ -86,6 +86,9 @@ function submit() {
         return false;
     }
 
+    $('.btn-ok').prop('disabled', true)
+        .text('processing...');
+
     $('form').submit();
 }
 

@@ -1,6 +1,8 @@
 
 $(function () {
     $('.btn-ok').on('click', function () {
+        $(this).prop('disabled', true)
+            .text('processing...');
         $('form').submit();
     });
 
