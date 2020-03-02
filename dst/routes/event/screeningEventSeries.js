@@ -22,6 +22,7 @@ const screeningEventSeriesRouter = express_1.Router();
 screeningEventSeriesRouter.all('/add', ScreeningEventSeriesController.add);
 screeningEventSeriesRouter.all('', ScreeningEventSeriesController.index);
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -41,7 +42,9 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
                 branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
             },
             workPerformed: {
-                identifiers: (req.query.movieIdentifier !== '') ? [req.query.movieIdentifier] : undefined
+                identifiers: (typeof ((_a = req.query.workPerformed) === null || _a === void 0 ? void 0 : _a.identifier) === 'string' && ((_b = req.query.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier.length) > 0)
+                    ? [(_c = req.query.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier]
+                    : undefined
             }
         });
         res.json({

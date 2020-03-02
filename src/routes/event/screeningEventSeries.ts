@@ -39,7 +39,9 @@ screeningEventSeriesRouter.get(
                     branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
                 },
                 workPerformed: {
-                    identifiers: (req.query.movieIdentifier !== '') ? [req.query.movieIdentifier] : undefined
+                    identifiers: (typeof req.query.workPerformed?.identifier === 'string' && req.query.workPerformed?.identifier.length > 0)
+                        ? [req.query.workPerformed?.identifier]
+                        : undefined
                 }
             });
 
