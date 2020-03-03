@@ -21,65 +21,6 @@ const debug = createDebug('chevre-backend:routes');
 const ScreeningEventController = require("../../controllers/event/screeningEvent");
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.get('', ScreeningEventController.index);
-screeningEventRouter.get('/getlist', 
-// tslint:disable-next-line:max-func-body-length
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    try {
-        const date = req.query.date;
-        const movieTheater = yield placeService.findMovieTheaterById({ id: req.query.theater });
-        const limit = Number(req.query.limit);
-        const page = Number(req.query.page);
-        const { data } = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                .add(1, 'day')
-                .toDate(), superEvent: {
-                locationBranchCodes: [movieTheater.branchCode]
-            }, offers: {
-                itemOffered: {
-                    serviceOutput: {
-                        reservedTicket: {
-                            ticketedSeat: {
-                                // 座席指定有のみの検索の場合
-                                typeOfs: req.query.onlyReservedSeatsAvailable === '1'
-                                    ? [chevre.factory.placeType.Seat]
-                                    : undefined
-                            }
-                        }
-                    }
-                }
-            } }, {
-            location: {
-                branchCode: {
-                    $eq: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
-                        ? req.query.screen
-                        : undefined
-                }
-            }
-        }));
-        res.json({
-            success: true,
-            count: (data.length === Number(limit))
-                ? (Number(page) * Number(limit)) + 1
-                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data
-        });
-    }
-    catch (error) {
-        res.json({
-            success: false,
-            count: 0,
-            results: error
-        });
-    }
-}));
 screeningEventRouter.get('/search', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -97,36 +38,18 @@ screeningEventRouter.get('/search',
     });
     try {
         debug('searching...query:', req.query);
+        const format = req.query.format;
         const date = req.query.date;
-        const days = req.query.days;
-        const screeningRoomBranchCode = req.query.screen;
-        const movieTheater = yield placeService.findMovieTheaterById({ id: req.query.theater });
-        const movieTheaterBranchCode = movieTheater.branchCode;
-        const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            branchCode: {
-                $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
-                    ? screeningRoomBranchCode
-                    : undefined
-            },
-            containedInPlace: {
-                branchCode: { $eq: movieTheaterBranchCode }
-            }
-        });
-        // カレンダー表示の場合すべて検索する
-        const limit = 100;
-        let page = 0;
-        let numData = limit;
-        const events = [];
-        while (numData === limit) {
-            page += 1;
-            const searchEventsResult = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+        const locationId = req.query.theater;
+        if (format === 'table') {
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+            const { data } = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                    .add(days, 'day')
-                    .toDate(), superEvent: {
-                    locationBranchCodes: [movieTheater.branchCode]
-                }, offers: {
+                    .add(1, 'day')
+                    .toDate(), superEvent: Object.assign({
+                    location: { id: { $eq: locationId } }
+                }), offers: {
                     itemOffered: {
                         serviceOutput: {
                             reservedTicket: {
@@ -142,24 +65,82 @@ screeningEventRouter.get('/search',
                 } }, {
                 location: {
                     branchCode: {
-                        $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
-                            ? screeningRoomBranchCode
+                        $eq: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
+                            ? req.query.screen
                             : undefined
                     }
                 }
             }));
-            numData = searchEventsResult.data.length;
-            events.push(...searchEventsResult.data);
+            res.json({
+                success: true,
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
+            });
         }
-        const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: 'EventService' } }
-        });
-        res.json({
-            performances: events,
-            screens: searchScreeningRoomsResult.data,
-            ticketGroups: searchTicketTypeGroupsResult.data
-        });
+        else {
+            const days = Number(format);
+            const screeningRoomBranchCode = req.query.screen;
+            const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                branchCode: {
+                    $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                        ? screeningRoomBranchCode
+                        : undefined
+                },
+                containedInPlace: {
+                    id: { $eq: locationId }
+                }
+            });
+            // カレンダー表示の場合すべて検索する
+            const limit = 100;
+            let page = 0;
+            let numData = limit;
+            const events = [];
+            while (numData === limit) {
+                page += 1;
+                const searchEventsResult = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                        .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                        .add(days, 'day')
+                        .toDate(), superEvent: Object.assign({
+                        location: { id: { $eq: locationId } }
+                    }), offers: {
+                        itemOffered: {
+                            serviceOutput: {
+                                reservedTicket: {
+                                    ticketedSeat: {
+                                        // 座席指定有のみの検索の場合
+                                        typeOfs: req.query.onlyReservedSeatsAvailable === '1'
+                                            ? [chevre.factory.placeType.Seat]
+                                            : undefined
+                                    }
+                                }
+                            }
+                        }
+                    } }, {
+                    location: {
+                        branchCode: {
+                            $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                                ? screeningRoomBranchCode
+                                : undefined
+                        }
+                    }
+                }));
+                numData = searchEventsResult.data.length;
+                events.push(...searchEventsResult.data);
+            }
+            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: 'EventService' } }
+            });
+            res.json({
+                performances: events,
+                screens: searchScreeningRoomsResult.data,
+                ticketGroups: searchTicketTypeGroupsResult.data
+            });
+        }
     }
     catch (err) {
         res.status(http_status_1.INTERNAL_SERVER_ERROR)

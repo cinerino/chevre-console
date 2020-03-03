@@ -6,6 +6,7 @@ var creatingSchedules = false;
 var scheduler;
 var ITEMS_ON_PAGE;
 var conditions = {};
+var SEARCH_URL = '/events/screeningEvent/search';
 
 $(function () {
     ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
@@ -46,6 +47,8 @@ $(function () {
 
     // スクリーン選択肢初期化
     getScreens($('.search select[name="theater"]').val(), 'none');
+
+    searchSchedule();
 
     // 検索
     $(document).on('click', '.search-button', searchSchedule);
@@ -107,7 +110,7 @@ $(function () {
     );
 
     // COAイベントインポート
-    $('a.importFromCOA').click(function () {
+    $(document).on('click', 'a.importFromCOA', function (event) {
         var theater = $('.search select[name=theater]').val();
         if (!theater) {
             alert('劇場を選択してください');
@@ -142,8 +145,6 @@ $(function () {
 
         showOffers(id);
     });
-
-    $('.search-button').click();
 });
 
 /**
@@ -180,8 +181,7 @@ function getEventSeries(theater) {
             screeningEventSeriesSelect.html(options);
         }
     }).fail(function (jqxhr, textStatus, error) {
-        console.error(jqxhr, textStatus, error);
-        alert('エラーが発生しました。');
+        alert('劇場上映作品を検索できませんでした');
     });
 }
 
@@ -239,8 +239,7 @@ function getScreens(theaterId, modal = 'none') {
             resetScreenList();
         }
     }).fail(function (jqxhr, textStatus, error) {
-        console.error(jqxhr, textStatus, error);
-        alert('エラーが発生しました。');
+        alert('スクリーンを検索できませんでした');
     });
 }
 
@@ -579,13 +578,12 @@ function searchSchedule() {
     getScreens(theater, 'edit');
 
     var format = $('.search select[name=format]').val();
-    console.log('searching...format:', format);
 
     switch (format) {
         case 'table':
             $('#scheduler').addClass('d-none');
 
-            searchByTable();
+            search(1);
 
             break;
 
@@ -599,23 +597,18 @@ function searchSchedule() {
     }
 }
 
-function searchByTable() {
-    // 検索条件取得
-    conditions = $.fn.getDataFromForm('.search form');
-    // 検索API呼び出し
-    search(1);
-}
-
 //--------------------------------
 // 検索API呼び出し
 //--------------------------------
 function search(pageNumber) {
+    // 検索条件取得
+    conditions = $.fn.getDataFromForm('.search form');
     conditions['limit'] = ITEMS_ON_PAGE;
     conditions['page'] = pageNumber;
 
     $.ajax({
         dataType: 'json',
-        url: '/events/screeningEvent/getlist',
+        url: SEARCH_URL,
         cache: false,
         type: 'GET',
         data: conditions,
@@ -624,7 +617,6 @@ function search(pageNumber) {
         }
     }).done(function (data) {
         if (data.success) {
-            //alert("success:" + data.count);
             var dataCount = (data.count) ? (data.count) : 0;
             // 一覧表示
             if ($.CommonMasterList.bind(data.results, dataCount, pageNumber)) {
@@ -634,7 +626,7 @@ function search(pageNumber) {
             }
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert("fail");
+        alert('検索できませんでした');
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
@@ -790,15 +782,15 @@ function createScheduler() {
                     return;
                 }
                 var _this = this;
-                $('#loadingModal').modal({ backdrop: 'static' });
-                this.searchScreeningEvent().then(function (data) {
-                    modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
-                    _this.createScheduleData(data);
-                    $('#loadingModal').modal('hide');
-                }).catch(function (error) {
-                    alert('エラーが発生しました。');
-                    $('#loadingModal').modal('hide');
-                });
+
+                this.searchScreeningEvent()
+                    .then(function (data) {
+                        modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
+                        _this.createScheduleData(data);
+                    })
+                    .catch(function (error) {
+                        alert('検索できませんでした');
+                    });
             },
             /**
              * 検索条件取得
@@ -807,7 +799,7 @@ function createScheduler() {
                 return {
                     theater: $('.search select[name=theater]').val(),
                     date: $('.search input[name=date]').val(),
-                    days: $('.search select[name=format]').val(),
+                    format: $('.search select[name=format]').val(),
                     screen: ($('.search select[name=screen]').val() === '') ? undefined : $('.search select[name=screen]').val(),
                     onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val()
                 };
@@ -818,19 +810,27 @@ function createScheduler() {
             searchScreeningEvent: function () {
                 var options = {
                     dataType: 'json',
-                    url: '/events/screeningEvent/search',
+                    url: SEARCH_URL,
                     type: 'GET',
-                    data: this.searchCondition
+                    data: this.searchCondition,
+                    beforeSend: function () {
+                        $('#loadingModal').modal({ backdrop: 'static' });
+                    }
                 };
-                return $.ajax(options);
+                return $.ajax(options)
+                    .always(function () {
+                        $('#loadingModal').modal('hide');
+                    });
             },
             /**
              * スケジュールデータ作成
              */
             createScheduleData: function (data) {
                 this.scheduleData.dates = [];
-                for (var i = 0; i < this.searchCondition.days; i++) {
-                    var date = moment(this.searchCondition.date).add(i, 'days').toISOString();
+                for (var i = 0; i < Number(this.searchCondition.format); i++) {
+                    var date = moment(this.searchCondition.date)
+                        .add(i, 'days')
+                        .toISOString();
                     this.scheduleData.dates.push({
                         data: date,
                         screens: data.screens.map(function (s) {
@@ -851,7 +851,6 @@ function createScheduler() {
                         })
                     });
                 }
-                console.log(JSON.parse(JSON.stringify(this.scheduleData)));
             },
             /**
              * 時間データ生成
@@ -1055,7 +1054,7 @@ function showOffers(id) {
         modal.find('.modal-body').html(div);
         modal.modal();
     }).fail(function (jqxhr, textStatus, error) {
-        alert("fail");
+        alert('検索できませんでした');
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
