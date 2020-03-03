@@ -345,7 +345,7 @@ function createFromBody(req) {
             name: body.name,
             description: body.description,
             alternateName: body.alternateName,
-            ticketTypes: [],
+            // ticketTypes: [],
             itemListElement: itemListElement,
             itemOffered: {
                 typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf

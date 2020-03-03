@@ -51,10 +51,8 @@ screeningEventRouter.get(
                     inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                         .add(1, 'day')
                         .toDate(),
-                    superEvent: <any>{
-                        ...{
-                            location: { id: { $eq: locationId } }
-                        }
+                    superEvent: {
+                        location: { id: { $eq: locationId } }
                     },
                     offers: {
                         itemOffered: {
@@ -123,10 +121,8 @@ screeningEventRouter.get(
                         inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                             .add(days, 'day')
                             .toDate(),
-                        superEvent: <any>{
-                            ...{
-                                location: { id: { $eq: locationId } }
-                            }
+                        superEvent: {
+                            location: { id: { $eq: locationId } }
                         },
                         offers: {
                             itemOffered: {

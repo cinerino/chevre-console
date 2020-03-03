@@ -250,7 +250,8 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
-        ticketTypes: ticketTypes,
+        // ticketTypes: ticketTypes,
+        itemListElement: itemListElement, // 後にオファーカタログへ統合するため
         itemOffered: {
             serviceType: serviceType,
             ...{
@@ -265,10 +266,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
                         value: String(p.value)
                     };
                 })
-            : undefined,
-        ...{
-            itemListElement: itemListElement // 後にオファーカタログへ統合するため
-        }
+            : undefined
     };
 }
 
@@ -308,7 +306,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
             results: data.map((g) => {
                 return {
                     ...g,
-                    offerCount: g.ticketTypes.length
+                    offerCount: g.itemListElement.length
                 };
             })
         });

@@ -651,8 +651,8 @@ export async function getList(req: Request, res: Response): Promise<void> {
         let ticketTypeIds: string[] = [];
         if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
             const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
-            if (ticketTypeGroup.ticketTypes !== null) {
-                ticketTypeIds = ticketTypeGroup.ticketTypes;
+            if (Array.isArray(ticketTypeGroup.itemListElement)) {
+                ticketTypeIds = ticketTypeGroup.itemListElement.map((e) => e.id);
             } else {
                 //券種がありません。
                 res.json({

@@ -407,7 +407,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
-        ticketTypes: [],
+        // ticketTypes: [],
         itemListElement: itemListElement,
         itemOffered: {
             typeOf: body.itemOffered?.typeOf

@@ -47,9 +47,9 @@ screeningEventRouter.get('/search',
             const { data } = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .add(1, 'day')
-                    .toDate(), superEvent: Object.assign({
+                    .toDate(), superEvent: {
                     location: { id: { $eq: locationId } }
-                }), offers: {
+                }, offers: {
                     itemOffered: {
                         serviceOutput: {
                             reservedTicket: {
@@ -104,9 +104,9 @@ screeningEventRouter.get('/search',
                 const searchEventsResult = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                         .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                         .add(days, 'day')
-                        .toDate(), superEvent: Object.assign({
+                        .toDate(), superEvent: {
                         location: { id: { $eq: locationId } }
-                    }), offers: {
+                    }, offers: {
                         itemOffered: {
                             serviceOutput: {
                                 reservedTicket: {

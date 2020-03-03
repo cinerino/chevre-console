@@ -228,9 +228,19 @@ function createFromBody(req) {
         if (serviceType === undefined) {
             throw new Error('興行区分が見つかりません');
         }
-        return Object.assign({ project: req.project, id: body.id, identifier: req.body.identifier, name: body.name, description: body.description, alternateName: body.alternateName, ticketTypes: ticketTypes, itemOffered: Object.assign({ serviceType: serviceType }, {
+        return {
+            project: req.project,
+            id: body.id,
+            identifier: req.body.identifier,
+            name: body.name,
+            description: body.description,
+            alternateName: body.alternateName,
+            // ticketTypes: ticketTypes,
+            itemListElement: itemListElement,
+            itemOffered: Object.assign({ serviceType: serviceType }, {
                 typeOf: 'EventService' // 後にオファーカタログへ統合するため
-            }), additionalProperty: (Array.isArray(body.additionalProperty))
+            }),
+            additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -238,9 +248,8 @@ function createFromBody(req) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, {
-            itemListElement: itemListElement // 後にオファーカタログへ統合するため
-        });
+                : undefined
+        };
     });
 }
 /**
@@ -277,7 +286,7 @@ function getList(req, res) {
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((g) => {
-                    return Object.assign(Object.assign({}, g), { offerCount: g.ticketTypes.length });
+                    return Object.assign(Object.assign({}, g), { offerCount: g.itemListElement.length });
                 })
             });
         }

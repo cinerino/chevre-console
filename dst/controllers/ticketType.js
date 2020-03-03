@@ -556,8 +556,8 @@ function getList(req, res) {
             let ticketTypeIds = [];
             if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
                 const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
-                if (ticketTypeGroup.ticketTypes !== null) {
-                    ticketTypeIds = ticketTypeGroup.ticketTypes;
+                if (Array.isArray(ticketTypeGroup.itemListElement)) {
+                    ticketTypeIds = ticketTypeGroup.itemListElement.map((e) => e.id);
                 }
                 else {
                     //券種がありません。
