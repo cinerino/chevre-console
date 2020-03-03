@@ -53,8 +53,6 @@ $(function () {
                 } else {
                     $('#list').hide();
                 }
-                // 検索条件表示
-                $.fn.setDataToForm('form', conditions);
             }
         }).fail(function (jqxhr, textStatus, error) {
             alert("fail");

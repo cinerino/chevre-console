@@ -59,8 +59,6 @@ $(function () {
                         $(this).text(moment.duration($(this).text()).asMinutes());
                     }
                 });
-                // 検索条件表示
-                $.fn.setDataToForm('form', conditions);
             }
         }).fail(function (jqxhr, textStatus, error) {
             alert("fail");
