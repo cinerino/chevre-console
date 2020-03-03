@@ -114,40 +114,49 @@ screeningEventRouter.get('/search',
                 branchCode: { $eq: movieTheaterBranchCode }
             }
         });
+        // カレンダー表示の場合すべて検索する
         const limit = 100;
-        const searchResult = yield eventService.search(Object.assign({ limit: limit, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                .add(days, 'day')
-                .toDate(), superEvent: {
-                locationBranchCodes: [movieTheater.branchCode]
-            }, offers: {
-                itemOffered: {
-                    serviceOutput: {
-                        reservedTicket: {
-                            ticketedSeat: {
-                                // 座席指定有のみの検索の場合
-                                typeOfs: req.query.onlyReservedSeatsAvailable === '1'
-                                    ? [chevre.factory.placeType.Seat]
-                                    : undefined
+        let page = 0;
+        let numData = limit;
+        const events = [];
+        while (numData === limit) {
+            page += 1;
+            const searchEventsResult = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .add(days, 'day')
+                    .toDate(), superEvent: {
+                    locationBranchCodes: [movieTheater.branchCode]
+                }, offers: {
+                    itemOffered: {
+                        serviceOutput: {
+                            reservedTicket: {
+                                ticketedSeat: {
+                                    // 座席指定有のみの検索の場合
+                                    typeOfs: req.query.onlyReservedSeatsAvailable === '1'
+                                        ? [chevre.factory.placeType.Seat]
+                                        : undefined
+                                }
                             }
                         }
                     }
+                } }, {
+                location: {
+                    branchCode: {
+                        $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                            ? screeningRoomBranchCode
+                            : undefined
+                    }
                 }
-            } }, {
-            location: {
-                branchCode: {
-                    $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
-                        ? screeningRoomBranchCode
-                        : undefined
-                }
-            }
-        }));
+            }));
+            numData = searchEventsResult.data.length;
+            events.push(...searchEventsResult.data);
+        }
         const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: 'EventService' } }
         });
         res.json({
-            performances: searchResult.data,
+            performances: events,
             screens: searchScreeningRoomsResult.data,
             ticketGroups: searchTicketTypeGroupsResult.data
         });
