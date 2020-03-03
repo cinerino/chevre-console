@@ -215,12 +215,12 @@ Aa-4
                                 <div v-for="performance in screen.performances"
                                     class="performance w-100 overflow-hidden px-1"
                                     v-on:click="editPerformance(performance)"
-                                    v-bind:style="getPerformanceStyle(performance)">
+                                    v-bind:style="getPerformanceStyle(performance, date).parent">
                                     <div v-bind:class="{ 
                                     'bg-danger': getOverlapPerformanceCount(performance, screen.performances) > 0,
                                     'bg-primary': !getAdditionalProperty(performance.superEvent.additionalProperty, 'color') && getOverlapPerformanceCount(performance, screen.performances) === 0
-                                    }" v-bind:style="{ backgroundColor: getAdditionalProperty(performance.superEvent.additionalProperty, 'color') }"
-                                        class="inner h-100 p-1 rounded pointer border border-white">
+                                    }" v-bind:style="getPerformanceStyle(performance, date).child"
+                                        class="inner h-100 p-1 pointer border border-white overflow-hidden">
                                         <div class="overflow-hidden nowrap mw-100 text-x-small text-white">
                                             {{ performance.name.ja }}
                                         </div>
