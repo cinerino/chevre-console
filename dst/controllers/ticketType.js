@@ -310,8 +310,11 @@ function createFromBody(req, isNew) {
             availableAddOn.push({
                 project: addOn.project,
                 typeOf: chevre.factory.offerType.Offer,
-                name: addOn.name,
-                itemOffered: addOn,
+                itemOffered: {
+                    typeOf: addOn.typeOf,
+                    id: addOn.id,
+                    name: addOn.name
+                },
                 priceCurrency: chevre.factory.priceCurrency.JPY
             });
         }
