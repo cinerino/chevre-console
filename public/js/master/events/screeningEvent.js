@@ -601,15 +601,15 @@ function searchSchedule() {
 
 function searchByTable() {
     // 検索条件取得
-    conditions = $.fn.getDataFromForm('form');
+    conditions = $.fn.getDataFromForm('.search form');
     // 検索API呼び出し
-    search(1);
+    search4table(1);
 }
 
 //--------------------------------
 // 検索API呼び出し
 //--------------------------------
-function search(pageNumber) {
+function search4table(pageNumber) {
     conditions['limit'] = ITEMS_ON_PAGE;
     conditions['page'] = pageNumber;
 

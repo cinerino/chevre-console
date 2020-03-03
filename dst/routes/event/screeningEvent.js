@@ -35,26 +35,12 @@ screeningEventRouter.get('/getlist',
         const movieTheater = yield placeService.findMovieTheaterById({ id: req.query.theater });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield eventService.search({
-            limit: limit,
-            page: page,
-            project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
-            inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
-                .toDate(),
-            inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+        const { data } = yield eventService.search(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .add(1, 'day')
-                .toDate(),
-            // location: {
-            //     branchCodes: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
-            //         ? [req.query.screen]
-            //         : undefined
-            // },
-            superEvent: {
+                .toDate(), superEvent: {
                 locationBranchCodes: [movieTheater.branchCode]
-            },
-            offers: {
+            }, offers: {
                 itemOffered: {
                     serviceOutput: {
                         reservedTicket: {
@@ -67,8 +53,15 @@ screeningEventRouter.get('/getlist',
                         }
                     }
                 }
+            } }, {
+            location: {
+                branchCode: {
+                    $eq: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
+                        ? req.query.screen
+                        : undefined
+                }
             }
-        });
+        }));
         res.json({
             success: true,
             count: (data.length === Number(limit))

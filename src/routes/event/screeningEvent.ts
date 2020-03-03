@@ -41,11 +41,6 @@ screeningEventRouter.get(
                 inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate(),
-                // location: {
-                //     branchCodes: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
-                //         ? [req.query.screen]
-                //         : undefined
-                // },
                 superEvent: {
                     locationBranchCodes: [movieTheater.branchCode]
                 },
@@ -60,6 +55,15 @@ screeningEventRouter.get(
                                         : undefined
                                 }
                             }
+                        }
+                    }
+                },
+                ...{
+                    location: {
+                        branchCode: {
+                            $eq: (typeof req.query.screen === 'string' && req.query.screen.length > 0)
+                                ? req.query.screen
+                                : undefined
                         }
                     }
                 }
