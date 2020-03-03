@@ -4,8 +4,12 @@
 var creatingSchedules = false;
 
 var scheduler;
+var ITEMS_ON_PAGE;
+var conditions = {};
 
 $(function () {
+    ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
+
     //上映日
     $('.search form input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
         .val(moment().tz('Asia/Tokyo').format('YYYY/MM/DD'));
@@ -30,9 +34,16 @@ $(function () {
     $('.datepicker').datepicker({
         language: 'ja'
     });
+
+    // 共通一覧表示初期セット・ページャセット
+    $.CommonMasterList.init('#templateRow', '#searchedCount');
+    $.CommonMasterList.pager('#pager', ITEMS_ON_PAGE, function (pageNumber) {
+        search(pageNumber);
+    });
+
     //スケジューラー初期化
     scheduler = createScheduler();
-    $('#scheduler').removeClass('d-none');
+
     // 検索
     $(document).on('click', '.search-button', searchSchedule);
     // 新規作成
@@ -122,6 +133,13 @@ $(function () {
             });
         } else {
         }
+    });
+
+    $(document).on('click', '.showOffers', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing offers...id:', id);
+
+        showOffers(id);
     });
 });
 
@@ -556,7 +574,67 @@ function update() {
 function searchSchedule() {
     var theater = $('.search select[name=theater]').val();
     getScreens(theater, 'edit');
-    scheduler.create();
+
+    var format = $('.search select[name=format]').val();
+    console.log('searching...format:', format);
+
+    switch (format) {
+        case 'table':
+            $('#scheduler').addClass('d-none');
+
+            searchByTable();
+
+            break;
+
+        default:
+            $('#list').hide();
+            $('#datatables_info,#datatables_paginate,#pager').empty();
+            $('#scheduler').removeClass('d-none');
+
+            scheduler.create();
+            break;
+    }
+}
+
+function searchByTable() {
+    // 検索条件取得
+    conditions = $.fn.getDataFromForm('form');
+    // 検索API呼び出し
+    search(1);
+}
+
+//--------------------------------
+// 検索API呼び出し
+//--------------------------------
+function search(pageNumber) {
+    conditions['limit'] = ITEMS_ON_PAGE;
+    conditions['page'] = pageNumber;
+
+    $.ajax({
+        dataType: 'json',
+        url: '/events/screeningEvent/getlist',
+        cache: false,
+        type: 'GET',
+        data: conditions,
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (data) {
+        if (data.success) {
+            //alert("success:" + data.count);
+            var dataCount = (data.count) ? (data.count) : 0;
+            // 一覧表示
+            if ($.CommonMasterList.bind(data.results, dataCount, pageNumber)) {
+                $('#list').show();
+            } else {
+                $('#list').hide();
+            }
+        }
+    }).fail(function (jqxhr, textStatus, error) {
+        alert("fail");
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
 }
 
 /**
@@ -725,7 +803,7 @@ function createScheduler() {
                 return {
                     theater: $('.search select[name=theater]').val(),
                     date: $('.search input[name=date]').val(),
-                    days: $('.search input[name=days]:checked').val(),
+                    days: $('.search select[name=format]').val(),
                     screen: ($('.search select[name=screen]').val() === '') ? undefined : $('.search select[name=screen]').val(),
                     onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val()
                 };
@@ -905,4 +983,50 @@ function changeInputType() {
     var parent = $(this).parents('.form-group');
     parent.find('.input-type').addClass('d-none');
     parent.find('.input-type[data-input-type=' + inputType + ']').removeClass('d-none');
+}
+
+function showOffers(id) {
+    $.ajax({
+        dataType: 'json',
+        url: '/events/screeningEvent/' + id + '/offers',
+        cache: false,
+        type: 'GET',
+        data: {},
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (data) {
+        console.log(data);
+        var modal = $('#modal-event');
+
+        var thead = $('<thead>').addClass('text-primary')
+            .append([
+                $('<tr>').append([
+                    $('<th>').text('ID'),
+                    $('<th>').text('名称')
+                ])
+            ]);
+        var tbody = $('<tbody>')
+            .append(data.map(function (result) {
+                var url = '/ticketTypes/' + result.id + '/update';
+
+                return $('<tr>').append([
+                    $('<td>').html('<a target="_blank" href="' + url + '">' + result.id + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
+                    $('<td>').text(result.name.ja)
+                ]);
+            }))
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+
+        var div = $('<div>').addClass('table-responsive')
+            .append(table);
+
+        modal.find('.modal-title').text('イベントオファー');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }).fail(function (jqxhr, textStatus, error) {
+        alert("fail");
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
 }
