@@ -2,9 +2,12 @@
  * 上映イベント管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as createDebug from 'debug';
 import { Router } from 'express';
 import { CREATED, INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment';
+
+const debug = createDebug('chevre-backend:routes');
 
 import * as ScreeningEventController from '../../controllers/event/screeningEvent';
 
@@ -86,7 +89,103 @@ screeningEventRouter.get(
     }
 );
 
-screeningEventRouter.get('/search', ScreeningEventController.search);
+screeningEventRouter.get(
+    '/search',
+    // tslint:disable-next-line:max-func-body-length
+    async (req, res) => {
+        const offerService = new chevre.service.Offer({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        try {
+            debug('searching...query:', req.query);
+            const date = req.query.date;
+            const days = req.query.days;
+            const screeningRoomBranchCode = req.query.screen;
+
+            const movieTheater = await placeService.findMovieTheaterById({ id: req.query.theater });
+            const movieTheaterBranchCode = movieTheater.branchCode;
+
+            const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                branchCode: {
+                    $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                        ? screeningRoomBranchCode
+                        : undefined
+                },
+                containedInPlace: {
+                    branchCode: { $eq: movieTheaterBranchCode }
+                }
+            });
+
+            const limit = 100;
+            const searchResult = await eventService.search({
+                limit: limit,
+                project: { ids: [req.project.id] },
+                typeOf: chevre.factory.eventType.ScreeningEvent,
+                eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
+                inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .toDate(),
+                inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+                    .add(days, 'day')
+                    .toDate(),
+                superEvent: {
+                    locationBranchCodes: [movieTheater.branchCode]
+                },
+                offers: {
+                    itemOffered: {
+                        serviceOutput: {
+                            reservedTicket: {
+                                ticketedSeat: {
+                                    // 座席指定有のみの検索の場合
+                                    typeOfs: req.query.onlyReservedSeatsAvailable === '1'
+                                        ? [chevre.factory.placeType.Seat]
+                                        : undefined
+                                }
+                            }
+                        }
+                    }
+                },
+                ...{
+                    location: {
+                        branchCode: {
+                            $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                                ? screeningRoomBranchCode
+                                : undefined
+                        }
+                    }
+                }
+            });
+
+            const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: 'EventService' } }
+            });
+
+            res.json({
+                performances: searchResult.data,
+                screens: searchScreeningRoomsResult.data,
+                ticketGroups: searchTicketTypeGroupsResult.data
+            });
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: err.message,
+                    error: err.message
+                });
+        }
+    }
+);
+
 screeningEventRouter.get('/searchScreeningEventSeries', ScreeningEventController.searchScreeningEventSeries);
 screeningEventRouter.post('/regist', ScreeningEventController.regist);
 screeningEventRouter.post('/:eventId/update', ScreeningEventController.update);

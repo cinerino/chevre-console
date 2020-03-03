@@ -603,13 +603,13 @@ function searchByTable() {
     // 検索条件取得
     conditions = $.fn.getDataFromForm('.search form');
     // 検索API呼び出し
-    search4table(1);
+    search(1);
 }
 
 //--------------------------------
 // 検索API呼び出し
 //--------------------------------
-function search4table(pageNumber) {
+function search(pageNumber) {
     conditions['limit'] = ITEMS_ON_PAGE;
     conditions['page'] = pageNumber;
 
