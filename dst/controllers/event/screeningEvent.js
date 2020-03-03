@@ -114,7 +114,7 @@ function search(req, res) {
             });
             let data;
             let screens;
-            if (screen !== undefined) {
+            if (typeof screen === 'string' && screen.length > 0) {
                 data = searchResult.data.filter((event) => event.location.branchCode === screen);
                 if (searchResult.data.length >= limit) {
                     let dataPage2;

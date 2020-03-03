@@ -110,7 +110,7 @@ export async function search(req: Request, res: Response): Promise<void> {
 
         let data: typeof searchResult.data;
         let screens: typeof movieTheater.containsPlace;
-        if (screen !== undefined) {
+        if (typeof screen === 'string' && screen.length > 0) {
             data = searchResult.data.filter((event) => event.location.branchCode === screen);
             if (searchResult.data.length >= limit) {
                 let dataPage2: typeof searchResult.data;

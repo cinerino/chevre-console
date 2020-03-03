@@ -40,15 +40,14 @@ Aa-4
 
                                     <div class="input-group">
                                         <select class="form-control" name="theater">
-                                            <option value="">選択してください</option>
                                             <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                                            <% for (const movieTheater of movieTheaters) { %>
+                                            <% movieTheaters.forEach(function (movieTheater, index) { %>
                                             <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% } %>
+                                            <% }) %>
                                             <% } else { %>
-                                            <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                                            <% user.cognitoGroups.movieTheaters.forEach(function (movieTheater, index) { %>
                                             <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% } %>
+                                            <% }) %>
                                             <% } %>
                                         </select>
                                     </div>

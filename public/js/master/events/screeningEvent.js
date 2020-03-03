@@ -44,6 +44,9 @@ $(function () {
     //スケジューラー初期化
     scheduler = createScheduler();
 
+    // スクリーン選択肢初期化
+    getScreens($('.search select[name="theater"]').val(), 'none');
+
     // 検索
     $(document).on('click', '.search-button', searchSchedule);
     // 新規作成
@@ -64,8 +67,6 @@ $(function () {
     // 劇場検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
-        console.log(theater, 'selecetd');
-        var date = $('.search input[name=date]').val();
         getScreens(theater, 'none');
     }, 500));
 
@@ -141,6 +142,8 @@ $(function () {
 
         showOffers(id);
     });
+
+    $('.search-button').click();
 });
 
 /**
@@ -780,6 +783,7 @@ function createScheduler() {
             create: function () {
                 this.createTimes();
                 this.searchCondition = this.getSearchCondition();
+                console.log('this.searchCondition:', this.searchCondition);
                 if (this.searchCondition.theater === ''
                     || this.searchCondition.date === '') {
                     alert('劇場、上映日を選択してください');
