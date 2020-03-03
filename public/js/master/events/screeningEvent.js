@@ -837,10 +837,15 @@ function createScheduler() {
                             return {
                                 data: s,
                                 performances: data.performances.filter(function (p) {
+                                    var expectedDate = moment(date)
+                                        .tz('Asia/Tokyo')
+                                        .format('YYYYMMDD');
+                                    var isDateMatched = moment(p.startDate).tz('Asia/Tokyo').format('YYYYMMDD') === expectedDate
+                                        || moment(p.endDate).tz('Asia/Tokyo').format('YYYYMMDD') === expectedDate;
+                                    var isLocationMatched = p.location.branchCode === s.branchCode;
+
                                     // 同一スクリーンかつ同一日時に上映しているか
-                                    return (p.location.branchCode === s.branchCode
-                                        && (moment(p.startDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD')
-                                            || moment(p.endDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD')));
+                                    return isLocationMatched && isDateMatched;
                                 })
                             };
                         })
@@ -876,7 +881,7 @@ function createScheduler() {
                     hour: moment(performance.endDate).tz('Asia/Tokyo').format('HH'),
                     minutes: moment(performance.endDate).tz('Asia/Tokyo').format('mm')
                 };
-                
+
                 var hour = 60;
                 var top = (start.hour * this.HOUR_HEIGHT) + (start.minutes * this.HOUR_HEIGHT / hour);
                 var left = 0;
