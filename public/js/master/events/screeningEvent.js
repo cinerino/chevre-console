@@ -837,8 +837,10 @@ function createScheduler() {
                             return {
                                 data: s,
                                 performances: data.performances.filter(function (p) {
+                                    // 同一スクリーンかつ同一日時に上映しているか
                                     return (p.location.branchCode === s.branchCode
-                                        && moment(p.startDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD'));
+                                        && (moment(p.startDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD')
+                                            || moment(p.endDate).format('YYYYMMDD') === moment(date).format('YYYYMMDD')));
                                 })
                             };
                         })
@@ -858,7 +860,12 @@ function createScheduler() {
             /**
              * パフォーマンスの表示位置取得
              */
-            getPerformanceStyle: function (performance) {
+            getPerformanceStyle: function (performance, date) {
+                var viewDate = {
+                    day: moment(date.data).tz('Asia/Tokyo').format('YYYYMMDD'),
+                    hour: moment(date.data).tz('Asia/Tokyo').format('HH'),
+                    minutes: moment(date.data).tz('Asia/Tokyo').format('mm')
+                }
                 var start = {
                     day: moment(performance.doorTime).tz('Asia/Tokyo').format('YYYYMMDD'),
                     hour: moment(performance.doorTime).tz('Asia/Tokyo').format('HH'),
@@ -869,21 +876,35 @@ function createScheduler() {
                     hour: moment(performance.endDate).tz('Asia/Tokyo').format('HH'),
                     minutes: moment(performance.endDate).tz('Asia/Tokyo').format('mm')
                 };
-
+                
                 var hour = 60;
                 var top = (start.hour * this.HOUR_HEIGHT) + (start.minutes * this.HOUR_HEIGHT / hour);
                 var left = 0;
+                var borderRadius = '6px';
 
                 var height = ((end.hour - start.hour) * this.HOUR_HEIGHT) + ((end.minutes - start.minutes) * this.HOUR_HEIGHT / hour);
-                // 日本時間で日またぎの場合
-                if (Number(end.day) > Number(start.day)) {
+                // 日本時間で日またぎの場合（当日表示）
+                if (Number(end.day) > Number(start.day) && Number(start.day) === Number(viewDate.day)) {
                     height = ((24 - start.hour) * this.HOUR_HEIGHT) + ((0 - start.minutes) * this.HOUR_HEIGHT / hour);
+                    borderRadius = '6px 6px 0px 0px';
+                }
+                // 日本時間で日またぎの場合（翌日表示）
+                if (Number(end.day) > Number(start.day) && Number(end.day) === Number(viewDate.day)) {
+                    top = 0;
+                    height = ((end.hour - 0) * this.HOUR_HEIGHT) + ((end.minutes - 0) * this.HOUR_HEIGHT / hour);
+                    borderRadius = '0px 0px 6px 6px';
                 }
 
                 return {
-                    top: top + 'px',
-                    left: left + 'px',
-                    height: height + 'px'
+                    parent: {
+                        top: top + 'px',
+                        left: left + 'px',
+                        height: height + 'px',
+                    },
+                    child: {
+                        backgroundColor: this.getAdditionalProperty(performance.superEvent.additionalProperty, 'color'),
+                        borderRadius: borderRadius
+                    }
                 };
             },
             /**
