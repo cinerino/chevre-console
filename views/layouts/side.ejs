@@ -85,13 +85,13 @@
                     <li class="nav-item <%= (displayId === 'Aa-6') ? 'active': ''; %>">
                         <a class="nav-link" href="/ticketTypes">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">イベント券種</span>
+                            <span class="sidebar-normal">券種</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'Aa-8') ? 'active': ''; %>">
                         <a class="nav-link" href="/ticketTypeGroups">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">イベント券種グループ</span>
+                            <span class="sidebar-normal">券種グループ</span>
                         </a>
                     </li>
                     <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
@@ -104,8 +104,7 @@
                     <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/offerCatalogs">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">オファーカタログ <span
-                                    class="badge badge-secondary">Preview</span></span>
+                            <span class="sidebar-normal">カタログ <span class="badge badge-secondary">Preview</span></span>
                         </a>
                     </li>
                     <% } %>

@@ -128,6 +128,10 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
         auth: req.user.authClient
     });
     let offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
+    if (offerCatalog.itemOffered.typeOf === 'EventService') {
+        res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
+        return;
+    }
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -206,19 +210,32 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             auth: req.user.authClient
         });
         const offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
-        const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
+        const offerIds = offerCatalog.itemListElement.map((element) => element.id);
         const limit = 100;
         const page = 1;
-        const { data } = yield offerService.search({
-            limit: limit,
-            page: page,
-            project: { id: { $eq: req.project.id } },
-            id: {
-                $in: itemListElementIds
-            }
-        });
+        let data;
+        if (offerCatalog.itemOffered.typeOf === 'EventService') {
+            const searchTicketTypesResult = yield offerService.searchTicketTypes({
+                limit: limit,
+                page: page,
+                project: { ids: [req.project.id] },
+                ids: offerIds
+            });
+            data = searchTicketTypesResult.data;
+        }
+        else {
+            const searchResult = yield offerService.search({
+                limit: limit,
+                page: page,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: offerIds
+                }
+            });
+            data = searchResult.data;
+        }
         // 登録順にソート
-        const offers = data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        const offers = data.sort((a, b) => offerIds.indexOf(a.id) - offerIds.indexOf(b.id));
         res.json({
             success: true,
             count: (offers.length === Number(limit))

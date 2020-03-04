@@ -147,6 +147,11 @@ offerCatalogsRouter.all(
         });
 
         let offerCatalog = await offerCatalogService.findById({ id: req.params.id });
+        if (offerCatalog.itemOffered.typeOf === 'EventService') {
+            res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
+
+            return;
+        }
 
         let message = '';
         let errors: any = {};
@@ -246,22 +251,35 @@ offerCatalogsRouter.get(
             });
 
             const offerCatalog = await offerCatalogService.findById({ id: req.params.id });
-            const itemListElementIds = offerCatalog.itemListElement.map((element) => element.id);
+            const offerIds = offerCatalog.itemListElement.map((element) => element.id);
 
             const limit = 100;
             const page = 1;
-            const { data } = await offerService.search({
-                limit: limit,
-                page: page,
-                project: { id: { $eq: req.project.id } },
-                id: {
-                    $in: itemListElementIds
-                }
-            });
+            let data: chevre.factory.offer.IOffer[];
+
+            if (offerCatalog.itemOffered.typeOf === 'EventService') {
+                const searchTicketTypesResult = await offerService.searchTicketTypes({
+                    limit: limit,
+                    page: page,
+                    project: { ids: [req.project.id] },
+                    ids: offerIds
+                });
+                data = searchTicketTypesResult.data;
+            } else {
+                const searchResult = await offerService.search({
+                    limit: limit,
+                    page: page,
+                    project: { id: { $eq: req.project.id } },
+                    id: {
+                        $in: offerIds
+                    }
+                });
+                data = searchResult.data;
+            }
 
             // 登録順にソート
             const offers = data.sort(
-                (a, b) => itemListElementIds.indexOf(<string>a.id) - itemListElementIds.indexOf(<string>b.id)
+                (a, b) => offerIds.indexOf(<string>a.id) - offerIds.indexOf(<string>b.id)
             );
 
             res.json({
