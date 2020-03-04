@@ -453,70 +453,82 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="form-group bmd-form-group">
-            <label for="indicatorColor" class="bmd-label-static">
-                表示カラー
-            </label>
-            <div class="row pt-2 pb-2 px-3">
-                <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor"
-                    id="indicatorColor" value="<%= forms.indicatorColor %>"
-                    style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
-                <input type="hidden" name="hiddenColor" id="hiddenColor">
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-4">
+                <label for="indicatorColor" class="bmd-label-static">
+                    カラー
+                </label>
+                <div class="row pt-2 pb-2 px-3">
+                    <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor"
+                        id="indicatorColor" value="<%= forms.indicatorColor %>"
+                        style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
+                    <input type="hidden" name="hiddenColor" id="hiddenColor">
+                </div>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-4">
+                <label for="name[ja]" class="bmd-label-static">
+                    カテゴリー
+                </label>
+                <select class="form-control" name="category">
+                    <option value="" selected>指定しない</option>
+                    <% for (let ticketTypeCategory of ticketTypeCategories) { %>
+                    <option value="<%= ticketTypeCategory.codeValue %>"
+                        <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
+                        <%= ticketTypeCategory.name.ja %>
+                    </option>
+                    <% } %>
+                </select>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-4">
+                <label for="accountTitle" class="bmd-label-static">
+                    細目
+                </label>
+                <select class="form-control" name="accountTitle">
+                    <option value="" selected>指定しない</option>
+                    <% for (let accountTitle of accountTitles) { %>
+                    <option value="<%= accountTitle.codeValue %>"
+                        <% if (forms.accountTitle==accountTitle.codeValue) { %> selected <% } %>>
+                        <%= accountTitle.name %>
+                    </option>
+                    <% } %>
+                </select>
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors.accountTitle) { %>
+                    <%- errors.accountTitle.msg %>
+                    <% } %>
+                </span>
             </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="name[ja]" class="bmd-label-static">
-                オファーカテゴリー
-            </label>
-            <select class="form-control" name="category">
-                <option value="" selected>指定しない</option>
-                <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-                <option value="<%= ticketTypeCategory.codeValue %>"
-                    <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
-                    <%= ticketTypeCategory.name.ja %>
-                </option>
-                <% } %>
-            </select>
-        </div>
+        <div class="form-row">
+            <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
+            <div class="form-group bmd-form-group col-md-12">
+                <label for="availableAddOn" class="bmd-label-static">
+                    アドオン
+                </label>
 
-        <div class="form-group bmd-form-group">
-            <label for="accountTitle" class="bmd-label-static">
-                細目
-            </label>
-            <select class="form-control" name="accountTitle">
-                <option value="" selected>指定しない</option>
-                <% for (let accountTitle of accountTitles) { %>
-                <option value="<%= accountTitle.codeValue %>" <% if (forms.accountTitle==accountTitle.codeValue) { %>
-                    selected <% } %>>
-                    <%= accountTitle.name %>
-                </option>
-                <% } %>
-            </select>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors.accountTitle) { %>
-                <%- errors.accountTitle.msg %>
-                <% } %>
-            </span>
-        </div>
-
-        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
-        <div class="form-group bmd-form-group">
-            <label for="availableAddOn" class="bmd-label-static">
-                アドオン
-            </label>
-            <select class="form-control" name="availableAddOn">
-                <option value="" selected>なし</option>
                 <% for (let addOn of addOns) { %>
-                <option value="<%= addOn.id %>"
-                    <% if (Array.isArray(forms.addOn) && forms.addOn[0] !== undefined && forms.addOn[0].itemOffered.id === addOn.id) { %>
-                    selected <% } %>>
-                    <%= addOn.name.ja %>
-                </option>
+                <%
+                    let checked = false;
+                    if (Array.isArray(forms.addOn) && forms.addOn.some((a)=>a.itemOffered.id === addOn.id)) {
+                        checked = true;
+                    }
+                    %>
+                <div class="form-check form-check-inline">
+                    <label class="form-check-label">
+                        <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked" <% } %>
+                            value="<%= addOn.id %>" name="addOn[itemOffered][id]"><%= addOn.name.ja %>
+                        <span class="form-check-sign">
+                            <span class="check"></span>
+                        </span>
+                    </label>
+                </div>
                 <% } %>
-            </select>
+            </div>
+            <% } %>
         </div>
-        <% } %>
 
     </div>
 </div>

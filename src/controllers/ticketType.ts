@@ -345,24 +345,30 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     const availableAddOn: chevre.factory.offer.IOffer[] = [];
-    if (typeof req.body.availableAddOn === 'string' && req.body.availableAddOn.length > 0) {
-        const addOn = await productService.findById({
-            id: req.body.availableAddOn
-        });
-        if (addOn.hasOfferCatalog === undefined) {
-            throw new Error(`アドオン '${addOn.name.ja}' にはオファーカタログが登録されていません`);
-        }
+    let addOnItemOfferedIds: string[] = body.addOn?.itemOffered?.id;
+    if (typeof addOnItemOfferedIds === 'string') {
+        addOnItemOfferedIds = [addOnItemOfferedIds];
+    }
+    if (Array.isArray(addOnItemOfferedIds)) {
+        for (const addOnItemOfferedId of addOnItemOfferedIds) {
+            const addOn = await productService.findById({
+                id: addOnItemOfferedId
+            });
+            if (addOn.hasOfferCatalog === undefined) {
+                throw new Error(`アドオン '${addOn.name.ja}' にはオファーカタログが登録されていません`);
+            }
 
-        availableAddOn.push({
-            project: addOn.project,
-            typeOf: chevre.factory.offerType.Offer,
-            itemOffered: {
-                typeOf: addOn.typeOf,
-                id: addOn.id,
-                name: addOn.name
-            },
-            priceCurrency: chevre.factory.priceCurrency.JPY
-        });
+            availableAddOn.push({
+                project: addOn.project,
+                typeOf: chevre.factory.offerType.Offer,
+                itemOffered: {
+                    typeOf: addOn.typeOf,
+                    id: addOn.id,
+                    name: addOn.name
+                },
+                priceCurrency: chevre.factory.priceCurrency.JPY
+            });
+        }
     }
 
     let availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.OutOfStock;
@@ -455,17 +461,17 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     // 適用座席タイプがあれば設定
     let eligibleSeatingTypes: chevre.factory.offer.IEligibleCategoryCode[] | undefined;
-    if (Array.isArray(req.body.eligibleSeatingType) && req.body.eligibleSeatingType.length > 0
-        && typeof req.body.eligibleSeatingType[0].id === 'string' && req.body.eligibleSeatingType[0].id.length > 0) {
+    if (Array.isArray(body.eligibleSeatingType) && body.eligibleSeatingType.length > 0
+        && typeof body.eligibleSeatingType[0].id === 'string' && body.eligibleSeatingType[0].id.length > 0) {
         const searchSeatingTypeResult = await categoryCodeService.search({
             limit: 1,
-            id: { $eq: req.body.eligibleSeatingType[0].id },
+            id: { $eq: body.eligibleSeatingType[0].id },
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const seatingType = searchSeatingTypeResult.data.shift();
         if (seatingType === undefined) {
-            throw new Error(`Seating Type ${req.body.eligibleSeatingType[0].id} Not Found`);
+            throw new Error(`Seating Type ${body.eligibleSeatingType[0].id} Not Found`);
         }
 
         eligibleSeatingTypes = [{
@@ -479,55 +485,55 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     // 適用口座があれば設定
     let eligibleMonetaryAmount: chevre.factory.offer.IEligibleMonetaryAmount[] | undefined;
-    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
-        && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
-        && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
+    if (Array.isArray(body.eligibleMonetaryAmount) && body.eligibleMonetaryAmount.length > 0
+        && typeof body.eligibleMonetaryAmount[0].currency === 'string' && body.eligibleMonetaryAmount[0].currency.length > 0
+        && typeof body.eligibleMonetaryAmount[0].value === 'string' && body.eligibleMonetaryAmount[0].value.length > 0) {
         eligibleMonetaryAmount = [{
             typeOf: 'MonetaryAmount',
-            currency: req.body.eligibleMonetaryAmount[0].currency,
-            value: Number(req.body.eligibleMonetaryAmount[0].value)
+            currency: body.eligibleMonetaryAmount[0].currency,
+            value: Number(body.eligibleMonetaryAmount[0].value)
         }];
     }
 
     // 適用サブ予約条件があれば設定
     let eligibleSubReservation: chevre.factory.offer.IEligibleSubReservation[] | undefined;
-    if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
-        && typeof req.body.eligibleSubReservation[0].typeOfGood !== undefined
-        && typeof req.body.eligibleSubReservation[0].typeOfGood !== null
-        && typeof req.body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
-        && req.body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
-        && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
-        && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
+    if (Array.isArray(body.eligibleSubReservation) && body.eligibleSubReservation.length > 0
+        && typeof body.eligibleSubReservation[0].typeOfGood !== undefined
+        && typeof body.eligibleSubReservation[0].typeOfGood !== null
+        && typeof body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
+        && body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
+        && typeof body.eligibleSubReservation[0].amountOfThisGood === 'string'
+        && body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
         const searchSeatingTypeResult = await categoryCodeService.search({
             limit: 1,
-            id: { $eq: req.body.eligibleSubReservation[0].typeOfGood.seatingType },
+            id: { $eq: body.eligibleSubReservation[0].typeOfGood.seatingType },
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const seatingType = searchSeatingTypeResult.data.shift();
         if (seatingType === undefined) {
-            throw new Error(`Seating Type ${req.body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
+            throw new Error(`Seating Type ${body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
         }
 
         eligibleSubReservation = [{
             typeOfGood: {
                 seatingType: seatingType.codeValue
             },
-            amountOfThisGood: Number(req.body.eligibleSubReservation[0].amountOfThisGood)
+            amountOfThisGood: Number(body.eligibleSubReservation[0].amountOfThisGood)
         }];
     }
 
     let validFrom: Date | undefined;
-    if (typeof req.body.validFrom === 'string' && req.body.validFrom.length > 0) {
-        validFrom = moment(`${req.body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+    if (typeof body.validFrom === 'string' && body.validFrom.length > 0) {
+        validFrom = moment(`${body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
             .toDate();
         // validFrom = moment(req.body.validFrom)
         //     .toDate();
     }
 
     let validThrough: Date | undefined;
-    if (typeof req.body.validThrough === 'string' && req.body.validThrough.length > 0) {
-        validThrough = moment(`${req.body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+    if (typeof body.validThrough === 'string' && body.validThrough.length > 0) {
+        validThrough = moment(`${body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
             .toDate();
         // validThrough = moment(req.body.validThrough)
         //     .toDate();
@@ -538,7 +544,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         typeOf: <chevre.factory.offerType>'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: body.id,
-        identifier: req.body.identifier,
+        identifier: body.identifier,
         name: {
             ...nameFromJson,
             ja: body.name.ja,
