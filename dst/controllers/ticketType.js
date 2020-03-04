@@ -28,7 +28,6 @@ const CHAGE_MAX_LENGTH = 10;
 /**
  * 新規登録
  */
-// tslint:disable-next-line:cyclomatic-complexity
 // tslint:disable-next-line:max-func-body-length
 function add(req, res) {
     return __awaiter(this, void 0, void 0, function* () {

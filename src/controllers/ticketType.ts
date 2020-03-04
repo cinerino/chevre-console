@@ -2,7 +2,7 @@
  * 券種マスタコントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -22,7 +22,6 @@ const CHAGE_MAX_LENGTH = 10;
 /**
  * 新規登録
  */
-// tslint:disable-next-line:cyclomatic-complexity
 // tslint:disable-next-line:max-func-body-length
 export async function add(req: Request, res: Response): Promise<void> {
     let message = '';
