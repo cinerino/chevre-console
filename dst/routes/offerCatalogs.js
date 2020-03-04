@@ -241,7 +241,7 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             count: (offers.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(offers.length),
-            results: offers.map((o) => o.name.ja)
+            results: offers
         });
     }
     catch (err) {

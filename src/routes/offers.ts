@@ -129,7 +129,7 @@ offersRouter.all(
 offersRouter.all(
     '/:id/update',
     // tslint:disable-next-line:max-func-body-length
-    async (req, res) => {
+    async (req, res, next) => {
         let message = '';
         let errors: any = {};
 
@@ -149,53 +149,57 @@ offersRouter.all(
             auth: req.user.authClient
         });
 
-        let offer = await offerService.findById({ id: req.params.id });
+        try {
+            let offer = await offerService.findById({ id: req.params.id });
 
-        if (req.method === 'POST') {
-            // 検証
-            validateFormAdd(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
-            // 検証
-            if (validatorResult.isEmpty()) {
-                try {
-                    req.body.id = req.params.id;
-                    offer = await createFromBody(req, false);
-                    await offerService.updateOffer(offer);
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
+            if (req.method === 'POST') {
+                // 検証
+                validateFormAdd(req);
+                const validatorResult = await req.getValidationResult();
+                errors = req.validationErrors(true);
+                // 検証
+                if (validatorResult.isEmpty()) {
+                    try {
+                        req.body.id = req.params.id;
+                        offer = await createFromBody(req, false);
+                        await offerService.updateOffer(offer);
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
 
-                    return;
-                } catch (error) {
-                    message = error.message;
+                        return;
+                    } catch (error) {
+                        message = error.message;
+                    }
                 }
             }
+
+            const forms = {
+                ...offer,
+                ...req.body
+            };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            const searchOfferCategoryTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+            });
+
+            res.render('offers/update', {
+                message: message,
+                errors: errors,
+                forms: forms,
+                ticketTypeCategories: searchOfferCategoryTypesResult.data,
+                accountTitles: searchAccountTitlesResult.data
+            });
+        } catch (error) {
+            next(error);
         }
-
-        const forms = {
-            ...offer,
-            ...req.body
-        };
-        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-            // tslint:disable-next-line:prefer-array-literal
-            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-                return {};
-            }));
-        }
-
-        const searchOfferCategoryTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-        });
-
-        res.render('offers/update', {
-            message: message,
-            errors: errors,
-            forms: forms,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data
-        });
     }
 );
 

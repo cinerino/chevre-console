@@ -111,7 +111,7 @@ offersRouter.all('/add',
 }));
 offersRouter.all('/:id/update', 
 // tslint:disable-next-line:max-func-body-length
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -129,46 +129,51 @@ offersRouter.all('/:id/update',
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    let offer = yield offerService.findById({ id: req.params.id });
-    if (req.method === 'POST') {
-        // 検証
-        validateFormAdd(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
-        // 検証
-        if (validatorResult.isEmpty()) {
-            try {
-                req.body.id = req.params.id;
-                offer = yield createFromBody(req, false);
-                yield offerService.updateOffer(offer);
-                req.flash('message', '更新しました');
-                res.redirect(req.originalUrl);
-                return;
-            }
-            catch (error) {
-                message = error.message;
+    try {
+        let offer = yield offerService.findById({ id: req.params.id });
+        if (req.method === 'POST') {
+            // 検証
+            validateFormAdd(req);
+            const validatorResult = yield req.getValidationResult();
+            errors = req.validationErrors(true);
+            // 検証
+            if (validatorResult.isEmpty()) {
+                try {
+                    req.body.id = req.params.id;
+                    offer = yield createFromBody(req, false);
+                    yield offerService.updateOffer(offer);
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
+                    return;
+                }
+                catch (error) {
+                    message = error.message;
+                }
             }
         }
+        const forms = Object.assign(Object.assign({}, offer), req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+        const searchOfferCategoryTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
+        res.render('offers/update', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
+            accountTitles: searchAccountTitlesResult.data
+        });
     }
-    const forms = Object.assign(Object.assign({}, offer), req.body);
-    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-        // tslint:disable-next-line:prefer-array-literal
-        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-            return {};
-        }));
+    catch (error) {
+        next(error);
     }
-    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-    res.render('offers/update', {
-        message: message,
-        errors: errors,
-        forms: forms,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        accountTitles: searchAccountTitlesResult.data
-    });
 }));
 offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

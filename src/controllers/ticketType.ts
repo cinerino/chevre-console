@@ -2,7 +2,7 @@
  * 券種マスタコントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -154,7 +154,7 @@ export async function add(req: Request, res: Response): Promise<void> {
  * 編集
  */
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-export async function update(req: Request, res: Response): Promise<void> {
+export async function update(req: Request, res: Response, next: NextFunction): Promise<void> {
     let message = '';
     let errors: any = {};
 
@@ -178,141 +178,145 @@ export async function update(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
 
-    let ticketType = await offerService.findTicketTypeById({ id: req.params.id });
+    try {
+        let ticketType = await offerService.findTicketTypeById({ id: req.params.id });
 
-    if (req.method === 'POST') {
-        // 検証
-        validateFormAdd(req);
-        const validatorResult = await req.getValidationResult();
-        errors = req.validationErrors(true);
-        console.error(errors);
-        // 検証
-        if (validatorResult.isEmpty()) {
-            // 券種DB更新プロセス
-            try {
-                req.body.id = req.params.id;
-                ticketType = await createFromBody(req, false);
-                await offerService.updateTicketType(ticketType);
-                req.flash('message', '更新しました');
-                res.redirect(req.originalUrl);
+        if (req.method === 'POST') {
+            // 検証
+            validateFormAdd(req);
+            const validatorResult = await req.getValidationResult();
+            errors = req.validationErrors(true);
+            console.error(errors);
+            // 検証
+            if (validatorResult.isEmpty()) {
+                // 券種DB更新プロセス
+                try {
+                    req.body.id = req.params.id;
+                    ticketType = await createFromBody(req, false);
+                    await offerService.updateTicketType(ticketType);
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
 
-                return;
-            } catch (error) {
-                message = error.message;
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
             }
         }
+
+        if (ticketType.priceSpecification === undefined) {
+            throw new Error('ticketType.priceSpecification undefined');
+        }
+
+        let isBoxTicket = false;
+        let isOnlineTicket = false;
+        switch (ticketType.availability) {
+            case chevre.factory.itemAvailability.InStock:
+                isBoxTicket = true;
+                isOnlineTicket = true;
+                break;
+            case chevre.factory.itemAvailability.InStoreOnly:
+                isBoxTicket = true;
+                break;
+            case chevre.factory.itemAvailability.OnlineOnly:
+                isOnlineTicket = true;
+                break;
+            default:
+        }
+
+        let seatReservationUnit = 1;
+        if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
+            seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
+        }
+
+        const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
+            ? ticketType.priceSpecification.accounting.accountsReceivable
+            : '';
+
+        const forms = {
+            additionalProperty: [],
+            alternateName: {},
+            priceSpecification: {
+                referenceQuantity: {}
+            },
+            ...ticketType,
+            category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '',
+            price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit),
+            accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit),
+            validFrom: (ticketType.validFrom !== undefined)
+                ? moment(ticketType.validFrom)
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '',
+            validThrough: (ticketType.validThrough !== undefined)
+                ? moment(ticketType.validThrough)
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '',
+            ...req.body,
+            isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
+            isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
+            seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit,
+            accountTitle: (_.isEmpty(req.body.accountTitle))
+                ? (ticketType.priceSpecification.accounting !== undefined
+                    && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
+                    ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
+                : req.body.accountTitle
+        };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+
+        const searchOfferCategoryTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        });
+
+        // ムビチケ券種区分検索
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+
+        // 座席タイプ検索
+        const searchSeatingTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+
+        // 口座タイプ検索
+        const searchAccountTypesResult = await categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+        });
+
+        const searchAddOnsResult = await productService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            typeOf: { $eq: 'Product' }
+        });
+
+        res.render('ticketType/update', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            movieTicketTypes: searchMovieTicketTypesResult.data,
+            seatingTypes: searchSeatingTypesResult.data,
+            accountTypes: searchAccountTypesResult.data,
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
+            accountTitles: searchAccountTitlesResult.data,
+            addOns: searchAddOnsResult.data
+        });
+    } catch (error) {
+        next(error);
     }
-
-    if (ticketType.priceSpecification === undefined) {
-        throw new Error('ticketType.priceSpecification undefined');
-    }
-
-    let isBoxTicket = false;
-    let isOnlineTicket = false;
-    switch (ticketType.availability) {
-        case chevre.factory.itemAvailability.InStock:
-            isBoxTicket = true;
-            isOnlineTicket = true;
-            break;
-        case chevre.factory.itemAvailability.InStoreOnly:
-            isBoxTicket = true;
-            break;
-        case chevre.factory.itemAvailability.OnlineOnly:
-            isOnlineTicket = true;
-            break;
-        default:
-    }
-
-    let seatReservationUnit = 1;
-    if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
-        seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
-    }
-
-    const accountsReceivable = (ticketType.priceSpecification.accounting !== undefined)
-        ? ticketType.priceSpecification.accounting.accountsReceivable
-        : '';
-
-    const forms = {
-        additionalProperty: [],
-        alternateName: {},
-        priceSpecification: {
-            referenceQuantity: {}
-        },
-        ...ticketType,
-        category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '',
-        price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit),
-        accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit),
-        validFrom: (ticketType.validFrom !== undefined)
-            ? moment(ticketType.validFrom)
-                .tz('Asia/Tokyo')
-                .format('YYYY/MM/DD')
-            : '',
-        validThrough: (ticketType.validThrough !== undefined)
-            ? moment(ticketType.validThrough)
-                .tz('Asia/Tokyo')
-                .format('YYYY/MM/DD')
-            : '',
-        ...req.body,
-        isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
-        isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
-        seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit,
-        accountTitle: (_.isEmpty(req.body.accountTitle))
-            ? (ticketType.priceSpecification.accounting !== undefined
-                && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
-                ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
-            : req.body.accountTitle
-    };
-    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-        // tslint:disable-next-line:prefer-array-literal
-        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-            return {};
-        }));
-    }
-
-    const searchOfferCategoryTypesResult = await categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-
-    // ムビチケ券種区分検索
-    const searchMovieTicketTypesResult = await categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-    });
-
-    // 座席タイプ検索
-    const searchSeatingTypesResult = await categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-    });
-
-    // 口座タイプ検索
-    const searchAccountTypesResult = await categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
-    });
-
-    const searchAddOnsResult = await productService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        typeOf: { $eq: 'Product' }
-    });
-
-    res.render('ticketType/update', {
-        message: message,
-        errors: errors,
-        forms: forms,
-        movieTicketTypes: searchMovieTicketTypesResult.data,
-        seatingTypes: searchSeatingTypesResult.data,
-        accountTypes: searchAccountTypesResult.data,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        accountTitles: searchAccountTitlesResult.data,
-        addOns: searchAddOnsResult.data
-    });
 }
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length

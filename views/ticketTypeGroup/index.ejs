@@ -25,24 +25,20 @@ Aa-8
 
         <%- include('../offerCatalogs/_dataTables', { onlyEventService: true }) %>
     </div>
-</div>
 
-<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span>×</span></button>
-                <h4 class="modal-title">券種グループの追加特性</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+    <div class="modal fade" id="modal-offerCatalog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<%- include('_listTicketTypes') %>
 
 <%- include('../common/master/_loading') %>

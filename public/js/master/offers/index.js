@@ -82,12 +82,13 @@ $(function () {
             return;
         }
 
-        var modal = $('#modal-additionalProperty');
+        var modal = $('#modal-offer');
         var body = modal.find('.modal-body');
         body.empty()
         var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
             + JSON.stringify(movieTheater.additionalProperty, null, '\t')
             + '</textarea>'
+        modal.find('.modal-title').text('追加特性');
         body.append(html);
         modal.modal();
     }
@@ -112,7 +113,7 @@ $(function () {
             }
         }).done(function (data) {
             if (data.success) {
-                var modal = $('#offerCatalogs');
+                var modal = $('#modal-offer');
 
                 var body = $('<p>').text('データが見つかりませんでした');
                 var tbody = $('<tbody>');
@@ -139,6 +140,7 @@ $(function () {
                         .append(table)
                 }
 
+                modal.find('.modal-title').text('関連カタログ');
                 modal.find('.modal-body').html(body);
                 modal.modal();
             }

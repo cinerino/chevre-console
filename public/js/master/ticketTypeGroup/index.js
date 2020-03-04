@@ -82,16 +82,38 @@ $(function () {
             }
         }).done(function (data) {
             if (data.success) {
-                var modal = $('#listModal');
-                var listTicketTypeGroup = modal.find('#listTicketType');
-                listTicketTypeGroup.empty();
+                var modal = $('#modal-offerCatalog');
+
+                var div = $('<div>');
+
                 if (data.results.length > 0) {
-                    for (let i = 0; i < data.results.length; i++) {
-                        listTicketTypeGroup.append(`<tr><td>${data.results[i]}</td></tr>`);
-                    }
+                    var thead = $('<thead>').addClass('text-primary')
+                        .append([
+                            $('<tr>').append([
+                                $('<th>').text('コード'),
+                                $('<th>').text('名称')
+                            ])
+                        ]);
+                    var tbody = $('<tbody>')
+                        .append(data.results.map(function (result) {
+                            var url = '/ticketTypes/' + result.id + '/update';
+
+                            return $('<tr>').append([
+                                $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
+                                $('<td>').text(result.name.ja)
+                            ]);
+                        }))
+                    var table = $('<table>').addClass('table table-sm')
+                        .append([thead, tbody]);
+
+                    div.addClass('table-responsive')
+                        .append(table);
                 } else {
-                    listTicketTypeGroup.append(`<tr><td>データがありません。</td></tr>`);
+                    div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
                 }
+
+                modal.find('.modal-title').text('対象オファー');
+                modal.find('.modal-body').html(div);
                 modal.modal();
             }
         }).fail(function (jqxhr, textStatus, error) {
@@ -122,13 +144,16 @@ $(function () {
             return;
         }
 
-        var modal = $('#modal-additionalProperty');
-        var body = modal.find('.modal-body');
-        body.empty()
-        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
+        var modal = $('#modal-offerCatalog');
+
+        var div = $('<div>');
+
+        div.append('<textarea rows="20" class="form-control" placeholder="" disabled="">'
             + JSON.stringify(movieTheater.additionalProperty, null, '\t')
-            + '</textarea>'
-        body.append(html);
+            + '</textarea>');
+
+        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-body').html(div);
         modal.modal();
     }
 });

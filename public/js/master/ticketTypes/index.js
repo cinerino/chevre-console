@@ -69,7 +69,7 @@ $(function () {
     });
 
     /**
-     * 関連券種グループのpopupを表示
+     * 関連券種グループを表示
      */
     function list(id) {
         console.log('requesting...', id);
@@ -84,16 +84,38 @@ $(function () {
             }
         }).done(function (data) {
             if (data.success) {
-                var modal = $('#listModal');
-                var listTicketTypeGroup = modal.find('#listTicketTypeGroup');
-                listTicketTypeGroup.empty();
+                var modal = $('#modal-offer');
+
+                var div = $('<div>');
+
                 if (data.results.length > 0) {
-                    for (let i = 0; i < data.results.length; i++) {
-                        listTicketTypeGroup.append(`<tr><td>${data.results[i].name.ja}</td></tr>`);
-                    }
+                    var thead = $('<thead>').addClass('text-primary')
+                        .append([
+                            $('<tr>').append([
+                                $('<th>').text('コード'),
+                                $('<th>').text('名称')
+                            ])
+                        ]);
+                    var tbody = $('<tbody>')
+                        .append(data.results.map(function (result) {
+                            var url = '/offerCatalogs/' + result.id + '/update';
+
+                            return $('<tr>').append([
+                                $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
+                                $('<td>').text(result.name.ja)
+                            ]);
+                        }))
+                    var table = $('<table>').addClass('table table-sm')
+                        .append([thead, tbody]);
+
+                    div.addClass('table-responsive')
+                        .append(table);
                 } else {
-                    listTicketTypeGroup.append(`<tr><td>データがありません。</td></tr>`);
+                    div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
                 }
+
+                modal.find('.modal-title').text('関連グループ');
+                modal.find('.modal-body').html(div);
                 modal.modal();
             }
         }).fail(function (jqxhr, textStatus, error) {

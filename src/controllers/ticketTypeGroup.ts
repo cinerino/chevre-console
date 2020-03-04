@@ -348,7 +348,7 @@ export async function getTicketTypeList(req: Request, res: Response): Promise<vo
             count: (ticketTypes.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(ticketTypes.length),
-            results: ticketTypes.map((t) => (t.alternateName !== undefined) ? t.alternateName.ja : t.name.ja)
+            results: ticketTypes
         });
     } catch (err) {
         res.json({

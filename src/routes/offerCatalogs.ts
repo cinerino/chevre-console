@@ -287,7 +287,7 @@ offerCatalogsRouter.get(
                 count: (offers.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(offers.length),
-                results: offers.map((o) => (<any>o.name).ja)
+                results: offers
             });
         } catch (err) {
             res.json({
