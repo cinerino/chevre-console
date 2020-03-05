@@ -72,22 +72,43 @@ $(function () {
      * 追加特性を見る
      */
     function showAdditionalProperty(id) {
-        var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
+        var seat = $.CommonMasterList.getDatas().find(function (data) {
             return data.id === id
         });
-        if (movieTheater === undefined) {
+        if (seat === undefined) {
             alert('座席' + id + 'が見つかりません');
 
             return;
         }
 
         var modal = $('#modal-additionalProperty');
-        var body = modal.find('.modal-body');
-        body.empty()
-        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
-            + JSON.stringify(movieTheater.additionalProperty, null, '\t')
-            + '</textarea>'
-        body.append(html);
+        var div = $('<div>')
+
+        if (Array.isArray(seat.additionalProperty)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('Name'),
+                    $('<th>').text('Value')
+                ])
+            ]);
+            tbody.append(seat.additionalProperty.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.name),
+                    $('<td>').text(property.value)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
+        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-body').html(div);
         modal.modal();
     }
 });

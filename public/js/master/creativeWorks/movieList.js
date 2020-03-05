@@ -89,12 +89,33 @@ $(function () {
         }
 
         var modal = $('#modal-additionalProperty');
-        var body = modal.find('.modal-body');
-        body.empty()
-        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
-            + JSON.stringify(movie.additionalProperty, null, '\t')
-            + '</textarea>'
-        body.append(html);
+        var div = $('<div>')
+
+        if (Array.isArray(movie.additionalProperty)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('Name'),
+                    $('<th>').text('Value')
+                ])
+            ]);
+            tbody.append(movie.additionalProperty.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.name),
+                    $('<td>').text(property.value)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
+        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-body').html(div);
         modal.modal();
     }
 });
