@@ -3,7 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -109,61 +109,65 @@ export async function searchAccountTitleCategory(req: Request, res: Response): P
 /**
  * 科目分類編集
  */
-export async function updateAccountTitleCategory(req: Request, res: Response): Promise<void> {
-    let message = '';
-    let errors: any = {};
+export async function updateAccountTitleCategory(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        let message = '';
+        let errors: any = {};
 
-    const accountTitleService = new chevre.service.AccountTitle({
-        endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
 
-    const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
-        project: { ids: [req.project.id] },
-        codeValue: req.params.codeValue
-    });
-    let accountTitle = searchAccountTitlesResult.data.shift();
-    if (accountTitle === undefined) {
-        throw new chevre.factory.errors.NotFound('AccounTitle');
-    }
+        const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
+            project: { ids: [req.project.id] },
+            codeValue: { $eq: req.params.codeValue }
+        });
+        let accountTitle = searchAccountTitlesResult.data.shift();
+        if (accountTitle === undefined) {
+            throw new chevre.factory.errors.NotFound('AccounTitle');
+        }
 
-    if (req.method === 'POST') {
-        // バリデーション
-        validateAccountTitleCategory(req);
-        const validatorResult = await req.getValidationResult();
-        errors = req.validationErrors(true);
-        if (validatorResult.isEmpty()) {
-            // 作品DB登録
-            try {
-                accountTitle = {
-                    project: req.project,
-                    typeOf: <'AccountTitle'>'AccountTitle',
-                    codeValue: req.body.codeValue,
-                    name: req.body.name,
-                    description: req.body.description
-                };
-                debug('saving account title...', accountTitle);
-                await accountTitleService.updateAccounTitleCategory(accountTitle);
-                req.flash('message', '更新しました');
-                res.redirect(req.originalUrl);
+        if (req.method === 'POST') {
+            // バリデーション
+            validateAccountTitleCategory(req);
+            const validatorResult = await req.getValidationResult();
+            errors = req.validationErrors(true);
+            if (validatorResult.isEmpty()) {
+                // 作品DB登録
+                try {
+                    accountTitle = {
+                        project: req.project,
+                        typeOf: <'AccountTitle'>'AccountTitle',
+                        codeValue: req.body.codeValue,
+                        name: req.body.name,
+                        description: req.body.description
+                    };
+                    debug('saving account title...', accountTitle);
+                    await accountTitleService.updateAccounTitleCategory(accountTitle);
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
 
-                return;
-            } catch (error) {
-                message = error.message;
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
             }
         }
+
+        const forms = {
+            ...accountTitle,
+            ...req.body
+        };
+
+        res.render('accountTitles/accountTitleCategory/edit', {
+            message: message,
+            errors: errors,
+            forms: forms
+        });
+    } catch (error) {
+        next(error);
     }
-
-    const forms = {
-        ...accountTitle,
-        ...req.body
-    };
-
-    res.render('accountTitles/accountTitleCategory/edit', {
-        message: message,
-        errors: errors,
-        forms: forms
-    });
 }
 
 /**

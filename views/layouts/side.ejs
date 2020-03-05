@@ -171,6 +171,37 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#accountTitles">
+                <i class="material-icons">category</i>
+                <p>勘定科目
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse" id="accountTitles">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accountTitles/accountTitleCategory">
+                            <span class="sidebar-mini"><i class="material-icons">category</i></span>
+                            <span class="sidebar-normal">科目分類</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accountTitles/accountTitleSet">
+                            <span class="sidebar-mini"><i class="material-icons">category</i></span>
+                            <span class="sidebar-normal">科目</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accountTitles">
+                            <span class="sidebar-mini"><i class="material-icons">category</i></span>
+                            <span class="sidebar-normal">細目</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
             <a class="nav-link" href="/reservations">
                 <i class="material-icons">event_seat</i>

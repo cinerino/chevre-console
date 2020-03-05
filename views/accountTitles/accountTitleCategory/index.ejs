@@ -12,56 +12,82 @@ AT-05
 
 <%- contentFor('body') %>
 
-<div class="col-sm-12 search searchAccountTitleCategories">
-    <form method="post" class="form-horizontal">
-        <%- include('../../common/master/_hidden') %>
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/accountTitles/accountTitleCategory/new">
+                <i class="material-icons">add</i>登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i>更新</a>
+        </div>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../../common/master/_hidden') %>
 
-        <div class="form-group ">
-            <label for="codeValue" class="col-sm-3 control-label label-title">
-                科目分類コード
-            </label>
-            <div class="col-sm-9">
-                <input type="text" class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
-                    value="">
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label for="codeValue" class="bmd-label-static">
+                                        科目分類コード
+                                    </label>
+                                    <input type="text" class="form-control" name="codeValue" id="codeValue"
+                                        placeholder="" maxlength=64 value="">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>科目分類コード</th>
+                                    <th>科目分類名称</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow">
+                                    <td name="codeValue"><a class="editAccountTitleCategory"
+                                            href="javascript:void(0)">$codeValue$</a>
+                                    </td>
+                                    <td name="name">$name$</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <a class="btn btn-ok search btn-primary"><span>検索する</span></a>
-        </div>
-    </form>
-</div>
-
-<div class="col-sm-12 search">
-    <div id="list" class="table-responsive" style="display:none;">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>科目分類コード</th>
-                    <th>科目分類名称</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="templateRow">
-                    <td name="codeValue"><a class="editAccountTitleCategory" href="javascript:void(0)">$codeValue$</a>
-                    </td>
-                    <td name="name">$name$</td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="pager" class="div_pager_parent"></div>
     </div>
-</div>
 
-<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">細目の追加特性</h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+    <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">細目の追加特性</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
             </div>
         </div>
     </div>

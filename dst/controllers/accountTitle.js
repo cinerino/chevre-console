@@ -114,54 +114,59 @@ exports.searchAccountTitleCategory = searchAccountTitleCategory;
 /**
  * 科目分類編集
  */
-function updateAccountTitleCategory(req, res) {
+function updateAccountTitleCategory(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let message = '';
-        let errors = {};
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
-            project: { ids: [req.project.id] },
-            codeValue: req.params.codeValue
-        });
-        let accountTitle = searchAccountTitlesResult.data.shift();
-        if (accountTitle === undefined) {
-            throw new chevre.factory.errors.NotFound('AccounTitle');
-        }
-        if (req.method === 'POST') {
-            // バリデーション
-            validateAccountTitleCategory(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
-            if (validatorResult.isEmpty()) {
-                // 作品DB登録
-                try {
-                    accountTitle = {
-                        project: req.project,
-                        typeOf: 'AccountTitle',
-                        codeValue: req.body.codeValue,
-                        name: req.body.name,
-                        description: req.body.description
-                    };
-                    debug('saving account title...', accountTitle);
-                    yield accountTitleService.updateAccounTitleCategory(accountTitle);
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
-                    return;
-                }
-                catch (error) {
-                    message = error.message;
+        try {
+            let message = '';
+            let errors = {};
+            const accountTitleService = new chevre.service.AccountTitle({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
+                project: { ids: [req.project.id] },
+                codeValue: { $eq: req.params.codeValue }
+            });
+            let accountTitle = searchAccountTitlesResult.data.shift();
+            if (accountTitle === undefined) {
+                throw new chevre.factory.errors.NotFound('AccounTitle');
+            }
+            if (req.method === 'POST') {
+                // バリデーション
+                validateAccountTitleCategory(req);
+                const validatorResult = yield req.getValidationResult();
+                errors = req.validationErrors(true);
+                if (validatorResult.isEmpty()) {
+                    // 作品DB登録
+                    try {
+                        accountTitle = {
+                            project: req.project,
+                            typeOf: 'AccountTitle',
+                            codeValue: req.body.codeValue,
+                            name: req.body.name,
+                            description: req.body.description
+                        };
+                        debug('saving account title...', accountTitle);
+                        yield accountTitleService.updateAccounTitleCategory(accountTitle);
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
+                        return;
+                    }
+                    catch (error) {
+                        message = error.message;
+                    }
                 }
             }
+            const forms = Object.assign(Object.assign({}, accountTitle), req.body);
+            res.render('accountTitles/accountTitleCategory/edit', {
+                message: message,
+                errors: errors,
+                forms: forms
+            });
         }
-        const forms = Object.assign(Object.assign({}, accountTitle), req.body);
-        res.render('accountTitles/accountTitleCategory/edit', {
-            message: message,
-            errors: errors,
-            forms: forms
-        });
+        catch (error) {
+            next(error);
+        }
     });
 }
 exports.updateAccountTitleCategory = updateAccountTitleCategory;
