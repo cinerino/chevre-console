@@ -63,8 +63,7 @@ AT-06
                                 <tr>
                                     <th>コード</th>
                                     <th>名称</th>
-                                    <th>科目分類コード</th>
-                                    <th>科目分類名称</th>
+                                    <th>科目分類</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,14 +75,13 @@ AT-06
                                         </a>
                                     </td>
                                     <td name="name">$name$</td>
-                                    <td name="inCodeSet.codeValue__inCodeSet.codeValue">
+                                    <td name="inCodeSet.codeValue__inCodeSet.name">
                                         <a target="_blank"
                                             href="/accountTitles/accountTitleCategory/$inCodeSet.codeValue$">
-                                            $inCodeSet.codeValue$
+                                            $inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="inCodeSet.name">$inCodeSet.name$</td>
                                 </tr>
                             </tbody>
                         </table>

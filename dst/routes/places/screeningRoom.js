@@ -163,7 +163,6 @@ screeningRoomRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
                 return;
             }
             catch (error) {
-                console.error(error);
                 message = error.message;
             }
         }

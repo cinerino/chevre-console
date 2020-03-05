@@ -185,7 +185,6 @@ export async function update(req: Request, res: Response, next: NextFunction): P
             validateFormAdd(req);
             const validatorResult = await req.getValidationResult();
             errors = req.validationErrors(true);
-            console.error(errors);
             // 検証
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス

@@ -77,11 +77,8 @@ AT-01
                                 <tr>
                                     <th>コード</th>
                                     <th>名称</th>
-                                    <th>科目分類コード</th>
-                                    <th>科目分類名称</th>
-                                    <th>科目コード</th>
-                                    <th>科目名称</th>
-                                    <th></th>
+                                    <th>科目分類</th>
+                                    <th>科目</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -92,29 +89,18 @@ AT-01
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     <td name="name">$name$</td>
-                                    <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.codeValue">
+                                    <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.name">
                                         <a target="_blank"
                                             href="/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
-                                            $inCodeSet.inCodeSet.codeValue$
+                                            $inCodeSet.inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
-                                    <td name="inCodeSet.codeValue__inCodeSet.codeValue">
+                                    <td name="inCodeSet.codeValue__inCodeSet.name">
                                         <a target="_blank" href="/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
-                                            $inCodeSet.codeValue$
+                                            $inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
-                                    </td>
-                                    <td name="inCodeSet.name">$inCodeSet.name$</td>
-                                    <td name="edit__codeValue">
-                                        <div class="text-center mt-2">
-                                            <a href="javascript:void(0)"
-                                                class="btn btn-sm btn-outline-primary showAdditionalProperty"
-                                                data-codeValue="$codeValue$">
-                                                <span>追加特性</span>
-                                            </a>
-                                        </div>
                                     </td>
                                 </tr>
                             </tbody>

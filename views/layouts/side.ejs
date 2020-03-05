@@ -171,6 +171,7 @@
             </a>
         </li>
 
+        <% if (process.env.USE_ACCOUNT_TITLE === '1') { %>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#accountTitles">
                 <i class="material-icons">category</i>
@@ -201,6 +202,7 @@
                 </ul>
             </div>
         </li>
+        <% } %>
 
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
             <a class="nav-link" href="/reservations">

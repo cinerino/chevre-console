@@ -185,7 +185,6 @@ screeningRoomRouter.all(
 
                     return;
                 } catch (error) {
-                    console.error(error);
                     message = error.message;
                 }
             }

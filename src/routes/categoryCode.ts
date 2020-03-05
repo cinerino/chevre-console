@@ -81,7 +81,6 @@ categoryCodesRouter.all(
             validate(req);
             const validatorResult = await req.getValidationResult();
             errors = req.validationErrors(true);
-            console.error(errors);
             if (validatorResult.isEmpty()) {
                 try {
                     let categoryCode = createMovieFromBody(req);

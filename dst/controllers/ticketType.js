@@ -169,7 +169,6 @@ function update(req, res, next) {
                 validateFormAdd(req);
                 const validatorResult = yield req.getValidationResult();
                 errors = req.validationErrors(true);
-                console.error(errors);
                 // 検証
                 if (validatorResult.isEmpty()) {
                     // 券種DB更新プロセス

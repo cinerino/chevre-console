@@ -194,7 +194,6 @@ seatRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void
                     return;
                 }
                 catch (error) {
-                    console.error(error);
                     message = error.message;
                 }
             }
