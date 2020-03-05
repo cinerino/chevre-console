@@ -1,78 +1,62 @@
-<div class="form-group">
-    <label for="inCodeSet[codeValue]" class="">
-        科目分類<span class="text-danger">＊</span>
-    </label>
-    <% if (!isNew) { %>
-    <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
-    <% } %>
-    <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
-        <option value="">選択してください</option>
-        <% for (const accountTitleCategory of accountTitleCategories) { %>
-        <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">基本設定</h4>
+        </div>
+    </div>
+
+    <div class="card-body">
+
+        <div class="form-group">
+            <label for="inCodeSet[codeValue]" class="">
+                科目分類<span class="text-danger">＊</span>
+            </label>
+            <% if (!isNew) { %>
+            <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
+            <% } %>
+            <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
+                <option value="">選択してください</option>
+                <% for (const accountTitleCategory of accountTitleCategories) { %>
+                <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
                 { %> selected <% } %>>
-            <%= accountTitleCategory.codeValue %>
-            <%= accountTitleCategory.name %>
-        </option>
-        <% } %>
-    </select>
-    <p class="error message text-danger">
-        <% if (errors && errors['inCodeSet.codeValue']) { %>
-        <%- errors['inCodeSet.codeValue'].msg %>
-        <% } %>
-    </p>
-</div>
+                    <%= accountTitleCategory.codeValue %>
+                    <%= accountTitleCategory.name %>
+                </option>
+                <% } %>
+            </select>
+            <p class="error message text-danger">
+                <% if (errors && errors['inCodeSet.codeValue']) { %>
+                <%- errors['inCodeSet.codeValue'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<div class="form-group">
-    <label for="codeValue" class="">
-        科目コード<span class="text-danger">＊</span>
-    </label>
-    <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
-        value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
-    <p class="message">半角64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['codeValue']) { %>
-        <%- errors['codeValue'].msg %>
-        <% } %>
-    </p>
-</div>
+        <div class="form-group">
+            <label for="codeValue" class="">
+                科目コード<span class="text-danger">＊</span>
+            </label>
+            <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+                value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
+            <p class="message">半角64文字以内でご入力ください。</p>
+            <p class="error message text-danger">
+                <% if (errors && errors['codeValue']) { %>
+                <%- errors['codeValue'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<div class="form-group">
-    <label for="name" class="">
-        科目名称<span class="text-danger">＊</span>
-    </label>
-    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
-    <p class="message">64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['name']) { %>
-        <%- errors['name'].msg %>
-        <% } %>
-    </p>
+        <div class="form-group">
+            <label for="name" class="">
+                科目名称<span class="text-danger">＊</span>
+            </label>
+            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
+            <p class="message">64文字以内でご入力ください。</p>
+            <p class="error message text-danger">
+                <% if (errors && errors['name']) { %>
+                <%- errors['name'].msg %>
+                <% } %>
+            </p>
+        </div>
+    </div>
 </div>
-
-<div class="form-group">
-    <label for="inDefinedTermSet[termCode]" class="">
-        科目区分コード<font color="red">＊</font>
-    </label>
-    <input class="form-control" name="inDefinedTermSet[termCode]" id="inDefinedTermSet[termCode]" placeholder=""
-        maxlength=64 value="<%= forms.inDefinedTermSet.termCode %>">
-    <p class="message">半角64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['inDefinedTermSet.termCode']) { %>
-        <%- errors['inDefinedTermSet.termCode'].msg %>
-        <% } %>
-    </p>
-</div>
-
-<div class="form-group">
-    <label for="inDefinedTermSet[name]" class="">
-        科目区分名<font color="red">＊</font>
-    </label>
-    <input class="form-control" name="inDefinedTermSet[name]" id="inDefinedTermSet[name]" placeholder="" maxlength=64
-        value="<%= forms.inDefinedTermSet.name %>">
-    <p class="message">64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['inDefinedTermSet.name']) { %>
-        <%- errors['inDefinedTermSet.name'].msg %>
-        <% } %>
-    </p>
-</div>
+<!-- end card -->

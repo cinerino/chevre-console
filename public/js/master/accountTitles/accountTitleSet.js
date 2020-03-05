@@ -19,12 +19,14 @@ $(function () {
 
     // 科目検索ボタンイベント
     var conditions = {};
-    $(document).on('click', '.search .btn-ok', function () {
+    $(document).on('click', '.btn-ok', function () {
         // 検索条件取得
         conditions = $.fn.getDataFromForm('form');
         // 検索API呼び出し
         search(1);
     });
+
+    $('.btn-ok').click();
 
     // 細目編集ボタン
     $(document).on('click', 'a.editAccountTitle', function () {

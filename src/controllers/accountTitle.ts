@@ -349,7 +349,7 @@ export async function searchAccountTitleSet(req: Request, res: Response): Promis
                 limit: limit,
                 page: page,
                 project: { ids: [req.project.id] },
-                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
+                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? { $eq: req.query.codeValue } : undefined,
                 inCodeSet: {
                     codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
                         ? { $eq: req.query.inCodeSet.codeValue }
@@ -399,15 +399,15 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
         auth: req.user.authClient
     });
 
-    const searchAccountTitlesResult = await accountTitleService.searchAccountTitleSets({
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
         project: { ids: [req.project.id] },
-        codeValue: req.params.codeValue
+        codeValue: { $eq: req.params.codeValue }
     });
-    let accountTitle = searchAccountTitlesResult.data.shift();
-    if (accountTitle === undefined) {
+    let accountTitleSet = searchAccountTitleSetsResult.data.shift();
+    if (accountTitleSet === undefined) {
         throw new chevre.factory.errors.NotFound('AccounTitle');
     }
-    debug('accountTitle found', accountTitle);
+    debug('accountTitle found', accountTitleSet);
 
     // 科目分類検索
     const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
@@ -424,16 +424,20 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                accountTitle = {
+                accountTitleSet = {
                     project: req.project,
                     typeOf: <'AccountTitle'>'AccountTitle',
                     codeValue: req.body.codeValue,
                     name: req.body.name,
-                    description: req.body.description,
-                    inDefinedTermSet: req.body.inDefinedTermSet
+                    inCodeSet: {
+                        project: req.project,
+                        typeOf: 'AccountTitle',
+                        codeValue: req.body.inCodeSet?.codeValue
+                    }
+                    // inDefinedTermSet: req.body.inDefinedTermSet
                 };
-                debug('saving account title...', accountTitle);
-                await accountTitleService.updateAccounTitleSet(accountTitle);
+                debug('saving account title...', accountTitleSet);
+                await accountTitleService.updateAccounTitleSet(accountTitleSet);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
@@ -447,7 +451,7 @@ export async function updateAccountTitleSet(req: Request, res: Response): Promis
     const forms = {
         inCodeSet: {},
         inDefinedTermSet: {},
-        ...accountTitle,
+        ...accountTitleSet,
         ...req.body
     };
 

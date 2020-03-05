@@ -342,7 +342,7 @@ function searchAccountTitleSet(req, res) {
                     limit: limit,
                     page: page,
                     project: { ids: [req.project.id] },
-                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? req.query.codeValue : undefined,
+                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? { $eq: req.query.codeValue } : undefined,
                     inCodeSet: {
                         codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
                             ? { $eq: req.query.inCodeSet.codeValue }
@@ -385,6 +385,7 @@ exports.searchAccountTitleSet = searchAccountTitleSet;
  * 科目編集
  */
 function updateAccountTitleSet(req, res) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         let message = '';
         let errors = {};
@@ -392,15 +393,15 @@ function updateAccountTitleSet(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleSets({
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
             project: { ids: [req.project.id] },
-            codeValue: req.params.codeValue
+            codeValue: { $eq: req.params.codeValue }
         });
-        let accountTitle = searchAccountTitlesResult.data.shift();
-        if (accountTitle === undefined) {
+        let accountTitleSet = searchAccountTitleSetsResult.data.shift();
+        if (accountTitleSet === undefined) {
             throw new chevre.factory.errors.NotFound('AccounTitle');
         }
-        debug('accountTitle found', accountTitle);
+        debug('accountTitle found', accountTitleSet);
         // 科目分類検索
         const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
             limit: 100,
@@ -415,16 +416,20 @@ function updateAccountTitleSet(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    accountTitle = {
+                    accountTitleSet = {
                         project: req.project,
                         typeOf: 'AccountTitle',
                         codeValue: req.body.codeValue,
                         name: req.body.name,
-                        description: req.body.description,
-                        inDefinedTermSet: req.body.inDefinedTermSet
+                        inCodeSet: {
+                            project: req.project,
+                            typeOf: 'AccountTitle',
+                            codeValue: (_a = req.body.inCodeSet) === null || _a === void 0 ? void 0 : _a.codeValue
+                        }
+                        // inDefinedTermSet: req.body.inDefinedTermSet
                     };
-                    debug('saving account title...', accountTitle);
-                    yield accountTitleService.updateAccounTitleSet(accountTitle);
+                    debug('saving account title...', accountTitleSet);
+                    yield accountTitleService.updateAccounTitleSet(accountTitleSet);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
@@ -434,7 +439,7 @@ function updateAccountTitleSet(req, res) {
                 }
             }
         }
-        const forms = Object.assign(Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitle), req.body);
+        const forms = Object.assign(Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitleSet), req.body);
         res.render('accountTitles/accountTitleSet/edit', {
             message: message,
             errors: errors,
