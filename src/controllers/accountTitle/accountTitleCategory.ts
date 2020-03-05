@@ -28,22 +28,15 @@ export async function create(req: Request, res: Response): Promise<void> {
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                const accountTitle = {
-                    project: req.project,
-                    typeOf: <'AccountTitle'>'AccountTitle',
-                    codeValue: req.body.codeValue,
-                    name: req.body.name,
-                    description: req.body.description,
-                    hasCategoryCode: []
-                };
-                debug('saving account title...', accountTitle);
+                const accountTitleCategory = createFromBody(req, true);
+                debug('saving account title...', accountTitleCategory);
                 const accountTitleService = new chevre.service.AccountTitle({
                     endpoint: <string>process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
-                await accountTitleService.createAccounTitleCategory(accountTitle);
+                await accountTitleService.createAccounTitleCategory(accountTitleCategory);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles/accountTitleCategory/${accountTitle.codeValue}`);
+                res.redirect(`/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
 
                 return;
             } catch (error) {
@@ -121,8 +114,8 @@ export async function update(req: Request, res: Response, next: NextFunction): P
             project: { ids: [req.project.id] },
             codeValue: { $eq: req.params.codeValue }
         });
-        let accountTitle = searchAccountTitlesResult.data.shift();
-        if (accountTitle === undefined) {
+        let accountTitleCategory = searchAccountTitlesResult.data.shift();
+        if (accountTitleCategory === undefined) {
             throw new chevre.factory.errors.NotFound('AccounTitle');
         }
 
@@ -134,15 +127,9 @@ export async function update(req: Request, res: Response, next: NextFunction): P
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
-                    accountTitle = {
-                        project: req.project,
-                        typeOf: <'AccountTitle'>'AccountTitle',
-                        codeValue: req.body.codeValue,
-                        name: req.body.name,
-                        description: req.body.description
-                    };
-                    debug('saving account title...', accountTitle);
-                    await accountTitleService.updateAccounTitleCategory(accountTitle);
+                    accountTitleCategory = createFromBody(req, false);
+                    debug('saving account title...', accountTitleCategory);
+                    await accountTitleService.updateAccounTitleCategory(accountTitleCategory);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
 
@@ -154,7 +141,7 @@ export async function update(req: Request, res: Response, next: NextFunction): P
         }
 
         const forms = {
-            ...accountTitle,
+            ...accountTitleCategory,
             ...req.body
         };
 
@@ -168,20 +155,35 @@ export async function update(req: Request, res: Response, next: NextFunction): P
     }
 }
 
+function createFromBody(req: Request, isNew: boolean): chevre.factory.accountTitle.IAccountTitle {
+    return {
+        project: req.project,
+        typeOf: <'AccountTitle'>'AccountTitle',
+        codeValue: req.body.codeValue,
+        name: req.body.name,
+        // description: req.body.description,
+        // inDefinedTermSet: req.body.inDefinedTermSet
+        ...(isNew)
+            ? { hasCategoryCode: [] }
+            : undefined
+    };
+}
+
 /**
  * 科目分類検証
  */
 function validate(req: Request): void {
-    // 科目分類コード
-    let colName: string = '科目分類コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
-    // 科目分類名称
-    colName = '科目分類名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+    let colName: string = 'コード';
+    req.checkBody('codeValue')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
+
+    colName = '名称';
+    req.checkBody('name')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
 }

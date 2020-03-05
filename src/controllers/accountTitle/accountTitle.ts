@@ -79,7 +79,6 @@ export async function index(req: Request, res: Response): Promise<void> {
         sort: { codeValue: chevre.factory.sortType.Ascending },
         project: { ids: [req.project.id] }
     });
-    debug(searchAccountTitleCategoriesResult);
 
     // 科目検索
     const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
@@ -87,7 +86,6 @@ export async function index(req: Request, res: Response): Promise<void> {
         sort: { codeValue: chevre.factory.sortType.Ascending },
         project: { ids: [req.project.id] }
     });
-    debug(searchAccountTitleSetsResult);
 
     res.render('accountTitles/index', {
         forms: {},
@@ -108,14 +106,6 @@ export async function create(req: Request, res: Response): Promise<void> {
         auth: req.user.authClient
     });
 
-    // 科目分類検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-        limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] }
-    });
-    const accountTitleSets = searchAccountTitleSetsResult.data;
-
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -123,24 +113,7 @@ export async function create(req: Request, res: Response): Promise<void> {
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                const accountTitleSet = accountTitleSets.find((a) => a.codeValue === req.body.inCodeSet.codeValue);
-                const accountTitle = {
-                    project: req.project,
-                    typeOf: <'AccountTitle'>'AccountTitle',
-                    codeValue: req.body.codeValue,
-                    name: req.body.name,
-                    description: req.body.description,
-                    inCodeSet: accountTitleSet,
-                    additionalProperty: (Array.isArray(req.body.additionalProperty))
-                        ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
-                            .map((p: any) => {
-                                return {
-                                    name: String(p.name),
-                                    value: String(p.value)
-                                };
-                            })
-                        : undefined
-                };
+                const accountTitle = await createFromBody(req);
                 debug('saving account title...', accountTitle);
                 await accountTitleService.create(accountTitle);
                 req.flash('message', '登録しました');
@@ -164,6 +137,14 @@ export async function create(req: Request, res: Response): Promise<void> {
             return {};
         }));
     }
+
+    // 科目分類検索
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
+    });
+    const accountTitleSets = searchAccountTitleSetsResult.data;
 
     res.render('accountTitles/new', {
         message: message,
@@ -194,14 +175,6 @@ export async function update(req: Request, res: Response): Promise<void> {
         throw new chevre.factory.errors.NotFound('AccounTitle');
     }
 
-    // 科目分類検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-        limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] }
-    });
-    const accountTitleSets = searchAccountTitleSetsResult.data;
-
     if (req.method === 'POST') {
         // バリデーション
         validate(req);
@@ -210,23 +183,7 @@ export async function update(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
-                accountTitle = {
-                    project: req.project,
-                    typeOf: <'AccountTitle'>'AccountTitle',
-                    codeValue: req.body.codeValue,
-                    name: req.body.name,
-                    description: req.body.description,
-                    inCodeSet: accountTitle.inCodeSet,
-                    additionalProperty: (Array.isArray(req.body.additionalProperty))
-                        ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
-                            .map((p: any) => {
-                                return {
-                                    name: String(p.name),
-                                    value: String(p.value)
-                                };
-                            })
-                        : undefined
-                };
+                accountTitle = await createFromBody(req);
                 debug('saving account title...', accountTitle);
                 await accountTitleService.update(accountTitle);
                 req.flash('message', '更新しました');
@@ -238,6 +195,14 @@ export async function update(req: Request, res: Response): Promise<void> {
             }
         }
     }
+
+    // 科目分類検索
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 100,
+        sort: { codeValue: chevre.factory.sortType.Ascending },
+        project: { ids: [req.project.id] }
+    });
+    const accountTitleSets = searchAccountTitleSetsResult.data;
 
     const forms = {
         additionalProperty: [],
@@ -259,23 +224,61 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 
+async function createFromBody(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle> {
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // 科目検索
+    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        codeValue: { $eq: req.body.inCodeSet?.codeValue }
+    });
+    const accountTitleSet = searchAccountTitleSetsResult.data.shift();
+    if (accountTitleSet === undefined) {
+        throw new Error('科目が見つかりません');
+    }
+
+    return {
+        project: req.project,
+        typeOf: <'AccountTitle'>'AccountTitle',
+        codeValue: req.body.codeValue,
+        name: req.body.name,
+        inCodeSet: accountTitleSet,
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined
+    };
+}
+
 /**
  * 細目バリデーション
  */
 function validate(req: Request): void {
-    let colName: string = '科目分類';
-    req.checkBody('inCodeSet.codeValue', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+    let colName: string = '科目';
+    req.checkBody('inCodeSet.codeValue')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-    colName = '科目コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
+    colName = 'コード';
+    req.checkBody('codeValue')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
 
-    colName = '科目名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+    colName = '名称';
+    req.checkBody('name')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
 }

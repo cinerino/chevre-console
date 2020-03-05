@@ -34,22 +34,15 @@ function create(req, res) {
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    const accountTitle = {
-                        project: req.project,
-                        typeOf: 'AccountTitle',
-                        codeValue: req.body.codeValue,
-                        name: req.body.name,
-                        description: req.body.description,
-                        hasCategoryCode: []
-                    };
-                    debug('saving account title...', accountTitle);
+                    const accountTitleCategory = createFromBody(req, true);
+                    debug('saving account title...', accountTitleCategory);
                     const accountTitleService = new chevre.service.AccountTitle({
                         endpoint: process.env.API_ENDPOINT,
                         auth: req.user.authClient
                     });
-                    yield accountTitleService.createAccounTitleCategory(accountTitle);
+                    yield accountTitleService.createAccounTitleCategory(accountTitleCategory);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles/accountTitleCategory/${accountTitle.codeValue}`);
+                    res.redirect(`/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
                     return;
                 }
                 catch (error) {
@@ -126,8 +119,8 @@ function update(req, res, next) {
                 project: { ids: [req.project.id] },
                 codeValue: { $eq: req.params.codeValue }
             });
-            let accountTitle = searchAccountTitlesResult.data.shift();
-            if (accountTitle === undefined) {
+            let accountTitleCategory = searchAccountTitlesResult.data.shift();
+            if (accountTitleCategory === undefined) {
                 throw new chevre.factory.errors.NotFound('AccounTitle');
             }
             if (req.method === 'POST') {
@@ -138,15 +131,9 @@ function update(req, res, next) {
                 if (validatorResult.isEmpty()) {
                     // 作品DB登録
                     try {
-                        accountTitle = {
-                            project: req.project,
-                            typeOf: 'AccountTitle',
-                            codeValue: req.body.codeValue,
-                            name: req.body.name,
-                            description: req.body.description
-                        };
-                        debug('saving account title...', accountTitle);
-                        yield accountTitleService.updateAccounTitleCategory(accountTitle);
+                        accountTitleCategory = createFromBody(req, false);
+                        debug('saving account title...', accountTitleCategory);
+                        yield accountTitleService.updateAccounTitleCategory(accountTitleCategory);
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
                         return;
@@ -156,7 +143,7 @@ function update(req, res, next) {
                     }
                 }
             }
-            const forms = Object.assign(Object.assign({}, accountTitle), req.body);
+            const forms = Object.assign(Object.assign({}, accountTitleCategory), req.body);
             res.render('accountTitles/accountTitleCategory/edit', {
                 message: message,
                 errors: errors,
@@ -169,20 +156,25 @@ function update(req, res, next) {
     });
 }
 exports.update = update;
+function createFromBody(req, isNew) {
+    return Object.assign({ project: req.project, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name }, (isNew)
+        ? { hasCategoryCode: [] }
+        : undefined);
+}
 /**
  * 科目分類検証
  */
 function validate(req) {
-    // 科目分類コード
-    let colName = '科目分類コード';
-    req.checkBody('codeValue', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('codeValue', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
-    // 科目分類名称
-    colName = '科目分類名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+    let colName = 'コード';
+    req.checkBody('codeValue')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
+    colName = '名称';
+    req.checkBody('name')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
 }
