@@ -195,11 +195,32 @@ $(function () {
         }
 
         var modal = $('#modal-offer');
-        var html = '<textarea rows="20" class="form-control" placeholder="" disabled="">'
-            + JSON.stringify(offer.addOn, null, '\t')
-            + '</textarea>'
+        var div = $('<div>')
+
+        if (Array.isArray(offer.addOn)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('名称')
+                ])
+            ]);
+            tbody.append(offer.addOn.map(function (offer) {
+                var href = '/products/' + offer.itemOffered.id;
+                return $('<tr>').append([
+                    $('<td>').html($('<a>').attr({ href, href, target: '_blank' }).text(offer.itemOffered.name.ja))
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
         modal.find('.modal-title').text('アドオン');
-        modal.find('.modal-body').html(html);
+        modal.find('.modal-body').html(div);
         modal.modal();
     }
 
