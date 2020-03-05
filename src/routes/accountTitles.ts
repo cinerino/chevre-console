@@ -1,30 +1,23 @@
 /**
- * 勘定科目コントローラー
+ * 勘定科目管理ルーター
  */
 import { Router } from 'express';
 
-import * as AccountTitleController from '../controllers/accountTitle';
+import * as AccountTitleController from '../controllers/accountTitle/accountTitle';
+
+import accountTitleCategoryRouter from './accountTitles/accountTitleCategory';
+import accountTitleSetRouter from './accountTitles/accountTitleSet';
 
 const accountTitlesRouter = Router();
 
+accountTitlesRouter.use('/accountTitleCategory', accountTitleCategoryRouter);
+accountTitlesRouter.use('/accountTitleSet', accountTitleSetRouter);
+
 accountTitlesRouter.get('', AccountTitleController.index);
 accountTitlesRouter.get('/getlist', AccountTitleController.getList);
-
-accountTitlesRouter.get('/accountTitleCategory', AccountTitleController.searchAccountTitleCategory);
-accountTitlesRouter.get('/accountTitleCategory/new', AccountTitleController.createAccountTitleCategory);
-accountTitlesRouter.post('/accountTitleCategory/new', AccountTitleController.createAccountTitleCategory);
-accountTitlesRouter.get('/accountTitleCategory/:codeValue', AccountTitleController.updateAccountTitleCategory);
-accountTitlesRouter.post('/accountTitleCategory/:codeValue', AccountTitleController.updateAccountTitleCategory);
-
-accountTitlesRouter.get('/accountTitleSet', AccountTitleController.searchAccountTitleSet);
-accountTitlesRouter.get('/accountTitleSet/new', AccountTitleController.addAccountTitleSet);
-accountTitlesRouter.post('/accountTitleSet/new', AccountTitleController.addAccountTitleSet);
-accountTitlesRouter.get('/accountTitleSet/:codeValue', AccountTitleController.updateAccountTitleSet);
-accountTitlesRouter.post('/accountTitleSet/:codeValue', AccountTitleController.updateAccountTitleSet);
-
-accountTitlesRouter.get('/new', AccountTitleController.createAccountTitle);
-accountTitlesRouter.post('/new', AccountTitleController.createAccountTitle);
-accountTitlesRouter.get('/:codeValue', AccountTitleController.updateAccountTitle);
-accountTitlesRouter.post('/:codeValue', AccountTitleController.updateAccountTitle);
+accountTitlesRouter.get('/new', AccountTitleController.create);
+accountTitlesRouter.post('/new', AccountTitleController.create);
+accountTitlesRouter.get('/:codeValue', AccountTitleController.update);
+accountTitlesRouter.post('/:codeValue', AccountTitleController.update);
 
 export default accountTitlesRouter;
