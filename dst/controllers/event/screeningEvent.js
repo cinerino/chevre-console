@@ -32,7 +32,7 @@ var OnlineDisplayType;
 function index(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const offerService = new chevre.service.Offer({
+            const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
@@ -46,7 +46,7 @@ function index(req, res, next) {
             if (searchMovieTheatersResult.data.length === 0) {
                 throw new Error('劇場が見つかりません');
             }
-            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+            const searchTicketTypeGroupsResult = yield offerCatalogService.search({
                 project: { id: { $eq: req.project.id } },
                 itemOffered: { typeOf: { $eq: 'EventService' } }
             });
@@ -396,7 +396,7 @@ function createMultipleEventFromBody(req, user) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
-        const offerService = new chevre.service.Offer({
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
@@ -423,7 +423,7 @@ function createMultipleEventFromBody(req, user) {
         const ticketTypeIds = body.ticketData;
         const mvtkExcludeFlgs = body.mvtkExcludeFlgData;
         const timeData = body.timeData;
-        const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+        const searchTicketTypeGroupsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: 'EventService' } }

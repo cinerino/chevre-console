@@ -48,15 +48,6 @@ offerCatalogsRouter.all(
                     let offerCatalog = await createFromBody(req);
 
                     // コード重複確認
-                    const { data } = await offerService.searchTicketTypeGroups({
-                        project: { id: { $eq: req.project.id } },
-                        identifier: { $eq: offerCatalog.identifier }
-                    });
-                    if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
-                    }
-
-                    // コード重複確認
                     const searchOfferCatalogsResult = await offerCatalogService.search({
                         project: { id: { $eq: req.project.id } },
                         identifier: { $eq: offerCatalog.identifier }
@@ -425,7 +416,6 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         name: body.name,
         description: body.description,
         alternateName: body.alternateName,
-        // ticketTypes: [],
         itemListElement: itemListElement,
         itemOffered: {
             typeOf: body.itemOffered?.typeOf

@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/tickettypegroups/getlist';
+        var url = '/offerCatalogs/getlist';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -73,7 +73,7 @@ $(function () {
     function list(id) {
         $.ajax({
             dataType: 'json',
-            url: '/ticketTypeGroups/ticketTypeList?id=' + id,
+            url: '/offerCatalogs/' + id + '/offers',
             cache: false,
             type: 'GET',
             // data: conditions,

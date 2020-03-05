@@ -24,15 +24,15 @@ screeningEventRouter.get('', ScreeningEventController.index);
 screeningEventRouter.get('/search', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const offerService = new chevre.service.Offer({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
     const placeService = new chevre.service.Place({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -131,7 +131,7 @@ screeningEventRouter.get('/search',
                 numData = searchEventsResult.data.length;
                 events.push(...searchEventsResult.data);
             }
-            const searchTicketTypeGroupsResult = yield offerService.searchTicketTypeGroups({
+            const searchTicketTypeGroupsResult = yield offerCatalogService.search({
                 project: { id: { $eq: req.project.id } },
                 itemOffered: { typeOf: { $eq: 'EventService' } }
             });

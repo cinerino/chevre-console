@@ -779,14 +779,14 @@ export async function getList(req: Request, res: Response): Promise<void> {
  */
 export async function getTicketTypeGroupList(req: Request, res: Response): Promise<void> {
     try {
-        const offerService = new chevre.service.Offer({
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
 
         const limit = 100;
         const page = 1;
-        const { data } = await offerService.searchTicketTypeGroups({
+        const { data } = await offerCatalogService.search({
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },

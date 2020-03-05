@@ -26,7 +26,7 @@ enum OnlineDisplayType {
 
 export async function index(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        const offerService = new chevre.service.Offer({
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -42,7 +42,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
             throw new Error('劇場が見つかりません');
         }
 
-        const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+        const searchTicketTypeGroupsResult = await offerCatalogService.search({
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: 'EventService' } }
         });
@@ -389,7 +389,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const offerService = new chevre.service.Offer({
+    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
@@ -421,7 +421,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const mvtkExcludeFlgs: string[] = body.mvtkExcludeFlgData;
     const timeData: { doorTime: string; startTime: string; endTime: string; endDayRelative: string }[] = body.timeData;
 
-    const searchTicketTypeGroupsResult = await offerService.searchTicketTypeGroups({
+    const searchTicketTypeGroupsResult = await offerCatalogService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
         itemOffered: { typeOf: { $eq: 'EventService' } }

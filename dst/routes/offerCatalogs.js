@@ -50,14 +50,6 @@ offerCatalogsRouter.all('/add',
                 req.body.id = '';
                 let offerCatalog = yield createFromBody(req);
                 // コード重複確認
-                const { data } = yield offerService.searchTicketTypeGroups({
-                    project: { id: { $eq: req.project.id } },
-                    identifier: { $eq: offerCatalog.identifier }
-                });
-                if (data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
-                }
-                // コード重複確認
                 const searchOfferCatalogsResult = yield offerCatalogService.search({
                     project: { id: { $eq: req.project.id } },
                     identifier: { $eq: offerCatalog.identifier }
@@ -362,7 +354,6 @@ function createFromBody(req) {
             name: body.name,
             description: body.description,
             alternateName: body.alternateName,
-            // ticketTypes: [],
             itemListElement: itemListElement,
             itemOffered: {
                 typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf

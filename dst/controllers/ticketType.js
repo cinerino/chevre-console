@@ -673,13 +673,13 @@ exports.getList = getList;
 function getTicketTypeGroupList(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const offerService = new chevre.service.Offer({
+            const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
             const limit = 100;
             const page = 1;
-            const { data } = yield offerService.searchTicketTypeGroups({
+            const { data } = yield offerCatalogService.search({
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
