@@ -567,7 +567,7 @@ export async function updateAccountTitle(req: Request, res: Response): Promise<v
 
     const searchAccountTitlesResult = await accountTitleService.search({
         project: { ids: [req.project.id] },
-        codeValue: req.params.codeValue
+        codeValue: { $eq: req.params.codeValue }
     });
     let accountTitle = searchAccountTitlesResult.data.shift();
     if (accountTitle === undefined) {

@@ -540,7 +540,7 @@ function updateAccountTitle(req, res) {
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] },
-            codeValue: req.params.codeValue
+            codeValue: { $eq: req.params.codeValue }
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
         if (accountTitle === undefined) {

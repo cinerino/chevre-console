@@ -1,57 +1,78 @@
-<div class="form-group">
-    <label for="inCodeSet[codeValue]" class="">
-        科目<span class="text-danger">＊</span>
-    </label>
-    <% if (!isNew) { %>
-    <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
-    <% } %>
-    <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
-        <option value="">選択してください</option>
-        <% for (const accountTitleSet of accountTitleSets) { %>
-        <option value="<%= accountTitleSet.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleSet.codeValue)
-                { %> selected <% } %>>
-            <%= accountTitleSet.inCodeSet.codeValue %>
-            <%= accountTitleSet.inCodeSet.name %>
-            -
-            <%= accountTitleSet.codeValue %>
-            <%= accountTitleSet.name %>
-        </option>
-        <% } %>
-    </select>
-    <p class="error message text-danger">
-        <% if (errors && errors['inCodeSet.codeValue']) { %>
-        <%- errors['inCodeSet.codeValue'].msg %>
-        <% } %>
-    </p>
-</div>
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">基本設定</h4>
+        </div>
+    </div>
 
-<div class="form-group">
-    <label for="codeValue" class="">
-        細目コード<span class="text-danger">＊</span>
-    </label>
-    <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
-        value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
-    <p class="message">半角64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['codeValue']) { %>
-        <%- errors['codeValue'].msg %>
-        <% } %>
-    </p>
-</div>
+    <div class="card-body">
+        <div class="form-group">
+            <label for="inCodeSet[codeValue]" class="">
+                科目<span class="text-danger">＊</span>
+            </label>
+            <% if (!isNew) { %>
+            <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
+            <% } %>
+            <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
+                <option value="">選択してください</option>
+                <% for (const accountTitleSet of accountTitleSets) { %>
+                <option value="<%= accountTitleSet.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleSet.codeValue)
+                        { %> selected <% } %>>
+                    <%= accountTitleSet.inCodeSet.codeValue %>
+                    <%= accountTitleSet.inCodeSet.name %>
+                    -
+                    <%= accountTitleSet.codeValue %>
+                    <%= accountTitleSet.name %>
+                </option>
+                <% } %>
+            </select>
+            <p class="error message text-danger">
+                <% if (errors && errors['inCodeSet.codeValue']) { %>
+                <%- errors['inCodeSet.codeValue'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<div class="form-group">
-    <label for="name" class="">
-        細目名称<span class="text-danger">＊</span>
-    </label>
-    <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
-    <p class="message">64文字以内でご入力ください。</p>
-    <p class="error message text-danger">
-        <% if (errors && errors['name']) { %>
-        <%- errors['name'].msg %>
-        <% } %>
-    </p>
-</div>
+        <div class="form-group">
+            <label for="codeValue" class="">
+                細目コード<span class="text-danger">＊</span>
+            </label>
+            <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
+                value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
+            <p class="message">半角64文字以内でご入力ください。</p>
+            <p class="error message text-danger">
+                <% if (errors && errors['codeValue']) { %>
+                <%- errors['codeValue'].msg %>
+                <% } %>
+            </p>
+        </div>
 
-<%- include('../common/part/_additionalProperty', {
-    additionalProperty: forms.additionalProperty
-}) %>
+        <div class="form-group">
+            <label for="name" class="">
+                細目名称<span class="text-danger">＊</span>
+            </label>
+            <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
+            <p class="message">64文字以内でご入力ください。</p>
+            <p class="error message text-danger">
+                <% if (errors && errors['name']) { %>
+                <%- errors['name'].msg %>
+                <% } %>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- end card -->
+
+<div class="card">
+    <div class="card-header card-header-primary card-header-text">
+        <div class="card-text">
+            <h4 class="card-title">追加特性</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <%- include('../common/part/_additionalProperty', {
+            additionalProperty: forms.additionalProperty
+        }) %>
+    </div>
+</div>
+<!-- end card -->
