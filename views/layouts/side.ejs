@@ -88,6 +88,12 @@
                             <span class="sidebar-normal">券種</span>
                         </a>
                     </li>
+                    <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/offerCatalogs">
+                            <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
+                            <span class="sidebar-normal">カタログ(券種グループ)</span>
+                        </a>
+                    </li>
                     <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
                     <li class="nav-item <%= (displayId === 'OF-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/offers">
@@ -96,12 +102,6 @@
                         </a>
                     </li>
                     <% } %>
-                    <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/offerCatalogs">
-                            <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">カタログ(券種グループ)</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </li>

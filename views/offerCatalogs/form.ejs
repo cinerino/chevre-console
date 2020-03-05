@@ -33,16 +33,17 @@
                 </label>
                 <% if (isNew) { %>
                 <select class="form-control" name="itemOffered[typeOf]" id="itemOffered[typeOf]">
-                    <option value="" disabled selected>選択してください</option>
                     <option value="EventService"
                         <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'EventService') { %>
                         selected<% } %>>イベント</option>
-                    <option value="MembershipService"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
-                        selected<% } %>>会員サービス</option>
+                    <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
                     <option value="Product"
                         <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'Product') { %>
                         selected<% } %>>アドオン</option>
+                    <option value="MembershipService"
+                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
+                        selected<% } %>>会員サービス</option>
+                    <% } %>
                 </select>
                 <% } else { %>
                 <input class="form-control" disabled type="text" value="<%= forms.itemOffered.typeOf %>">
