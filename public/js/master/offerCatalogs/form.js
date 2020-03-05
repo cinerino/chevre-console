@@ -9,6 +9,8 @@ $(function () {
 
     $('#price').on('change', priceChange);
 
+    $('#itemOffered\\[typeOf\\]').on('change', resetOffers);
+
     $("#sortable1, #sortable2").sortable({
         connectWith: ".connectedSortable"
     }).disableSelection();
@@ -55,11 +57,17 @@ function remove() {
  * 更新
  */
 function submit() {
+    // オファーリストに含まれるムビチケ券種区分リスト
+    var appliesToMovieTicketTypes = [];
     var offerIds = [];
 
     $('#sortable2 > li').each(function () {
         var uid = $(this).attr('uid');
         offerIds.push(uid);
+        var appliesToMovieTicketType = $(this).attr('appliesToMovieTicketType');
+        if (appliesToMovieTicketType !== '') {
+            appliesToMovieTicketTypes.push(appliesToMovieTicketType);
+        }
     });
 
     offerIds.forEach(function (offerId, index) {
@@ -68,6 +76,16 @@ function submit() {
             .attr('value', offerId)
             .appendTo('#ticketTypeGroupsForm');
     });
+
+    // ムビチケ券種区分の重複を確認
+    var uniqueAppliesToMovieTicketTypes = appliesToMovieTicketTypes.filter(function (value, index, self) {
+        return self.indexOf(value) === index;
+    });
+    if (appliesToMovieTicketTypes.length !== uniqueAppliesToMovieTicketTypes.length) {
+        alert('ムビチケ券種区分が重複しています');
+
+        return false;
+    }
 
     $('.btn-ok').prop('disabled', true)
         .text('processing...');
@@ -109,7 +127,7 @@ function priceChange() {
     $('#sortable1').empty();
 
     // アイテム選択済かどうか
-    const itemOfferedType = $('select[name="itemOffered[typeOf]"]').val();
+    const itemOfferedType = $('#itemOffered\\[typeOf\\]').val();
     if (typeof itemOfferedType !== 'string' || itemOfferedType.length <= 0) {
         alert('アイテムを選択してください');
     }
@@ -119,20 +137,29 @@ function priceChange() {
             var offers = data.results;
             if (data.success) {
                 var i;
-                // すでに選択済の券種を除外
+                // すでに選択済のオファーを除外
                 offers = offers.filter(function (t) {
                     return selectedOfferIds.indexOf(t.id) < 0;
                 });
                 for (i in offers) {
-                    $('#sortable1').append(
-                        '<li class="list-group-item p-0" uid=' + offers[i].id
-                        + '>'
-                        + '<span class="btn btn-primary btn-block">'
-                        + offers[i].name.ja
-                        + '(' + Math.floor(offers[i].priceSpecification.price / offers[i].priceSpecification.referenceQuantity.value) + ')'
-                        + '</span>'
-                        + '</li>'
-                    );
+                    var appliesToMovieTicketType = '';
+                    if (typeof offers[i].priceSpecification.appliesToMovieTicketType === 'string') {
+                        appliesToMovieTicketType = offers[i].priceSpecification.appliesToMovieTicketType;
+                    }
+
+                    var text = offers[i].alternateName.ja
+                        + '('
+                        + offers[i].priceSpecification.price + ' / ' + offers[i].priceSpecification.referenceQuantity.value
+                        + ')';
+                    var span = $('<span>').addClass('btn btn-primary btn-block')
+                        .text(text);
+                    var li = $('<li>').addClass('list-group-item p-0')
+                        .attr({
+                            uid: offers[i].id,
+                            appliesToMovieTicketType: appliesToMovieTicketType
+                        })
+                        .html(span);
+                    $('#sortable1').append(li);
                 }
                 $('#sortable1').show();
                 $('#sortable2').show();
@@ -140,4 +167,9 @@ function priceChange() {
         }).catch(function (jqxhr, textStatus, error) {
             alert('オファーの検索に失敗しました');
         });
+}
+
+function resetOffers() {
+    $('#sortable1').empty();
+    $('#sortable2').empty();
 }

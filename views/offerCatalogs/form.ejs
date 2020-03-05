@@ -31,8 +31,12 @@
                 <label for="itemOffered[typeOf]" class="bmd-label-static">
                     アイテム<span class="text-danger">＊</span>
                 </label>
-                <select class="form-control" name="itemOffered[typeOf]">
+                <% if (isNew) { %>
+                <select class="form-control" name="itemOffered[typeOf]" id="itemOffered[typeOf]">
                     <option value="" disabled selected>選択してください</option>
+                    <option value="EventService"
+                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'EventService') { %>
+                        selected<% } %>>イベント</option>
                     <option value="MembershipService"
                         <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
                         selected<% } %>>会員サービス</option>
@@ -40,9 +44,39 @@
                         <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'Product') { %>
                         selected<% } %>>アドオン</option>
                 </select>
+                <% } else { %>
+                <input class="form-control" disabled type="text" value="<%= forms.itemOffered.typeOf %>">
+                <input type="hidden" name="itemOffered[typeOf]" id="itemOffered[typeOf]"
+                    value="<%= forms.itemOffered.typeOf %>">
+                <% } %>
                 <span class="bmd-help text-danger d-block">
                     <% if (errors && errors['itemOffered.typeOf']) { %>
                     <%- errors['itemOffered.typeOf'].msg %>
+                    <% } %>
+                </span>
+            </div>
+
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="serviceType" class="bmd-label-static">
+                    サービス区分
+                </label>
+                <select name="serviceType" id="serviceType" class="form-control">
+                    <option value="" selected>未指定</option>
+                    <% for (let serviceType of serviceTypes) { %>
+                    <% if (forms.serviceType === serviceType.codeValue) { %>
+                    <option value="<%= serviceType.codeValue %>" selected>
+                        <%= serviceType.name.ja %>
+                    </option>
+                    <% } else { %>
+                    <option value="<%= serviceType.codeValue %>">
+                        <%= serviceType.name.ja %>
+                    </option>
+                    <% } %>
+                    <% } %>
+                </select>
+                <span class="bmd-help text-danger d-block">
+                    <% if (errors && errors.serviceType) { %>
+                    <%- errors.serviceType.msg %>
                     <% } %>
                 </span>
             </div>
@@ -105,10 +139,11 @@
                     </ul>
                     <ul id="sortable2" class="float-left connectedSortable list-group m-3 p-3">
                         <% offers.forEach((offer) => { %>
-                        <li class="list-group-item p-0" uid="<%= offer.id %>">
+                        <li class="list-group-item p-0" uid="<%= offer.id %>"
+                            appliesToMovieTicketType="<%= offer.priceSpecification.appliesToMovieTicketType %>">
                             <span class="btn btn-primary btn-block">
-                                <%= offer.name.ja %>
-                                <%= `(${Math.floor(offer.priceSpecification.price / offer.priceSpecification.referenceQuantity.value)})` %>
+                                <%= offer.alternateName.ja %>
+                                <%= `(${offer.priceSpecification.price} / ${offer.priceSpecification.referenceQuantity.value})` %>
                             </span>
                         </li>
                         <% }) %>

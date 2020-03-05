@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
+const moment = require("moment");
 const _ = require("underscore");
 const Message = require("../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -26,6 +27,7 @@ const offerCatalogsRouter = express_1.Router();
 offerCatalogsRouter.all('/add', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -91,16 +93,27 @@ offerCatalogsRouter.all('/add',
     // オファー検索
     let offers = [];
     if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
-        const searchOffersResult = yield offerService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            id: {
-                $in: forms.itemListElement.map((element) => element.id)
-            }
-        });
-        // 登録順にソート
         const itemListElementIds = forms.itemListElement.map((element) => element.id);
-        offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        if (((_a = forms.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'EventService') {
+            const searchTicketTypesResult = yield offerService.searchTicketTypes({
+                limit: 100,
+                project: { ids: [req.project.id] },
+                ids: itemListElementIds
+            });
+            // 登録順にソート
+            offers = searchTicketTypesResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        }
+        else {
+            const searchOffersResult = yield offerService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: itemListElementIds
+                }
+            });
+            // 登録順にソート
+            offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        }
     }
     res.render('offerCatalogs/add', {
         message: message,
@@ -110,7 +123,10 @@ offerCatalogsRouter.all('/add',
         offers: offers
     });
 }));
-offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+offerCatalogsRouter.all('/:id/update', 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b, _c;
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -119,11 +135,20 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchServiceTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+    });
     let offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
-    if (offerCatalog.itemOffered.typeOf === 'EventService') {
-        res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
-        return;
-    }
+    // if (offerCatalog.itemOffered.typeOf === 'EventService') {
+    //     res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
+    //     return;
+    // }
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -146,7 +171,7 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
             }
         }
     }
-    const forms = Object.assign(Object.assign({ additionalProperty: [] }, offerCatalog), req.body);
+    const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, offerCatalog), { serviceType: (_b = offerCatalog.itemOffered.serviceType) === null || _b === void 0 ? void 0 : _b.codeValue }), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -155,33 +180,67 @@ offerCatalogsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     }
     // オファー検索
     let offers = [];
-    if (forms.itemListElement.length > 0) {
-        const searchOffersResult = yield offerService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            id: {
-                $in: forms.itemListElement.map((element) => element.id)
-            }
-        });
-        // 登録順にソート
+    if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
         const itemListElementIds = forms.itemListElement.map((element) => element.id);
-        offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        if (((_c = forms.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === 'EventService') {
+            const searchTicketTypesResult = yield offerService.searchTicketTypes({
+                limit: 100,
+                project: { ids: [req.project.id] },
+                ids: itemListElementIds
+            });
+            // 登録順にソート
+            offers = searchTicketTypesResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        }
+        else {
+            const searchOffersResult = yield offerService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: itemListElementIds
+                }
+            });
+            // 登録順にソート
+            offers = searchOffersResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
+        }
     }
     res.render('offerCatalogs/update', {
         message: message,
         errors: errors,
         offers: offers,
-        forms: forms
+        forms: forms,
+        serviceTypes: searchServiceTypesResult.data
     });
 }));
 offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
         // tslint:disable-next-line:no-suspicious-comment
         // TODO 削除して問題ないカタログかどうか検証
+        if (offerCatalog.itemOffered.typeOf === 'EventService') {
+            // 削除して問題ない券種グループかどうか検証
+            const searchEventsResult = yield eventService.search({
+                limit: 1,
+                typeOf: chevre.factory.eventType.ScreeningEvent,
+                project: { ids: [req.project.id] },
+                offers: {
+                    ids: [req.params.id]
+                },
+                sort: { endDate: chevre.factory.sortType.Descending }
+            });
+            if (searchEventsResult.data.length > 0) {
+                if (moment(searchEventsResult.data[0].endDate) >= moment()) {
+                    throw new Error('終了していないスケジュールが存在します');
+                }
+            }
+        }
         yield offerCatalogService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -250,7 +309,7 @@ offerCatalogsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
     });
 }));
 offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f;
+    var _d, _e, _f, _g, _h, _j;
     try {
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
@@ -268,8 +327,8 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
             itemListElement: {},
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_b = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === null || _b === void 0 ? void 0 : _b.$eq) === 'string' && ((_d = (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq.length) > 0)
-                        ? (_f = (_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq : undefined
+                    $eq: (typeof ((_e = (_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === null || _e === void 0 ? void 0 : _e.$eq) === 'string' && ((_g = (_f = req.query.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === null || _g === void 0 ? void 0 : _g.$eq.length) > 0)
+                        ? (_j = (_h = req.query.itemOffered) === null || _h === void 0 ? void 0 : _h.typeOf) === null || _j === void 0 ? void 0 : _j.$eq : undefined
                 }
             }
         });
@@ -292,33 +351,56 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
     }
 }));
 offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g;
+    var _k, _l;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // 指定価格のオファー検索
+        const itemOfferedType = (_k = req.query.itemOffered) === null || _k === void 0 ? void 0 : _k.typeOf;
+        let data;
         const limit = 100;
         const page = 1;
-        const { data } = yield offerService.search({
-            limit: limit,
-            page: page,
-            sort: {
-                'priceSpecification.price': chevre.factory.sortType.Descending
-            },
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: (_g = req.query.itemOffered) === null || _g === void 0 ? void 0 : _g.typeOf } },
-            priceSpecification: {
-                // 売上金額で検索
-                accounting: {
-                    accountsReceivable: {
-                        $gte: Number(req.query.price),
-                        $lte: Number(req.query.price)
+        if (itemOfferedType === 'EventService') {
+            const searchTicketTypesResult = yield offerService.searchTicketTypes({
+                limit: limit,
+                page: page,
+                sort: {
+                    'priceSpecification.price': chevre.factory.sortType.Descending
+                },
+                project: { ids: [req.project.id] },
+                priceSpecification: {
+                    // 売上金額で検索
+                    accounting: {
+                        minAccountsReceivable: Number(req.query.price),
+                        maxAccountsReceivable: Number(req.query.price)
                     }
                 }
-            }
-        });
+            });
+            data = searchTicketTypesResult.data;
+        }
+        else {
+            // 指定価格のオファー検索
+            const searchOffersResult = yield offerService.search({
+                limit: limit,
+                page: page,
+                sort: {
+                    'priceSpecification.price': chevre.factory.sortType.Descending
+                },
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: (_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf } },
+                priceSpecification: {
+                    // 売上金額で検索
+                    accounting: {
+                        accountsReceivable: {
+                            $gte: Number(req.query.price),
+                            $lte: Number(req.query.price)
+                        }
+                    }
+                }
+            });
+            data = searchOffersResult.data;
+        }
         res.json({
             success: true,
             count: (data.length === Number(limit))
@@ -347,6 +429,23 @@ function createFromBody(req) {
                 };
             });
         }
+        let serviceType;
+        if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const searchServiceTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+                codeValue: { $eq: req.body.serviceType }
+            });
+            serviceType = searchServiceTypesResult.data.shift();
+            if (serviceType === undefined) {
+                throw new Error('サービス区分が見つかりません');
+            }
+        }
         return {
             project: req.project,
             id: body.id,
@@ -355,9 +454,9 @@ function createFromBody(req) {
             description: body.description,
             alternateName: body.alternateName,
             itemListElement: itemListElement,
-            itemOffered: {
-                typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf
-            },
+            itemOffered: Object.assign({ typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf }, (serviceType !== undefined)
+                ? { serviceType }
+                : undefined),
             additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
@@ -371,11 +470,13 @@ function createFromBody(req) {
     });
 }
 function validate(req) {
+    var _a;
     let colName = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
+    req.checkBody('identifier')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_CODE })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
     colName = '名称';
     req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
@@ -390,6 +491,13 @@ function validate(req) {
     colName = 'アイテム';
     req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
+    // サービス区分
+    if (((_a = req.body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'EventService') {
+        colName = 'サービス区分';
+        req.checkBody('serviceType')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    }
     colName = '対象オファー';
     req.checkBody('itemListElement', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
