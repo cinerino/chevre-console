@@ -31,7 +31,7 @@ AT-05
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-3">
                                     <label for="codeValue" class="bmd-label-static">
-                                        科目分類コード
+                                        コード
                                     </label>
                                     <input type="text" class="form-control" name="codeValue" id="codeValue"
                                         placeholder="" maxlength=64 value="">
@@ -47,14 +47,17 @@ AT-05
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
-                                    <th>科目分類コード</th>
-                                    <th>科目分類名称</th>
+                                    <th>コード</th>
+                                    <th>名称</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
-                                    <td name="codeValue"><a class="editAccountTitleCategory"
-                                            href="javascript:void(0)">$codeValue$</a>
+                                    <td name="codeValue__codeValue">
+                                        <a target="_blank" href="/accountTitles/accountTitleCategory/$codeValue$">
+                                            $codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
                                     </td>
                                     <td name="name">$name$</td>
                                 </tr>

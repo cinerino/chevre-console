@@ -28,27 +28,6 @@ $(function () {
 
     $('.btn-ok').click();
 
-    // 細目編集ボタン
-    $(document).on('click', 'a.editAccountTitle', function () {
-        var codeValue = $(this).html();
-        var url = '/accountTitles/' + codeValue;
-        open(url);
-    });
-
-    // 科目編集ボタン
-    $(document).on('click', 'a.editAccountTitleSet', function () {
-        var codeValue = $(this).html();
-        var url = '/accountTitles/accountTitleSet/' + codeValue;
-        open(url);
-    });
-
-    // 科目分類編集ボタン
-    $(document).on('click', 'a.editAccountTitleCategory', function () {
-        var codeValue = $(this).html();
-        var url = '/accountTitles/accountTitleCategory/' + codeValue;
-        open(url);
-    });
-
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;

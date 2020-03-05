@@ -45,7 +45,7 @@ AT-06
                                 </div>
                                 <div class="form-group bmd-form-group col-md-3">
                                     <label for="codeValue" class="bmd-label-static">
-                                        科目コード
+                                        コード
                                     </label>
                                     <input type="text" class="form-control" name="codeValue" id="codeValue"
                                         placeholder="" maxlength=64 value="">
@@ -61,25 +61,29 @@ AT-06
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
+                                    <th>コード</th>
+                                    <th>名称</th>
                                     <th>科目分類コード</th>
                                     <th>科目分類名称</th>
-                                    <th>科目コード</th>
-                                    <th>科目名称</th>
-                                    <th>科目区分</th>
-                                    <th>科目区分名</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
-                                    <td name="inCodeSet.codeValue"><a class="editAccountTitleCategory"
-                                            href="javascript:void(0)">$inCodeSet.codeValue$</a></td>
-                                    <td name="inCodeSet.name">$inCodeSet.name$</td>
-                                    <td name="codeValue"><a class="editAccountTitleSet"
-                                            href="javascript:void(0)">$codeValue$</a>
+                                    <td name="codeValue__codeValue">
+                                        <a target="_blank" href="/accountTitles/accountTitleSet/$codeValue$">
+                                            $codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
                                     </td>
                                     <td name="name">$name$</td>
-                                    <td name="inDefinedTermSet.termCode">$inDefinedTermSet.termCode$</td>
-                                    <td name="inDefinedTermSet.name">$inDefinedTermSet.name$</td>
+                                    <td name="inCodeSet.codeValue__inCodeSet.codeValue">
+                                        <a target="_blank"
+                                            href="/accountTitles/accountTitleCategory/$inCodeSet.codeValue$">
+                                            $inCodeSet.codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td name="inCodeSet.name">$inCodeSet.name$</td>
                                 </tr>
                             </tbody>
                         </table>

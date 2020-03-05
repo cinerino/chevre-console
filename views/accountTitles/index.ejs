@@ -16,9 +16,6 @@ AT-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" role="button" href="/accountTitles/accountTitleSet/new">
-                <i class="material-icons">add</i>科目登録</a>
-
             <a class="btn btn-primary" href="/accountTitles/new">
                 <i class="material-icons">add</i>登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
@@ -62,7 +59,7 @@ AT-01
                                 </div>
                                 <div class="form-group bmd-form-group col-md-3">
                                     <label for="codeValue" class="bmd-label-static">
-                                        細目コード
+                                        コード
                                     </label>
                                     <input type="text" class="form-control" name="codeValue" id="codeValue"
                                         placeholder="" maxlength=64 value="">
@@ -78,35 +75,38 @@ AT-01
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
+                                    <th>コード</th>
+                                    <th>名称</th>
                                     <th>科目分類コード</th>
                                     <th>科目分類名称</th>
                                     <th>科目コード</th>
                                     <th>科目名称</th>
-                                    <th>細目コード</th>
-                                    <th>細目名称</th>
-                                    <th>科目区分</th>
-                                    <th>科目区分名</th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow" codeValue="$codeValue$">
-                                    <td name="inCodeSet.inCodeSet.codeValue">
-                                        <a class="editAccountTitleCategory"
-                                            href="javascript:void(0)">$inCodeSet.inCodeSet.codeValue$</a>
+                                    <td name="codeValue__codeValue">
+                                        <a target="_blank" href="/accountTitles/$codeValue$">
+                                            $codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    <td name="name">$name$</td>
+                                    <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.codeValue">
+                                        <a target="_blank"
+                                            href="/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
+                                            $inCodeSet.inCodeSet.codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
                                     </td>
                                     <td name="inCodeSet.inCodeSet.name">$inCodeSet.inCodeSet.name$</td>
-                                    <td name="inCodeSet.codeValue">
-                                        <a class="editAccountTitleSet"
-                                            href="javascript:void(0)">$inCodeSet.codeValue$</a>
+                                    <td name="inCodeSet.codeValue__inCodeSet.codeValue">
+                                        <a target="_blank" href="/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
+                                            $inCodeSet.codeValue$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
                                     </td>
                                     <td name="inCodeSet.name">$inCodeSet.name$</td>
-                                    <td name="codeValue"><a class="editAccountTitle"
-                                            href="javascript:void(0)">$codeValue$</a></td>
-                                    <td name="name">$name$</td>
-                                    <td name="inCodeSet.inDefinedTermSet.termCode">$inCodeSet.inDefinedTermSet.termCode$
-                                    </td>
-                                    <td name="inCodeSet.inDefinedTermSet.name">$inCodeSet.inDefinedTermSet.name$</td>
                                     <td name="edit__codeValue">
                                         <div class="text-center mt-2">
                                             <a href="javascript:void(0)"
