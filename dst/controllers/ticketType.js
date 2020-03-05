@@ -549,6 +549,10 @@ function getList(req, res) {
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+            const offerCatalogService = new chevre.service.OfferCatalog({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
@@ -568,9 +572,9 @@ function getList(req, res) {
             // 券種グループ取得
             let ticketTypeIds = [];
             if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
-                const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
-                if (Array.isArray(ticketTypeGroup.itemListElement)) {
-                    ticketTypeIds = ticketTypeGroup.itemListElement.map((e) => e.id);
+                const catalog = yield offerCatalogService.findById({ id: req.query.ticketTypeGroups });
+                if (Array.isArray(catalog.itemListElement)) {
+                    ticketTypeIds = catalog.itemListElement.map((e) => e.id);
                 }
                 else {
                     //券種がありません。

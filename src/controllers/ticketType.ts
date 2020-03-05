@@ -639,6 +639,10 @@ export async function getList(req: Request, res: Response): Promise<void> {
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -661,9 +665,9 @@ export async function getList(req: Request, res: Response): Promise<void> {
         // 券種グループ取得
         let ticketTypeIds: string[] = [];
         if (req.query.ticketTypeGroups !== undefined && req.query.ticketTypeGroups !== '') {
-            const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: req.query.ticketTypeGroups });
-            if (Array.isArray(ticketTypeGroup.itemListElement)) {
-                ticketTypeIds = ticketTypeGroup.itemListElement.map((e) => e.id);
+            const catalog = await offerCatalogService.findById({ id: req.query.ticketTypeGroups });
+            if (Array.isArray(catalog.itemListElement)) {
+                ticketTypeIds = catalog.itemListElement.map((e) => e.id);
             } else {
                 //券種がありません。
                 res.json({

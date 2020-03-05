@@ -225,7 +225,7 @@ function createEventFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
-        const offerService = new chevre.service.Offer({
+        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
@@ -244,12 +244,12 @@ function createEventFromBody(req) {
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
-        const ticketTypeGroup = yield offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-        if (typeof ticketTypeGroup.id !== 'string') {
+        const catalog = yield offerCatalogService.findById({ id: body.ticketTypeGroup });
+        if (typeof catalog.id !== 'string') {
             throw new Error('Offer Catalog ID undefined');
         }
         let serviceType;
-        const offerCatagoryServiceTypeCode = (_a = ticketTypeGroup.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue;
+        const offerCatagoryServiceTypeCode = (_a = catalog.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue;
         if (typeof offerCatagoryServiceTypeCode === 'string') {
             const searchServiceTypesResult = yield categoryCodeService.search({
                 limit: 1,
@@ -327,8 +327,8 @@ function createEventFromBody(req) {
             };
         const offers = {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            id: ticketTypeGroup.id,
-            name: ticketTypeGroup.name,
+            id: catalog.id,
+            name: catalog.name,
             typeOf: chevre.factory.offerType.Offer,
             priceCurrency: chevre.factory.priceCurrency.JPY,
             availabilityEnds: salesEndDate,

@@ -209,7 +209,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const offerService = new chevre.service.Offer({
+    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
@@ -232,13 +232,13 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         throw new Error('上映スクリーン名が見つかりません');
     }
 
-    const ticketTypeGroup = await offerService.findTicketTypeGroupById({ id: body.ticketTypeGroup });
-    if (typeof ticketTypeGroup.id !== 'string') {
+    const catalog = await offerCatalogService.findById({ id: body.ticketTypeGroup });
+    if (typeof catalog.id !== 'string') {
         throw new Error('Offer Catalog ID undefined');
     }
 
     let serviceType: chevre.factory.serviceType.IServiceType | undefined;
-    const offerCatagoryServiceTypeCode = ticketTypeGroup.itemOffered.serviceType?.codeValue;
+    const offerCatagoryServiceTypeCode = catalog.itemOffered.serviceType?.codeValue;
     if (typeof offerCatagoryServiceTypeCode === 'string') {
         const searchServiceTypesResult = await categoryCodeService.search({
             limit: 1,
@@ -320,8 +320,8 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
 
     const offers: chevre.factory.event.screeningEvent.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        id: ticketTypeGroup.id,
-        name: ticketTypeGroup.name,
+        id: catalog.id,
+        name: catalog.name,
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
         availabilityEnds: salesEndDate,

@@ -64,7 +64,7 @@ export async function add(req: Request, res: Response): Promise<void> {
                     throw new Error(`既に存在するコードです: ${ticketTypeGroup.identifier}`);
                 }
 
-                ticketTypeGroup = await offerService.createTicketTypeGroup(ticketTypeGroup);
+                ticketTypeGroup = await offerCatalogService.create(ticketTypeGroup);
                 req.flash('message', '登録しました');
                 res.redirect(`/ticketTypeGroups/${ticketTypeGroup.id}/update`);
 
@@ -141,6 +141,10 @@ export async function update(req: Request, res: Response): Promise<void> {
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const offerCatalogService = new chevre.service.OfferCatalog({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -163,7 +167,7 @@ export async function update(req: Request, res: Response): Promise<void> {
                 // 券種グループDB登録
                 req.body.id = req.params.id;
                 const ticketTypeGroup = await createFromBody(req);
-                await offerService.updateTicketTypeGroup(ticketTypeGroup);
+                await offerCatalogService.update(ticketTypeGroup);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
 
@@ -175,12 +179,12 @@ export async function update(req: Request, res: Response): Promise<void> {
     }
 
     // 券種グループ取得
-    const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.params.id });
+    const catalog = await offerCatalogService.findById({ id: req.params.id });
     const forms = {
         additionalProperty: [],
-        ...ticketGroup,
-        serviceType: ticketGroup.itemOffered.serviceType?.codeValue,
-        ticketTypes: ticketGroup.itemListElement.map((e) => e.id),
+        ...catalog,
+        serviceType: catalog.itemOffered.serviceType?.codeValue,
+        ticketTypes: catalog.itemListElement.map((e) => e.id),
         ...req.body
     };
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -271,95 +275,6 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
             : undefined
     };
 }
-
-/**
- * 一覧データ取得API
- */
-// export async function getList(req: Request, res: Response): Promise<void> {
-//     try {
-//         const offerService = new chevre.service.Offer({
-//             endpoint: <string>process.env.API_ENDPOINT,
-//             auth: req.user.authClient
-//         });
-
-//         const limit = Number(req.query.limit);
-//         const page = Number(req.query.page);
-//         const { data } = await offerService.searchTicketTypeGroups({
-//             limit: limit,
-//             page: page,
-//             sort: { identifier: chevre.factory.sortType.Ascending },
-//             project: { id: { $eq: req.project.id } },
-//             identifier: req.query.identifier,
-//             name: req.query.name,
-//             itemListElement: {},
-//             itemOffered: {
-//                 typeOf: {
-//                     $eq: (typeof req.query.itemOffered?.typeOf?.$eq === 'string' && req.query.itemOffered?.typeOf?.$eq.length > 0)
-//                         ? req.query.itemOffered?.typeOf?.$eq
-//                         : undefined
-//                 }
-//             }
-//         });
-//         res.json({
-//             success: true,
-//             count: (data.length === Number(limit))
-//                 ? (Number(page) * Number(limit)) + 1
-//                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-//             results: data.map((g) => {
-//                 return {
-//                     ...g,
-//                     offerCount: g.itemListElement.length
-//                 };
-//             })
-//         });
-//     } catch (err) {
-//         res.json({
-//             success: false,
-//             count: 0,
-//             results: []
-//         });
-//     }
-// }
-
-/**
- * 関連券種
- */
-// export async function getTicketTypeList(req: Request, res: Response): Promise<void> {
-//     try {
-//         const offerService = new chevre.service.Offer({
-//             endpoint: <string>process.env.API_ENDPOINT,
-//             auth: req.user.authClient
-//         });
-//         // 券種グループ取得
-//         const ticketGroup = await offerService.findTicketTypeGroupById({ id: req.query.id });
-//         const offerIds = ticketGroup.itemListElement.map((e) => e.id);
-
-//         const limit = 100;
-//         const page = 1;
-//         const { data } = await offerService.searchTicketTypes({
-//             limit: limit,
-//             page: page,
-//             project: { ids: [req.project.id] },
-//             ids: offerIds
-//         });
-
-//         // 券種を登録順にソート
-//         const ticketTypes = data.sort((a, b) => offerIds.indexOf(a.id) - offerIds.indexOf(b.id));
-
-//         res.json({
-//             success: true,
-//             count: (ticketTypes.length === Number(limit))
-//                 ? (Number(page) * Number(limit)) + 1
-//                 : ((Number(page) - 1) * Number(limit)) + Number(ticketTypes.length),
-//             results: ticketTypes
-//         });
-//     } catch (err) {
-//         res.json({
-//             success: false,
-//             results: err
-//         });
-//     }
-// }
 
 /**
  * 券種金額
