@@ -134,7 +134,6 @@ $(function () {
                         } else {
                             fieldId = splittedField[0];
                         }
-                        console.log('transforming...', fieldId, transformType, arguments);
 
                         value = $.fn.getStringValue(data, fieldId, '');
 

@@ -81,11 +81,17 @@ function add(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
         });
+        const searchDistributorTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+        });
         res.render('creativeWorks/movie/add', {
             message: message,
             errors: errors,
             forms: forms,
-            contentRatingTypes: searchContentRatingTypesResult.data
+            contentRatingTypes: searchContentRatingTypesResult.data,
+            distributorTypes: searchDistributorTypesResult.data
         });
     });
 }
@@ -158,19 +164,24 @@ function update(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
         });
-        debug('errors:', errors);
+        const searchDistributorTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+        });
         res.render('creativeWorks/movie/edit', {
             message: message,
             errors: errors,
             forms: forms,
-            contentRatingTypes: searchContentRatingTypesResult.data
+            contentRatingTypes: searchContentRatingTypesResult.data,
+            distributorTypes: searchDistributorTypesResult.data
         });
     });
 }
 exports.update = update;
 // tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     const body = req.body;
     let contentRating;
     if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
@@ -197,7 +208,14 @@ function createFromBody(req, isNew) {
             .toDate();
     }
     const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
-    const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
+    let distributor;
+    const distributorCodeParam = (_d = body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
+    if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
+        distributor = Object.assign({ id: distributorCodeParam, distributorType: distributorCodeParam }, {
+            codeValue: distributorCodeParam
+        });
+    }
+    const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
@@ -205,7 +223,7 @@ function createFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (!isNew)
+            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (distributor !== undefined) ? { distributor } : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined)
         }

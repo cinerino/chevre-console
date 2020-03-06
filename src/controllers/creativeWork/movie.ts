@@ -86,11 +86,18 @@ export async function add(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
     });
 
+    const searchDistributorTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+    });
+
     res.render('creativeWorks/movie/add', {
         message: message,
         errors: errors,
         forms: forms,
-        contentRatingTypes: searchContentRatingTypesResult.data
+        contentRatingTypes: searchContentRatingTypesResult.data,
+        distributorTypes: searchDistributorTypesResult.data
     });
 }
 
@@ -173,12 +180,18 @@ export async function update(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
     });
 
-    debug('errors:', errors);
+    const searchDistributorTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+    });
+
     res.render('creativeWorks/movie/edit', {
         message: message,
         errors: errors,
         forms: forms,
-        contentRatingTypes: searchContentRatingTypesResult.data
+        contentRatingTypes: searchContentRatingTypesResult.data,
+        distributorTypes: searchDistributorTypesResult.data
     });
 }
 
@@ -222,6 +235,18 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
         ...(availabilityEnds !== undefined) ? { availabilityEnds } : undefined
     };
 
+    let distributor: chevre.factory.creativeWork.movie.IDistributor | undefined;
+    const distributorCodeParam = body.distributor?.codeValue;
+    if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
+        distributor = {
+            id: distributorCodeParam,
+            distributorType: distributorCodeParam,
+            ...{
+                codeValue: distributorCodeParam
+            }
+        };
+    }
+
     const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
         project: req.project,
         typeOf: chevre.factory.creativeWorkType.Movie,
@@ -242,6 +267,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
         ...(duration !== undefined) ? { duration } : undefined,
         ...(headline !== undefined) ? { headline } : undefined,
         ...(datePublished !== undefined) ? { datePublished } : undefined,
+        ...(distributor !== undefined) ? { distributor } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
