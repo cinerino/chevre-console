@@ -382,6 +382,34 @@ function regist() {
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
 
+    console.log({ theater, screen, startDate, toDate, screeningEventId, saleStartDate, saleStartTime, onlineDisplayStartDate });
+    if (typeof theater !== 'string' || theater.length === 0
+        || typeof screen !== 'string' || screen.length === 0
+        || typeof startDate !== 'string' || startDate.length === 0
+        || typeof toDate !== 'string' || toDate.length === 0
+        || typeof screeningEventId !== 'string' || screeningEventId.length === 0
+        || typeof saleStartDate !== 'string' || saleStartDate.length === 0
+        || typeof saleStartTime !== 'string' || saleStartTime.length === 0
+        || typeof onlineDisplayStartDate !== 'string' || onlineDisplayStartDate.length === 0
+    ) {
+        creatingSchedules = false;
+        alert('未入力の項目があります');
+        return;
+    }
+
+    if (weekDayData.length === 0) {
+        creatingSchedules = false;
+        alert('曜日を入力してください');
+        return;
+    }
+
+    if (tableData.ticketData.length === 0
+        || tableData.timeData.length === 0) {
+        creatingSchedules = false;
+        alert('時刻、券種グループを入力してください');
+        return;
+    }
+
     if (theater === ''
         || screen === null
         || startDate === ''
