@@ -266,9 +266,9 @@ function getWeekDayData() {
  * 登録スケジュールのタイムテーブルを取得する
  */
 function getTableData() {
+    var tempData = [];
     var timeTableData = $('#newModal .timeTable[data-dirty="true"]');
 
-    var tempData = [];
     timeTableData.each(function (_, row) {
         const mvtkExcludeFlg = $(row).find('input[name="mvtkExcludeFlg"]:checked').val() === undefined ? 0 : 1;
         var o = {
@@ -280,7 +280,9 @@ function getTableData() {
             mvtkExcludeFlg: mvtkExcludeFlg
         };
 
-        // 入力していない情報がある=>NG
+        var isValidRow = true;
+
+        // 入力していない情報があればNG
         if (
             typeof o.doorTime !== 'string' || o.doorTime.length === 0 ||
             typeof o.startTime !== 'string' || o.startTime.length === 0 ||
@@ -288,22 +290,27 @@ function getTableData() {
             typeof o.endDayRelative !== 'number' || String(o.endDayRelative).length === 0 ||
             typeof o.ticketTypeGroup !== 'string' || o.ticketTypeGroup.length === 0
         ) {
-            return false;
+            isValidRow = false;
         }
 
-        // if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
-        //     alert('開場/開始/終了時刻を確認してください');
-        //     return false;
-        // }
-
-        console.log('adding timeTable...', o);
-
-        tempData.push(o);
+        if (isValidRow) {
+            console.log('adding timeTable...', o);
+            tempData.push(o);
+        }
     });
 
-    // タイムテーブルなし、あるいは、すべてのテーブル情報が適切でない場合、NG
+    // タイムテーブルなしはNG
     if (tempData.length === 0) {
-        // if (tempData.length === 0 || tempData.length !== timeTableData.length) {
+        return {
+            ticketData: [],
+            timeData: [],
+            mvtkExcludeFlgData: []
+        };
+    }
+
+    if (tempData.length !== timeTableData.length) {
+        alert('情報が足りないタイムテーブルがあります。スケジュール登録モーダルを一度閉じてください。');
+
         return {
             ticketData: [],
             timeData: [],
