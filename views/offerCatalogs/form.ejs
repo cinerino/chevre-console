@@ -34,14 +34,14 @@
                 <% if (isNew) { %>
                 <select class="form-control" name="itemOffered[typeOf]" id="itemOffered[typeOf]">
                     <option value="EventService"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'EventService') { %>
+                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'EventService') { %>
                         selected<% } %>>イベント</option>
                     <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
                     <option value="Product"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'Product') { %>
+                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'Product') { %>
                         selected<% } %>>アドオン</option>
                     <option value="MembershipService"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
+                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
                         selected<% } %>>会員サービス</option>
                     <% } %>
                 </select>
@@ -116,6 +116,11 @@
             <label for="ticketTypes" class="bmd-label-static">
                 オファーリスト<span class="text-danger">＊</span>
             </label>
+            <% if (errors && errors['itemListElement']) { %>
+            <p class="text-danger">
+                <%- errors['itemListElement'].msg %>
+            </p>
+            <% } %>
         </div>
 
         <div class="form-group bmd-form-group">
@@ -134,21 +139,10 @@
                 <div class="col-md-6"></div>
             </div>
             <div class="row">
+                <textarea class="d-none" name="selectedOffers"><%= JSON.stringify(offers, null, '\t')%></textarea>
                 <div class="mx-auto">
-                    <ul id="sortable1" class="float-left connectedSortable list-group m-3 p-3">
-
-                    </ul>
-                    <ul id="sortable2" class="float-left connectedSortable list-group m-3 p-3">
-                        <% offers.forEach((offer) => { %>
-                        <li class="list-group-item p-0" uid="<%= offer.id %>"
-                            appliesToMovieTicketType="<%= offer.priceSpecification.appliesToMovieTicketType %>">
-                            <span class="btn btn-primary btn-block">
-                                <%= offer.alternateName.ja %>
-                                <%= `(${offer.priceSpecification.price} / ${offer.priceSpecification.referenceQuantity.value})` %>
-                            </span>
-                        </li>
-                        <% }) %>
-                    </ul>
+                    <ul id="sortable1" class="float-left connectedSortable list-group m-3 p-3"></ul>
+                    <ul id="sortable2" class="float-left connectedSortable list-group m-3 p-3"></ul>
                 </div>
             </div>
         </div>

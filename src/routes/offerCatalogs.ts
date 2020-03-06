@@ -576,9 +576,10 @@ function validate(req: Request): void {
             .withMessage(Message.Common.required.replace('$fieldName$', colName));
     }
 
-    colName = '対象オファー';
-    req.checkBody('itemListElement', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+    colName = 'オファーリスト';
+    req.checkBody('itemListElement')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
 }
 
 export default offerCatalogsRouter;

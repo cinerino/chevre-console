@@ -44,7 +44,7 @@ offersRouter.all('/add',
     });
     if (req.method === 'POST') {
         // 検証
-        validateFormAdd(req);
+        validate(req);
         const validatorResult = yield req.getValidationResult();
         errors = req.validationErrors(true);
         // 検証
@@ -133,7 +133,7 @@ offersRouter.all('/:id/update',
         let offer = yield offerService.findById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
-            validateFormAdd(req);
+            validate(req);
             const validatorResult = yield req.getValidationResult();
             errors = req.validationErrors(true);
             // 検証
@@ -513,32 +513,38 @@ function createFromBody(req, isNew) {
                 validThrough: validThrough
             }
             : undefined), (!isNew)
-            // ...{
-            //     $unset: { eligibleCustomerType: 1 }
-            // },
             ? {
                 $unset: Object.assign(Object.assign(Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
 }
-function validateFormAdd(req) {
+function validate(req) {
     let colName = 'コード';
     req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
     req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
         .len({ max: NAME_MAX_LENGTH_CODE });
     colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('name.ja')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
+    colName = '代替名称';
+    req.checkBody('alternateName.ja')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .len({ max: NAME_MAX_LENGTH_NAME_JA })
+        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
     colName = '適用数';
-    req.checkBody('priceSpecification.referenceQuantity.value', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.value')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
     colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.unitCode', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+    req.checkBody('priceSpecification.referenceQuantity.unitCode')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
     colName = '発生金額';
     req.checkBody('priceSpecification.price')
         .notEmpty()
