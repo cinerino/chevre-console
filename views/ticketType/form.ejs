@@ -75,7 +75,7 @@
 
         <div class="form-group bmd-form-group">
             <label for="alternateName[ja]" class="bmd-label-static">
-                代替名称<span class="text-danger">＊</span>
+                代替名称(管理名称)<span class="text-danger">＊</span>
             </label>
             <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]" placeholder=""
                 maxlength=64 value="<%= forms.alternateName.ja %>">
@@ -96,7 +96,7 @@
                     <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10 value="<%=forms.price
                     %>">
                     <div class="input-group-append">
-                        <span class="input-group-text">円 / 1枚 ×</span>
+                        <span class="input-group-text">円 / 枚 ×</span>
                     </div>
                     <select class="form-control" name="seatReservationUnit">
                         <% for (let i = 1; i <= 10; i++) { %>
@@ -131,7 +131,7 @@
                     <input type="text" class="form-control" name="accountsReceivable" id="accountsReceivable"
                         placeholder="" maxlength=10 value="<%=forms.accountsReceivable %>">
                     <div class="input-group-append">
-                        <span class="input-group-text">円として計上</span>
+                        <span class="input-group-text">円 / 枚として計上</span>
                     </div>
                 </div>
                 <span class="bmd-help">半角10文字以内でご入力ください</span>
