@@ -29,6 +29,16 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchDistributorTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+        });
+        const distributorTypes = searchDistributorTypesResult.data;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield creativeWorkService.searchMovies({
@@ -60,7 +70,10 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data
+            results: data.map((d) => {
+                const distributorType = distributorTypes.find((distributorType) => { var _a; return distributorType.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
+                return Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined);
+            })
         });
     }
     catch (error) {

@@ -32,6 +32,18 @@ movieRouter.all(
                 auth: req.user.authClient
             });
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const searchDistributorTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+            });
+            const distributorTypes = searchDistributorTypesResult.data;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await creativeWorkService.searchMovies({
@@ -64,7 +76,16 @@ movieRouter.all(
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-                results: data
+                results: data.map((d) => {
+                    const distributorType = distributorTypes.find(
+                        (distributorType) => distributorType.codeValue === (<any>d).distributor?.codeValue
+                    );
+
+                    return {
+                        ...d,
+                        ...(distributorType !== undefined) ? { distributorName: (<any>distributorType.name).ja } : undefined
+                    };
+                })
             });
         } catch (error) {
             res.json({

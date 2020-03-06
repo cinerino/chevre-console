@@ -374,6 +374,18 @@ offerCatalogsRouter.get(
                 auth: req.user.authClient
             });
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const searchServiceTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+            });
+            const serviceTypes = searchServiceTypesResult.data;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await offerCatalogService.search({
@@ -399,8 +411,11 @@ offerCatalogsRouter.get(
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((catalog) => {
+                    const serviceType = serviceTypes.find((s) => s.codeValue === catalog.itemOffered.serviceType?.codeValue);
+
                     return {
                         ...catalog,
+                        ...(serviceType !== undefined) ? { serviceTypeName: (<any>serviceType.name).ja } : undefined,
                         offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0
                     };
                 })

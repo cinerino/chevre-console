@@ -315,6 +315,16 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchServiceTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+        });
+        const serviceTypes = searchServiceTypesResult.data;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield offerCatalogService.search({
@@ -338,7 +348,8 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((catalog) => {
-                return Object.assign(Object.assign({}, catalog), { offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0 });
+                const serviceType = serviceTypes.find((s) => { var _a; return s.codeValue === ((_a = catalog.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue); });
+                return Object.assign(Object.assign(Object.assign({}, catalog), (serviceType !== undefined) ? { serviceTypeName: serviceType.name.ja } : undefined), { offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0 });
             })
         });
     }
