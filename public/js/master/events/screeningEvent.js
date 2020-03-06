@@ -145,6 +145,13 @@ $(function () {
 
         showOffers(id);
     });
+
+    $(document).on('click', '.editPerformance', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('editing...id:', id);
+
+        editPerformance(id);
+    });
 });
 
 /**
@@ -1058,4 +1065,18 @@ function showOffers(id) {
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
+}
+
+function editPerformance(id) {
+    var event = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (event === undefined) {
+        alert('イベント' + id + 'が見つかりません');
+
+        return;
+    }
+
+    // 編集モーダルオープン
+    scheduler.editPerformance(event);
 }
