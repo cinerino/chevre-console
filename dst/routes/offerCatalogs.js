@@ -476,7 +476,6 @@ function createFromBody(req) {
     });
 }
 function validate(req) {
-    var _a;
     let colName = 'コード';
     req.checkBody('identifier')
         .notEmpty()
@@ -498,12 +497,12 @@ function validate(req) {
     req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
     // サービス区分
-    if (((_a = req.body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'EventService') {
-        colName = 'サービス区分';
-        req.checkBody('serviceType')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    }
+    // if (req.body.itemOffered?.typeOf === 'EventService') {
+    //     colName = 'サービス区分';
+    //     req.checkBody('serviceType')
+    //         .notEmpty()
+    //         .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // }
     colName = 'オファーリスト';
     req.checkBody('itemListElement')
         .notEmpty()

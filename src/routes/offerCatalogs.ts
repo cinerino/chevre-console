@@ -575,12 +575,12 @@ function validate(req: Request): void {
         .notEmpty();
 
     // サービス区分
-    if (req.body.itemOffered?.typeOf === 'EventService') {
-        colName = 'サービス区分';
-        req.checkBody('serviceType')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    }
+    // if (req.body.itemOffered?.typeOf === 'EventService') {
+    //     colName = 'サービス区分';
+    //     req.checkBody('serviceType')
+    //         .notEmpty()
+    //         .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    // }
 
     colName = 'オファーリスト';
     req.checkBody('itemListElement')
