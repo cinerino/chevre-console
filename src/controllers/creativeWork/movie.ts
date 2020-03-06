@@ -274,7 +274,8 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
                     ...(contentRating === undefined) ? { contentRating: 1 } : undefined,
                     ...(duration === undefined) ? { duration: 1 } : undefined,
                     ...(headline === undefined) ? { headline: 1 } : undefined,
-                    ...(datePublished === undefined) ? { datePublished: 1 } : undefined
+                    ...(datePublished === undefined) ? { datePublished: 1 } : undefined,
+                    ...(distributor === undefined) ? { distributor: 1 } : undefined
                 }
             }
             : undefined
