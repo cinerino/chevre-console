@@ -37,10 +37,6 @@ function add(req, res) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -113,9 +109,7 @@ function add(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
         });
-        const searchAccountTitlesResult = yield accountTitleService.search({
-            project: { ids: [req.project.id] }
-        });
+        const accountTitles = yield searchAllAccountTitles(req);
         const searchAddOnsResult = yield productService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -129,7 +123,7 @@ function add(req, res) {
             seatingTypes: searchSeatingTypesResult.data,
             accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data,
+            accountTitles: accountTitles,
             addOns: searchAddOnsResult.data
         });
     });
@@ -150,13 +144,6 @@ function update(req, res, next) {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
-        });
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchAccountTitlesResult = yield accountTitleService.search({
-            project: { ids: [req.project.id] }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -259,6 +246,7 @@ function update(req, res, next) {
                 project: { id: { $eq: req.project.id } },
                 typeOf: { $eq: 'Product' }
             });
+            const accountTitles = yield searchAllAccountTitles(req);
             res.render('ticketType/update', {
                 message: message,
                 errors: errors,
@@ -267,7 +255,7 @@ function update(req, res, next) {
                 seatingTypes: searchSeatingTypesResult.data,
                 accountTypes: searchAccountTypesResult.data,
                 ticketTypeCategories: searchOfferCategoryTypesResult.data,
-                accountTitles: searchAccountTitlesResult.data,
+                accountTitles: accountTitles,
                 addOns: searchAddOnsResult.data
             });
         }
@@ -277,6 +265,29 @@ function update(req, res, next) {
     });
 }
 exports.update = update;
+function searchAllAccountTitles(req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const limit = 100;
+        let page = 0;
+        let numData = limit;
+        const accountTitles = [];
+        while (numData === limit) {
+            page += 1;
+            const searchAccountTitlesResult = yield accountTitleService.search({
+                limit: limit,
+                page: page,
+                project: { ids: [req.project.id] }
+            });
+            numData = searchAccountTitlesResult.data.length;
+            accountTitles.push(...searchAccountTitlesResult.data);
+        }
+        return accountTitles;
+    });
+}
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b;
