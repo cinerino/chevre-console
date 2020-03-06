@@ -291,10 +291,10 @@ function getTableData() {
             return false;
         }
 
-        if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
-            alert('開場/開始/終了時刻を確認してください');
-            return false;
-        }
+        // if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
+        //     alert('開場/開始/終了時刻を確認してください');
+        //     return false;
+        // }
 
         console.log('adding timeTable...', o);
 
@@ -302,7 +302,8 @@ function getTableData() {
     });
 
     // タイムテーブルなし、あるいは、すべてのテーブル情報が適切でない場合、NG
-    if (tempData.length === 0 || tempData.length !== timeTableData.length) {
+    if (tempData.length === 0) {
+        // if (tempData.length === 0 || tempData.length !== timeTableData.length) {
         return {
             ticketData: [],
             timeData: [],
@@ -370,6 +371,7 @@ function regist() {
 
     var tableData = getTableData();
     console.log('tableData:', tableData);
+
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
 
@@ -387,6 +389,19 @@ function regist() {
     ) {
         creatingSchedules = false;
         alert('情報が足りません');
+        return;
+    }
+
+    // 時刻の現実性チェック
+    var isTimesValid = true;
+    tableData.timeData.forEach(function (data) {
+        if (data.doorTime > data.startTime || (data.endDayRelative === 0 && data.startTime > data.endTime)) {
+            isTimesValid = false;
+        }
+    });
+    if (!isTimesValid) {
+        creatingSchedules = false;
+        alert('開場/開始/終了時刻を確認してください');
         return;
     }
 
