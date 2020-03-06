@@ -515,6 +515,14 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         if (serviceType === undefined) {
             throw new Error('サービス区分が見つかりません');
         }
+        serviceType = {
+            project: serviceType.project,
+            id: serviceType.id,
+            typeOf: serviceType.typeOf,
+            codeValue: serviceType.codeValue,
+            name: serviceType.name,
+            inCodeSet: serviceType.inCodeSet
+        };
     }
 
     return {
@@ -527,9 +535,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         itemListElement: itemListElement,
         itemOffered: {
             typeOf: body.itemOffered?.typeOf,
-            ...(serviceType !== undefined)
-                ? { serviceType }
-                : undefined
+            ...(serviceType !== undefined) ? { serviceType } : undefined
         },
         additionalProperty: (Array.isArray(body.additionalProperty))
             ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')

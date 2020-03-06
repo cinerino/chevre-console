@@ -445,6 +445,14 @@ function createFromBody(req) {
             if (serviceType === undefined) {
                 throw new Error('サービス区分が見つかりません');
             }
+            serviceType = {
+                project: serviceType.project,
+                id: serviceType.id,
+                typeOf: serviceType.typeOf,
+                codeValue: serviceType.codeValue,
+                name: serviceType.name,
+                inCodeSet: serviceType.inCodeSet
+            };
         }
         return {
             project: req.project,
@@ -454,9 +462,7 @@ function createFromBody(req) {
             description: body.description,
             alternateName: body.alternateName,
             itemListElement: itemListElement,
-            itemOffered: Object.assign({ typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf }, (serviceType !== undefined)
-                ? { serviceType }
-                : undefined),
+            itemOffered: Object.assign({ typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf }, (serviceType !== undefined) ? { serviceType } : undefined),
             additionalProperty: (Array.isArray(body.additionalProperty))
                 ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {

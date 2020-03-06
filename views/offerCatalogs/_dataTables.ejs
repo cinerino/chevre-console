@@ -32,8 +32,10 @@
                                 <% } else { %>
                                 <option value="">---</option>
                                 <option value="EventService">イベント</option>
+                                <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
                                 <option value="Product">アドオン</option>
                                 <option value="MembershipService">会員サービス</option>
+                                <% } %>
                                 <% } %>
                             </select>
                         </div>
