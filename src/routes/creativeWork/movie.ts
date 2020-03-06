@@ -78,7 +78,7 @@ movieRouter.all(
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((d) => {
                     const distributorType = distributorTypes.find(
-                        (distributorType) => distributorType.codeValue === (<any>d).distributor?.codeValue
+                        (category) => category.codeValue === (<any>d).distributor?.codeValue
                     );
 
                     return {

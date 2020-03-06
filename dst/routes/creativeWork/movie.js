@@ -71,7 +71,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
-                const distributorType = distributorTypes.find((distributorType) => { var _a; return distributorType.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
+                const distributorType = distributorTypes.find((category) => { var _a; return category.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
                 return Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined);
             })
         });
