@@ -291,15 +291,15 @@ function getTableData() {
 
         // 入力していない情報がある=>NG
         if (
-            o.doorTime == null ||
-            o.startTime == null ||
-            o.endTime == null ||
-            o.endDayRelative == null ||
-            o.ticketTypeGroup == null
+            typeof o.doorTime !== 'string' || o.doorTime.length === 0 ||
+            typeof o.startTime !== 'string' || o.startTime.length === 0 ||
+            typeof o.endTime !== 'string' || o.endTime.length === 0 ||
+            typeof o.endDayRelative !== 'number' || String(o.endDayRelative).length === 0 ||
+            typeof o.ticketTypeGroup !== 'string' || o.ticketTypeGroup.length === 0
         ) {
             return false;
         }
-
+        console.log(o);
         if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
             alert('開場/開始/終了時刻を確認してください');
             return false;
@@ -721,6 +721,8 @@ function add() {
     modal.find('input[name=screeningDateThrough]').datepicker('update', new Date());
 
     modal.find('.mvtk').show();
+
+    modal.find('.timeTable').attr('data-dirty', false);
 
     $('#newModal').modal();
 }
