@@ -263,19 +263,10 @@ function getWeekDayData() {
 }
 
 /**
- * 時間情報を取得
- * @function getTableData
+ * 登録スケジュールのタイムテーブルを取得する
  */
 function getTableData() {
     var timeTableData = $('#newModal .timeTable[data-dirty="true"]');
-    if (timeTableData.length === 0) {
-        // 何も入力していない=>NG
-        return {
-            ticketData: [],
-            timeData: [],
-            mvtkExcludeFlgData: []
-        };
-    }
 
     var tempData = [];
     timeTableData.each(function (_, row) {
@@ -299,14 +290,25 @@ function getTableData() {
         ) {
             return false;
         }
-        console.log(o);
+
         if (o.doorTime > o.startTime || (o.endDayRelative === 0 && o.startTime > o.endTime)) {
             alert('開場/開始/終了時刻を確認してください');
             return false;
         }
 
+        console.log('adding timeTable...', o);
+
         tempData.push(o);
     });
+
+    // タイムテーブルなし、あるいは、すべてのテーブル情報が適切でない場合、NG
+    if (tempData.length === 0 || tempData.length !== timeTableData.length) {
+        return {
+            ticketData: [],
+            timeData: [],
+            mvtkExcludeFlgData: []
+        };
+    }
 
     var timeData = tempData.map(function (data) {
         return {
