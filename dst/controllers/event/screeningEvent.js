@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const http_status_1 = require("http-status");
 const moment = require("moment");
+const productType_1 = require("../../factory/productType");
 const debug = createDebug('chevre-backend:controllers');
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
 var SaleStartDateType;
@@ -48,7 +49,7 @@ function index(req, res, next) {
             }
             const searchTicketTypeGroupsResult = yield offerCatalogService.search({
                 project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: 'EventService' } }
+                itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
             });
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
@@ -426,7 +427,7 @@ function createMultipleEventFromBody(req, user) {
         const searchTicketTypeGroupsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: 'EventService' } }
+            itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
         });
         const ticketTypeGroups = searchTicketTypeGroupsResult.data;
         const searchServiceTypesResult = yield categoryCodeService.search({

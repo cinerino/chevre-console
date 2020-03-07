@@ -24,7 +24,6 @@ import reservationsRouter from './reservations';
 import servicesRouter from './services';
 import serviceTypesRouter from './serviceTypes';
 import ticketTypeMasterRouter from './ticketType';
-import ticketTypeGroupMasterRouter from './ticketTypeGroup';
 
 const router = express.Router();
 
@@ -67,6 +66,5 @@ router.use('/reservations', reservationsRouter);
 router.use('/services', servicesRouter);
 router.use('/serviceTypes', serviceTypesRouter);
 router.use('/ticketTypes', ticketTypeMasterRouter);
-router.use('/ticketTypeGroups', ticketTypeGroupMasterRouter);
 
 export default router;

@@ -17,8 +17,8 @@ const express_1 = require("express");
 const http_status_1 = require("http-status");
 const _ = require("underscore");
 const Message = require("../message");
+const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
-const PRODUCT_TYPE = 'Product';
 const productsRouter = express_1.Router();
 productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
@@ -65,7 +65,7 @@ productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, funct
     const searchOfferCatalogsResult = yield offerCatalogService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+        itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
     });
     res.render('products/new', {
         message: message,
@@ -89,7 +89,7 @@ productsRouter.get('/search',
             page: page,
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: PRODUCT_TYPE }
+            typeOf: { $eq: productType_1.ProductType.Product }
         };
         const { data } = yield productService.search(searchConditions);
         res.json({
@@ -154,7 +154,7 @@ productsRouter.all('/:id',
         const searchOfferCatalogsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+            itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
         });
         res.render('products/update', {
             message: message,
@@ -182,7 +182,7 @@ function createFromBody(req, isNew) {
             id: (_c = body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
-    return Object.assign(Object.assign({ project: req.project, typeOf: PRODUCT_TYPE, id: req.params.id, 
+    return Object.assign(Object.assign({ project: req.project, typeOf: productType_1.ProductType.Product, id: req.params.id, 
         // identifier: body.identifier,
         name: body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {

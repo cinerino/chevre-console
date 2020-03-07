@@ -18,6 +18,7 @@ const http_status_1 = require("http-status");
 const moment = require("moment");
 const _ = require("underscore");
 const Message = require("../message");
+const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種グループコード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -94,7 +95,7 @@ offerCatalogsRouter.all('/add',
     let offers = [];
     if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
         const itemListElementIds = forms.itemListElement.map((element) => element.id);
-        if (((_a = forms.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'EventService') {
+        if (((_a = forms.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: 100,
                 project: { ids: [req.project.id] },
@@ -120,7 +121,8 @@ offerCatalogsRouter.all('/add',
         errors: errors,
         forms: forms,
         serviceTypes: searchServiceTypesResult.data,
-        offers: offers
+        offers: offers,
+        productTypes: productType_1.productTypes
     });
 }));
 offerCatalogsRouter.all('/:id/update', 
@@ -145,10 +147,6 @@ offerCatalogsRouter.all('/:id/update',
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     let offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
-    // if (offerCatalog.itemOffered.typeOf === 'EventService') {
-    //     res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
-    //     return;
-    // }
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -182,7 +180,7 @@ offerCatalogsRouter.all('/:id/update',
     let offers = [];
     if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
         const itemListElementIds = forms.itemListElement.map((element) => element.id);
-        if (((_c = forms.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === 'EventService') {
+        if (((_c = forms.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: 100,
                 project: { ids: [req.project.id] },
@@ -208,7 +206,8 @@ offerCatalogsRouter.all('/:id/update',
         errors: errors,
         offers: offers,
         forms: forms,
-        serviceTypes: searchServiceTypesResult.data
+        serviceTypes: searchServiceTypesResult.data,
+        productTypes: productType_1.productTypes
     });
 }));
 offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -224,7 +223,7 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         const offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
         // tslint:disable-next-line:no-suspicious-comment
         // TODO 削除して問題ないカタログかどうか検証
-        if (offerCatalog.itemOffered.typeOf === 'EventService') {
+        if (offerCatalog.itemOffered.typeOf === productType_1.ProductType.EventService) {
             // 削除して問題ない券種グループかどうか検証
             const searchEventsResult = yield eventService.search({
                 limit: 1,
@@ -265,7 +264,7 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
         const limit = 100;
         const page = 1;
         let data;
-        if (offerCatalog.itemOffered.typeOf === 'EventService') {
+        if (offerCatalog.itemOffered.typeOf === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: limit,
                 page: page,
@@ -305,7 +304,8 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
 offerCatalogsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('offerCatalogs/index', {
         message: '',
-        ticketTypes: undefined
+        ticketTypes: undefined,
+        productTypes: productType_1.productTypes
     });
 }));
 offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -349,7 +349,8 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((catalog) => {
                 const serviceType = serviceTypes.find((s) => { var _a; return s.codeValue === ((_a = catalog.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue); });
-                return Object.assign(Object.assign(Object.assign({}, catalog), (serviceType !== undefined) ? { serviceTypeName: serviceType.name.ja } : undefined), { offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0 });
+                const productType = productType_1.productTypes.find((p) => p.codeValue === catalog.itemOffered.typeOf);
+                return Object.assign(Object.assign(Object.assign(Object.assign({}, catalog), (serviceType !== undefined) ? { serviceTypeName: serviceType.name.ja } : undefined), (productType !== undefined) ? { itemOfferedName: productType.name } : undefined), { offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0 });
             })
         });
     }
@@ -372,7 +373,7 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
         let data;
         const limit = 100;
         const page = 1;
-        if (itemOfferedType === 'EventService') {
+        if (itemOfferedType === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: limit,
                 page: page,
@@ -508,7 +509,7 @@ function validate(req) {
     req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
         .notEmpty();
     // サービス区分
-    // if (req.body.itemOffered?.typeOf === 'EventService') {
+    // if (req.body.itemOffered?.typeOf === ProductType.EventService) {
     //     colName = 'サービス区分';
     //     req.checkBody('serviceType')
     //         .notEmpty()

@@ -9,6 +9,8 @@ import * as moment from 'moment';
 
 import User from '../../user';
 
+import { ProductType } from '../../factory/productType';
+
 const debug = createDebug('chevre-backend:controllers');
 
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
@@ -44,7 +46,7 @@ export async function index(req: Request, res: Response, next: NextFunction): Pr
 
         const searchTicketTypeGroupsResult = await offerCatalogService.search({
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: 'EventService' } }
+            itemOffered: { typeOf: { $eq: ProductType.EventService } }
         });
 
         res.render('events/screeningEvent/index', {
@@ -424,7 +426,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const searchTicketTypeGroupsResult = await offerCatalogService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: 'EventService' } }
+        itemOffered: { typeOf: { $eq: ProductType.EventService } }
     });
     const ticketTypeGroups = searchTicketTypeGroupsResult.data;
 

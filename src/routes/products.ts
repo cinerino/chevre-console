@@ -8,8 +8,9 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
+import { ProductType } from '../factory/productType';
+
 const NUM_ADDITIONAL_PROPERTY = 10;
-const PRODUCT_TYPE = 'Product';
 
 const productsRouter = Router();
 
@@ -74,7 +75,7 @@ productsRouter.all(
         const searchOfferCatalogsResult = await offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+            itemOffered: { typeOf: { $eq: ProductType.Product } }
         });
 
         res.render('products/new', {
@@ -103,7 +104,7 @@ productsRouter.get(
                 page: page,
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: PRODUCT_TYPE }
+                typeOf: { $eq: ProductType.Product }
             };
             const { data } = await productService.search(searchConditions);
 
@@ -181,7 +182,7 @@ productsRouter.all(
             const searchOfferCatalogsResult = await offerCatalogService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: PRODUCT_TYPE } }
+                itemOffered: { typeOf: { $eq: ProductType.Product } }
             });
 
             res.render('products/update', {
@@ -218,7 +219,7 @@ function createFromBody(req: Request, isNew: boolean): any {
 
     return {
         project: req.project,
-        typeOf: PRODUCT_TYPE,
+        typeOf: ProductType.Product,
         id: req.params.id,
         // identifier: body.identifier,
         name: body.name,

@@ -17,6 +17,7 @@ const createDebug = require("debug");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
+const productType_1 = require("../../factory/productType");
 const debug = createDebug('chevre-backend:routes');
 const ScreeningEventController = require("../../controllers/event/screeningEvent");
 const screeningEventRouter = express_1.Router();
@@ -133,7 +134,7 @@ screeningEventRouter.get('/search',
             }
             const searchTicketTypeGroupsResult = yield offerCatalogService.search({
                 project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: 'EventService' } }
+                itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
             });
             res.json({
                 performances: events,

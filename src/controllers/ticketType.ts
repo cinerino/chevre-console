@@ -8,6 +8,8 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
+import { ProductType } from '../factory/productType';
+
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 // 券種コード 半角64
@@ -127,7 +129,7 @@ export async function add(req: Request, res: Response): Promise<void> {
     const searchAddOnsResult = await productService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        typeOf: { $eq: 'Product' }
+        typeOf: { $eq: ProductType.Product }
     });
 
     res.render('ticketType/add', {
@@ -285,7 +287,7 @@ export async function update(req: Request, res: Response, next: NextFunction): P
         const searchAddOnsResult = await productService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: 'Product' }
+            typeOf: { $eq: ProductType.Product }
         });
 
         const accountTitles = await searchAllAccountTitles(req);

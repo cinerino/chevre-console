@@ -36,8 +36,9 @@ OF-01
                                     </label>
                                     <select class="form-control" name="itemOffered[typeOf]">
                                         <option value="">---</option>
-                                        <option value="MembershipService">会員サービス</option>
-                                        <option value="Product">アドオン</option>
+                                        <% productTypes.forEach((productType) => { %>
+                                        <option value="<%= productType.codeValue %>"><%= productType.name %></option>
+                                        <% }) %>
                                     </select>
                                 </div>
 
@@ -141,7 +142,7 @@ OF-01
                                     <td name="availability">
                                         <span class="text-muted">$availability$</span>
                                     </td>
-                                    <td name="itemOffered.typeOf">$itemOffered.typeOf$</td>
+                                    <td name="itemOfferedName">$itemOfferedName$</td>
                                     <td name="categoryName">$categoryName$</td>
                                     <td name="name.ja|slice">$name.ja$</td>
                                     <td

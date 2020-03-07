@@ -9,6 +9,8 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
+import { ProductType, productTypes } from '../factory/productType';
+
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 // コード 半角64
@@ -121,7 +123,8 @@ offersRouter.all(
             errors: errors,
             forms: forms,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data
+            accountTitles: searchAccountTitlesResult.data,
+            productTypes: productTypes
         });
     }
 );
@@ -196,7 +199,8 @@ offersRouter.all(
                 errors: errors,
                 forms: forms,
                 ticketTypeCategories: searchOfferCategoryTypesResult.data,
-                accountTitles: searchAccountTitlesResult.data
+                accountTitles: searchAccountTitlesResult.data,
+                productTypes: productTypes
             });
         } catch (error) {
             next(error);
@@ -259,7 +263,8 @@ offersRouter.get(
         // 券種マスタ画面遷移
         res.render('offers/index', {
             message: '',
-            ticketTypeCategories: searchOfferCategoryTypesResult.data
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
+            productTypes: productTypes
         });
     }
 );
@@ -363,8 +368,11 @@ offersRouter.get(
                         );
                     }
 
+                    const productType = productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
+
                     return {
                         ...t,
+                        ...(productType !== undefined) ? { itemOfferedName: productType.name } : undefined,
                         categoryName: (typeof categoryCode === 'string')
                             ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                             : '',
@@ -542,14 +550,14 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     let itemOffered;
     const itemOfferedTypeOf = body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
-        case 'Product':
+        case ProductType.Product:
             itemOffered = {
                 project: req.project,
                 typeOf: itemOfferedTypeOf
             };
             break;
 
-        case 'MembershipService':
+        case ProductType.MembershipService:
             itemOffered = {
                 project: req.project,
                 typeOf: itemOfferedTypeOf,

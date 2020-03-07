@@ -17,8 +17,8 @@ const express_1 = require("express");
 const http_status_1 = require("http-status");
 const _ = require("underscore");
 const Message = require("../../message");
+const productType_1 = require("../../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
-const SERVICE_TYPE = 'MembershipService';
 const membershipServiceRouter = express_1.Router();
 membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
@@ -65,7 +65,7 @@ membershipServiceRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void
     const searchOfferCatalogsResult = yield offerCatalogService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+        itemOffered: { typeOf: { $eq: productType_1.ProductType.MembershipService } }
     });
     res.render('services/membershipService/new', {
         message: message,
@@ -88,7 +88,7 @@ membershipServiceRouter.get('/search',
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: SERVICE_TYPE },
+            typeOf: { $eq: productType_1.ProductType.MembershipService },
             serviceOutput: { typeOf: { $eq: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership } }
         };
         const { data } = yield productService.search(searchConditions);
@@ -154,7 +154,7 @@ membershipServiceRouter.all('/:id',
         const searchOfferCatalogsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+            itemOffered: { typeOf: { $eq: productType_1.ProductType.MembershipService } }
         });
         res.render('services/membershipService/update', {
             message: message,
@@ -182,7 +182,7 @@ function createFromBody(req, isNew) {
             id: (_c = body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
-    return Object.assign(Object.assign({ project: req.project, typeOf: SERVICE_TYPE, id: req.params.id, 
+    return Object.assign(Object.assign({ project: req.project, typeOf: productType_1.ProductType.MembershipService, id: req.params.id, 
         // identifier: body.identifier,
         name: body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {

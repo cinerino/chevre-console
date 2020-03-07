@@ -7,6 +7,8 @@ import { Router } from 'express';
 import { CREATED, INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment';
 
+import { ProductType } from '../../factory/productType';
+
 const debug = createDebug('chevre-backend:routes');
 
 import * as ScreeningEventController from '../../controllers/event/screeningEvent';
@@ -154,7 +156,7 @@ screeningEventRouter.get(
 
                 const searchTicketTypeGroupsResult = await offerCatalogService.search({
                     project: { id: { $eq: req.project.id } },
-                    itemOffered: { typeOf: { $eq: 'EventService' } }
+                    itemOffered: { typeOf: { $eq: ProductType.EventService } }
                 });
 
                 res.json({

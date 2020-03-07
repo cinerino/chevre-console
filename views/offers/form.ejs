@@ -35,12 +35,11 @@
                 </label>
                 <select class="form-control" name="itemOffered[typeOf]">
                     <option value="" disabled selected>選択してください</option>
-                    <option value="MembershipService"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
-                        selected<% } %>>会員サービス</option>
-                    <option value="Product"
-                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === 'Product') { %>
-                        selected<% } %>>アドオン</option>
+                    <% productTypes.forEach((productType) => { %>
+                    <option value="<%= productType.codeValue %>"
+                        <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === productType.codeValue) { %>
+                        selected<% } %>><%= productType.name %></option>
+                    <% }) %>
                 </select>
                 <p class="error message text-danger">
                     <% if (errors && errors['itemOffered[typeOf]']) { %>

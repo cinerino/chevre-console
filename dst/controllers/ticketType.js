@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
+const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -113,7 +114,7 @@ function add(req, res) {
         const searchAddOnsResult = yield productService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: 'Product' }
+            typeOf: { $eq: productType_1.ProductType.Product }
         });
         res.render('ticketType/add', {
             message: message,
@@ -244,7 +245,7 @@ function update(req, res, next) {
             const searchAddOnsResult = yield productService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: 'Product' }
+                typeOf: { $eq: productType_1.ProductType.Product }
             });
             const accountTitles = yield searchAllAccountTitles(req);
             res.render('ticketType/update', {

@@ -8,8 +8,9 @@ import * as _ from 'underscore';
 
 import * as Message from '../../message';
 
+import { ProductType } from '../../factory/productType';
+
 const NUM_ADDITIONAL_PROPERTY = 10;
-const SERVICE_TYPE = 'MembershipService';
 
 const membershipServiceRouter = Router();
 
@@ -74,7 +75,7 @@ membershipServiceRouter.all(
         const searchOfferCatalogsResult = await offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+            itemOffered: { typeOf: { $eq: ProductType.MembershipService } }
         });
 
         res.render('services/membershipService/new', {
@@ -102,7 +103,7 @@ membershipServiceRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: SERVICE_TYPE },
+                typeOf: { $eq: ProductType.MembershipService },
                 serviceOutput: { typeOf: { $eq: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership } }
             };
             const { data } = await productService.search(searchConditions);
@@ -180,7 +181,7 @@ membershipServiceRouter.all(
             const searchOfferCatalogsResult = await offerCatalogService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: SERVICE_TYPE } }
+                itemOffered: { typeOf: { $eq: ProductType.MembershipService } }
             });
 
             res.render('services/membershipService/update', {
@@ -217,7 +218,7 @@ function createFromBody(req: Request, isNew: boolean): any {
 
     return {
         project: req.project,
-        typeOf: SERVICE_TYPE,
+        typeOf: ProductType.MembershipService,
         id: req.params.id,
         // identifier: body.identifier,
         name: body.name,

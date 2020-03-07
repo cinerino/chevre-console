@@ -33,20 +33,16 @@
                 </label>
                 <% if (isNew) { %>
                 <select class="form-control" name="itemOffered[typeOf]" id="itemOffered[typeOf]">
-                    <option value="EventService"
-                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'EventService') { %>
-                        selected<% } %>>イベント</option>
-                    <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
-                    <option value="Product"
-                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'Product') { %>
-                        selected<% } %>>アドオン</option>
-                    <option value="MembershipService"
-                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === 'MembershipService') { %>
-                        selected<% } %>>会員サービス</option>
-                    <% } %>
+                    <% productTypes.forEach((productType) => { %>
+                    <option value="<%= productType.codeValue %>"
+                        <% if (forms.itemOffered !== undefined && forms.itemOffered.typeOf === productType.codeValue) { %>
+                        selected<% } %>><%= productType.name %></option>
+                    <% }) %>
                 </select>
                 <% } else { %>
-                <input class="form-control" disabled type="text" value="<%= forms.itemOffered.typeOf %>">
+                <% const productType = productTypes.find((p) => p.codeValue === forms.itemOffered.typeOf) %>
+                <input class="form-control" disabled type="text"
+                    value="<%= (productType !== undefined) ? productType.name : '' %>">
                 <input type="hidden" name="itemOffered[typeOf]" id="itemOffered[typeOf]"
                     value="<%= forms.itemOffered.typeOf %>">
                 <% } %>

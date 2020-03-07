@@ -17,6 +17,7 @@ const express_1 = require("express");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
+const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -106,7 +107,8 @@ offersRouter.all('/add',
         errors: errors,
         forms: forms,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        accountTitles: searchAccountTitlesResult.data
+        accountTitles: searchAccountTitlesResult.data,
+        productTypes: productType_1.productTypes
     });
 }));
 offersRouter.all('/:id/update', 
@@ -168,7 +170,8 @@ offersRouter.all('/:id/update',
             errors: errors,
             forms: forms,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data
+            accountTitles: searchAccountTitlesResult.data,
+            productTypes: productType_1.productTypes
         });
     }
     catch (error) {
@@ -221,7 +224,8 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     // 券種マスタ画面遷移
     res.render('offers/index', {
         message: '',
-        ticketTypeCategories: searchOfferCategoryTypesResult.data
+        ticketTypeCategories: searchOfferCategoryTypesResult.data,
+        productTypes: productType_1.productTypes
     });
 }));
 offersRouter.get('/getlist', 
@@ -313,7 +317,8 @@ offersRouter.get('/getlist',
                 if (typeof eligibleMonetaryAmountValue === 'number') {
                     eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_g = (_f = t.eligibleMonetaryAmount) === null || _f === void 0 ? void 0 : _f.slice(0, 1)[0]) === null || _g === void 0 ? void 0 : _g.currency}`);
                 }
-                return Object.assign(Object.assign({}, t), { categoryName: (typeof categoryCode === 'string')
+                const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
+                return Object.assign(Object.assign(Object.assign({}, t), (productType !== undefined) ? { itemOfferedName: productType.name } : undefined), { categoryName: (typeof categoryCode === 'string')
                         ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
                         minValue: (t.priceSpecification !== undefined
                             && t.priceSpecification.eligibleQuantity !== undefined
@@ -470,13 +475,13 @@ function createFromBody(req, isNew) {
         let itemOffered;
         const itemOfferedTypeOf = (_d = body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
         switch (itemOfferedTypeOf) {
-            case 'Product':
+            case productType_1.ProductType.Product:
                 itemOffered = {
                     project: req.project,
                     typeOf: itemOfferedTypeOf
                 };
                 break;
-            case 'MembershipService':
+            case productType_1.ProductType.MembershipService:
                 itemOffered = {
                     project: req.project,
                     typeOf: itemOfferedTypeOf,

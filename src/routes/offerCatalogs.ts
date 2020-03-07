@@ -9,6 +9,8 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
+import { ProductType, productTypes } from '../factory/productType';
+
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 // 券種グループコード 半角64
@@ -103,7 +105,7 @@ offerCatalogsRouter.all(
         if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
             const itemListElementIds = forms.itemListElement.map((element: any) => element.id);
 
-            if (forms.itemOffered?.typeOf === 'EventService') {
+            if (forms.itemOffered?.typeOf === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: 100,
                     project: { ids: [req.project.id] },
@@ -135,7 +137,8 @@ offerCatalogsRouter.all(
             errors: errors,
             forms: forms,
             serviceTypes: searchServiceTypesResult.data,
-            offers: offers
+            offers: offers,
+            productTypes: productTypes
         });
     }
 );
@@ -164,11 +167,6 @@ offerCatalogsRouter.all(
         });
 
         let offerCatalog = await offerCatalogService.findById({ id: req.params.id });
-        // if (offerCatalog.itemOffered.typeOf === 'EventService') {
-        //     res.redirect(`/ticketTypeGroups/${offerCatalog.id}/update`);
-
-        //     return;
-        // }
 
         let message = '';
         let errors: any = {};
@@ -211,7 +209,7 @@ offerCatalogsRouter.all(
         if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
             const itemListElementIds = forms.itemListElement.map((element: any) => element.id);
 
-            if (forms.itemOffered?.typeOf === 'EventService') {
+            if (forms.itemOffered?.typeOf === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: 100,
                     project: { ids: [req.project.id] },
@@ -243,7 +241,8 @@ offerCatalogsRouter.all(
             errors: errors,
             offers: offers,
             forms: forms,
-            serviceTypes: searchServiceTypesResult.data
+            serviceTypes: searchServiceTypesResult.data,
+            productTypes: productTypes
         });
     }
 );
@@ -266,7 +265,7 @@ offerCatalogsRouter.delete(
             // tslint:disable-next-line:no-suspicious-comment
             // TODO 削除して問題ないカタログかどうか検証
 
-            if (offerCatalog.itemOffered.typeOf === 'EventService') {
+            if (offerCatalog.itemOffered.typeOf === ProductType.EventService) {
                 // 削除して問題ない券種グループかどうか検証
                 const searchEventsResult = await eventService.search({
                     limit: 1,
@@ -314,7 +313,7 @@ offerCatalogsRouter.get(
             const page = 1;
             let data: chevre.factory.offer.IOffer[];
 
-            if (offerCatalog.itemOffered.typeOf === 'EventService') {
+            if (offerCatalog.itemOffered.typeOf === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: limit,
                     page: page,
@@ -360,7 +359,8 @@ offerCatalogsRouter.get(
     async (__, res) => {
         res.render('offerCatalogs/index', {
             message: '',
-            ticketTypes: undefined
+            ticketTypes: undefined,
+            productTypes: productTypes
         });
     }
 );
@@ -413,9 +413,12 @@ offerCatalogsRouter.get(
                 results: data.map((catalog) => {
                     const serviceType = serviceTypes.find((s) => s.codeValue === catalog.itemOffered.serviceType?.codeValue);
 
+                    const productType = productTypes.find((p) => p.codeValue === catalog.itemOffered.typeOf);
+
                     return {
                         ...catalog,
                         ...(serviceType !== undefined) ? { serviceTypeName: (<any>serviceType.name).ja } : undefined,
+                        ...(productType !== undefined) ? { itemOfferedName: productType.name } : undefined,
                         offerCount: (Array.isArray(catalog.itemListElement)) ? catalog.itemListElement.length : 0
                     };
                 })
@@ -444,7 +447,7 @@ offerCatalogsRouter.get(
             let data: chevre.factory.offer.IOffer[];
             const limit = 100;
             const page = 1;
-            if (itemOfferedType === 'EventService') {
+            if (itemOfferedType === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: limit,
                     page: page,
@@ -590,7 +593,7 @@ function validate(req: Request): void {
         .notEmpty();
 
     // サービス区分
-    // if (req.body.itemOffered?.typeOf === 'EventService') {
+    // if (req.body.itemOffered?.typeOf === ProductType.EventService) {
     //     colName = 'サービス区分';
     //     req.checkBody('serviceType')
     //         .notEmpty()
