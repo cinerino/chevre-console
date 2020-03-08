@@ -46,7 +46,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = '';
-                let movie = createFromBody(req, true);
+                let movie = await createFromBody(req, true);
 
                 const { data } = await creativeWorkService.searchMovies({
                     limit: 1,
@@ -129,7 +129,7 @@ export async function update(req: Request, res: Response): Promise<void> {
             // 作品DB登録
             try {
                 req.body.id = req.params.id;
-                movie = createFromBody(req, false);
+                movie = await createFromBody(req, false);
                 debug('saving an movie...', movie);
                 await creativeWorkService.updateMovie(movie);
                 req.flash('message', '更新しました');
@@ -195,9 +195,14 @@ export async function update(req: Request, res: Response): Promise<void> {
     });
 }
 
-// tslint:disable-next-line:cyclomatic-complexity
-function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWork.movie.ICreativeWork {
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
+async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.creativeWork.movie.ICreativeWork> {
     const body = req.body;
+
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
 
     let contentRating: string | undefined;
     if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
@@ -238,11 +243,22 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.creativeWo
     let distributor: chevre.factory.creativeWork.movie.IDistributor | undefined;
     const distributorCodeParam = body.distributor?.codeValue;
     if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
+        const searchDistributorTypesResult = await categoryCodeService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
+            codeValue: { $eq: distributorCodeParam }
+        });
+        const distributorType = searchDistributorTypesResult.data.shift();
+        if (distributorType === undefined) {
+            throw new Error('配給区分が見つかりません');
+        }
+
         distributor = {
-            id: distributorCodeParam,
-            distributorType: distributorCodeParam,
+            id: distributorType.id,
+            distributorType: distributorType.codeValue,
             ...{
-                codeValue: distributorCodeParam
+                codeValue: distributorType.codeValue
             }
         };
     }

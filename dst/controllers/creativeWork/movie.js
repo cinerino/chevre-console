@@ -49,7 +49,7 @@ function add(req, res) {
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = '';
-                    let movie = createFromBody(req, true);
+                    let movie = yield createFromBody(req, true);
                     const { data } = yield creativeWorkService.searchMovies({
                         limit: 1,
                         project: { ids: [req.project.id] },
@@ -124,7 +124,7 @@ function update(req, res) {
                 // 作品DB登録
                 try {
                     req.body.id = req.params.id;
-                    movie = createFromBody(req, false);
+                    movie = yield createFromBody(req, false);
                     debug('saving an movie...', movie);
                     yield creativeWorkService.updateMovie(movie);
                     req.flash('message', '更新しました');
@@ -179,62 +179,78 @@ function update(req, res) {
     });
 }
 exports.update = update;
-// tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d;
-    const body = req.body;
-    let contentRating;
-    if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
-        contentRating = body.contentRating;
-    }
-    let duration;
-    if (typeof body.duration === 'string' && body.duration.length > 0) {
-        duration = moment.duration(Number(body.duration), 'm')
-            .toISOString();
-    }
-    let headline;
-    if (typeof body.headline === 'string' && body.headline.length > 0) {
-        headline = body.headline;
-    }
-    let datePublished;
-    if (typeof body.datePublished === 'string' && body.datePublished.length > 0) {
-        datePublished = moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-            .toDate();
-    }
-    let availabilityEnds;
-    if (typeof ((_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) === 'string' && ((_b = body.offers) === null || _b === void 0 ? void 0 : _b.availabilityEnds.length) > 0) {
-        availabilityEnds = moment(`${(_c = body.offers) === null || _c === void 0 ? void 0 : _c.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-            .add(1, 'day')
-            .toDate();
-    }
-    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
-    let distributor;
-    const distributorCodeParam = (_d = body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
-    if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
-        distributor = Object.assign({ id: distributorCodeParam, distributorType: distributorCodeParam }, {
-            codeValue: distributorCodeParam
+    return __awaiter(this, void 0, void 0, function* () {
+        const body = req.body;
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-    }
-    const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
-                .map((p) => {
-                return {
-                    name: String(p.name),
-                    value: String(p.value)
-                };
-            })
-            : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (distributor !== undefined) ? { distributor } : undefined), (!isNew)
-        ? {
-            $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined), (distributor === undefined) ? { distributor: 1 } : undefined)
+        let contentRating;
+        if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
+            contentRating = body.contentRating;
         }
-        : undefined);
-    if (movie.offers !== undefined
-        && movie.offers.availabilityEnds !== undefined
-        && movie.datePublished !== undefined
-        && movie.offers.availabilityEnds <= movie.datePublished) {
-        throw new Error('興行終了予定日が公開日よりも前です');
-    }
-    return movie;
+        let duration;
+        if (typeof body.duration === 'string' && body.duration.length > 0) {
+            duration = moment.duration(Number(body.duration), 'm')
+                .toISOString();
+        }
+        let headline;
+        if (typeof body.headline === 'string' && body.headline.length > 0) {
+            headline = body.headline;
+        }
+        let datePublished;
+        if (typeof body.datePublished === 'string' && body.datePublished.length > 0) {
+            datePublished = moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate();
+        }
+        let availabilityEnds;
+        if (typeof ((_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) === 'string' && ((_b = body.offers) === null || _b === void 0 ? void 0 : _b.availabilityEnds.length) > 0) {
+            availabilityEnds = moment(`${(_c = body.offers) === null || _c === void 0 ? void 0 : _c.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .add(1, 'day')
+                .toDate();
+        }
+        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
+        let distributor;
+        const distributorCodeParam = (_d = body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
+        if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
+            const searchDistributorTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
+                codeValue: { $eq: distributorCodeParam }
+            });
+            const distributorType = searchDistributorTypesResult.data.shift();
+            if (distributorType === undefined) {
+                throw new Error('配給区分が見つかりません');
+            }
+            distributor = Object.assign({ id: distributorType.id, distributorType: distributorType.codeValue }, {
+                codeValue: distributorType.codeValue
+            });
+        }
+        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
+                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (distributor !== undefined) ? { distributor } : undefined), (!isNew)
+            ? {
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined), (distributor === undefined) ? { distributor: 1 } : undefined)
+            }
+            : undefined);
+        if (movie.offers !== undefined
+            && movie.offers.availabilityEnds !== undefined
+            && movie.datePublished !== undefined
+            && movie.offers.availabilityEnds <= movie.datePublished) {
+            throw new Error('興行終了予定日が公開日よりも前です');
+        }
+        return movie;
+    });
 }
 /**
  * 作品マスタ新規登録画面検証
