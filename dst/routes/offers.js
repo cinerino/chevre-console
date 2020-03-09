@@ -54,7 +54,7 @@ offersRouter.all('/add',
             try {
                 req.body.id = '';
                 let offer = yield createFromBody(req, true);
-                // 券種コード重複確認
+                // コード重複確認
                 const { data } = yield offerService.searchTicketTypes({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -63,7 +63,7 @@ offersRouter.all('/add',
                 if (data.length > 0) {
                     throw new Error(`既に存在するコードです: ${offer.identifier}`);
                 }
-                // オファーコード重複確認
+                // コード重複確認
                 const searchOffersResult = yield offerService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },

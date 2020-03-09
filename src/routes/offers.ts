@@ -54,24 +54,24 @@ offersRouter.all(
                     req.body.id = '';
                     let offer = await createFromBody(req, true);
 
-                    // 券種コード重複確認
+                    // コード重複確認
                     const { data } = await offerService.searchTicketTypes({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
-                        identifier: { $eq: <string>offer.identifier }
+                        identifier: { $eq: offer.identifier }
                     });
                     if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${<string>offer.identifier}`);
+                        throw new Error(`既に存在するコードです: ${offer.identifier}`);
                     }
 
-                    // オファーコード重複確認
+                    // コード重複確認
                     const searchOffersResult = await offerService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
-                        identifier: { $eq: <string>offer.identifier }
+                        identifier: { $eq: offer.identifier }
                     });
                     if (searchOffersResult.data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${<string>offer.identifier}`);
+                        throw new Error(`既に存在するコードです: ${offer.identifier}`);
                     }
 
                     offer = await offerService.create(offer);
@@ -423,7 +423,7 @@ offersRouter.get(
 );
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IOffer> {
+async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {
     const body = req.body;
 
     const categoryCodeService = new chevre.service.CategoryCode({

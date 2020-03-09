@@ -333,7 +333,7 @@ async function searchAllAccountTitles(req: Request): Promise<chevre.factory.acco
 }
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.ticketType.ITicketType> {
+async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {
     const body = req.body;
 
     const productService = new chevre.service.Product({
@@ -695,7 +695,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
 
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const searchConditions: chevre.factory.ticketType.ITicketTypeSearchConditions = {
+        const searchConditions: chevre.factory.offer.ISearchConditions = {
             limit: limit,
             page: page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
