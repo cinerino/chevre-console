@@ -256,9 +256,9 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
         distributor = {
             id: distributorType.id,
-            distributorType: distributorType.codeValue,
+            codeValue: distributorType.codeValue,
             ...{
-                codeValue: distributorType.codeValue
+                distributorType: distributorType.codeValue
             }
         };
     }

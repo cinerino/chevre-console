@@ -98,8 +98,8 @@ offerCatalogsRouter.all('/add',
         if (((_a = forms.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: 100,
-                project: { ids: [req.project.id] },
-                ids: itemListElementIds
+                project: { id: { $eq: req.project.id } },
+                id: { $in: itemListElementIds }
             });
             // 登録順にソート
             offers = searchTicketTypesResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
@@ -183,8 +183,8 @@ offerCatalogsRouter.all('/:id/update',
         if (((_c = forms.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: 100,
-                project: { ids: [req.project.id] },
-                ids: itemListElementIds
+                project: { id: { $eq: req.project.id } },
+                id: { $in: itemListElementIds }
             });
             // 登録順にソート
             offers = searchTicketTypesResult.data.sort((a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id));
@@ -268,8 +268,8 @@ offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, v
             const searchTicketTypesResult = yield offerService.searchTicketTypes({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
-                ids: offerIds
+                project: { id: { $eq: req.project.id } },
+                id: { $in: offerIds }
             });
             data = searchTicketTypesResult.data;
         }
@@ -380,12 +380,14 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
                 sort: {
                     'priceSpecification.price': chevre.factory.sortType.Descending
                 },
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 priceSpecification: {
                     // 売上金額で検索
                     accounting: {
-                        minAccountsReceivable: Number(req.query.price),
-                        maxAccountsReceivable: Number(req.query.price)
+                        accountsReceivable: {
+                            $gte: Number(req.query.price),
+                            $lte: Number(req.query.price)
+                        }
                     }
                 }
             });

@@ -108,8 +108,8 @@ offerCatalogsRouter.all(
             if (forms.itemOffered?.typeOf === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: 100,
-                    project: { ids: [req.project.id] },
-                    ids: itemListElementIds
+                    project: { id: { $eq: req.project.id } },
+                    id: { $in: itemListElementIds }
                 });
 
                 // 登録順にソート
@@ -212,8 +212,8 @@ offerCatalogsRouter.all(
             if (forms.itemOffered?.typeOf === ProductType.EventService) {
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: 100,
-                    project: { ids: [req.project.id] },
-                    ids: itemListElementIds
+                    project: { id: { $eq: req.project.id } },
+                    id: { $in: itemListElementIds }
                 });
 
                 // 登録順にソート
@@ -317,8 +317,8 @@ offerCatalogsRouter.get(
                 const searchTicketTypesResult = await offerService.searchTicketTypes({
                     limit: limit,
                     page: page,
-                    project: { ids: [req.project.id] },
-                    ids: offerIds
+                    project: { id: { $eq: req.project.id } },
+                    id: { $in: offerIds }
                 });
                 data = searchTicketTypesResult.data;
             } else {
@@ -454,12 +454,14 @@ offerCatalogsRouter.get(
                     sort: {
                         'priceSpecification.price': chevre.factory.sortType.Descending
                     },
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     priceSpecification: {
                         // 売上金額で検索
                         accounting: {
-                            minAccountsReceivable: Number(req.query.price),
-                            maxAccountsReceivable: Number(req.query.price)
+                            accountsReceivable: {
+                                $gte: Number(req.query.price),
+                                $lte: Number(req.query.price)
+                            }
                         }
                     }
                 });

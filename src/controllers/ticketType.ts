@@ -56,11 +56,11 @@ export async function add(req: Request, res: Response): Promise<void> {
 
                 // 券種コード重複確認
                 const { data } = await offerService.searchTicketTypes({
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     identifier: { $eq: ticketType.identifier }
                 });
                 if (data.length > 0) {
-                    throw new Error(`既に存在する券種コードです: ${ticketType.identifier}`);
+                    throw new Error(`既に存在するコードです: ${ticketType.identifier}`);
                 }
 
                 ticketType = await offerService.createTicketType(ticketType);
@@ -699,31 +699,37 @@ export async function getList(req: Request, res: Response): Promise<void> {
             limit: limit,
             page: page,
             sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
-            ids: ticketTypeIds,
+            id: {
+                ...(ticketTypeIds.length > 0) ? { $in: ticketTypeIds } : undefined
+            },
             name: (req.query.name !== undefined
                 && req.query.name !== '')
                 ? req.query.name
                 : undefined,
             priceSpecification: {
-                minPrice: (req.query.priceSpecification !== undefined
-                    && req.query.priceSpecification.minPrice !== undefined
-                    && req.query.priceSpecification.minPrice !== '')
-                    ? Number(req.query.priceSpecification.minPrice)
-                    : undefined,
-                maxPrice: (req.query.priceSpecification !== undefined
-                    && req.query.priceSpecification.maxPrice !== undefined
-                    && req.query.priceSpecification.maxPrice !== '')
-                    ? Number(req.query.priceSpecification.maxPrice)
-                    : undefined,
-                referenceQuantity: {
-                    value: (req.query.priceSpecification !== undefined
-                        && req.query.priceSpecification.referenceQuantity !== undefined
-                        && req.query.priceSpecification.referenceQuantity.value !== undefined
-                        && req.query.priceSpecification.referenceQuantity.value !== '')
-                        ? Number(req.query.priceSpecification.referenceQuantity.value)
+                price: {
+                    $gte: (req.query.priceSpecification !== undefined
+                        && req.query.priceSpecification.minPrice !== undefined
+                        && req.query.priceSpecification.minPrice !== '')
+                        ? Number(req.query.priceSpecification.minPrice)
+                        : undefined,
+                    $lte: (req.query.priceSpecification !== undefined
+                        && req.query.priceSpecification.maxPrice !== undefined
+                        && req.query.priceSpecification.maxPrice !== '')
+                        ? Number(req.query.priceSpecification.maxPrice)
                         : undefined
+                },
+                referenceQuantity: {
+                    value: {
+                        $eq: (req.query.priceSpecification !== undefined
+                            && req.query.priceSpecification.referenceQuantity !== undefined
+                            && req.query.priceSpecification.referenceQuantity.value !== undefined
+                            && req.query.priceSpecification.referenceQuantity.value !== '')
+                            ? Number(req.query.priceSpecification.referenceQuantity.value)
+                            : undefined
+                    }
                 }
             },
             category: {
@@ -783,6 +789,7 @@ export async function getList(req: Request, res: Response): Promise<void> {
             })
         });
     } catch (err) {
+        console.error(err);
         res.json({
             success: false,
             message: err.message,

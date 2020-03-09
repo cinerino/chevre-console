@@ -57,7 +57,7 @@ offersRouter.all('/add',
                 // 券種コード重複確認
                 const { data } = yield offerService.searchTicketTypes({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     identifier: { $eq: offer.identifier }
                 });
                 if (data.length > 0) {

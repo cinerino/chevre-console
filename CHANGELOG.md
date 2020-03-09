@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファーカテゴリー管理を追加
 - オファー適用条件拡張
 - 券種グループをオファーカテゴリーに統合
+- 券種検索条件をオファー検索条件に統合
 
 ### Deprecated
 

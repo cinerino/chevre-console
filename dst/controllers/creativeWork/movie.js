@@ -226,8 +226,8 @@ function createFromBody(req, isNew) {
             if (distributorType === undefined) {
                 throw new Error('配給区分が見つかりません');
             }
-            distributor = Object.assign({ id: distributorType.id, distributorType: distributorType.codeValue }, {
-                codeValue: distributorType.codeValue
+            distributor = Object.assign({ id: distributorType.id, codeValue: distributorType.codeValue }, {
+                distributorType: distributorType.codeValue
             });
         }
         const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
