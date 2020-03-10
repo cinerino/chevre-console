@@ -1,7 +1,4 @@
 "use strict";
-/**
- * オファー管理ルーター
- */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,6 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * オファー管理ルーター
+ */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment-timezone");
@@ -114,8 +114,14 @@ offersRouter.all('/add',
 offersRouter.all('/:id/update', 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     let message = '';
     let errors = {};
+    const itemOfferedTypeOf = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
+    if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
+        res.redirect(`/ticketTypes/${req.params.id}/update`);
+        return;
+    }
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -231,7 +237,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _b, _c, _d, _e, _f;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -256,16 +262,16 @@ offersRouter.get('/getlist',
             project: { id: { $eq: req.project.id } },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf) === 'string' && ((_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf.length) > 0)
-                        ? (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf : undefined
+                    $eq: (typeof ((_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf) === 'string' && ((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf.length) > 0)
+                        ? (_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf : undefined
                 }
             },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
             id: (typeof req.query.id === 'string' && req.query.id.length > 0) ? { $eq: req.query.id } : undefined,
-            // name: (req.query.name !== undefined
-            //     && req.query.name !== '')
-            //     ? req.query.name
-            //     : undefined,
+            name: (req.query.name !== undefined
+                && req.query.name !== '')
+                ? { $regex: req.query.name }
+                : undefined,
             priceSpecification: {
                 price: {
                     $gte: (req.query.priceSpecification !== undefined
@@ -298,7 +304,15 @@ offersRouter.get('/getlist',
                     : undefined
             }
         };
-        const { data } = yield offerService.search(searchConditions);
+        let data;
+        if (((_f = (_e = searchConditions.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq) === productType_1.ProductType.EventService) {
+            const searchResult = yield offerService.searchTicketTypes(searchConditions);
+            data = searchResult.data;
+        }
+        else {
+            const searchResult = yield offerService.search(searchConditions);
+            data = searchResult.data;
+        }
         res.json({
             success: true,
             count: (data.length === Number(limit))
@@ -306,45 +320,11 @@ offersRouter.get('/getlist',
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             // tslint:disable-next-line:cyclomatic-complexity
             results: data.map((t) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+                var _a, _b, _c;
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
-                const eligibleSeatingTypeCodeValue = (_c = (_b = t.eligibleSeatingType) === null || _b === void 0 ? void 0 : _b.slice(0, 1)[0]) === null || _c === void 0 ? void 0 : _c.codeValue;
-                const eligibleMonetaryAmountValue = (_e = (_d = t.eligibleMonetaryAmount) === null || _d === void 0 ? void 0 : _d.slice(0, 1)[0]) === null || _e === void 0 ? void 0 : _e.value;
-                const eligibleConditions = [];
-                if (typeof eligibleSeatingTypeCodeValue === 'string') {
-                    eligibleConditions.push(`座席: ${eligibleSeatingTypeCodeValue}`);
-                }
-                if (typeof eligibleMonetaryAmountValue === 'number') {
-                    eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_g = (_f = t.eligibleMonetaryAmount) === null || _f === void 0 ? void 0 : _f.slice(0, 1)[0]) === null || _g === void 0 ? void 0 : _g.currency}`);
-                }
                 const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
                 return Object.assign(Object.assign(Object.assign({}, t), (productType !== undefined) ? { itemOfferedName: productType.name } : undefined), { categoryName: (typeof categoryCode === 'string')
-                        ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', eligibleConditions: eligibleConditions.join(' / '), eligibleQuantity: {
-                        minValue: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleQuantity !== undefined
-                            && t.priceSpecification.eligibleQuantity.minValue !== undefined)
-                            ? t.priceSpecification.eligibleQuantity.minValue
-                            : '--',
-                        maxValue: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleQuantity !== undefined
-                            && t.priceSpecification.eligibleQuantity.maxValue !== undefined)
-                            ? t.priceSpecification.eligibleQuantity.maxValue
-                            : '--'
-                    }, eligibleTransactionVolume: {
-                        price: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume.price !== undefined)
-                            ? t.priceSpecification.eligibleTransactionVolume.price
-                            : '--',
-                        priceCurrency: (t.priceSpecification !== undefined
-                            && t.priceSpecification.eligibleTransactionVolume !== undefined)
-                            ? t.priceSpecification.eligibleTransactionVolume.priceCurrency
-                            : '--'
-                    }, referenceQuantity: {
-                        value: (t.priceSpecification !== undefined && t.priceSpecification.referenceQuantity.value !== undefined)
-                            ? t.priceSpecification.referenceQuantity.value
-                            : '--'
-                    }, validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
+                        ? (_c = (_b = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                         ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                         : '', addOnCount: (Array.isArray(t.addOn))
                         ? t.addOn.length

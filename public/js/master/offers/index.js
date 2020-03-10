@@ -69,6 +69,20 @@ $(function () {
         showAdditionalProperty(id);
     });
 
+    // カタログ表示
+    $(document).on('click', '.showCatalogs', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        showCatalogs(id);
+    });
+
+    $(document).on('click', '.showAddOn', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing addOn...id:', id);
+
+        showAddOn(id);
+    });
+
     /**
      * 追加特性を見る
      */
@@ -113,15 +127,7 @@ $(function () {
         modal.modal();
     }
 
-    // カタログ表示
-    $(document).on('click', '.showCatalogs', function (event) {
-        event.preventDefault();
-        var id = $(this).attr('data-id');
-        showCatalogs(id);
-    });
-
     function showCatalogs(id) {
-        console.log('requesting...', id);
         $.ajax({
             dataType: 'json',
             url: '/offers/' + id + '/catalogs',
@@ -136,8 +142,8 @@ $(function () {
                 var modal = $('#modal-offer');
 
                 var body = $('<p>').text('データが見つかりませんでした');
-                var tbody = $('<tbody>');
                 if (data.results.length > 0) {
+                    var tbody = $('<tbody>');
                     data.results.forEach(function (offerCatalog) {
                         var href = '/offerCatalogs/' + offerCatalog.id + '/update';
                         var identifier = $('<a>').attr({ 'href': href, target: '_blank' }).text(offerCatalog.identifier);
@@ -156,7 +162,7 @@ $(function () {
                     var table = $('<table>').addClass('table table-sm')
                         .append(thead)
                         .append(tbody)
-                    var body = $('<div>').addClass('table-responsive')
+                    body = $('<div>').addClass('table-responsive')
                         .append(table)
                 }
 
@@ -169,5 +175,45 @@ $(function () {
         }).always(function (data) {
             $('#loadingModal').modal('hide');
         });
+    }
+
+    function showAddOn(id) {
+        var offer = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (offer === undefined) {
+            alert('券種' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-offer');
+        var div = $('<div>')
+
+        if (Array.isArray(offer.addOn)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('名称')
+                ])
+            ]);
+            tbody.append(offer.addOn.map(function (offer) {
+                var href = '/products/' + offer.itemOffered.id;
+                return $('<tr>').append([
+                    $('<td>').html($('<a>').attr({ href, href, target: '_blank' }).text(offer.itemOffered.name.ja))
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
+        modal.find('.modal-title').text('アドオン');
+        modal.find('.modal-body').html(div);
+        modal.modal();
     }
 });

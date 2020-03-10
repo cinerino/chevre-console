@@ -7,6 +7,8 @@ import { CREATED } from 'http-status';
 
 import * as ticketTypeController from '../controllers/ticketType';
 
+import { productTypes } from '../factory/productType';
+
 const ticketTypeMasterRouter = Router();
 
 // 券種登録
@@ -32,13 +34,11 @@ ticketTypeMasterRouter.get(
         // 券種マスタ画面遷移
         res.render('ticketType/index', {
             message: '',
-            ticketTypeCategories: searchOfferCategoryTypesResult.data
+            ticketTypeCategories: searchOfferCategoryTypesResult.data,
+            productTypes: productTypes
         });
     }
 );
-
-ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
-ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeController.getTicketTypeGroupList);
 
 /**
  * COA券種インポート

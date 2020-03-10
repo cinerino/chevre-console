@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/ticketTypes/getlist';
+        var url = '/offers/getlist';
         // alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',
@@ -61,76 +61,19 @@ $(function () {
         });
     }
 
-    // 関連券種グループ button
-    $(document).on('click', '.popupListTicketTypeGroup', function (event) {
-        event.preventDefault();
-        var id = $(this).attr('data-id');
-        list(id);
-    });
-
-    /**
-     * 関連券種グループを表示
-     */
-    function list(id) {
-        console.log('requesting...', id);
-        $.ajax({
-            dataType: 'json',
-            url: '/ticketTypes/getTicketTypeGroupList/' + id,
-            cache: false,
-            type: 'GET',
-            // data: conditions,
-            beforeSend: function () {
-                $('#loadingModal').modal({ backdrop: 'static' });
-            }
-        }).done(function (data) {
-            if (data.success) {
-                var modal = $('#modal-offer');
-
-                var div = $('<div>');
-
-                if (data.results.length > 0) {
-                    var thead = $('<thead>').addClass('text-primary')
-                        .append([
-                            $('<tr>').append([
-                                $('<th>').text('コード'),
-                                $('<th>').text('名称')
-                            ])
-                        ]);
-                    var tbody = $('<tbody>')
-                        .append(data.results.map(function (result) {
-                            var url = '/offerCatalogs/' + result.id + '/update';
-
-                            return $('<tr>').append([
-                                $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
-                                $('<td>').text(result.name.ja)
-                            ]);
-                        }))
-                    var table = $('<table>').addClass('table table-sm')
-                        .append([thead, tbody]);
-
-                    div.addClass('table-responsive')
-                        .append(table);
-                } else {
-                    div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
-                }
-
-                modal.find('.modal-title').text('関連グループ');
-                modal.find('.modal-body').html(div);
-                modal.modal();
-            }
-        }).fail(function (jqxhr, textStatus, error) {
-            alert(error);
-        }).always(function (data) {
-            $('#loadingModal').modal('hide');
-        });
-    }
-
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
         var id = $(this).attr('data-id');
         console.log('showing additionalProperty...id:', id);
 
         showAdditionalProperty(id);
+    });
+
+    // カタログ表示
+    $(document).on('click', '.showCatalogs', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        showCatalogs(id);
     });
 
     $(document).on('click', '.showAddOn', function (event) {
@@ -182,6 +125,56 @@ $(function () {
         modal.find('.modal-title').text('追加特性');
         modal.find('.modal-body').html(div);
         modal.modal();
+    }
+
+    function showCatalogs(id) {
+        $.ajax({
+            dataType: 'json',
+            url: '/offers/' + id + '/catalogs',
+            cache: false,
+            type: 'GET',
+            // data: conditions,
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            if (data.success) {
+                var modal = $('#modal-offer');
+
+                var body = $('<p>').text('データが見つかりませんでした');
+                if (data.results.length > 0) {
+                    var tbody = $('<tbody>');
+                    data.results.forEach(function (offerCatalog) {
+                        var href = '/offerCatalogs/' + offerCatalog.id + '/update';
+                        var identifier = $('<a>').attr({ 'href': href, target: '_blank' }).text(offerCatalog.identifier);
+                        tbody.append(
+                            $('<tr>')
+                                .append($('<td>').html(identifier))
+                                .append($('<td>').text(offerCatalog.name.ja))
+                        );
+                    });
+                    var thead = $('<thead>').addClass('text-primary')
+                        .append(
+                            $('<tr>')
+                                .append($('<th>').text('コード'))
+                                .append($('<th>').text('名称'))
+                        );
+                    var table = $('<table>').addClass('table table-sm')
+                        .append(thead)
+                        .append(tbody)
+                    body = $('<div>').addClass('table-responsive')
+                        .append(table)
+                }
+
+                modal.find('.modal-title').text('関連カタログ');
+                modal.find('.modal-body').html(body);
+                modal.modal();
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert(error);
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
     }
 
     function showAddOn(id) {

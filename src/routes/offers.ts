@@ -1,7 +1,6 @@
 /**
  * オファー管理ルーター
  */
-
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
 import * as moment from 'moment-timezone';
@@ -135,6 +134,13 @@ offersRouter.all(
     async (req, res, next) => {
         let message = '';
         let errors: any = {};
+
+        const itemOfferedTypeOf = req.query.itemOffered?.typeOf;
+        if (itemOfferedTypeOf === ProductType.EventService) {
+            res.redirect(`/ticketTypes/${req.params.id}/update`);
+
+            return;
+        }
 
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -306,10 +312,10 @@ offersRouter.get(
                 },
                 identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
                 id: (typeof req.query.id === 'string' && req.query.id.length > 0) ? { $eq: req.query.id } : undefined,
-                // name: (req.query.name !== undefined
-                //     && req.query.name !== '')
-                //     ? req.query.name
-                //     : undefined,
+                name: (req.query.name !== undefined
+                    && req.query.name !== '')
+                    ? { $regex: req.query.name }
+                    : undefined,
                 priceSpecification: {
                     price: {
                         $gte: (req.query.priceSpecification !== undefined
@@ -343,7 +349,14 @@ offersRouter.get(
                 }
             };
 
-            const { data } = await offerService.search(searchConditions);
+            let data: chevre.factory.offer.IUnitPriceOffer[];
+            if (searchConditions.itemOffered?.typeOf?.$eq === ProductType.EventService) {
+                const searchResult = await offerService.searchTicketTypes(searchConditions);
+                data = searchResult.data;
+            } else {
+                const searchResult = await offerService.search(searchConditions);
+                data = searchResult.data;
+            }
 
             res.json({
                 success: true,
@@ -352,21 +365,7 @@ offersRouter.get(
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 // tslint:disable-next-line:cyclomatic-complexity
                 results: data.map((t) => {
-
                     const categoryCode = t.category?.codeValue;
-
-                    const eligibleSeatingTypeCodeValue = t.eligibleSeatingType?.slice(0, 1)[0]?.codeValue;
-                    const eligibleMonetaryAmountValue = t.eligibleMonetaryAmount?.slice(0, 1)[0]?.value;
-
-                    const eligibleConditions: string[] = [];
-                    if (typeof eligibleSeatingTypeCodeValue === 'string') {
-                        eligibleConditions.push(`座席: ${eligibleSeatingTypeCodeValue}`);
-                    }
-                    if (typeof eligibleMonetaryAmountValue === 'number') {
-                        eligibleConditions.push(
-                            `口座: ${eligibleMonetaryAmountValue} ${t.eligibleMonetaryAmount?.slice(0, 1)[0]?.currency}`
-                        );
-                    }
 
                     const productType = productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
 
@@ -376,35 +375,6 @@ offersRouter.get(
                         categoryName: (typeof categoryCode === 'string')
                             ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                             : '',
-                        eligibleConditions: eligibleConditions.join(' / '),
-                        eligibleQuantity: {
-                            minValue: (t.priceSpecification !== undefined
-                                && t.priceSpecification.eligibleQuantity !== undefined
-                                && t.priceSpecification.eligibleQuantity.minValue !== undefined)
-                                ? t.priceSpecification.eligibleQuantity.minValue
-                                : '--',
-                            maxValue: (t.priceSpecification !== undefined
-                                && t.priceSpecification.eligibleQuantity !== undefined
-                                && t.priceSpecification.eligibleQuantity.maxValue !== undefined)
-                                ? t.priceSpecification.eligibleQuantity.maxValue
-                                : '--'
-                        },
-                        eligibleTransactionVolume: {
-                            price: (t.priceSpecification !== undefined
-                                && t.priceSpecification.eligibleTransactionVolume !== undefined
-                                && t.priceSpecification.eligibleTransactionVolume.price !== undefined)
-                                ? t.priceSpecification.eligibleTransactionVolume.price
-                                : '--',
-                            priceCurrency: (t.priceSpecification !== undefined
-                                && t.priceSpecification.eligibleTransactionVolume !== undefined)
-                                ? t.priceSpecification.eligibleTransactionVolume.priceCurrency
-                                : '--'
-                        },
-                        referenceQuantity: {
-                            value: (t.priceSpecification !== undefined && (<any>t.priceSpecification).referenceQuantity.value !== undefined)
-                                ? (<any>t.priceSpecification).referenceQuantity.value
-                                : '--'
-                        },
                         validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
                             ? `1 ${(<any>t).validRateLimit.scope} / ${(<any>t).validRateLimit.unitInSeconds} s`
                             : '',

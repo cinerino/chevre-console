@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const ticketTypeController = require("../controllers/ticketType");
+const productType_1 = require("../factory/productType");
 const ticketTypeMasterRouter = express_1.Router();
 // 券種登録
 ticketTypeMasterRouter.all('/add', ticketTypeController.add);
@@ -35,11 +36,10 @@ ticketTypeMasterRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, f
     // 券種マスタ画面遷移
     res.render('ticketType/index', {
         message: '',
-        ticketTypeCategories: searchOfferCategoryTypesResult.data
+        ticketTypeCategories: searchOfferCategoryTypesResult.data,
+        productTypes: productType_1.productTypes
     });
 }));
-ticketTypeMasterRouter.get('/getlist', ticketTypeController.getList);
-ticketTypeMasterRouter.get('/getTicketTypeGroupList/:ticketTypeId', ticketTypeController.getTicketTypeGroupList);
 /**
  * COA券種インポート
  */
