@@ -9,7 +9,7 @@
 
         <%
         let placesShow = false;
-        if (displayId === 'Aa-12' || displayId === 'SR-01' || displayId === 'ST-01') {
+        if (displayId.slice(0, 3) === 'MT-' || displayId.slice(0, 3) === 'SR-' || displayId.slice(0, 3) === 'ST-') {
             placesShow = true;
         }
         %>
@@ -22,7 +22,7 @@
             </a>
             <div class="collapse<% if (placesShow) { %> show<% } %>" id="places">
                 <ul class="nav">
-                    <li class="nav-item <%= (displayId === 'Aa-12') ? 'active': ''; %>">
+                    <li class="nav-item <%= (displayId === 'MT-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/movieTheater">
                             <span class="sidebar-mini"><i class="material-icons">theaters</i></span>
                             <span class="sidebar-normal">劇場</span>
@@ -81,16 +81,9 @@
             </div>
         </li>
 
-        <!-- <li class="nav-item <%= (displayId === 'AT-01') ? 'active': ''; %>">
-            <a class="nav-link" href="/accountTitles">
-                <i class="icon fa fa-table"></i>
-                <p>細目</p>
-            </a>
-        </li> -->
-
         <%
         let offersShow = false;
-        if (displayId === 'Aa-6' || displayId === 'OC-01' || displayId === 'OF-01') {
+        if (displayId.slice(0, 3) === 'OC-' || displayId.slice(0, 3) === 'OF-') {
             offersShow = true;
         }
         %>
@@ -106,7 +99,7 @@
                     <li class="nav-item <%= (displayId === 'OF-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/offers">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
-                            <span class="sidebar-normal">オファー(券種)</span>
+                            <span class="sidebar-normal">単価オファー(券種)</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
@@ -147,21 +140,29 @@
         </li>
         <% } %>
 
-        <li class="nav-item">
+        <%
+        let offersCategoryCodes = false;
+        if (displayId.slice(0, 3) === 'CC-') {
+            offersCategoryCodes = true;
+        }
+        %>
+        <li class="nav-item <%= (offersCategoryCodes) ? 'active': ''; %>">
             <a class="nav-link" data-toggle="collapse" href="#categoryCodes">
                 <i class="material-icons">category</i>
                 <p> 区分
                     <b class="caret"></b>
                 </p>
             </a>
-            <div class="collapse" id="categoryCodes">
+            <div class="collapse<% if (offersCategoryCodes) { %> show<% } %>" id="categoryCodes">
                 <ul class="nav">
+                    <% if (false) { %>
                     <li class="nav-item <%= (displayId === 'Aa-17') ? 'active': ''; %>">
                         <a class="nav-link" href="/serviceTypes">
                             <span class="sidebar-mini"><i class="material-icons">category</i></span>
                             <span class="sidebar-normal">興行区分</span>
                         </a>
                     </li>
+                    <% } %>
                     <li class="nav-item <%= (displayId === 'CC-00') ? 'active': ''; %>">
                         <a class="nav-link" href="/categoryCodes">
                             <span class="sidebar-mini"><i class="material-icons">category</i></span>
@@ -179,28 +180,34 @@
         </li>
 
         <% if (process.env.USE_ACCOUNT_TITLE === '1') { %>
-        <li class="nav-item">
+        <%
+        let offersAccountTitles = false;
+        if (displayId.slice(0, 3) === 'AT-') {
+            offersAccountTitles = true;
+        }
+        %>
+        <li class="nav-item <% if (offersAccountTitles) { %>active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#accountTitles">
                 <i class="material-icons">account_balance</i>
                 <p>勘定科目
                     <b class="caret"></b>
                 </p>
             </a>
-            <div class="collapse" id="accountTitles">
+            <div class="collapse <% if (offersAccountTitles) { %>show<% } %>" id="accountTitles">
                 <ul class="nav">
-                    <li class="nav-item">
+                    <li class="nav-item <%= (displayId === 'AT-07') ? 'active': ''; %>">
                         <a class="nav-link" href="/accountTitles/accountTitleCategory">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">科目分類</span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item <%= (displayId === 'AT-04') ? 'active': ''; %>">
                         <a class="nav-link" href="/accountTitles/accountTitleSet">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">科目</span>
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item <%= (displayId === 'AT-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/accountTitles">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">細目</span>
