@@ -6,14 +6,21 @@
                 <p>Home</p>
             </a>
         </li>
-        <li class="nav-item">
+
+        <%
+        let placesShow = false;
+        if (displayId === 'Aa-12' || displayId === 'SR-01' || displayId === 'ST-01') {
+            placesShow = true;
+        }
+        %>
+        <li class="nav-item<% if (placesShow) { %> active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#places">
                 <i class="material-icons">place</i>
                 <p> 施設
                     <b class="caret"></b>
                 </p>
             </a>
-            <div class="collapse" id="places">
+            <div class="collapse<% if (placesShow) { %> show<% } %>" id="places">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'Aa-12') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/movieTheater">
@@ -42,14 +49,21 @@
                 <p>作品</p>
             </a>
         </li>
-        <li class="nav-item">
+
+        <%
+        let eventsShow = false;
+        if (displayId === 'Aa-3' || displayId === 'Aa-4') {
+            eventsShow = true;
+        }
+        %>
+        <li class="nav-item<% if (eventsShow) { %> active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#events">
                 <i class="material-icons">event</i>
                 <p> イベント
                     <b class="caret"></b>
                 </p>
             </a>
-            <div class="collapse" id="events">
+            <div class="collapse<% if (eventsShow) { %> show<% } %>" id="events">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'Aa-3') ? 'active': ''; %>">
                         <a class="nav-link" href="/events/screeningEventSeries">
@@ -73,14 +87,21 @@
                 <p>細目</p>
             </a>
         </li> -->
-        <li class="nav-item">
+
+        <%
+        let offersShow = false;
+        if (displayId === 'Aa-6' || displayId === 'OC-01' || displayId === 'OF-01') {
+            offersShow = true;
+        }
+        %>
+        <li class="nav-item<% if (offersShow) { %> active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#offers">
                 <i class="material-icons">local_offer</i>
                 <p> オファー(券種)
                     <b class="caret"></b>
                 </p>
             </a>
-            <div class="collapse" id="offers">
+            <div class="collapse<% if (offersShow) { %> show<% } %>" id="offers">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'Aa-6') ? 'active': ''; %>">
                         <a class="nav-link" href="/ticketTypes">
