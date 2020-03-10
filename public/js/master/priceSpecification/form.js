@@ -17,4 +17,17 @@ $(function () {
         });
     }
 
+    $(document).on('change', 'select[name="typeOf"]', function () {
+        showAppliesToConditions($(this).val());
+    });
+
+    showAppliesToConditions($('select,input[name="typeOf"]').val());
 });
+
+/**
+ * 価格仕様タイプに応じた適用条件フォームを表示する
+ */
+function showAppliesToConditions(priceSpecificationType) {
+    $('.appliesToConditions').addClass('d-none');
+    $('.appliesToConditions.' + priceSpecificationType).removeClass('d-none');
+}

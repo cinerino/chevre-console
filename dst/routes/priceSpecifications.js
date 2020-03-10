@@ -256,11 +256,28 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, voi
 }));
 function createMovieFromBody(req, isNew) {
     const body = req.body;
-    const appliesToCategoryCode = (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
-        ? JSON.parse(body.appliesToCategoryCode)
-        : undefined;
-    return Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: body.name, appliesToCategoryCode: (appliesToCategoryCode !== undefined)
-            ? [{
+    let appliesToCategoryCode;
+    let appliesToVideoFormat;
+    let appliesToMovieTicketType;
+    switch (body.typeOf) {
+        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+            appliesToCategoryCode =
+                (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
+                    ? JSON.parse(body.appliesToCategoryCode)
+                    : undefined;
+            appliesToVideoFormat = undefined;
+            appliesToMovieTicketType = undefined;
+            break;
+        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+            appliesToCategoryCode = undefined;
+            appliesToVideoFormat = body.appliesToVideoFormat;
+            appliesToMovieTicketType = body.appliesToMovieTicketType;
+            break;
+        default:
+    }
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: body.name, valueAddedTaxIncluded: true }, (appliesToCategoryCode !== undefined)
+        ? {
+            appliesToCategoryCode: [{
                     project: req.project,
                     typeOf: 'CategoryCode',
                     codeValue: appliesToCategoryCode.codeValue,
@@ -268,17 +285,19 @@ function createMovieFromBody(req, isNew) {
                         typeOf: 'CategoryCodeSet',
                         identifier: appliesToCategoryCode.inCodeSet.identifier
                     }
-                }] : undefined, valueAddedTaxIncluded: true }, (typeof body.appliesToVideoFormat === 'string' && body.appliesToVideoFormat.length > 0)
+                }]
+        }
+        : undefined), (typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
         ? { appliesToVideoFormat: body.appliesToVideoFormat }
-        : undefined), (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
+        : undefined), (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
         ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
         : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign(Object.assign({}, (appliesToCategoryCode === undefined)
                 ? { appliesToCategoryCode: 1 }
-                : undefined), (typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
+                : undefined), (appliesToVideoFormat === undefined)
                 ? { appliesToVideoFormat: 1 }
-                : undefined), (typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
+                : undefined), (appliesToMovieTicketType === undefined)
                 ? { appliesToMovieTicketType: 1 }
                 : undefined)
         } : undefined);
@@ -286,14 +305,33 @@ function createMovieFromBody(req, isNew) {
 function validate(req) {
     let colName = '';
     colName = '価格仕様タイプ';
-    req.checkBody('typeOf', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    // req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('typeOf')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
     colName = '名称';
     req.checkBody('name.ja')
         .notEmpty()
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));
+    switch (req.body.typeOf) {
+        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+            colName = '適用区分';
+            req.checkBody('appliesToCategoryCode')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+            break;
+        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+            colName = '適用ムビチケ券種区分';
+            req.checkBody('appliesToMovieTicketType')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+            colName = 'ムビチケ適用上映方式区分';
+            req.checkBody('appliesToVideoFormat')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+            break;
+        default:
+    }
 }
 exports.default = priceSpecificationsRouter;

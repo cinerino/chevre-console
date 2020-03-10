@@ -10,6 +10,7 @@
             <label for="typeOf" class="bmd-label-static">
                 価格仕様タイプ
             </label>
+            <% if (isNew) { %>
             <select class="form-control" name="typeOf">
                 <option value="" selected>選択してください</option>
                 <% priceSpecificationTypes.forEach((priceSpecificationType) => { %>
@@ -19,6 +20,12 @@
                 </option>
                 <% }) %>
             </select>
+            <% } else { %>
+            <% const priceSpecificationType = priceSpecificationTypes.find((p) => p.codeValue === forms.typeOf) %>
+            <input class="form-control" disabled type="text"
+                value="<%= (priceSpecificationType !== undefined) ? priceSpecificationType.name : '' %>">
+            <input type="hidden" name="typeOf" value="<%= forms.typeOf %>">
+            <% } %>
             <p class="error message text-danger">
                 <% if (errors && errors.typeOf) { %>
                 <%- errors.typeOf.msg %>
@@ -31,101 +38,124 @@
                 名称<span class="text-danger">＊</span>
             </label>
             <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
-                value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
-            <p class="message">
-                30文字以内でご入力ください。
-            </p>
-            <p class="error message text-danger">
-                <% if (errors && errors['name.ja']) { %>
+                value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
+            <span class="bmd-help">30文字以内でご入力ください</span>
+            <% if (errors && errors['name.ja']) { %>
+            <p class="text-danger">
                 <%- errors['name.ja'].msg %>
+            </p>
+            <% } %>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group bmd-form-group col-md-3">
+                <label for="price" class="bmd-label-static">
+                    金額<span class="text-danger">＊</span>
+                </label>
+                <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
+                    value=<%=forms.price %>>
+                <p class="message">
+                    半角10文字以内でご入力ください。
+                </p>
+                <p class="error message text-danger">
+                    <% if (errors && errors.price) { %>
+                    <%- errors.price.msg %>
+                    <% } %>
+                </p>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div
+                class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
+                <label for="appliesToCategoryCode" class="bmd-label-static">
+                    適用区分
+                </label>
+                <select class="form-control" name="appliesToCategoryCode">
+                    <option value="" selected>選択してください</option>
+
+                    <% videoFormatTypes.forEach((videoFormatType) => { %>
+                    <option
+                        value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                    && forms.appliesToCategoryCode.codeValue === videoFormatType.codeValue
+                    && forms.appliesToCategoryCode.inCodeSet.identifier === videoFormatType.inCodeSet.identifier) { %>
+                        selected<% } %>>
+                        上映方式区分 <%= videoFormatType.codeValue %>
+                    </option>
+                    <% }) %>
+
+                    <% soundFormatTypes.forEach((soundFormatType) => { %>
+                    <option
+                        value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>"
+                        <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                        && forms.appliesToCategoryCode.codeValue === soundFormatType.codeValue
+                        && forms.appliesToCategoryCode.inCodeSet.identifier === soundFormatType.inCodeSet.identifier) { %> selected<% } %>>
+                        音響方式区分 <%= soundFormatType.codeValue %>
+                    </option>
+                    <% }) %>
+
+                    <% seatingTypes.forEach((seatingType) => { %>
+                    <option
+                        value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>"
+                        <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
+                            && forms.appliesToCategoryCode.codeValue === seatingType.codeValue
+                            && forms.appliesToCategoryCode.inCodeSet.identifier === seatingType.inCodeSet.identifier) { %> selected<% } %>>
+                        座席区分 <%= seatingType.codeValue %>
+                    </option>
+                    <% }) %>
+                </select>
+                <% if (errors && errors['appliesToCategoryCode']) { %>
+                <p class="text-danger">
+                    <%- errors['appliesToCategoryCode'].msg %>
+                </p>
                 <% } %>
-            </p>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="price" class="bmd-label-static">
-                金額<span class="text-danger">＊</span>
-            </label>
-            <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
-                value=<%=forms.price %>>
-            <p class="message">
-                半角10文字以内でご入力ください。
-            </p>
-            <p class="error message text-danger">
-                <% if (errors && errors.price) { %>
-                <%- errors.price.msg %>
+        <div class="form-row">
+            <div
+                class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
+                <label for="appliesToMovieTicketType" class="bmd-label-static">
+                    適用ムビチケ券種区分
+                </label>
+
+                <select class="form-control" name="appliesToMovieTicketType">
+                    <option value="" selected>選択してください</option>
+                    <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
+                    <option value="<%= movieTicketType.codeValue %>"
+                        <% if (movieTicketType.codeValue === forms.appliesToMovieTicketType) { %> selected<% } %>>
+                        <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                    </option>
+                    <% }) %>
+                </select>
+                <% if (errors && errors['appliesToMovieTicketType']) { %>
+                <p class="text-danger">
+                    <%- errors['appliesToMovieTicketType'].msg %>
+                </p>
                 <% } %>
-            </p>
-        </div>
+            </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="appliesToCategoryCode" class="bmd-label-static">
-                適用区分
-            </label>
-            <select class="form-control" name="appliesToCategoryCode">
-                <option value="" selected>選択してください</option>
+            <div
+                class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
+                <label for="appliesToVideoFormat" class="bmd-label-static">
+                    ムビチケ適用上映方式
+                </label>
+                <select class="form-control" name="appliesToVideoFormat">
+                    <option value="" selected>選択してください</option>
 
-                <% videoFormatTypes.forEach((videoFormatType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                && forms.appliesToCategoryCode.codeValue === videoFormatType.codeValue
-                && forms.appliesToCategoryCode.inCodeSet.identifier === videoFormatType.inCodeSet.identifier) { %>
-                    selected<% } %>>
-                    上映方式区分 <%= videoFormatType.codeValue %>
-                </option>
-                <% }) %>
-
-                <% soundFormatTypes.forEach((soundFormatType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                    && forms.appliesToCategoryCode.codeValue === soundFormatType.codeValue
-                    && forms.appliesToCategoryCode.inCodeSet.identifier === soundFormatType.inCodeSet.identifier) { %>
-                    selected<% } %>>
-                    音響方式区分 <%= soundFormatType.codeValue %>
-                </option>
-                <% }) %>
-
-                <% seatingTypes.forEach((seatingType) => { %>
-                <option
-                    value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>" <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                        && forms.appliesToCategoryCode.codeValue === seatingType.codeValue
-                        && forms.appliesToCategoryCode.inCodeSet.identifier === seatingType.inCodeSet.identifier) { %>
-                    selected<% } %>>
-                    座席区分 <%= seatingType.codeValue %>
-                </option>
-                <% }) %>
-            </select>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="appliesToMovieTicketType" class="bmd-label-static">
-                適用ムビチケ券種区分
-            </label>
-            <select class="form-control" name="appliesToMovieTicketType">
-                <option value="" selected>選択してください</option>
-                <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                <option value="<%= movieTicketType.codeValue %>"
-                    <% if (movieTicketType.codeValue === forms.appliesToMovieTicketType) { %> selected<% } %>>
-                    <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
-                </option>
-                <% }) %>
-            </select>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="appliesToVideoFormat" class="bmd-label-static">
-                ムビチケ適用上映方式
-            </label>
-            <select class="form-control" name="appliesToVideoFormat">
-                <option value="" selected>選択してください</option>
-
-                <% videoFormatTypes.forEach((videoFormatType) => { %>
-                <option value="<%= videoFormatType.codeValue %>"
-                    <% if (videoFormatType.codeValue === forms.appliesToVideoFormat) { %> selected<% } %>>
-                    <%= videoFormatType.codeValue %>
-                </option>
-                <% }) %>
-            </select>
+                    <% videoFormatTypes.forEach((videoFormatType) => { %>
+                    <option value="<%= videoFormatType.codeValue %>"
+                        <% if (videoFormatType.codeValue === forms.appliesToVideoFormat) { %> selected<% } %>>
+                        <%= videoFormatType.codeValue %>
+                    </option>
+                    <% }) %>
+                </select>
+                <% if (errors && errors['appliesToVideoFormat']) { %>
+                <p class="text-danger">
+                    <%- errors['appliesToVideoFormat'].msg %>
+                </p>
+                <% } %>
+            </div>
         </div>
     </div>
 </div>

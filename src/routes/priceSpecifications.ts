@@ -307,10 +307,30 @@ priceSpecificationsRouter.all(
 function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.priceSpecification.IPriceSpecification<any> {
     const body = req.body;
 
-    const appliesToCategoryCode =
-        (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
-            ? JSON.parse(body.appliesToCategoryCode)
-            : undefined;
+    let appliesToCategoryCode: chevre.factory.categoryCode.ICategoryCode | undefined;
+    let appliesToVideoFormat: string | undefined;
+    let appliesToMovieTicketType: string | undefined;
+
+    switch (body.typeOf) {
+        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+            appliesToCategoryCode =
+                (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
+                    ? JSON.parse(body.appliesToCategoryCode)
+                    : undefined;
+            appliesToVideoFormat = undefined;
+            appliesToMovieTicketType = undefined;
+
+            break;
+
+        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+            appliesToCategoryCode = undefined;
+            appliesToVideoFormat = body.appliesToVideoFormat;
+            appliesToMovieTicketType = body.appliesToMovieTicketType;
+
+            break;
+
+        default:
+    }
 
     return {
         project: req.project,
@@ -318,21 +338,24 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
         price: Number(body.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,
         name: body.name,
-        appliesToCategoryCode: (appliesToCategoryCode !== undefined)
-            ? [{
-                project: req.project,
-                typeOf: 'CategoryCode',
-                codeValue: appliesToCategoryCode.codeValue,
-                inCodeSet: {
-                    typeOf: 'CategoryCodeSet',
-                    identifier: appliesToCategoryCode.inCodeSet.identifier
-                }
-            }] : undefined,
         valueAddedTaxIncluded: true,
-        ...(typeof body.appliesToVideoFormat === 'string' && body.appliesToVideoFormat.length > 0)
+        ...(appliesToCategoryCode !== undefined)
+            ? {
+                appliesToCategoryCode: [{
+                    project: req.project,
+                    typeOf: 'CategoryCode',
+                    codeValue: appliesToCategoryCode.codeValue,
+                    inCodeSet: {
+                        typeOf: 'CategoryCodeSet',
+                        identifier: appliesToCategoryCode.inCodeSet.identifier
+                    }
+                }]
+            }
+            : undefined,
+        ...(typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
             ? { appliesToVideoFormat: body.appliesToVideoFormat }
             : undefined,
-        ...(typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
+        ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
             ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
             : undefined,
         ...(!isNew)
@@ -341,10 +364,10 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
                     ...(appliesToCategoryCode === undefined)
                         ? { appliesToCategoryCode: 1 }
                         : undefined,
-                    ...(typeof body.appliesToVideoFormat !== 'string' || body.appliesToVideoFormat.length === 0)
+                    ...(appliesToVideoFormat === undefined)
                         ? { appliesToVideoFormat: 1 }
                         : undefined,
-                    ...(typeof body.appliesToMovieTicketType !== 'string' || body.appliesToMovieTicketType.length === 0)
+                    ...(appliesToMovieTicketType === undefined)
                         ? { appliesToMovieTicketType: 1 }
                         : undefined
                 }
@@ -356,9 +379,9 @@ function validate(req: Request): void {
     let colName: string = '';
 
     colName = '価格仕様タイプ';
-    req.checkBody('typeOf', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    // req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE)).len({ max: NAME_MAX_LENGTH_NAME_JA });
+    req.checkBody('typeOf')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
     colName = '名称';
     req.checkBody('name.ja')
@@ -366,6 +389,31 @@ function validate(req: Request): void {
         .withMessage(Message.Common.required.replace('$fieldName$', colName))
         // tslint:disable-next-line:no-magic-numbers
         .withMessage(Message.Common.getMaxLength(colName, 30));
+
+    switch (req.body.typeOf) {
+        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+            colName = '適用区分';
+            req.checkBody('appliesToCategoryCode')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+
+            break;
+
+        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+            colName = '適用ムビチケ券種区分';
+            req.checkBody('appliesToMovieTicketType')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+
+            colName = 'ムビチケ適用上映方式区分';
+            req.checkBody('appliesToVideoFormat')
+                .notEmpty()
+                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+
+            break;
+
+        default:
+    }
 }
 
 export default priceSpecificationsRouter;

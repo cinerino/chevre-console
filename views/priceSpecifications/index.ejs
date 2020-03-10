@@ -100,7 +100,8 @@ PS-02
                                     <th>仕様タイプ</th>
                                     <th>名称</th>
                                     <th>適用区分</th>
-                                    <th>適用ムビチケ</th>
+                                    <th>適用ムビチケ券種区分</th>
+                                    <th>ムビチケ適用上映方式</th>
                                     <th>金額</th>
                                 </tr>
                             </thead>
@@ -119,9 +120,11 @@ PS-02
                                     <td name="appliesToCategoryCodeSetName__appliesToCategoryCode.codeValue">
                                         $appliesToCategoryCodeSetName$
                                         $appliesToCategoryCode.codeValue$</td>
-                                    <td
-                                        name="appliesToMovieTicketType__appliesToMovieTicket.name__appliesToVideoFormat">
-                                        $appliesToMovieTicketType$ $appliesToMovieTicket.name$ /
+                                    <td name="appliesToMovieTicketType__appliesToMovieTicket.name">
+                                        $appliesToMovieTicketType$
+                                        $appliesToMovieTicket.name$
+                                    </td>
+                                    <td name="appliesToVideoFormat">
                                         $appliesToVideoFormat$
                                     </td>
                                     <td name="price__priceCurrency">$price$ $priceCurrency$</td>
