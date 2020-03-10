@@ -346,7 +346,9 @@ offersRouter.get('/getlist',
                             : '--'
                     }, validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                         ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
-                        : '' });
+                        : '', addOnCount: (Array.isArray(t.addOn))
+                        ? t.addOn.length
+                        : 0 });
             })
         });
     }

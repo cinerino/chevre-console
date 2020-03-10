@@ -493,7 +493,11 @@ function createFromBody(req, isNew) {
             // validThrough = moment(req.body.validThrough)
             //     .toDate();
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, 
+        const itemOffered = {
+            project: req.project,
+            typeOf: productType_1.ProductType.EventService
+        };
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 project: req.project,
@@ -666,7 +670,8 @@ function getList(req, res) {
                     if (typeof eligibleMonetaryAmountValue === 'number') {
                         eligibleConditions.push(`口座: ${eligibleMonetaryAmountValue} ${(_h = (_g = t.eligibleMonetaryAmount) === null || _g === void 0 ? void 0 : _g.slice(0, 1)[0]) === null || _h === void 0 ? void 0 : _h.currency}`);
                     }
-                    return Object.assign(Object.assign({}, t), { categoryName: (typeof categoryCode === 'string')
+                    const productType = productType_1.productTypes.find((p) => { var _a; return p.codeValue === ((_a = t.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf); });
+                    return Object.assign(Object.assign(Object.assign({}, t), (productType !== undefined) ? { itemOfferedName: productType.name } : undefined), { categoryName: (typeof categoryCode === 'string')
                             ? (_k = (_j = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _j === void 0 ? void 0 : _j.name) === null || _k === void 0 ? void 0 : _k.ja : '', eligibleConditions: eligibleConditions.join(' / '), validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                             ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                             : '', addOnCount: (Array.isArray(t.addOn))

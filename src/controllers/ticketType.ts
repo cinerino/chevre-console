@@ -8,7 +8,7 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
-import { ProductType } from '../factory/productType';
+import { ProductType, productTypes } from '../factory/productType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -556,6 +556,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         //     .toDate();
     }
 
+    const itemOffered = {
+        project: req.project,
+        typeOf: ProductType.EventService
+    };
+
     return {
         project: req.project,
         typeOf: <chevre.factory.offerType>'Offer',
@@ -570,6 +575,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         description: body.description,
         alternateName: { ja: <string>body.alternateName.ja, en: '' },
         availability: availability,
+        itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: {
             project: req.project,
@@ -773,8 +779,11 @@ export async function getList(req: Request, res: Response): Promise<void> {
                     );
                 }
 
+                const productType = productTypes.find((p) => p.codeValue === t.itemOffered?.typeOf);
+
                 return {
                     ...t,
+                    ...(productType !== undefined) ? { itemOfferedName: productType.name } : undefined,
                     categoryName: (typeof categoryCode === 'string')
                         ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                         : '',
