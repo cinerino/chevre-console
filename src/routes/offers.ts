@@ -28,6 +28,13 @@ offersRouter.all(
         let message = '';
         let errors: any = {};
 
+        const itemOfferedTypeOf = req.query.itemOffered?.typeOf;
+        if (itemOfferedTypeOf === ProductType.EventService) {
+            res.redirect(`/ticketTypes/add`);
+
+            return;
+        }
+
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient

@@ -29,8 +29,14 @@ const offersRouter = express_1.Router();
 offersRouter.all('/add', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     let message = '';
     let errors = {};
+    const itemOfferedTypeOf = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
+    if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
+        res.redirect(`/ticketTypes/add`);
+        return;
+    }
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -114,10 +120,10 @@ offersRouter.all('/add',
 offersRouter.all('/:id/update', 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _b;
     let message = '';
     let errors = {};
-    const itemOfferedTypeOf = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
+    const itemOfferedTypeOf = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf;
     if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
         res.redirect(`/ticketTypes/${req.params.id}/update`);
         return;
@@ -237,7 +243,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d, _e, _f;
+    var _c, _d, _e, _f, _g;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -262,8 +268,8 @@ offersRouter.get('/getlist',
             project: { id: { $eq: req.project.id } },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf) === 'string' && ((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf.length) > 0)
-                        ? (_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf : undefined
+                    $eq: (typeof ((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === 'string' && ((_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf.length) > 0)
+                        ? (_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf : undefined
                 }
             },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
@@ -305,7 +311,7 @@ offersRouter.get('/getlist',
             }
         };
         let data;
-        if (((_f = (_e = searchConditions.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq) === productType_1.ProductType.EventService) {
+        if (((_g = (_f = searchConditions.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === null || _g === void 0 ? void 0 : _g.$eq) === productType_1.ProductType.EventService) {
             const searchResult = yield offerService.searchTicketTypes(searchConditions);
             data = searchResult.data;
         }

@@ -16,30 +16,11 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const ticketTypeController = require("../controllers/ticketType");
-const productType_1 = require("../factory/productType");
 const ticketTypeMasterRouter = express_1.Router();
 // 券種登録
 ticketTypeMasterRouter.all('/add', ticketTypeController.add);
 // 券種編集
 ticketTypeMasterRouter.all('/:id/update', ticketTypeController.update);
-// 券種一覧
-ticketTypeMasterRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categoryCodeService = new chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-    // 券種マスタ画面遷移
-    res.render('ticketType/index', {
-        message: '',
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        productTypes: productType_1.productTypes
-    });
-}));
 /**
  * COA券種インポート
  */

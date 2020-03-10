@@ -16,8 +16,12 @@ OF-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/offers/add">
+            <a class="btn btn-primary createOffer" href="#">
                 <i class="material-icons">add</i>登録</a>
+            <% if (process.env.USE_COA === '1') { %>
+            <a class="btn btn-primary importFromCOA" role="button" href="javascript:void(0)">
+                <i class="material-icons">add</i>COAからインポート</a>
+            <% } %>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i>更新</a>
         </div>

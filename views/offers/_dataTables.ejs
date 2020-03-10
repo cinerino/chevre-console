@@ -15,7 +15,6 @@
                                 <% if (onlyEventService) { %>
                                 <option value="EventService">イベント</option>
                                 <% } else { %>
-                                <option value="">---</option>
                                 <% productTypes.forEach((productType) => { %>
                                 <option value="<%= productType.codeValue %>"><%= productType.name %></option>
                                 <% }) %>

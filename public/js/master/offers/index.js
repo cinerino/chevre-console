@@ -61,6 +61,19 @@ $(function () {
         });
     }
 
+    // オファー追加
+    $(document).on('click', '.createOffer', function (event) {
+        conditions = $.fn.getDataFromForm('form');
+        var itemOfferedTypeOf = conditions['itemOffered[typeOf]'];
+        if (typeof itemOfferedTypeOf !== 'string' || itemOfferedTypeOf.length === 0) {
+            alert('アイテムを指定してください');
+
+            return;
+        }
+
+        location.href = '/offers/add?itemOffered[typeOf]=' + itemOfferedTypeOf;
+    });
+
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
         var id = $(this).attr('data-id');
@@ -216,4 +229,27 @@ $(function () {
         modal.find('.modal-body').html(div);
         modal.modal();
     }
+
+    // COA券種インポート
+    $('a.importFromCOA').click(function () {
+        var message = 'COA券種をインポートしようとしています。'
+            + '\nよろしいですか？';
+
+        if (window.confirm(message)) {
+            $.ajax({
+                url: '/ticketTypes/importFromCOA',
+                type: 'POST',
+                dataType: 'json',
+                data: $('form').serialize()
+            }).done(function (tasks) {
+                console.log(tasks);
+                alert('インポートを開始しました');
+            }).fail(function (xhr) {
+                var res = $.parseJSON(xhr.responseText);
+                alert(res.error.message);
+            }).always(function () {
+            });
+        } else {
+        }
+    });
 });
