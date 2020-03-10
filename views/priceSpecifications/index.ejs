@@ -29,50 +29,50 @@ PS-02
                             <%- include('../common/master/_hidden') %>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="typeOf" class="bmd-label-static">
                                         仕様タイプ
                                     </label>
                                     <select class="form-control" name="typeOf">
-                                        <option value="" selected>選択してください</option>
-                                        <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
-                                            各種区分加算料金</option>
-                                        <option
-                                            value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                                            ムビチケ加算料金</option>
+                                        <option value="">---</option>
+                                        <% priceSpecificationTypes.forEach((priceSpecificationType) => { %>
+                                        <option value="<%= priceSpecificationType.codeValue %>">
+                                            <%= priceSpecificationType.name %>
+                                        </option>
+                                        <% }) %>
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-3">
                                     <label for="appliesToCategoryCode" class="bmd-label-static">
-                                        適用カテゴリー
+                                        適用区分
                                     </label>
                                     <select class="form-control" name="appliesToCategoryCode">
                                         <option value="">選択してください</option>
                                         <% videoFormatTypes.forEach((videoFormatType) => { %>
                                         <option
                                             value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>">
-                                            上映方式タイプ <%= videoFormatType.name.ja %>
+                                            上映方式区分 <%= videoFormatType.name.ja %>
                                         </option>
                                         <% }) %>
 
                                         <% soundFormatTypes.forEach((soundFormatType) => { %>
                                         <option
-                                            value="<%= JSON.stringify({codeValue: soundFormatType, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
-                                            音響方式タイプ <%= soundFormatType.name.ja %>
+                                            value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
+                                            音響方式区分 <%= soundFormatType.name.ja %>
                                         </option>
                                         <% }) %>
 
                                         <% seatingTypes.forEach((seatingType) => { %>
                                         <option
-                                            value="<%= JSON.stringify({codeValue: seatingType, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
-                                            座席タイプ <%= seatingType.name.ja %>
+                                            value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
+                                            座席区分 <%= seatingType.name.ja %>
                                         </option>
                                         <% }) %>
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-3">
                                     <label for="appliesToMovieTicketType" class="bmd-label-static">
                                         適用ムビチケ券種区分
                                     </label>
@@ -96,29 +96,28 @@ PS-02
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
-                                    <th>仕様タイプ</th>
                                     <th>ID</th>
+                                    <th>仕様タイプ</th>
                                     <th>名称</th>
-                                    <th>適用カテゴリー</th>
+                                    <th>適用区分</th>
                                     <th>適用ムビチケ</th>
                                     <th>金額</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
-                                    <td name="typeOf">
-                                        <span class="text-muted">$typeOf$</span>
-                                    </td>
                                     <td name="id__id">
                                         <a target="_blank" href="/priceSpecifications/$id$/update">
                                             $id$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
+                                    <td name="priceSpecificationTypeName">
+                                        <span class="text-muted">$priceSpecificationTypeName$</span>
+                                    </td>
                                     <td name="name.ja">$name.ja$</td>
-                                    <td
-                                        name="appliesToCategoryCode.inCodeSet.identifier__appliesToCategoryCode.codeValue">
-                                        $appliesToCategoryCode.inCodeSet.identifier$
+                                    <td name="appliesToCategoryCodeSetName__appliesToCategoryCode.codeValue">
+                                        $appliesToCategoryCodeSetName$
                                         $appliesToCategoryCode.codeValue$</td>
                                     <td
                                         name="appliesToMovieTicketType__appliesToMovieTicket.name__appliesToVideoFormat">

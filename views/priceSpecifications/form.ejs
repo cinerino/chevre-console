@@ -12,14 +12,12 @@
             </label>
             <select class="form-control" name="typeOf">
                 <option value="" selected>選択してください</option>
-                <option value="<%= PriceSpecificationType.CategoryCodeChargeSpecification %>"
-                    <% if (PriceSpecificationType.CategoryCodeChargeSpecification === forms.typeOf) { %>
-                    selected<% } %>>
-                    各種区分加算料金</option>
-                <option value="<%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>"
-                    <% if (PriceSpecificationType.MovieTicketTypeChargeSpecification === forms.typeOf) { %>
-                    selected<% } %>>
-                    ムビチケ加算料金</option>
+                <% priceSpecificationTypes.forEach((priceSpecificationType) => { %>
+                <option value="<%= priceSpecificationType.codeValue %>"
+                    <% if (priceSpecificationType.codeValue === forms.typeOf) { %> selected<% } %>>
+                    <%= priceSpecificationType.name %>
+                </option>
+                <% }) %>
             </select>
             <p class="error message text-danger">
                 <% if (errors && errors.typeOf) { %>
@@ -62,7 +60,7 @@
 
         <div class="form-group bmd-form-group">
             <label for="appliesToCategoryCode" class="bmd-label-static">
-                適用カテゴリー
+                適用区分
             </label>
             <select class="form-control" name="appliesToCategoryCode">
                 <option value="" selected>選択してください</option>
@@ -73,7 +71,7 @@
                 && forms.appliesToCategoryCode.codeValue === videoFormatType.codeValue
                 && forms.appliesToCategoryCode.inCodeSet.identifier === videoFormatType.inCodeSet.identifier) { %>
                     selected<% } %>>
-                    上映方式タイプ <%= videoFormatType.codeValue %>
+                    上映方式区分 <%= videoFormatType.codeValue %>
                 </option>
                 <% }) %>
 
@@ -83,7 +81,7 @@
                     && forms.appliesToCategoryCode.codeValue === soundFormatType.codeValue
                     && forms.appliesToCategoryCode.inCodeSet.identifier === soundFormatType.inCodeSet.identifier) { %>
                     selected<% } %>>
-                    音響方式タイプ <%= soundFormatType.codeValue %>
+                    音響方式区分 <%= soundFormatType.codeValue %>
                 </option>
                 <% }) %>
 
@@ -93,7 +91,7 @@
                         && forms.appliesToCategoryCode.codeValue === seatingType.codeValue
                         && forms.appliesToCategoryCode.inCodeSet.identifier === seatingType.inCodeSet.identifier) { %>
                     selected<% } %>>
-                    座席タイプ <%= seatingType.codeValue %>
+                    座席区分 <%= seatingType.codeValue %>
                 </option>
                 <% }) %>
             </select>

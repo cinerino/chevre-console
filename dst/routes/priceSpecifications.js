@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const Message = require("../message");
+const categoryCodeSet_1 = require("../factory/categoryCodeSet");
+const priceSpecificationType_1 = require("../factory/priceSpecificationType");
 const priceSpecificationsRouter = express_1.Router();
 priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -49,6 +51,7 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
         message: '',
         movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
+        priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
@@ -88,9 +91,12 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
                 // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
-                return Object.assign(Object.assign({}, d), { appliesToCategoryCode: (Array.isArray(d.appliesToCategoryCode))
-                        ? d.appliesToCategoryCode[0] :
-                        undefined, appliesToMovieTicket: {
+                const appliesToCategoryCode = (Array.isArray(d.appliesToCategoryCode))
+                    ? d.appliesToCategoryCode[0] :
+                    undefined;
+                const categoryCodeSet = categoryCodeSet_1.categoryCodeSets.find((c) => { var _a; return c.identifier === ((_a = appliesToCategoryCode === null || appliesToCategoryCode === void 0 ? void 0 : appliesToCategoryCode.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier); });
+                const priceSpecificationType = priceSpecificationType_1.priceSpecificationTypes.find((p) => p.codeValue === d.typeOf);
+                return Object.assign(Object.assign({}, d), { priceSpecificationTypeName: priceSpecificationType === null || priceSpecificationType === void 0 ? void 0 : priceSpecificationType.name, appliesToCategoryCodeSetName: categoryCodeSet === null || categoryCodeSet === void 0 ? void 0 : categoryCodeSet.name, appliesToCategoryCode: appliesToCategoryCode, appliesToMovieTicket: {
                         name: ''
                     } });
             })
@@ -165,6 +171,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, vo
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
+        priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
@@ -240,6 +247,7 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, voi
         forms: forms,
         movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
+        priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,

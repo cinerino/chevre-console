@@ -6,6 +6,9 @@ import { Request, Router } from 'express';
 
 import * as Message from '../message';
 
+import { categoryCodeSets } from '../factory/categoryCodeSet';
+import { priceSpecificationTypes } from '../factory/priceSpecificationType';
+
 const priceSpecificationsRouter = Router();
 
 priceSpecificationsRouter.get(
@@ -48,6 +51,7 @@ priceSpecificationsRouter.get(
             message: '',
             movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
+            priceSpecificationTypes: priceSpecificationTypes,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
@@ -96,12 +100,19 @@ priceSpecificationsRouter.get(
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((d) => {
                     // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
+                    const appliesToCategoryCode = (Array.isArray((<any>d).appliesToCategoryCode))
+                        ? (<any>d).appliesToCategoryCode[0] :
+                        undefined;
+                    const categoryCodeSet = categoryCodeSets.find(
+                        (c) => c.identifier === appliesToCategoryCode?.inCodeSet?.identifier
+                    );
+                    const priceSpecificationType = priceSpecificationTypes.find((p) => p.codeValue === d.typeOf);
 
                     return {
                         ...d,
-                        appliesToCategoryCode: (Array.isArray((<any>d).appliesToCategoryCode))
-                            ? (<any>d).appliesToCategoryCode[0] :
-                            undefined,
+                        priceSpecificationTypeName: priceSpecificationType?.name,
+                        appliesToCategoryCodeSetName: categoryCodeSet?.name,
+                        appliesToCategoryCode: appliesToCategoryCode,
                         appliesToMovieTicket: {
                             name: ''
                         }
@@ -193,6 +204,7 @@ priceSpecificationsRouter.all(
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
+            priceSpecificationTypes: priceSpecificationTypes,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
@@ -283,6 +295,7 @@ priceSpecificationsRouter.all(
             forms: forms,
             movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
+            priceSpecificationTypes: priceSpecificationTypes,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
