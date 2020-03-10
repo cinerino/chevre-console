@@ -6,6 +6,8 @@ import { Request, Router } from 'express';
 
 import * as Message from '../message';
 
+import { categoryCodeSets } from '../factory/categoryCodeSet';
+
 const categoryCodesRouter = Router();
 
 categoryCodesRouter.get(
@@ -13,7 +15,8 @@ categoryCodesRouter.get(
     async (_, res) => {
         res.render('categoryCodes/index', {
             message: '',
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+            categoryCodeSets: categoryCodeSets
         });
     }
 );
@@ -52,7 +55,14 @@ categoryCodesRouter.get(
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-                results: data
+                results: data.map((d) => {
+                    const categoryCodeSet = categoryCodeSets.find((c) => c.identifier === d.inCodeSet.identifier);
+
+                    return {
+                        ...d,
+                        categoryCodeSetName: categoryCodeSet?.name
+                    };
+                })
             });
         } catch (error) {
             res.json({
@@ -85,7 +95,7 @@ categoryCodesRouter.all(
                 try {
                     let categoryCode = createMovieFromBody(req);
 
-                    // 区分コード重複確認
+                    // コード重複確認
                     const { data } = await categoryCodeService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
@@ -93,7 +103,7 @@ categoryCodesRouter.all(
                         inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
                     });
                     if (data.length > 0) {
-                        throw new Error('既に存在する区分コードです');
+                        throw new Error('既に存在するコードです');
                     }
 
                     categoryCode = await categoryCodeService.create(categoryCode);
@@ -117,7 +127,8 @@ categoryCodesRouter.all(
             message: message,
             errors: errors,
             forms: forms,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+            categoryCodeSets: categoryCodeSets
         });
     }
 );
@@ -165,7 +176,8 @@ categoryCodesRouter.all(
             message: message,
             errors: errors,
             forms: forms,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+            categoryCodeSets: categoryCodeSets
         });
     }
 );

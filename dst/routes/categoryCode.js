@@ -15,11 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const Message = require("../message");
+const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const categoryCodesRouter = express_1.Router();
 categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
         message: '',
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
 categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -45,7 +47,10 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data
+            results: data.map((d) => {
+                const categoryCodeSet = categoryCodeSet_1.categoryCodeSets.find((c) => c.identifier === d.inCodeSet.identifier);
+                return Object.assign(Object.assign({}, d), { categoryCodeSetName: categoryCodeSet === null || categoryCodeSet === void 0 ? void 0 : categoryCodeSet.name });
+            })
         });
     }
     catch (error) {
@@ -72,7 +77,7 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
         if (validatorResult.isEmpty()) {
             try {
                 let categoryCode = createMovieFromBody(req);
-                // 区分コード重複確認
+                // コード重複確認
                 const { data } = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -80,7 +85,7 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
                     inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
                 });
                 if (data.length > 0) {
-                    throw new Error('既に存在する区分コードです');
+                    throw new Error('既に存在するコードです');
                 }
                 categoryCode = yield categoryCodeService.create(categoryCode);
                 req.flash('message', '登録しました');
@@ -97,7 +102,8 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
         message: message,
         errors: errors,
         forms: forms,
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
 categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -134,7 +140,8 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
         message: message,
         errors: errors,
         forms: forms,
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
 function createMovieFromBody(req) {
