@@ -20,9 +20,9 @@ const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
-// 券種グループコード 半角64
+// コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
-// 券種グループ名・日本語 全角64
+// 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const offerCatalogsRouter = express_1.Router();
 offerCatalogsRouter.all('/add', 
@@ -156,7 +156,7 @@ offerCatalogsRouter.all('/:id/update',
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
             try {
-                // 券種グループDB登録
+                // DB登録
                 req.body.id = req.params.id;
                 offerCatalog = yield createFromBody(req);
                 yield offerCatalogService.update(offerCatalog);
@@ -224,7 +224,7 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         // tslint:disable-next-line:no-suspicious-comment
         // TODO 削除して問題ないカタログかどうか検証
         if (offerCatalog.itemOffered.typeOf === productType_1.ProductType.EventService) {
-            // 削除して問題ない券種グループかどうか検証
+            // 削除して問題ないカタログかどうか検証
             const searchEventsResult = yield eventService.search({
                 limit: 1,
                 typeOf: chevre.factory.eventType.ScreeningEvent,
