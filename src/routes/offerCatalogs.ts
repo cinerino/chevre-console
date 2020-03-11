@@ -13,9 +13,9 @@ import { ProductType, productTypes } from '../factory/productType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-// 券種グループコード 半角64
+// コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
-// 券種グループ名・日本語 全角64
+// 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const offerCatalogsRouter = Router();
@@ -177,7 +177,7 @@ offerCatalogsRouter.all(
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
                 try {
-                    // 券種グループDB登録
+                    // DB登録
                     req.body.id = req.params.id;
                     offerCatalog = await createFromBody(req);
                     await offerCatalogService.update(offerCatalog);
@@ -266,7 +266,7 @@ offerCatalogsRouter.delete(
             // TODO 削除して問題ないカタログかどうか検証
 
             if (offerCatalog.itemOffered.typeOf === ProductType.EventService) {
-                // 削除して問題ない券種グループかどうか検証
+                // 削除して問題ないカタログかどうか検証
                 const searchEventsResult = await eventService.search({
                     limit: 1,
                     typeOf: chevre.factory.eventType.ScreeningEvent,

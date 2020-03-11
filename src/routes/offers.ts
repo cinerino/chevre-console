@@ -8,6 +8,7 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
+import { itemAvailabilities } from '../factory/itemAvailability';
 import { ProductType, productTypes } from '../factory/productType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -375,10 +376,12 @@ offersRouter.get(
                     const categoryCode = t.category?.codeValue;
 
                     const productType = productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
+                    const itemAvailability = itemAvailabilities.find((i) => i.codeValue === t.availability);
 
                     return {
                         ...t,
-                        ...(productType !== undefined) ? { itemOfferedName: productType.name } : undefined,
+                        itemOfferedName: productType?.name,
+                        availabilityName: itemAvailability?.name,
                         categoryName: (typeof categoryCode === 'string')
                             ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                             : '',

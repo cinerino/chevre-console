@@ -17,6 +17,7 @@ const express_1 = require("express");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
+const itemAvailability_1 = require("../factory/itemAvailability");
 const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // コード 半角64
@@ -329,7 +330,8 @@ offersRouter.get('/getlist',
                 var _a, _b, _c;
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                 const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
-                return Object.assign(Object.assign(Object.assign({}, t), (productType !== undefined) ? { itemOfferedName: productType.name } : undefined), { categoryName: (typeof categoryCode === 'string')
+                const itemAvailability = itemAvailability_1.itemAvailabilities.find((i) => i.codeValue === t.availability);
+                return Object.assign(Object.assign({}, t), { itemOfferedName: productType === null || productType === void 0 ? void 0 : productType.name, availabilityName: itemAvailability === null || itemAvailability === void 0 ? void 0 : itemAvailability.name, categoryName: (typeof categoryCode === 'string')
                         ? (_c = (_b = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                         ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                         : '', addOnCount: (Array.isArray(t.addOn))
