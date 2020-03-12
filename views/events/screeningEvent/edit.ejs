@@ -104,13 +104,10 @@
 
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static" for="saleStartDate">販売開始日</label>
+                                    <label class="bmd-label-static" for="saleStartDate">販売開始日時</label>
                                     <div class="input-group">
                                         <input class="form-control datepicker" name="saleStartDate"
-                                            placeholder="YYYY/MM/DD" maxlength=10>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text"> </span>
-                                        </div>
+                                            placeholder="YYYY/MM/DD" maxlength=10>&nbsp;&nbsp;
                                         <%- include('../../common/part/_timeSelector', {
                                             name: 'saleStartTime',
                                             hourName: 'saleStartDateHour',
@@ -119,9 +116,13 @@
                                     </div>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日</label>
-                                    <input class="form-control datepicker" name="onlineDisplayStartDate"
-                                        placeholder="YYYY/MM/DD" maxlength=10>
+                                    <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日時</label>
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" name="onlineDisplayStartDate"
+                                            placeholder="YYYY/MM/DD" maxlength=10>&nbsp;&nbsp;
+                                        <input name="onlineDisplayStartTime" type="text" class="form-control timepicker"
+                                            autocomplete="off" placeholder="HH:mm">
+                                    </div>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
                                     <label class="bmd-label-static" for="mvtkExcludeFlg">ムビチケ

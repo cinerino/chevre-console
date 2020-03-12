@@ -285,7 +285,7 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             .format('YYYY-MM-DD')}T00:00:00+09:00`)
             .add(Number(body.onlineDisplayStartDate) * -1, 'days')
             .toDate()
-        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
             .toDate();
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
@@ -492,7 +492,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         .format('YYYY-MM-DD')}T00:00:00+09:00`)
                         .add(Number(body.onlineDisplayStartDate) * -1, 'days')
                         .toDate()
-                    : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    // tslint:disable-next-line:max-line-length
+                    : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                         .toDate();
 
                 let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;

@@ -294,7 +294,7 @@ function createEventFromBody(req) {
                 .format('YYYY-MM-DD')}T00:00:00+09:00`)
                 .add(Number(body.onlineDisplayStartDate) * -1, 'days')
                 .toDate()
-            : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                 .toDate();
         let acceptedPaymentMethod;
         // ムビチケ除外の場合は対応決済方法を追加
@@ -487,7 +487,8 @@ function createMultipleEventFromBody(req, user) {
                             .format('YYYY-MM-DD')}T00:00:00+09:00`)
                             .add(Number(body.onlineDisplayStartDate) * -1, 'days')
                             .toDate()
-                        : moment(`${String(body.onlineDisplayStartDate)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                        // tslint:disable-next-line:max-line-length
+                        : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                     let acceptedPaymentMethod;
                     // ムビチケ除外の場合は対応決済方法を追加

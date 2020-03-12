@@ -359,7 +359,7 @@ function regist() {
     var toDate = modal.find('input[name=screeningDateThrough]').val();
     var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
 
-    // 可能であれば登録時に販売開始日を追加
+    // 販売開始日時
     var saleStartDateType = modal.find('input[name=saleStartDateType]:checked').val();
     var saleStartDate = (saleStartDateType === 'absolute')
         ? modal.find('input[name=saleStartDateAbsolute]').val()
@@ -367,7 +367,6 @@ function regist() {
             ? modal.find('input[name=saleStartDateRelative]').val()
             : 'default';
     var saleStartTime = (saleStartDateType === 'absolute')
-        // ? modal.find('select[name=saleStartDateHour]').val() + modal.find('select[name=saleStartDateMinutes]').val()
         ? modal.find('input[name=saleStartTime]').val().replace(':', '')
         : 'default';
 
@@ -375,6 +374,9 @@ function regist() {
     var onlineDisplayStartDate = (onlineDisplayType === 'absolute')
         ? modal.find('input[name=onlineDisplayStartDateAbsolute]').val()
         : modal.find('input[name=onlineDisplayStartDateRelative]').val();
+    var onlineDisplayStartTime = (onlineDisplayType === 'absolute')
+        ? modal.find('input[name=onlineDisplayStartTime]').val().replace(':', '')
+        : 'default';
 
     var tableData = getTableData();
     console.log('tableData:', tableData);
@@ -391,6 +393,7 @@ function regist() {
         || typeof saleStartDate !== 'string' || saleStartDate.length === 0
         || typeof saleStartTime !== 'string' || saleStartTime.length === 0
         || typeof onlineDisplayStartDate !== 'string' || onlineDisplayStartDate.length === 0
+        || typeof onlineDisplayStartTime !== 'string' || onlineDisplayStartTime.length === 0
     ) {
         creatingSchedules = false;
         alert('未入力の項目があります');
@@ -421,6 +424,7 @@ function regist() {
         || saleStartDate === ''
         || saleStartTime === ''
         || onlineDisplayStartDate === ''
+        || onlineDisplayStartTime === ''
     ) {
         creatingSchedules = false;
         alert('情報が足りません');
@@ -491,6 +495,7 @@ function regist() {
             saleStartTime: saleStartTime,
             onlineDisplayType: onlineDisplayType,
             onlineDisplayStartDate: onlineDisplayStartDate,
+            onlineDisplayStartTime: onlineDisplayStartTime,
             maxSeatNumber: maxSeatNumber,
             saleStartDays: saleStartDays,
             endSaleTimeAfterScreening: endSaleTimeAfterScreening,
@@ -551,6 +556,7 @@ function update() {
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var saleStartTime = modal.find('input[name=saleStartTime]').val().replace(':', '');
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
+    var onlineDisplayStartTime = modal.find('input[name=onlineDisplayStartTime]').val().replace(':', '');
     var maxSeatNumber = modal.find('input[name=maxSeatNumber]').val();
     var mvtkExcludeFlg = modal.find('input[name=mvtkExcludeFlg]:checked').val();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]').val();
@@ -572,7 +578,9 @@ function update() {
         || ticketTypeGroup === ''
         || saleStartDate === ''
         || saleStartTime === ''
-        || onlineDisplayStartDate === '') {
+        || onlineDisplayStartDate === ''
+        || onlineDisplayStartTime === ''
+    ) {
         alert('情報が足りません');
         return;
     }
@@ -580,11 +588,11 @@ function update() {
     // オンライン表示開始日 ≦ 当日を確認
     var performanceBefore = scheduler.editingPerforamce;
     console.log('checking online display start date...', performanceBefore.offers.availabilityStarts);
-    var onlineDisplayStartDateBefore = performanceBefore.offers.availabilityStarts;
+    var onlineDisplayStartDateBefore = moment(performanceBefore.offers.availabilityStarts);
+    var onlineDisplayStartDateAfter = moment(onlineDisplayStartDate + 'T' + onlineDisplayStartTime + ':00+09:00', 'YYYY/MM/DDTHHmm:ssZ');
     var now = moment();
     var confirmed = false;
-    if (moment(onlineDisplayStartDateBefore) <= now
-        && moment(onlineDisplayStartDate + 'T00:00:00T09:00', 'YYYY/MM/DDTHH:mm:ssZ') > now) {
+    if (onlineDisplayStartDateBefore <= now && onlineDisplayStartDateAfter > now) {
         if (window.confirm('オンライン表示中のスケジュールが非表示になります。本当に変更しますか？')) {
             confirmed = true;
         }
@@ -610,6 +618,7 @@ function update() {
                 saleStartDate: saleStartDate,
                 saleStartTime: saleStartTime,
                 onlineDisplayStartDate: onlineDisplayStartDate,
+                onlineDisplayStartTime: onlineDisplayStartTime,
                 maxSeatNumber: maxSeatNumber,
                 mvtkExcludeFlg: mvtkExcludeFlg,
                 reservedSeatsAvailable: reservedSeatsAvailable,
@@ -764,9 +773,12 @@ function add() {
     modal.find('select[name=endDayRelative]').val('0');
     modal.find('input[name=mvtkExcludeFlg]').removeAttr('checked');
     modal.find('select[name=ticketTypeGroup]').val('');
+    modal.find('input[name=saleStartDateAbsolute]').datepicker('update', '');
+    modal.find('input[name=saleStartTime]').val('');
     modal.find('input[name=onlineDisplayStartDateRelative]').val('');
     modal.find('input[name=onlineDisplayStartDateAbsolute]').datepicker('update', '');
     modal.find('input[name=onlineDisplayStartDate]').datepicker('update', '');
+    modal.find('input[name=onlineDisplayStartTime]').val('');
     modal.find('input[name=maxSeatNumber]').val('');
 
     modal.find('input[name=screeningDateStart]').datepicker('update', new Date());
@@ -1027,7 +1039,7 @@ function createScheduler() {
                 modal.find('select[name=screen]').val(performance.location.branchCode);
                 modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
 
-                // 販売開始日
+                // 販売開始日時
                 var saleStartDate = (performance.offers === undefined)
                     ? '' : moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD');
                 var saleStartTime = (performance.offers === undefined)
@@ -1042,10 +1054,14 @@ function createScheduler() {
                 // オンライン表示
                 var onlineDisplayStartDate = (performance.offers)
                     ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';
+                var onlineDisplayStartTime = (performance.offers)
+                    ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('HH:mm') : '';
                 if (onlineDisplayStartDate !== '') {
                     modal.find('input[name=onlineDisplayStartDate]').datepicker('update', onlineDisplayStartDate);
+                    modal.find('input[name=onlineDisplayStartTime]').val(onlineDisplayStartTime);
                 } else {
                     modal.find('input[name=onlineDisplayStartDate]').val('');
+                    modal.find('input[name=onlineDisplayStartTime]').val('');
                 }
 
                 // 追加特性(フォームを初期化してからイベントの値をセット)
