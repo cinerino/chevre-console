@@ -3,8 +3,11 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Router } from 'express';
+import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import { format } from 'util';
+
+import { reservationStatusTypes } from '../factory/reservationStatusType';
 
 type IEventReservationPriceSpec = chevre.factory.reservation.IPriceSpecification<chevre.factory.reservationType.EventReservation>;
 
@@ -36,6 +39,7 @@ reservationsRouter.get(
         res.render('reservations/index', {
             message: '',
             reservationStatusType: chevre.factory.reservationStatusType,
+            reservationStatusTypes: reservationStatusTypes,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             movieTheaters: searchMovieTheatersResult.data
         });
@@ -188,6 +192,7 @@ reservationsRouter.get(
                         (c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification
                     );
 
+                    const reservationStatusType = reservationStatusTypes.find((r) => t.reservationStatus === r.codeValue);
                     // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
                     //     (c) => t.reservedTicket !== undefined
                     //         && t.reservedTicket !== null
@@ -197,6 +202,9 @@ reservationsRouter.get(
 
                     return {
                         ...t,
+                        reservationStatusTypeName: reservationStatusType?.name,
+                        checkedInText: (t.checkedIn === true) ? 'done' : undefined,
+                        attendedText: (t.attended === true) ? 'done' : undefined,
                         // ticketType: ticketTYpe,
                         unitPriceSpec: unitPriceSpec,
                         ticketedSeat: (t.reservedTicket !== undefined
@@ -219,11 +227,62 @@ reservationsRouter.get(
                 })
             });
         } catch (err) {
+            console.error(err);
             res.json({
                 success: false,
                 count: 0,
                 results: []
             });
+        }
+    }
+);
+
+reservationsRouter.post(
+    '/cancel',
+    async (req, res) => {
+        const successIds: string[] = [];
+        const errorIds: string[] = [];
+
+        try {
+            const ids = req.body.ids;
+            if (!Array.isArray(ids)) {
+                throw new Error('ids must be Array');
+            }
+
+            const cancelReservationService = new chevre.service.transaction.CancelReservation({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const expires = moment()
+                .add(1, 'minute')
+                .toDate();
+            for (const id of ids) {
+                const transaction = await cancelReservationService.start({
+                    typeOf: chevre.factory.transactionType.CancelReservation,
+                    project: req.project,
+                    agent: {
+                        typeOf: 'Person',
+                        id: req.user.profile.sub,
+                        name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
+                    },
+                    expires: expires,
+                    object: {
+                        reservation: { id: id }
+                    }
+                });
+                await cancelReservationService.confirm({ id: transaction.id });
+            }
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message,
+                    successIds: successIds,
+                    errorIds: errorIds
+                });
         }
     }
 );

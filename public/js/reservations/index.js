@@ -1,3 +1,5 @@
+var conditions = {};
+
 $(function () {
     var ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
@@ -18,7 +20,6 @@ $(function () {
     });
 
     // 検索ボタンイベント
-    var conditions = {};
     $(document).on('click', '.btn-ok', function () {
         // 検索条件取得
         conditions = $.fn.getDataFromForm('form');
@@ -27,38 +28,6 @@ $(function () {
     });
 
     $('.btn-ok').click();
-
-    //--------------------------------
-    // 検索API呼び出し
-    //--------------------------------
-    function search(pageNumber) {
-        conditions['page'] = pageNumber;
-        var url = '/reservations/search';
-        $.ajax({
-            dataType: 'json',
-            url: url,
-            cache: false,
-            type: 'GET',
-            data: conditions,
-            beforeSend: function () {
-                $('#loadingModal').modal({ backdrop: 'static' });
-            }
-        }).done(function (data) {
-            if (data.success) {
-                var dataCount = (data.count) ? (data.count) : 0;
-                // 一覧表示
-                if ($.CommonMasterList.bind(data.results, dataCount, pageNumber)) {
-                    $('#list').show();
-                } else {
-                    $('#list').hide();
-                }
-            }
-        }).fail(function (jqxhr, textStatus, error) {
-            alert("fail");
-        }).always(function (data) {
-            $('#loadingModal').modal('hide');
-        });
-    }
 
     $(document).on('click', '.showUnderName', function (event) {
         var id = $(this).attr('data-id');
@@ -99,4 +68,126 @@ $(function () {
         modal.find('.modal-body').html(body);
         modal.modal();
     }
+
+    // キャンセルボタンイベント
+    $(document).on('click', '.btn-cancel', function () {
+        cancelReservations();
+    });
+
+    $(document).on('change', 'input[name="selectedReservations"]', function () {
+        var selectedReservations = getSelectedReservations();
+        console.log(selectedReservations.length, 'selected');
+        var selectedReservationsExist = selectedReservations.length > 0;
+
+        var isAllConfimed = true;
+        selectedReservations.forEach(function (selectedReservation) {
+            if (selectedReservation.reservationStatus !== 'ReservationConfirmed') {
+                isAllConfimed = false;
+            }
+        });
+
+        if (selectedReservationsExist && isAllConfimed) {
+            $('.btn-cancel').removeClass('disabled');
+        } else {
+            $('.btn-cancel').addClass('disabled');
+        }
+    });
 });
+
+//--------------------------------
+// 検索API呼び出し
+//--------------------------------
+function search(pageNumber) {
+    conditions['page'] = pageNumber;
+    var url = '/reservations/search';
+    $.ajax({
+        dataType: 'json',
+        url: url,
+        cache: false,
+        type: 'GET',
+        data: conditions,
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (data) {
+        if (data.success) {
+            var dataCount = (data.count) ? (data.count) : 0;
+            // 一覧表示
+            if ($.CommonMasterList.bind(data.results, dataCount, pageNumber)) {
+                $('#list').show();
+            } else {
+                $('#list').hide();
+            }
+        }
+    }).fail(function (jqxhr, textStatus, error) {
+        alert("fail");
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
+}
+
+function getSelectedReservations() {
+    var selectedReservationBoxes = $('input[name="selectedReservations"]:checked');
+
+    var selectedReservationIds = [];
+    selectedReservationBoxes.each(function () {
+        selectedReservationIds.push($(this).val());
+    });
+
+    var selectedReservations = $.CommonMasterList.getDatas()
+        .filter(function (data) {
+            return selectedReservationIds.indexOf(data.id) >= 0;
+            // }).filter(function (data) {
+            //     return data.reservationStatus === 'ReservationConfirmed';
+        });
+
+    return selectedReservations;
+}
+
+function cancelReservations() {
+    var selectedReservations = getSelectedReservations();
+
+    var isAllConfimed = true;
+    selectedReservations.forEach(function (selectedReservation) {
+        if (selectedReservation.reservationStatus !== 'ReservationConfirmed') {
+            isAllConfimed = false;
+        }
+    });
+    if (!isAllConfimed) {
+        alert('確定予約のみキャンセル可能です');
+
+        return;
+    }
+
+    var ids = selectedReservations.map(function (r) {
+        return r.id;
+    });
+
+    var confirmed = false;
+    if (window.confirm(ids + 'をキャンセルしますか？')) {
+        confirmed = true;
+    }
+
+    if (confirmed) {
+        var url = '/reservations/cancel';
+        $.ajax({
+            dataType: 'json',
+            url: url,
+            cache: false,
+            type: 'POST',
+            data: { ids: ids },
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            alert('キャンセルしました');
+            $('.btn-cancel').addClass('disabled');
+            $('input[name="selectedReservations"]:checked').prop('checked', false);
+            search(1);
+        }).fail(function (jqxhr, textStatus, error) {
+            alert("fail");
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
+    }
+}

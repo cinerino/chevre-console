@@ -14,8 +14,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const http_status_1 = require("http-status");
 const moment = require("moment");
 const util_1 = require("util");
+const reservationStatusType_1 = require("../factory/reservationStatusType");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -38,6 +40,7 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
+        reservationStatusTypes: reservationStatusType_1.reservationStatusTypes,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         movieTheaters: searchMovieTheatersResult.data
     });
@@ -182,13 +185,14 @@ reservationsRouter.get('/search',
             results: data.map((t) => {
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
+                const reservationStatusType = reservationStatusType_1.reservationStatusTypes.find((r) => t.reservationStatus === r.codeValue);
                 // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
                 //     (c) => t.reservedTicket !== undefined
                 //         && t.reservedTicket !== null
                 //         && t.reservedTicket.ticketType.category !== undefined
                 //         && c.codeValue === t.reservedTicket.ticketType.category.id
                 // );
-                return Object.assign(Object.assign({}, t), { 
+                return Object.assign(Object.assign({}, t), { reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, 
                     // ticketType: ticketTYpe,
                     unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
                         && t.reservedTicket !== null
@@ -206,10 +210,54 @@ reservationsRouter.get('/search',
         });
     }
     catch (err) {
+        console.error(err);
         res.json({
             success: false,
             count: 0,
             results: []
+        });
+    }
+}));
+reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const successIds = [];
+    const errorIds = [];
+    try {
+        const ids = req.body.ids;
+        if (!Array.isArray(ids)) {
+            throw new Error('ids must be Array');
+        }
+        const cancelReservationService = new chevre.service.transaction.CancelReservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const expires = moment()
+            .add(1, 'minute')
+            .toDate();
+        for (const id of ids) {
+            const transaction = yield cancelReservationService.start({
+                typeOf: chevre.factory.transactionType.CancelReservation,
+                project: req.project,
+                agent: {
+                    typeOf: 'Person',
+                    id: req.user.profile.sub,
+                    name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
+                },
+                expires: expires,
+                object: {
+                    reservation: { id: id }
+                }
+            });
+            yield cancelReservationService.confirm({ id: transaction.id });
+        }
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message,
+            successIds: successIds,
+            errorIds: errorIds
         });
     }
 }));
