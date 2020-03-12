@@ -36,6 +36,12 @@ $(function () {
         showUnderName(id);
     });
 
+    $(document).on('click', '.editAdditionalTicketText', function (event) {
+        var id = $(this).attr('data-id');
+
+        editAdditionalTicketText(id);
+    });
+
     function showUnderName(id) {
         var reservation = $.CommonMasterList.getDatas().find(function (data) {
             return data.id === id
@@ -190,4 +196,40 @@ function cancelReservations() {
             $('#loadingModal').modal('hide');
         });
     }
+}
+
+function editAdditionalTicketText(id) {
+    var reservation = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (reservation === undefined) {
+        alert('予約' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-reservation');
+    var title = '予約 `' + reservation.id + '` の追加テキストを編集する';
+
+    var body = $('<div>');
+    body.append(
+        $('<input>')
+            .attr({
+                type: 'hidden',
+                name: 'id',
+                value: reservation.id
+            })
+    ).append(
+        $('<input>')
+            .addClass('form-control')
+            .attr({
+                type: 'text',
+                name: 'additionalTicketText',
+                value: reservation.additionalTicketText
+            })
+    );
+
+    modal.find('.modal-title').html(title);
+    modal.find('.modal-body').html(body);
+    modal.modal();
 }

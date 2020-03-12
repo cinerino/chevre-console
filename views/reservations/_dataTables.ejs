@@ -280,7 +280,10 @@
                                     <span>表示</span>
                                 </a>
                             </td>
-                            <td name="additionalTicketText">$additionalTicketText$</td>
+                            <td name="additionalTicketText|slice:10__id">$additionalTicketText$
+                                <a href="javascript:void(0)" class="editAdditionalTicketText" data-id="$id$">
+                                    <i class="material-icons" style="font-size: 1.2em;">edit</i>
+                                </a></td>
                             <td name="checkedInText">
                                 <i class="material-icons" style="font-size: 1.2em;">$checkedInText$</i>
                             </td>
