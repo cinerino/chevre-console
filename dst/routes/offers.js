@@ -62,15 +62,6 @@ offersRouter.all('/add',
                 req.body.id = '';
                 let offer = yield createFromBody(req, true);
                 // コード重複確認
-                const { data } = yield offerService.searchTicketTypes({
-                    limit: 1,
-                    project: { id: { $eq: req.project.id } },
-                    identifier: { $eq: offer.identifier }
-                });
-                if (data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${offer.identifier}`);
-                }
-                // コード重複確認
                 const searchOffersResult = yield offerService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -156,7 +147,7 @@ offersRouter.all('/:id/update',
                 try {
                     req.body.id = req.params.id;
                     offer = yield createFromBody(req, false);
-                    yield offerService.updateOffer(offer);
+                    yield offerService.update(offer);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
@@ -244,7 +235,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e, _f, _g;
+    var _c, _d, _e;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -312,14 +303,8 @@ offersRouter.get('/getlist',
             }
         };
         let data;
-        if (((_g = (_f = searchConditions.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === null || _g === void 0 ? void 0 : _g.$eq) === productType_1.ProductType.EventService) {
-            const searchResult = yield offerService.searchTicketTypes(searchConditions);
-            data = searchResult.data;
-        }
-        else {
-            const searchResult = yield offerService.search(searchConditions);
-            data = searchResult.data;
-        }
+        const searchResult = yield offerService.search(searchConditions);
+        data = searchResult.data;
         res.json({
             success: true,
             count: (data.length === Number(limit))

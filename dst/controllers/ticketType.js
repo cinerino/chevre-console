@@ -53,19 +53,19 @@ function add(req, res) {
             errors = req.validationErrors(true);
             // 検証
             if (validatorResult.isEmpty()) {
-                // 券種DB登録プロセス
+                // DB登録プロセス
                 try {
                     req.body.id = '';
                     let ticketType = yield createFromBody(req, true);
-                    // 券種コード重複確認
-                    const { data } = yield offerService.searchTicketTypes({
+                    // コード重複確認
+                    const { data } = yield offerService.search({
                         project: { id: { $eq: req.project.id } },
                         identifier: { $eq: ticketType.identifier }
                     });
                     if (data.length > 0) {
                         throw new Error(`既に存在するコードです: ${ticketType.identifier}`);
                     }
-                    ticketType = yield offerService.createTicketType(ticketType);
+                    ticketType = yield offerService.create(ticketType);
                     req.flash('message', '登録しました');
                     res.redirect(`/ticketTypes/${ticketType.id}/update`);
                     return;
@@ -151,7 +151,7 @@ function update(req, res, next) {
             auth: req.user.authClient
         });
         try {
-            let ticketType = yield offerService.findTicketTypeById({ id: req.params.id });
+            let ticketType = yield offerService.findById({ id: req.params.id });
             if (req.method === 'POST') {
                 // 検証
                 validateFormAdd(req);
@@ -163,7 +163,7 @@ function update(req, res, next) {
                     try {
                         req.body.id = req.params.id;
                         ticketType = yield createFromBody(req, false);
-                        yield offerService.updateTicketType(ticketType);
+                        yield offerService.update(ticketType);
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
                         return;

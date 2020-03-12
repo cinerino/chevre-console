@@ -105,31 +105,18 @@ offerCatalogsRouter.all(
         if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
             const itemListElementIds = forms.itemListElement.map((element: any) => element.id);
 
-            if (forms.itemOffered?.typeOf === ProductType.EventService) {
-                const searchTicketTypesResult = await offerService.searchTicketTypes({
-                    limit: 100,
-                    project: { id: { $eq: req.project.id } },
-                    id: { $in: itemListElementIds }
-                });
+            const searchOffersResult = await offerService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: itemListElementIds
+                }
+            });
 
-                // 登録順にソート
-                offers = searchTicketTypesResult.data.sort(
-                    (a: any, b: any) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
-                );
-            } else {
-                const searchOffersResult = await offerService.search({
-                    limit: 100,
-                    project: { id: { $eq: req.project.id } },
-                    id: {
-                        $in: itemListElementIds
-                    }
-                });
-
-                // 登録順にソート
-                offers = searchOffersResult.data.sort(
-                    (a: any, b: any) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
-                );
-            }
+            // 登録順にソート
+            offers = searchOffersResult.data.sort(
+                (a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
+            );
         }
 
         res.render('offerCatalogs/add', {
@@ -209,31 +196,18 @@ offerCatalogsRouter.all(
         if (Array.isArray(forms.itemListElement) && forms.itemListElement.length > 0) {
             const itemListElementIds = forms.itemListElement.map((element: any) => element.id);
 
-            if (forms.itemOffered?.typeOf === ProductType.EventService) {
-                const searchTicketTypesResult = await offerService.searchTicketTypes({
-                    limit: 100,
-                    project: { id: { $eq: req.project.id } },
-                    id: { $in: itemListElementIds }
-                });
+            const searchOffersResult = await offerService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: itemListElementIds
+                }
+            });
 
-                // 登録順にソート
-                offers = searchTicketTypesResult.data.sort(
-                    (a: any, b: any) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
-                );
-            } else {
-                const searchOffersResult = await offerService.search({
-                    limit: 100,
-                    project: { id: { $eq: req.project.id } },
-                    id: {
-                        $in: itemListElementIds
-                    }
-                });
-
-                // 登録順にソート
-                offers = searchOffersResult.data.sort(
-                    (a: any, b: any) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
-                );
-            }
+            // 登録順にソート
+            offers = searchOffersResult.data.sort(
+                (a, b) => itemListElementIds.indexOf(a.id) - itemListElementIds.indexOf(b.id)
+            );
         }
 
         res.render('offerCatalogs/update', {
@@ -313,25 +287,15 @@ offerCatalogsRouter.get(
             const page = 1;
             let data: chevre.factory.offer.IOffer[];
 
-            if (offerCatalog.itemOffered.typeOf === ProductType.EventService) {
-                const searchTicketTypesResult = await offerService.searchTicketTypes({
-                    limit: limit,
-                    page: page,
-                    project: { id: { $eq: req.project.id } },
-                    id: { $in: offerIds }
-                });
-                data = searchTicketTypesResult.data;
-            } else {
-                const searchResult = await offerService.search({
-                    limit: limit,
-                    page: page,
-                    project: { id: { $eq: req.project.id } },
-                    id: {
-                        $in: offerIds
-                    }
-                });
-                data = searchResult.data;
-            }
+            const searchResult = await offerService.search({
+                limit: limit,
+                page: page,
+                project: { id: { $eq: req.project.id } },
+                id: {
+                    $in: offerIds
+                }
+            });
+            data = searchResult.data;
 
             // 登録順にソート
             const offers = data.sort(
@@ -442,52 +406,28 @@ offerCatalogsRouter.get(
                 auth: req.user.authClient
             });
 
-            const itemOfferedType = req.query.itemOffered?.typeOf;
-
             let data: chevre.factory.offer.IOffer[];
             const limit = 100;
             const page = 1;
-            if (itemOfferedType === ProductType.EventService) {
-                const searchTicketTypesResult = await offerService.searchTicketTypes({
-                    limit: limit,
-                    page: page,
-                    sort: {
-                        'priceSpecification.price': chevre.factory.sortType.Descending
-                    },
-                    project: { id: { $eq: req.project.id } },
-                    priceSpecification: {
-                        // 売上金額で検索
-                        accounting: {
-                            accountsReceivable: {
-                                $gte: Number(req.query.price),
-                                $lte: Number(req.query.price)
-                            }
+            const searchOffersResult = await offerService.search({
+                limit: limit,
+                page: page,
+                sort: {
+                    'priceSpecification.price': chevre.factory.sortType.Descending
+                },
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: req.query.itemOffered?.typeOf } },
+                priceSpecification: {
+                    // 売上金額で検索
+                    accounting: {
+                        accountsReceivable: {
+                            $gte: Number(req.query.price),
+                            $lte: Number(req.query.price)
                         }
                     }
-                });
-                data = searchTicketTypesResult.data;
-            } else {
-                // 指定価格のオファー検索
-                const searchOffersResult = await offerService.search({
-                    limit: limit,
-                    page: page,
-                    sort: {
-                        'priceSpecification.price': chevre.factory.sortType.Descending
-                    },
-                    project: { id: { $eq: req.project.id } },
-                    itemOffered: { typeOf: { $eq: req.query.itemOffered?.typeOf } },
-                    priceSpecification: {
-                        // 売上金額で検索
-                        accounting: {
-                            accountsReceivable: {
-                                $gte: Number(req.query.price),
-                                $lte: Number(req.query.price)
-                            }
-                        }
-                    }
-                });
-                data = searchOffersResult.data;
-            }
+                }
+            });
+            data = searchOffersResult.data;
 
             res.json({
                 success: true,

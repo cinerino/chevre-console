@@ -13,7 +13,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/api-nodejs-client": "3.0.0-alpha.26",
+    "@chevre/api-nodejs-client": "3.0.0-alpha.27",
     "@cinerino/api-nodejs-client": "2.0.0-alpha.72",
     "@json-editor/json-editor": "^1.4.0-beta.0",
     "body-parser": "^1.19.0",

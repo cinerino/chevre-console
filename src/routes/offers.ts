@@ -62,16 +62,6 @@ offersRouter.all(
                     let offer = await createFromBody(req, true);
 
                     // コード重複確認
-                    const { data } = await offerService.searchTicketTypes({
-                        limit: 1,
-                        project: { id: { $eq: req.project.id } },
-                        identifier: { $eq: offer.identifier }
-                    });
-                    if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${offer.identifier}`);
-                    }
-
-                    // コード重複確認
                     const searchOffersResult = await offerService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
@@ -180,7 +170,7 @@ offersRouter.all(
                     try {
                         req.body.id = req.params.id;
                         offer = await createFromBody(req, false);
-                        await offerService.updateOffer(offer);
+                        await offerService.update(offer);
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
 
@@ -358,13 +348,8 @@ offersRouter.get(
             };
 
             let data: chevre.factory.offer.IUnitPriceOffer[];
-            if (searchConditions.itemOffered?.typeOf?.$eq === ProductType.EventService) {
-                const searchResult = await offerService.searchTicketTypes(searchConditions);
-                data = searchResult.data;
-            } else {
-                const searchResult = await offerService.search(searchConditions);
-                data = searchResult.data;
-            }
+            const searchResult = await offerService.search(searchConditions);
+            data = searchResult.data;
 
             res.json({
                 success: true,
