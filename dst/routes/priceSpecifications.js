@@ -35,7 +35,7 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
     });
-    // 座席タイプ検索
+    // 座席区分検索
     const searchSeatingTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -130,7 +130,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, vo
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
     });
-    // 座席タイプ検索
+    // 座席区分検索
     const searchSeatingTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -197,7 +197,7 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, voi
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
     });
-    // 座席タイプ検索
+    // 座席区分検索
     const searchSeatingTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },

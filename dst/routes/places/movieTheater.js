@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const Message = require("../../message");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const movieTheaterRouter = express_1.Router();
@@ -23,7 +24,7 @@ movieTheaterRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, f
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        // validate(req, 'add');
+        validate(req);
         const validatorResult = yield req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
@@ -129,7 +130,7 @@ movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, vo
     });
     if (req.method === 'POST') {
         // バリデーション
-        // validate(req, 'update');
+        validate(req);
         const validatorResult = yield req.getValidationResult();
         errors = req.validationErrors(true);
         if (validatorResult.isEmpty()) {
@@ -233,5 +234,22 @@ function createMovieTheaterFromBody(req) {
             : undefined
     };
     return movieTheater;
+}
+function validate(req) {
+    let colName = '';
+    colName = '枝番号';
+    req.checkBody('branchCode')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .matches(/^[0-9a-zA-Z]+$/)
+        .len({ max: 20 })
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 20));
+    colName = '名称';
+    req.checkBody('name.ja')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 64));
 }
 exports.default = movieTheaterRouter;

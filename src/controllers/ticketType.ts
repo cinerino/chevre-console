@@ -110,7 +110,7 @@ export async function add(req: Request, res: Response): Promise<void> {
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
     });
 
-    // 座席タイプ検索
+    // 座席区分検索
     const searchSeatingTypesResult = await categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -270,7 +270,7 @@ export async function update(req: Request, res: Response, next: NextFunction): P
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
 
-        // 座席タイプ検索
+        // 座席区分検索
         const searchSeatingTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -476,7 +476,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         }
     }
 
-    // 適用座席タイプがあれば設定
+    // 適用座席区分があれば設定
     let eligibleSeatingTypes: chevre.factory.offer.IEligibleCategoryCode[] | undefined;
     if (Array.isArray(body.eligibleSeatingType) && body.eligibleSeatingType.length > 0
         && typeof body.eligibleSeatingType[0].id === 'string' && body.eligibleSeatingType[0].id.length > 0) {

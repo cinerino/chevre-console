@@ -7,43 +7,11 @@ MT-00
 <%- contentFor('scripts') %>
 <script src="/js/master/places/movieTheater.js"></script>
 <%- contentFor('body') %>
-<% /* フォーム */ %>
-<form method=" post">
+<form method="post">
     <%- include('../../common/errorMessage') %>
     <%- include('../../common/successMessage') %>
-
-    <div class="form-group">
-        <label for="branchCode" class="">
-            枝番号<span class="text-danger">＊</span>
-        </label>
-        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder="" maxlength=64
-            value="<%= forms.branchCode %>">
-        <p class="message">
-            <% /*半角64文字以内でご入力ください。*/ %>
-            半角64文字以内でご入力ください。
-        </p>
-        <p class="error message text-danger">
-            <% if (errors && errors.branchCode) { %>
-            <%- errors.branchCode.msg %>
-            <% } %>
-        </p>
-    </div>
-
 
     <%- include('form', { forms: forms, isNew: true }) %>
 
     <button type="button" class="btn btn-ok btn-primary">登録する</button>
 </form>
-
-<script>
-    $(function () {
-        $('.btn-ok').on('click', function () {
-            $('.json-editor').remove();
-            $('form').submit();
-        });
-        // datepickerセット
-        $('.datepicker').datepicker({
-            language: 'ja'
-        })
-    });
-</script>

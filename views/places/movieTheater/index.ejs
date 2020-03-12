@@ -28,11 +28,13 @@ MT-01
                         <form method="post">
                             <%- include('../../common/master/_hidden') %>
 
-                            <div class="form-group bmd-form-group">
-                                <label for="name" class="bmd-label-static">
-                                    名称
-                                </label>
-                                <input class="form-control" name="name" id="name" placeholder="" maxlength=64>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input class="form-control" name="name" id="name" placeholder="" maxlength="64">
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -60,13 +62,8 @@ MT-01
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="name.ja|slice__name.en|slice">
-                                        $name.ja$<br>
-                                        $name.en$
-                                    </td>
-                                    <td name="telephone">
-                                        <p>$telephone$</p>
-                                    </td>
+                                    <td name="name.ja|slice">$name.ja$</td>
+                                    <td name="telephone">$telephone$</td>
                                     <td
                                         name="offers.eligibleQuantity.maxValue__availabilityStartsGraceTimeInDays__availabilityEndsGraceTimeInMinutes">
                                         $offers.eligibleQuantity.maxValue$ 席まで

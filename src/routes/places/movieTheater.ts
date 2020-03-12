@@ -5,6 +5,8 @@ import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 
+import * as Message from '../../message';
+
 const debug = createDebug('chevre-backend:router');
 
 const NUM_ADDITIONAL_PROPERTY = 5;
@@ -18,7 +20,7 @@ movieTheaterRouter.all(
         let errors: any = {};
         if (req.method === 'POST') {
             // バリデーション
-            // validate(req, 'add');
+            validate(req);
             const validatorResult = await req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
@@ -157,7 +159,7 @@ movieTheaterRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            // validate(req, 'update');
+            validate(req);
             const validatorResult = await req.getValidationResult();
             errors = req.validationErrors(true);
             if (validatorResult.isEmpty()) {
@@ -286,6 +288,26 @@ function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieThe
     };
 
     return movieTheater;
+}
+
+function validate(req: Request): void {
+    let colName: string = '';
+
+    colName = '枝番号';
+    req.checkBody('branchCode')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        .matches(/^[0-9a-zA-Z]+$/)
+        .len({ max: 20 })
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 20));
+
+    colName = '名称';
+    req.checkBody('name.ja')
+        .notEmpty()
+        .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        // tslint:disable-next-line:no-magic-numbers
+        .withMessage(Message.Common.getMaxLength(colName, 64));
 }
 
 export default movieTheaterRouter;

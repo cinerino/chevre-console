@@ -1,4 +1,13 @@
 $(function () {
+    $('.btn-ok').on('click', function () {
+        $('.json-editor').remove();
+        $('form').submit();
+    });
+    // datepickerセット
+    $('.datepicker').datepicker({
+        language: 'ja'
+    })
+
     JSONEditor.defaults.options.theme = 'bootstrap4';
     JSONEditor.defaults.options.iconlib = 'materialicons';
     initScreen();
@@ -61,7 +70,7 @@ function initScreen() {
                             }
                         }
                     }
-                }                
+                }
             }
         }
     };

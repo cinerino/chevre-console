@@ -98,7 +98,7 @@ function add(req, res) {
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
-        // 座席タイプ検索
+        // 座席区分検索
         const searchSeatingTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -230,7 +230,7 @@ function update(req, res, next) {
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
-            // 座席タイプ検索
+            // 座席区分検索
             const searchSeatingTypesResult = yield categoryCodeService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
@@ -420,7 +420,7 @@ function createFromBody(req, isNew) {
                 throw new Error(`高度な名称の型が不適切です ${error.message}`);
             }
         }
-        // 適用座席タイプがあれば設定
+        // 適用座席区分があれば設定
         let eligibleSeatingTypes;
         if (Array.isArray(body.eligibleSeatingType) && body.eligibleSeatingType.length > 0
             && typeof body.eligibleSeatingType[0].id === 'string' && body.eligibleSeatingType[0].id.length > 0) {

@@ -33,7 +33,7 @@ priceSpecificationsRouter.get(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
         });
 
-        // 座席タイプ検索
+        // 座席区分検索
         const searchSeatingTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -155,7 +155,7 @@ priceSpecificationsRouter.all(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
         });
 
-        // 座席タイプ検索
+        // 座席区分検索
         const searchSeatingTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -238,7 +238,7 @@ priceSpecificationsRouter.all(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
         });
 
-        // 座席タイプ検索
+        // 座席区分検索
         const searchSeatingTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
