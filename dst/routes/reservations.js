@@ -267,7 +267,6 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        console.log('updating reservation...', req.body);
         yield reservationService.update({
             id: req.params.id,
             update: Object.assign({}, (typeof req.body.additionalTicketText === 'string')
