@@ -225,6 +225,7 @@
                             <th>座席</th>
                             <th>チケットホルダー</th>
                             <th>追加テキスト</th>
+                            <th>サブ</th>
                             <th>発券</th>
                             <th>入場</th>
                         </tr>
@@ -249,9 +250,8 @@
                                 $bookingTime$
                             </td>
                             <td name="reservationStatusTypeName">$reservationStatusTypeName$</td>
-                            <td
-                                name="reservationFor.id__reservationFor.name.ja|slice:10__reservationFor.startDate|date:YY-MM-DD HH:mm">
-                                <a href="#$reservationFor.id$">$reservationFor.name.ja$</a><br>
+                            <td name="reservationFor.id__reservationFor.startDate|date:YY-MM-DD HH:mm">
+                                $reservationFor.id$<br>
                                 $reservationFor.startDate$
                             </td>
                             <td name="reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice:10">
@@ -284,6 +284,11 @@
                                 <a href="javascript:void(0)" class="editAdditionalTicketText" data-id="$id$">
                                     <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                 </a></td>
+                            <td name="id__showSubReservation">
+                                <a href="javascript:void(0)" class="showSubReservation" data-id="$id$">
+                                    <span>表示</span>
+                                </a>
+                            </td>
                             <td name="checkedInText">
                                 <i class="material-icons" style="font-size: 1.2em;">$checkedInText$</i>
                             </td>

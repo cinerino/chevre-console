@@ -36,44 +36,17 @@ $(function () {
         showUnderName(id);
     });
 
+    $(document).on('click', '.showSubReservation', function (event) {
+        var id = $(this).attr('data-id');
+
+        showSubReservation(id);
+    });
+
     $(document).on('click', '.editAdditionalTicketText', function (event) {
         var id = $(this).attr('data-id');
 
         editAdditionalTicketText(id);
     });
-
-    function showUnderName(id) {
-        var reservation = $.CommonMasterList.getDatas().find(function (data) {
-            return data.id === id
-        });
-        if (reservation === undefined) {
-            alert('予約' + id + 'が見つかりません');
-
-            return;
-        }
-
-        var modal = $('#modal-reservation');
-        var title = 'Reservation `' + reservation.id + '` Under Name';
-
-        var underName = reservation.underName;
-        var body = $('<dl>');
-        if (underName !== undefined && underName !== null) {
-            body.append($('<dt>').text('typeOf'))
-                .append($('<dd>').html(underName.typeOf))
-                .append($('<dt>').text('id'))
-                .append($('<dd>').html(underName.id))
-                .append($('<dt>').text('name'))
-                .append($('<dd>').html(underName.name))
-                .append($('<dt>').text('email'))
-                .append($('<dd>').html(underName.email))
-                .append($('<dt>').text('telephone'))
-                .append($('<dd>').html(underName.telephone));
-        }
-
-        modal.find('.modal-title').html(title);
-        modal.find('.modal-body').html(body);
-        modal.modal();
-    }
 
     // キャンセルボタンイベント
     $(document).on('click', '.btn-cancel', function () {
@@ -105,10 +78,117 @@ $(function () {
     });
 });
 
-//--------------------------------
-// 検索API呼び出し
-//--------------------------------
+function showUnderName(id) {
+    var reservation = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (reservation === undefined) {
+        alert('予約' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-reservation');
+    var title = '予約 `' + reservation.id + '` チケットホルダー';
+
+    var underName = reservation.underName;
+    var body = $('<dl>').addClass('row');
+    if (underName !== undefined && underName !== null) {
+        body.append($('<dt>').addClass('col-md-3').append($('<span>').text('タイプ')))
+            .append($('<dd>').addClass('col-md-9').append(underName.typeOf))
+            .append($('<dt>').addClass('col-md-3').append($('<span>').text('ID')))
+            .append($('<dd>').addClass('col-md-9').append(underName.id))
+            .append($('<dt>').addClass('col-md-3').append($('<span>').text('名称')))
+            .append($('<dd>').addClass('col-md-9').append(underName.name))
+            .append($('<dt>').addClass('col-md-3').append($('<span>').text('メールアドレス')))
+            .append($('<dd>').addClass('col-md-9').append(underName.email))
+            .append($('<dt>').addClass('col-md-3').append($('<span>').text('電話番号')))
+            .append($('<dd>').addClass('col-md-9').append(underName.telephone));
+    }
+
+    if (Array.isArray(underName.identifier)) {
+        var thead = $('<thead>').addClass('text-primary');
+        var tbody = $('<tbody>');
+        thead.append([
+            $('<tr>').append([
+                $('<th>').text('Name'),
+                $('<th>').text('Value')
+            ])
+        ]);
+        tbody.append(underName.identifier.map(function (property) {
+            return $('<tr>').append([
+                $('<td>').text(property.name),
+                $('<td>').text(property.value)
+            ]);
+        }));
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+        body.append($('<dt>').addClass('col-md-3').append($('<span>').text('識別子')))
+            .append($('<dd>').addClass('col-md-9').html(table));
+    } else {
+        body.append($('<dt>').addClass('col-md-3').append($('<h6>').text('識別子')))
+            .append($('<dd>').addClass('col-md-9').text('なし'));
+    }
+
+    modal.find('.modal-title').html(title);
+    modal.find('.modal-body').html(body);
+    modal.modal();
+}
+
+function showSubReservation(id) {
+    var reservation = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (reservation === undefined) {
+        alert('予約' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-reservation');
+    var title = '予約 `' + reservation.id + '` サブ予約';
+
+    var body = $('<div>');
+
+    if (Array.isArray(reservation.subReservation)) {
+        var thead = $('<thead>').addClass('text-primary');
+        var tbody = $('<tbody>');
+        thead.append([
+            $('<tr>').append([
+                $('<th>').text('セクションコード'),
+                $('<th>').text('座席コード')
+            ])
+        ]);
+        tbody.append(reservation.subReservation.map(function (property) {
+            return $('<tr>').append([
+                $('<td>').text(property.reservedTicket.ticketedSeat.seatSection),
+                $('<td>').text(property.reservedTicket.ticketedSeat.seatNumber)
+            ]);
+        }));
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+        body.append(table);
+    } else {
+        body.append($('<p>').text('なし'));
+    }
+
+    modal.find('.modal-title').html(title);
+    modal.find('.modal-body').html(body);
+    modal.modal();
+}
+
+function initializeView() {
+    $('.btn-cancel').addClass('disabled');
+
+    $('input[name="selectedReservations"]:checked').prop('checked', false);
+}
+
+/**
+ * 予約検索
+ */
 function search(pageNumber) {
+    initializeView();
+
     conditions['page'] = pageNumber;
     var url = '/reservations/search';
     $.ajax({
@@ -131,7 +211,7 @@ function search(pageNumber) {
             }
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert("fail");
+        alert(error);
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
@@ -196,7 +276,7 @@ function cancelReservations() {
             $('input[name="selectedReservations"]:checked').prop('checked', false);
             search(1);
         }).fail(function (jqxhr, textStatus, error) {
-            alert("fail");
+            alert(error);
         }).always(function (data) {
             $('#loadingModal').modal('hide');
         });
@@ -214,7 +294,7 @@ function editAdditionalTicketText(id) {
     }
 
     var modal = $('#modal-edit');
-    var title = '予約 `' + reservation.id + '` の追加テキスト';
+    var title = '予約 `' + reservation.id + '` 追加テキスト';
 
     var body = $('<form>').addClass('edit');
     body.append(
