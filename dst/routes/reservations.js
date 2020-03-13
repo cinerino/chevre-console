@@ -48,7 +48,7 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
 reservationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
@@ -60,6 +60,9 @@ reservationsRouter.get('/search',
             sort: { modifiedTime: chevre.factory.sortType.Descending },
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.reservationType.EventReservation,
+            additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
+                ? req.query.additionalTicketText
+                : undefined,
             reservationNumbers: (req.query.reservationNumber !== undefined
                 && req.query.reservationNumber !== '')
                 ? [String(req.query.reservationNumber)]
@@ -84,6 +87,12 @@ reservationsRouter.get('/search',
                         ids: (typeof ((_c = (_b = (_a = req.query.reservationFor) === null || _a === void 0 ? void 0 : _a.superEvent) === null || _b === void 0 ? void 0 : _b.location) === null || _c === void 0 ? void 0 : _c.id) === 'string'
                             && ((_f = (_e = (_d = req.query.reservationFor) === null || _d === void 0 ? void 0 : _d.superEvent) === null || _e === void 0 ? void 0 : _e.location) === null || _f === void 0 ? void 0 : _f.id.length) > 0)
                             ? [(_j = (_h = (_g = req.query.reservationFor) === null || _g === void 0 ? void 0 : _g.superEvent) === null || _h === void 0 ? void 0 : _h.location) === null || _j === void 0 ? void 0 : _j.id]
+                            : undefined
+                    },
+                    workPerformed: {
+                        identifiers: (typeof ((_m = (_l = (_k = req.query.reservationFor) === null || _k === void 0 ? void 0 : _k.superEvent) === null || _l === void 0 ? void 0 : _l.workPerformed) === null || _m === void 0 ? void 0 : _m.identifier) === 'string'
+                            && ((_q = (_p = (_o = req.query.reservationFor) === null || _o === void 0 ? void 0 : _o.superEvent) === null || _p === void 0 ? void 0 : _p.workPerformed) === null || _q === void 0 ? void 0 : _q.identifier.length) > 0)
+                            ? [(_t = (_s = (_r = req.query.reservationFor) === null || _r === void 0 ? void 0 : _r.superEvent) === null || _s === void 0 ? void 0 : _s.workPerformed) === null || _t === void 0 ? void 0 : _t.identifier]
                             : undefined
                     }
                 },
@@ -267,7 +276,6 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        console.log('updating reservation...', req.body);
         yield reservationService.update({
             id: req.params.id,
             update: Object.assign({}, (typeof req.body.additionalTicketText === 'string')

@@ -62,6 +62,9 @@ reservationsRouter.get(
                 sort: { modifiedTime: chevre.factory.sortType.Descending },
                 project: { ids: [req.project.id] },
                 typeOf: chevre.factory.reservationType.EventReservation,
+                additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
+                    ? req.query.additionalTicketText
+                    : undefined,
                 reservationNumbers: (req.query.reservationNumber !== undefined
                     && req.query.reservationNumber !== '')
                     ? [String(req.query.reservationNumber)]
@@ -86,6 +89,12 @@ reservationsRouter.get(
                             ids: (typeof req.query.reservationFor?.superEvent?.location?.id === 'string'
                                 && req.query.reservationFor?.superEvent?.location?.id.length > 0)
                                 ? [req.query.reservationFor?.superEvent?.location?.id]
+                                : undefined
+                        },
+                        workPerformed: {
+                            identifiers: (typeof req.query.reservationFor?.superEvent?.workPerformed?.identifier === 'string'
+                                && req.query.reservationFor?.superEvent?.workPerformed?.identifier.length > 0)
+                                ? [req.query.reservationFor?.superEvent?.workPerformed?.identifier]
                                 : undefined
                         }
                     },
