@@ -287,4 +287,33 @@ reservationsRouter.post(
     }
 );
 
+reservationsRouter.patch(
+    '/:id',
+    async (req, res) => {
+        try {
+            const reservationService = new chevre.service.Reservation({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            await reservationService.update({
+                id: req.params.id,
+                update: {
+                    ...(typeof req.body.additionalTicketText === 'string')
+                        ? { additionalTicketText: req.body.additionalTicketText }
+                        : undefined
+                }
+            });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
+        }
+    }
+);
+
 export default reservationsRouter;

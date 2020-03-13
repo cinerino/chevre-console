@@ -9,7 +9,7 @@ $(function () {
     })
 
     //Enter押下で検索
-    $('form').on('keydown', function () {
+    $('form.search').on('keydown', function () {
         if (window.event.keyCode == 13) $('.btn-ok').click();
     });
 
@@ -22,7 +22,7 @@ $(function () {
     // 検索ボタンイベント
     $(document).on('click', '.btn-ok', function () {
         // 検索条件取得
-        conditions = $.fn.getDataFromForm('form');
+        conditions = $.fn.getDataFromForm('form.search');
         // 検索API呼び出し
         search(1);
     });
@@ -97,6 +97,11 @@ $(function () {
         } else {
             $('.btn-cancel').addClass('disabled');
         }
+    });
+
+    // 更新ボタンイベント
+    $(document).on('click', '#modal-edit .btn-update', function () {
+        update();
     });
 });
 
@@ -208,10 +213,10 @@ function editAdditionalTicketText(id) {
         return;
     }
 
-    var modal = $('#modal-reservation');
-    var title = '予約 `' + reservation.id + '` の追加テキストを編集する';
+    var modal = $('#modal-edit');
+    var title = '予約 `' + reservation.id + '` の追加テキスト';
 
-    var body = $('<div>');
+    var body = $('<form>').addClass('edit');
     body.append(
         $('<input>')
             .attr({
@@ -232,4 +237,44 @@ function editAdditionalTicketText(id) {
     modal.find('.modal-title').html(title);
     modal.find('.modal-body').html(body);
     modal.modal();
+}
+
+function update() {
+    var modal = $('#modal-edit');
+
+    var id = $('input[name="id"]', modal).val();
+
+    console.log('updating...', id, $('form.edit').serialize());
+
+    var url = '/reservations/' + id;
+    $.ajax({
+        dataType: 'json',
+        url: url,
+        cache: false,
+        type: 'PATCH',
+        data: $('form.edit').serialize(),
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    })
+        .done(function (data) {
+            alert('変更しました');
+            modal.modal('hide');
+            search(1);
+        })
+        .fail(function (xhr, textStatus, error) {
+            var message = error;
+            try {
+                var res = xhr.responseJSON;
+                if (typeof res.message === 'string') {
+                    message = res.message;
+                }
+            } catch (e) {
+            }
+
+            alert('変更できませんでした: ' + message);
+        })
+        .always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
 }

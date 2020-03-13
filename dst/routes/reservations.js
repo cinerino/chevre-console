@@ -261,4 +261,27 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
 }));
+reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        console.log('updating reservation...', req.body);
+        yield reservationService.update({
+            id: req.params.id,
+            update: Object.assign({}, (typeof req.body.additionalTicketText === 'string')
+                ? { additionalTicketText: req.body.additionalTicketText }
+                : undefined)
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
+        });
+    }
+}));
 exports.default = reservationsRouter;
