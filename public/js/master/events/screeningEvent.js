@@ -879,7 +879,9 @@ function createScheduler() {
                     date: $('.search input[name=date]').val(),
                     format: $('.search select[name=format]').val(),
                     screen: ($('.search select[name=screen]').val() === '') ? undefined : $('.search select[name=screen]').val(),
-                    onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val()
+                    onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val(),
+                    offersAvailable: $('.search input[name="offersAvailable"]:checked').val(),
+                    offersValid: $('.search input[name="offersValid"]:checked').val()
                 };
             },
             /**

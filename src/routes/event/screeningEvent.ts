@@ -18,7 +18,7 @@ screeningEventRouter.get('', ScreeningEventController.index);
 
 screeningEventRouter.get(
     '/search',
-    // tslint:disable-next-line:max-func-body-length
+    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
         const eventService = new chevre.service.Event({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -35,6 +35,7 @@ screeningEventRouter.get(
 
         try {
             debug('searching...query:', req.query);
+            const now = new Date();
             const format = req.query.format;
             const date = req.query.date;
             const locationId = req.query.theater;
@@ -57,6 +58,10 @@ screeningEventRouter.get(
                         location: { id: { $eq: locationId } }
                     },
                     offers: {
+                        availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
+                        availableThrough: (req.query.offersAvailable === '1') ? now : undefined,
+                        validFrom: (req.query.offersValid === '1') ? now : undefined,
+                        validThrough: (req.query.offersValid === '1') ? now : undefined,
                         itemOffered: {
                             serviceOutput: {
                                 reservedTicket: {
@@ -127,6 +132,10 @@ screeningEventRouter.get(
                             location: { id: { $eq: locationId } }
                         },
                         offers: {
+                            availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
+                            availableThrough: (req.query.offersAvailable === '1') ? now : undefined,
+                            validFrom: (req.query.offersValid === '1') ? now : undefined,
+                            validThrough: (req.query.offersValid === '1') ? now : undefined,
                             itemOffered: {
                                 serviceOutput: {
                                     reservedTicket: {
