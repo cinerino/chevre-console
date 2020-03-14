@@ -1097,6 +1097,15 @@ function changeInputType() {
 }
 
 function showOffers(id) {
+    var event = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (event === undefined) {
+        alert('イベント' + id + 'が見つかりません');
+
+        return;
+    }
+
     $.ajax({
         dataType: 'json',
         url: '/events/screeningEvent/' + id + '/offers',
@@ -1112,24 +1121,42 @@ function showOffers(id) {
         var thead = $('<thead>').addClass('text-primary')
             .append([
                 $('<tr>').append([
-                    $('<th>').text('ID'),
+                    $('<th>').text('コード'),
                     $('<th>').text('名称')
                 ])
             ]);
         var tbody = $('<tbody>')
             .append(data.map(function (result) {
-                var url = '/ticketTypes/' + result.id + '/update';
+                var url = '/offers/' + result.id + '/update';
 
                 return $('<tr>').append([
-                    $('<td>').html('<a target="_blank" href="' + url + '">' + result.id + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
+                    $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
                     $('<td>').text(result.name.ja)
                 ]);
             }))
         var table = $('<table>').addClass('table table-sm')
             .append([thead, tbody]);
 
-        var div = $('<div>').addClass('table-responsive')
-            .append(table);
+        var availability = $('<dl>').addClass('row')
+            .append($('<dt>').addClass('col-md-3').append('表示期間'))
+            .append($('<dd>').addClass('col-md-9').append(
+                moment(event.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+                + ' - '
+                + moment(event.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+            ));
+
+        var validity = $('<dl>').addClass('row')
+            .append($('<dt>').addClass('col-md-3').append('販売期間'))
+            .append($('<dd>').addClass('col-md-9').append(
+                moment(event.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+                + ' - '
+                + moment(event.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+            ));
+
+        var div = $('<div>')
+            .append(availability)
+            .append(validity)
+            .append($('<div>').addClass('table-responsive').append(table));
 
         modal.find('.modal-title').text('イベントオファー');
         modal.find('.modal-body').html(div);

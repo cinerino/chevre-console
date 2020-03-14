@@ -112,7 +112,7 @@ offersRouter.all('/add',
 offersRouter.all('/:id/update', 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _b, _c;
     let message = '';
     let errors = {};
     const itemOfferedTypeOf = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf;
@@ -137,6 +137,10 @@ offersRouter.all('/:id/update',
     });
     try {
         let offer = yield offerService.findById({ id: req.params.id });
+        if (((_c = offer.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
+            res.redirect(`/ticketTypes/${req.params.id}/update`);
+            return;
+        }
         if (req.method === 'POST') {
             // 検証
             validate(req);
@@ -235,7 +239,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e;
+    var _d, _e, _f;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -260,8 +264,8 @@ offersRouter.get('/getlist',
             project: { id: { $eq: req.project.id } },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === 'string' && ((_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf.length) > 0)
-                        ? (_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf : undefined
+                    $eq: (typeof ((_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === 'string' && ((_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf.length) > 0)
+                        ? (_f = req.query.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf : undefined
                 }
             },
             identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,

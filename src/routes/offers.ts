@@ -159,6 +159,12 @@ offersRouter.all(
         try {
             let offer = await offerService.findById({ id: req.params.id });
 
+            if (offer.itemOffered?.typeOf === ProductType.EventService) {
+                res.redirect(`/ticketTypes/${req.params.id}/update`);
+
+                return;
+            }
+
             if (req.method === 'POST') {
                 // 検証
                 validate(req);
