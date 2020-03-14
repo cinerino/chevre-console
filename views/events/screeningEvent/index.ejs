@@ -112,6 +112,7 @@ Aa-4
                                     <th>キャパシティ</th>
                                     <th>発券</th>
                                     <th>入場</th>
+                                    <th>オファーカタログ</th>
                                     <th>オファー</th>
                                     <th>追加特性</th>
                                 </tr>
@@ -124,7 +125,7 @@ Aa-4
                                             <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
-                                    <td name="workPerformed.id__workPerformed.identifier__workPerformed.name|slice">
+                                    <td name="workPerformed.id__workPerformed.name|slice">
                                         <a target="_blank"
                                             href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
@@ -138,6 +139,12 @@ Aa-4
                                         $remainingAttendeeCapacity$ / $maximumAttendeeCapacity$</td>
                                     <td name="checkInCount">$checkInCount$</td>
                                     <td name="attendeeCount">$attendeeCount$</td>
+                                    <td name="offers.id__offers.id">
+                                        <a href="/offerCatalogs/$offers.id$/update" target="_blank">
+                                            $offers.id$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
                                     <td name="id__offers">
                                         <a href="javascript:void(0)" class="showOffers" data-id="$id$">
                                             <span>表示</span>
