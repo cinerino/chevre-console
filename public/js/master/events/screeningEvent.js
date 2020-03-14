@@ -141,9 +141,14 @@ $(function () {
 
     $(document).on('click', '.showOffers', function (event) {
         var id = $(this).attr('data-id');
-        console.log('showing offers...id:', id);
 
         showOffers(id);
+    });
+
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var id = $(this).attr('data-id');
+
+        showAdditionalProperty(id);
     });
 
     $(document).on('click', '.editPerformance', function (event) {
@@ -1102,7 +1107,6 @@ function showOffers(id) {
             $('#loadingModal').modal({ backdrop: 'static' });
         }
     }).done(function (data) {
-        console.log(data);
         var modal = $('#modal-event');
 
         var thead = $('<thead>').addClass('text-primary')
@@ -1135,6 +1139,50 @@ function showOffers(id) {
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
+}
+
+/**
+ * 追加特性を見る
+ */
+function showAdditionalProperty(id) {
+    var event = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (event === undefined) {
+        alert('イベント' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-event');
+    var div = $('<div>')
+
+    if (Array.isArray(event.additionalProperty)) {
+        var thead = $('<thead>').addClass('text-primary');
+        var tbody = $('<tbody>');
+        thead.append([
+            $('<tr>').append([
+                $('<th>').text('Name'),
+                $('<th>').text('Value')
+            ])
+        ]);
+        tbody.append(event.additionalProperty.map(function (property) {
+            return $('<tr>').append([
+                $('<td>').text(property.name),
+                $('<td>').text(property.value)
+            ]);
+        }));
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+        div.addClass('table-responsive')
+            .append(table);
+    } else {
+        div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+    }
+
+    modal.find('.modal-title').text('追加特性');
+    modal.find('.modal-body').html(div);
+    modal.modal();
 }
 
 function editPerformance(id) {

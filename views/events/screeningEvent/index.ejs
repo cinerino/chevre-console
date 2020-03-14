@@ -105,11 +105,13 @@ Aa-4
                             <thead class="text-primary">
                                 <tr>
                                     <th>ID</th>
-                                    <th>スクリーン</th>
                                     <th>作品</th>
-                                    <th class="text-left">名称</th>
+                                    <th>場所</th>
                                     <th>開始</th>
                                     <th>終了</th>
+                                    <th>キャパシティ</th>
+                                    <th>発券</th>
+                                    <th>入場</th>
                                     <th>オファー</th>
                                     <th>追加特性</th>
                                 </tr>
@@ -122,17 +124,20 @@ Aa-4
                                             <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
-                                    <td name="location.name.ja|slice">
-                                        $location.name.ja$
-                                    </td>
                                     <td name="workPerformed.id__workPerformed.identifier__workPerformed.name|slice">
                                         <a target="_blank"
                                             href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
-                                    <td name="name.ja|slice">$name.ja$</td>
-                                    <td name="startDate|date:YY/MM/DD HH:mm:ss">$startDate$</td>
-                                    <td name="endDate|date:YY/MM/DD HH:mm:ss">$endDate$</td>
+                                    <td name="location.name.ja|slice">
+                                        $location.name.ja$
+                                    </td>
+                                    <td name="startDate|date:YY/MM/DD HH:mm">$startDate$</td>
+                                    <td name="endDate|date:YY/MM/DD HH:mm">$endDate$</td>
+                                    <td name="remainingAttendeeCapacity__maximumAttendeeCapacity">
+                                        $remainingAttendeeCapacity$ / $maximumAttendeeCapacity$</td>
+                                    <td name="checkInCount">$checkInCount$</td>
+                                    <td name="attendeeCount">$attendeeCount$</td>
                                     <td name="id__offers">
                                         <a href="javascript:void(0)" class="showOffers" data-id="$id$">
                                             <span>表示</span>
