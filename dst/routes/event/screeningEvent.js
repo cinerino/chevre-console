@@ -25,6 +25,7 @@ screeningEventRouter.get('', ScreeningEventController.index);
 screeningEventRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -43,6 +44,7 @@ screeningEventRouter.get('/search',
         const format = req.query.format;
         const date = req.query.date;
         const locationId = req.query.theater;
+        const superEventWorkPerformedIdentifierEq = (_b = (_a = req.query.superEvent) === null || _a === void 0 ? void 0 : _a.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier;
         if (format === 'table') {
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
@@ -50,7 +52,11 @@ screeningEventRouter.get('/search',
                     .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate(), superEvent: {
-                    location: { id: { $eq: locationId } }
+                    location: { id: { $eq: locationId } },
+                    workPerformedIdentifiers: (typeof superEventWorkPerformedIdentifierEq === 'string'
+                        && superEventWorkPerformedIdentifierEq.length > 0)
+                        ? [superEventWorkPerformedIdentifierEq]
+                        : undefined
                 }, offers: {
                     availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
                     availableThrough: (req.query.offersAvailable === '1') ? now : undefined,
@@ -111,7 +117,11 @@ screeningEventRouter.get('/search',
                         .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                         .add(days, 'day')
                         .toDate(), superEvent: {
-                        location: { id: { $eq: locationId } }
+                        location: { id: { $eq: locationId } },
+                        workPerformedIdentifiers: (typeof superEventWorkPerformedIdentifierEq === 'string'
+                            && superEventWorkPerformedIdentifierEq.length > 0)
+                            ? [superEventWorkPerformedIdentifierEq]
+                            : undefined
                     }, offers: {
                         availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
                         availableThrough: (req.query.offersAvailable === '1') ? now : undefined,

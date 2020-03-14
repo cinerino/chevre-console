@@ -39,6 +39,7 @@ screeningEventRouter.get(
             const format = req.query.format;
             const date = req.query.date;
             const locationId = req.query.theater;
+            const superEventWorkPerformedIdentifierEq = req.query.superEvent?.workPerformed?.identifier;
 
             if (format === 'table') {
                 const limit = Number(req.query.limit);
@@ -55,7 +56,11 @@ screeningEventRouter.get(
                         .add(1, 'day')
                         .toDate(),
                     superEvent: {
-                        location: { id: { $eq: locationId } }
+                        location: { id: { $eq: locationId } },
+                        workPerformedIdentifiers: (typeof superEventWorkPerformedIdentifierEq === 'string'
+                            && superEventWorkPerformedIdentifierEq.length > 0)
+                            ? [superEventWorkPerformedIdentifierEq]
+                            : undefined
                     },
                     offers: {
                         availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
@@ -129,7 +134,11 @@ screeningEventRouter.get(
                             .add(days, 'day')
                             .toDate(),
                         superEvent: {
-                            location: { id: { $eq: locationId } }
+                            location: { id: { $eq: locationId } },
+                            workPerformedIdentifiers: (typeof superEventWorkPerformedIdentifierEq === 'string'
+                                && superEventWorkPerformedIdentifierEq.length > 0)
+                                ? [superEventWorkPerformedIdentifierEq]
+                                : undefined
                         },
                         offers: {
                             availableFrom: (req.query.offersAvailable === '1') ? now : undefined,
