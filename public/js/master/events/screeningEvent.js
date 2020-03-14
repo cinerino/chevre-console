@@ -778,7 +778,7 @@ function add() {
     modal.find('input[name=onlineDisplayStartDateRelative]').val('');
     modal.find('input[name=onlineDisplayStartDateAbsolute]').datepicker('update', '');
     modal.find('input[name=onlineDisplayStartDate]').datepicker('update', '');
-    modal.find('input[name=onlineDisplayStartTime]').val('');
+    modal.find('input[name=onlineDisplayStartTime]').val('00:00');
     modal.find('input[name=maxSeatNumber]').val('');
 
     modal.find('input[name=screeningDateStart]').datepicker('update', new Date());
