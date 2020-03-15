@@ -381,7 +381,6 @@ function getTableData() {
 
 /**
  * 新規登録（確定）
- * @function register
  * @returns {void}
  */
 function regist() {
@@ -423,7 +422,6 @@ function regist() {
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
 
-    console.log({ theater, screen, startDate, toDate, screeningEventId, saleStartDate, saleStartTime, onlineDisplayStartDate });
     if (typeof theater !== 'string' || theater.length === 0
         || typeof screen !== 'string' || screen.length === 0
         || typeof startDate !== 'string' || startDate.length === 0
@@ -449,24 +447,6 @@ function regist() {
         || tableData.timeData.length === 0) {
         creatingSchedules = false;
         alert('時刻、券種グループを入力してください');
-        return;
-    }
-
-    if (theater === ''
-        || screen === null
-        || startDate === ''
-        || toDate === ''
-        || screeningEventId === null
-        || tableData.timeData.length === 0
-        || tableData.ticketData.length === 0
-        || weekDayData.length === 0
-        || saleStartDate === ''
-        || saleStartTime === ''
-        || onlineDisplayStartDate === ''
-        || onlineDisplayStartTime === ''
-    ) {
-        creatingSchedules = false;
-        alert('情報が足りません');
         return;
     }
 
@@ -553,13 +533,10 @@ function regist() {
             }
             searchSchedule();
 
-            creatingSchedules = false;
             return;
         }
 
         alert('登録に失敗しました');
-
-        creatingSchedules = false;
     }).fail(function (jqxhr, textStatus, error) {
         console.error(jqxhr, textStatus, error);
         if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
@@ -567,9 +544,8 @@ function regist() {
         } else {
             alert('登録に失敗しました');
         }
-
-        creatingSchedules = false;
     }).always(function () {
+        creatingSchedules = false;
         $('.regist-button').prop('disabled', false);
         $('.regist-button').text(originalButtonText);
     });
