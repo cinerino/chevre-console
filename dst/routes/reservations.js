@@ -58,15 +58,31 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
 reservationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const iamService = new cinerino.service.IAM({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchApplicationsResult = yield iamService.searchMembers({
+            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        });
+        const applications = searchApplicationsResult.data.map((d) => d.member);
         const underNameIdentifierIn = [];
         if (typeof req.query.application === 'string' && req.query.application.length > 0) {
             underNameIdentifierIn.push({ name: 'clientId', value: req.query.application });
+        }
+        let underNameIdEq;
+        if (typeof ((_a = req.query.underName) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = req.query.underName) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
+            underNameIdEq = (_c = req.query.underName) === null || _c === void 0 ? void 0 : _c.id;
+        }
+        if (typeof ((_d = req.query.admin) === null || _d === void 0 ? void 0 : _d.id) === 'string' && ((_e = req.query.admin) === null || _e === void 0 ? void 0 : _e.id.length) > 0) {
+            underNameIdEq = (_f = req.query.admin) === null || _f === void 0 ? void 0 : _f.id;
         }
         const searchConditions = {
             limit: req.query.limit,
@@ -98,15 +114,15 @@ reservationsRouter.get('/search',
                         ? [String(req.query.reservationFor.superEvent.id)]
                         : undefined,
                     location: {
-                        ids: (typeof ((_c = (_b = (_a = req.query.reservationFor) === null || _a === void 0 ? void 0 : _a.superEvent) === null || _b === void 0 ? void 0 : _b.location) === null || _c === void 0 ? void 0 : _c.id) === 'string'
-                            && ((_f = (_e = (_d = req.query.reservationFor) === null || _d === void 0 ? void 0 : _d.superEvent) === null || _e === void 0 ? void 0 : _e.location) === null || _f === void 0 ? void 0 : _f.id.length) > 0)
-                            ? [(_j = (_h = (_g = req.query.reservationFor) === null || _g === void 0 ? void 0 : _g.superEvent) === null || _h === void 0 ? void 0 : _h.location) === null || _j === void 0 ? void 0 : _j.id]
+                        ids: (typeof ((_j = (_h = (_g = req.query.reservationFor) === null || _g === void 0 ? void 0 : _g.superEvent) === null || _h === void 0 ? void 0 : _h.location) === null || _j === void 0 ? void 0 : _j.id) === 'string'
+                            && ((_m = (_l = (_k = req.query.reservationFor) === null || _k === void 0 ? void 0 : _k.superEvent) === null || _l === void 0 ? void 0 : _l.location) === null || _m === void 0 ? void 0 : _m.id.length) > 0)
+                            ? [(_q = (_p = (_o = req.query.reservationFor) === null || _o === void 0 ? void 0 : _o.superEvent) === null || _p === void 0 ? void 0 : _p.location) === null || _q === void 0 ? void 0 : _q.id]
                             : undefined
                     },
                     workPerformed: {
-                        identifiers: (typeof ((_m = (_l = (_k = req.query.reservationFor) === null || _k === void 0 ? void 0 : _k.superEvent) === null || _l === void 0 ? void 0 : _l.workPerformed) === null || _m === void 0 ? void 0 : _m.identifier) === 'string'
-                            && ((_q = (_p = (_o = req.query.reservationFor) === null || _o === void 0 ? void 0 : _o.superEvent) === null || _p === void 0 ? void 0 : _p.workPerformed) === null || _q === void 0 ? void 0 : _q.identifier.length) > 0)
-                            ? [(_t = (_s = (_r = req.query.reservationFor) === null || _r === void 0 ? void 0 : _r.superEvent) === null || _s === void 0 ? void 0 : _s.workPerformed) === null || _t === void 0 ? void 0 : _t.identifier]
+                        identifiers: (typeof ((_t = (_s = (_r = req.query.reservationFor) === null || _r === void 0 ? void 0 : _r.superEvent) === null || _s === void 0 ? void 0 : _s.workPerformed) === null || _t === void 0 ? void 0 : _t.identifier) === 'string'
+                            && ((_w = (_v = (_u = req.query.reservationFor) === null || _u === void 0 ? void 0 : _u.superEvent) === null || _v === void 0 ? void 0 : _v.workPerformed) === null || _w === void 0 ? void 0 : _w.identifier.length) > 0)
+                            ? [(_z = (_y = (_x = req.query.reservationFor) === null || _x === void 0 ? void 0 : _x.superEvent) === null || _y === void 0 ? void 0 : _y.workPerformed) === null || _z === void 0 ? void 0 : _z.identifier]
                             : undefined
                     }
                 },
@@ -170,10 +186,8 @@ reservationsRouter.get('/search',
                 }
             },
             underName: {
-                id: (req.query.underName !== undefined
-                    && req.query.underName.id !== undefined
-                    && req.query.underName.id !== '')
-                    ? req.query.underName.id
+                id: (typeof underNameIdEq === 'string')
+                    ? underNameIdEq
                     : undefined,
                 name: (req.query.underName !== undefined
                     && req.query.underName.name !== undefined
@@ -209,8 +223,14 @@ reservationsRouter.get('/search',
                 ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
                 : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
             results: data.map((t) => {
+                var _a, _b, _c;
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
+                let clientId;
+                if (Array.isArray((_a = t.underName) === null || _a === void 0 ? void 0 : _a.identifier)) {
+                    clientId = (_c = (_b = t.underName) === null || _b === void 0 ? void 0 : _b.identifier.find((i) => i.name === 'clientId')) === null || _c === void 0 ? void 0 : _c.value;
+                }
+                const application = applications.find((a) => a.id === clientId);
                 const reservationStatusType = reservationStatusType_1.reservationStatusTypes.find((r) => t.reservationStatus === r.codeValue);
                 // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
                 //     (c) => t.reservedTicket !== undefined
@@ -218,7 +238,7 @@ reservationsRouter.get('/search',
                 //         && t.reservedTicket.ticketType.category !== undefined
                 //         && c.codeValue === t.reservedTicket.ticketType.category.id
                 // );
-                return Object.assign(Object.assign({}, t), { reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, 
+                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, 
                     // ticketType: ticketTYpe,
                     unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
                         && t.reservedTicket !== null
@@ -241,6 +261,37 @@ reservationsRouter.get('/search',
             success: false,
             count: 0,
             results: []
+        });
+    }
+}));
+reservationsRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const iamService = new cinerino.service.IAM({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const limit = 100;
+        const page = 1;
+        const nameRegex = req.query.name;
+        const { data } = yield iamService.searchMembers({
+            limit: 10,
+            member: {
+                typeOf: { $eq: cinerino.factory.personType.Person },
+                name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
+            }
+        });
+        res.json({
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
+        });
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
         });
     }
 }));

@@ -67,9 +67,28 @@ reservationsRouter.get(
                 auth: req.user.authClient
             });
 
+            const iamService = new cinerino.service.IAM({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const searchApplicationsResult = await iamService.searchMembers({
+                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            });
+            const applications = searchApplicationsResult.data.map((d) => d.member);
+
             const underNameIdentifierIn: chevre.factory.propertyValue.IPropertyValue<string>[] = [];
             if (typeof req.query.application === 'string' && req.query.application.length > 0) {
                 underNameIdentifierIn.push({ name: 'clientId', value: req.query.application });
+            }
+
+            let underNameIdEq: string | undefined;
+            if (typeof req.query.underName?.id === 'string' && req.query.underName?.id.length > 0) {
+                underNameIdEq = req.query.underName?.id;
+            }
+            if (typeof req.query.admin?.id === 'string' && req.query.admin?.id.length > 0) {
+                underNameIdEq = req.query.admin?.id;
             }
 
             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
@@ -174,10 +193,8 @@ reservationsRouter.get(
                     }
                 },
                 underName: {
-                    id: (req.query.underName !== undefined
-                        && req.query.underName.id !== undefined
-                        && req.query.underName.id !== '')
-                        ? req.query.underName.id
+                    id: (typeof underNameIdEq === 'string')
+                        ? underNameIdEq
                         : undefined,
                     name: (req.query.underName !== undefined
                         && req.query.underName.name !== undefined
@@ -220,6 +237,12 @@ reservationsRouter.get(
                         (c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification
                     );
 
+                    let clientId: string | undefined;
+                    if (Array.isArray(t.underName?.identifier)) {
+                        clientId = t.underName?.identifier.find((i) => i.name === 'clientId')?.value;
+                    }
+                    const application = applications.find((a) => a.id === clientId);
+
                     const reservationStatusType = reservationStatusTypes.find((r) => t.reservationStatus === r.codeValue);
                     // const ticketTYpe = searchOfferCategoryTypesResult.data.find(
                     //     (c) => t.reservedTicket !== undefined
@@ -230,6 +253,7 @@ reservationsRouter.get(
 
                     return {
                         ...t,
+                        application: application,
                         reservationStatusTypeName: reservationStatusType?.name,
                         checkedInText: (t.checkedIn === true) ? 'done' : undefined,
                         attendedText: (t.attended === true) ? 'done' : undefined,
@@ -261,6 +285,43 @@ reservationsRouter.get(
                 count: 0,
                 results: []
             });
+        }
+    }
+);
+
+reservationsRouter.get(
+    '/searchAdmins',
+    async (req, res) => {
+        try {
+            const iamService = new cinerino.service.IAM({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const limit = 100;
+            const page = 1;
+            const nameRegex = req.query.name;
+
+            const { data } = await iamService.searchMembers({
+                limit: 10,
+                member: {
+                    typeOf: { $eq: cinerino.factory.personType.Person },
+                    name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
+                }
+            });
+
+            res.json({
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
+            });
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
         }
     }
 );
