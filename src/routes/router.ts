@@ -22,7 +22,6 @@ import priceSpecificationsRouter from './priceSpecifications';
 import productsRouter from './products';
 import reservationsRouter from './reservations';
 import servicesRouter from './services';
-import serviceTypesRouter from './serviceTypes';
 import ticketTypeMasterRouter from './ticketType';
 
 const router = express.Router();
@@ -64,7 +63,6 @@ router.use('/priceSpecifications', priceSpecificationsRouter);
 router.use('/products', productsRouter);
 router.use('/reservations', reservationsRouter);
 router.use('/services', servicesRouter);
-router.use('/serviceTypes', serviceTypesRouter);
 router.use('/ticketTypes', ticketTypeMasterRouter);
 
 export default router;
