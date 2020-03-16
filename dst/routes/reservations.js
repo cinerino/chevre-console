@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 予約ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerino = require("@cinerino/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -28,6 +29,11 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const iamService = new cinerino.service.IAM({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -37,12 +43,16 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         limit: 100,
         project: { ids: [req.project.id] }
     });
+    const searchApplicationsResult = yield iamService.searchMembers({
+        member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+    });
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
         reservationStatusTypes: reservationStatusType_1.reservationStatusTypes,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        movieTheaters: searchMovieTheatersResult.data
+        movieTheaters: searchMovieTheatersResult.data,
+        applications: searchApplicationsResult.data.map((d) => d.member)
     });
 }));
 reservationsRouter.get('/search', 
@@ -54,6 +64,10 @@ reservationsRouter.get('/search',
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const underNameIdentifierIn = [];
+        if (typeof req.query.application === 'string' && req.query.application.length > 0) {
+            underNameIdentifierIn.push({ name: 'clientId', value: req.query.application });
+        }
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
@@ -175,7 +189,10 @@ reservationsRouter.get('/search',
                     && req.query.underName.telephone !== undefined
                     && req.query.underName.telephone !== '')
                     ? req.query.underName.telephone
-                    : undefined
+                    : undefined,
+                identifier: {
+                    $in: (underNameIdentifierIn.length > 0) ? underNameIdentifierIn : undefined
+                }
             },
             attended: (req.query.attended === '1') ? true : undefined,
             checkedIn: (req.query.checkedIn === '1') ? true : undefined

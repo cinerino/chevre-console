@@ -2,6 +2,7 @@
  * 予約ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -24,6 +25,11 @@ reservationsRouter.get(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const iamService = new cinerino.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 100,
@@ -36,12 +42,17 @@ reservationsRouter.get(
             project: { ids: [req.project.id] }
         });
 
+        const searchApplicationsResult = await iamService.searchMembers({
+            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        });
+
         res.render('reservations/index', {
             message: '',
             reservationStatusType: chevre.factory.reservationStatusType,
             reservationStatusTypes: reservationStatusTypes,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            movieTheaters: searchMovieTheatersResult.data
+            movieTheaters: searchMovieTheatersResult.data,
+            applications: searchApplicationsResult.data.map((d) => d.member)
         });
     }
 );
@@ -55,6 +66,11 @@ reservationsRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+
+            const underNameIdentifierIn: chevre.factory.propertyValue.IPropertyValue<string>[] = [];
+            if (typeof req.query.application === 'string' && req.query.application.length > 0) {
+                underNameIdentifierIn.push({ name: 'clientId', value: req.query.application });
+            }
 
             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
                 limit: req.query.limit,
@@ -177,7 +193,10 @@ reservationsRouter.get(
                         && req.query.underName.telephone !== undefined
                         && req.query.underName.telephone !== '')
                         ? req.query.underName.telephone
-                        : undefined
+                        : undefined,
+                    identifier: {
+                        $in: (underNameIdentifierIn.length > 0) ? underNameIdentifierIn : undefined
+                    }
                 },
                 attended: (req.query.attended === '1') ? true : undefined,
                 checkedIn: (req.query.checkedIn === '1') ? true : undefined
