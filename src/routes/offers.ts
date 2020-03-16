@@ -302,6 +302,8 @@ offersRouter.get(
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
+            const identifierRegex = req.query.identifier;
+
             const searchConditions: chevre.factory.offer.ISearchConditions = {
                 limit: limit,
                 page: page,
@@ -314,7 +316,9 @@ offersRouter.get(
                             : undefined
                     }
                 },
-                identifier: (req.query.identifier !== '' && req.query.identifier !== undefined) ? req.query.identifier : undefined,
+                identifier: {
+                    $regex: (typeof identifierRegex === 'string' && identifierRegex.length > 0) ? identifierRegex : undefined
+                },
                 id: (typeof req.query.id === 'string' && req.query.id.length > 0) ? { $eq: req.query.id } : undefined,
                 name: (req.query.name !== undefined
                     && req.query.name !== '')
