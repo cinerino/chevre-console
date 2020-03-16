@@ -458,6 +458,11 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
         });
     }
 
+    const MAX_NUM_OFFER = 100;
+    if (itemListElement.length > MAX_NUM_OFFER) {
+        throw new Error(`オファー数の上限は${MAX_NUM_OFFER}です`);
+    }
+
     let serviceType: chevre.factory.serviceType.IServiceType | undefined;
     if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
         const categoryCodeService = new chevre.service.CategoryCode({
