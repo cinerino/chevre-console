@@ -309,26 +309,19 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
-        // switch (req.body.typeOf) {
-        //     case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
-        //         colName = '適用区分';
-        //         body('appliesToCategoryCode')
-        //             .notEmpty()
-        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
-        //         break;
-        //     case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
-        //         colName = '適用ムビチケ券種区分';
-        //         body('appliesToMovieTicketType')
-        //             .notEmpty()
-        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
-        //         colName = 'ムビチケ適用上映方式区分';
-        //         body('appliesToVideoFormat')
-        //             .notEmpty()
-        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
-        //         break;
-        //     default:
-        // }
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('appliesToCategoryCode')
+            .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification)
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
+        express_validator_1.body('appliesToMovieTicketType')
+            .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用ムビチケ券種区分')),
+        express_validator_1.body('appliesToVideoFormat')
+            .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ムビチケ適用上映方式区分'))
     ];
 }
 exports.default = priceSpecificationsRouter;

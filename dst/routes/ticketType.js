@@ -629,17 +629,19 @@ function validateFormAdd() {
             .notEmpty(),
         express_validator_1.body('accountsReceivable', Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
             .isNumeric()
-            .isLength({ max: CHAGE_MAX_LENGTH })
-        // body('eligibleMonetaryAmount.*.value')
-        //     .optional()
-        //     .isNumeric()
-        //     .withMessage('数値を入力してください')
-        //     .isLength({ max: 10 }),
-        // body('eligibleSubReservation.*.amountOfThisGood')
-        //     .optional()
-        //     .isNumeric()
-        //     .withMessage('数値を入力してください')
-        //     .isLength({ max: 10 })
+            .isLength({ max: CHAGE_MAX_LENGTH }),
+        express_validator_1.body('eligibleMonetaryAmount.*.value')
+            .optional()
+            .if((value) => typeof value === 'string' && value.length > 0)
+            .isNumeric()
+            .withMessage('数値を入力してください')
+            .isLength({ max: 10 }),
+        express_validator_1.body('eligibleSubReservation.*.amountOfThisGood')
+            .optional()
+            .if((value) => typeof value === 'string' && value.length > 0)
+            .isNumeric()
+            .withMessage('数値を入力してください')
+            .isLength({ max: 10 })
     ];
 }
 exports.default = ticketTypeMasterRouter;
