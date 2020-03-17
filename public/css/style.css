@@ -216,6 +216,9 @@ body {
 .select2 {
   margin-top: .4375rem; }
 
+.nav-pills.nav-pills-primary .nav-item .nav-link.active, .nav-pills.nav-pills-primary .nav-item .nav-link.active:focus, .nav-pills.nav-pills-primary .nav-item .nav-link.active:hover {
+  background-color: #9c27b0; }
+
 .scheduler {
   margin: 0 auto;
   overflow: auto;

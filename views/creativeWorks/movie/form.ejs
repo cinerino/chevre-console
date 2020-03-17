@@ -1,164 +1,170 @@
 <div class="card">
-    <div class="card-header card-header-primary card-header-text">
-        <div class="card-text">
-            <h4 class="card-title">基本設定</h4>
-        </div>
-    </div>
+    <div class="card-body ">
+        <ul class="nav nav-pills nav-pills-primary" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
+        </ul>
 
-    <div class="card-body">
-        <div class="form-group bmd-form-group">
-            <label for="identifier" class="bmd-label-static">
-                コード<span class="text-danger">＊</span>
-            </label>
-            <% if (isNew) { %>
-            <input type="text" class="form-control" name="identifier" id="identifier" placeholder="" maxlength=64
-                value="<%= forms.identifier %>">
-            <% } else { %>
-            <input type="text" disabled class="form-control" placeholder="" maxlength=64
-                value="<%= forms.identifier %>">
-            <input type="hidden" class="form-control" name="identifier" id="identifier" value="<%= forms.identifier %>">
-            <% } %>
-            <span class="bmd-help">半角64文字以内でご入力ください</span>
-            <span class="bmd-help text-danger d-block">
-                <% if (errors && errors.identifier) { %>
-                <%- errors.identifier.msg %>
-                <% } %>
-            </span>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group bmd-form-group col-md-6">
-                <label for="name" class="bmd-label-static">
-                    名称<span class="text-danger">＊</span>
-                </label>
-                <input class="form-control" name="name" id="name" placeholder="" maxlength=64 value="<%= forms.name %>">
-                <span class="bmd-help">全角64文字以内でご入力ください</span>
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.name) { %>
-                    <%- errors.name.msg %>
-                    <% } %>
-                </span>
-            </div>
-
-            <div class="form-group bmd-form-group col-md-6">
-                <label class="bmd-label-static" for="headline">
-                    サブタイトル
-                </label>
-                <input class="form-control" name="headline" id="headline" placeholder="" maxlength=64
-                    value="<%= forms.headline %>">
-                <span class="bmd-help">全角64文字以内でご入力ください</span>
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.headline) { %>
-                    <%- errors.headline.msg %>
-                    <% } %>
-                </span>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group bmd-form-group col-md-3">
-                <label for="duration" class="bmd-label-static">
-                    上映時間
-                </label>
-                <div class="input-group">
-                    <input class="form-control" name="duration" id="duration" placeholder="" maxlength=10
-                        value="<%= forms.duration %>">
-                    <div class="input-group-append">
-                        <span class="input-group-text">分</span>
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="identifier" class="bmd-label-static">
+                            コード<span class="text-danger">＊</span>
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+                            maxlength=64 value="<%= forms.identifier %>">
+                        <% } else { %>
+                        <input type="text" disabled class="form-control" placeholder="" maxlength=64
+                            value="<%= forms.identifier %>">
+                        <input type="hidden" class="form-control" name="identifier" id="identifier"
+                            value="<%= forms.identifier %>">
+                        <% } %>
+                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.identifier) { %>
+                            <%- errors.identifier.msg %>
+                            <% } %>
+                        </span>
                     </div>
                 </div>
-                <span class="bmd-help">半角10文字以内でご入力ください</span>
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.duration) { %>
-                    <%- errors.duration.msg %>
-                    <% } %>
-                </span>
-            </div>
 
-            <div class="form-group bmd-form-group col-md-3">
-                <label for="contentRating" class="bmd-label-static">
-                    レイティング
-                </label>
-                <select name="contentRating" id="contentRating" class="form-control">
-                    <option value="">なし</option>
-                    <% for (let rating of contentRatingTypes) { %>
-                    <option value="<%= rating.codeValue %>" <% if (forms.contentRating === rating.codeValue) { %>
-                        selected="selected" <% } %>>
-                        <%- rating.name.ja %>
-                    </option>
-                    <% } %>
-                </select>
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.contentRating) { %>
-                    <%- errors.contentRating.msg %>
-                    <% } %>
-                </span>
-            </div>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="name" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="name" id="name" placeholder="" maxlength=64
+                            value="<%= forms.name %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.name) { %>
+                            <%- errors.name.msg %>
+                            <% } %>
+                        </span>
+                    </div>
 
-            <div class="form-group bmd-form-group col-md-3">
-                <label for="distributor[codeValue]" class="bmd-label-static">
-                    配給
-                </label>
-                <select name="distributor[codeValue]" id="distributor[codeValue]" class="form-control">
-                    <option value="">---</option>
-                    <% for (let distributorType of distributorTypes) { %>
-                    <option value="<%= distributorType.codeValue %>"
-                        <% if (forms.distributor !== undefined && forms.distributor !== null && forms.distributor.codeValue === distributorType.codeValue) { %>
-                        selected="selected" <% } %>>
-                        <%- distributorType.name.ja %>
-                    </option>
-                    <% } %>
-                </select>
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.contentRating) { %>
-                    <%- errors.contentRating.msg %>
-                    <% } %>
-                </span>
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label class="bmd-label-static" for="headline">
+                            サブタイトル
+                        </label>
+                        <input class="form-control" name="headline" id="headline" placeholder="" maxlength=64
+                            value="<%= forms.headline %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.headline) { %>
+                            <%- errors.headline.msg %>
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="duration" class="bmd-label-static">
+                            上映時間
+                        </label>
+                        <div class="input-group">
+                            <input class="form-control" name="duration" id="duration" placeholder="" maxlength=10
+                                value="<%= forms.duration %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text">分</span>
+                            </div>
+                        </div>
+                        <span class="bmd-help">半角10文字以内でご入力ください</span>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.duration) { %>
+                            <%- errors.duration.msg %>
+                            <% } %>
+                        </span>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="contentRating" class="bmd-label-static">
+                            レイティング
+                        </label>
+                        <select name="contentRating" id="contentRating" class="form-control">
+                            <option value="">なし</option>
+                            <% for (let rating of contentRatingTypes) { %>
+                            <option value="<%= rating.codeValue %>"
+                                <% if (forms.contentRating === rating.codeValue) { %> selected="selected" <% } %>>
+                                <%- rating.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.contentRating) { %>
+                            <%- errors.contentRating.msg %>
+                            <% } %>
+                        </span>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="distributor[codeValue]" class="bmd-label-static">
+                            配給
+                        </label>
+                        <select name="distributor[codeValue]" id="distributor[codeValue]" class="form-control">
+                            <option value="">---</option>
+                            <% for (let distributorType of distributorTypes) { %>
+                            <option value="<%= distributorType.codeValue %>"
+                                <% if (forms.distributor !== undefined && forms.distributor !== null && forms.distributor.codeValue === distributorType.codeValue) { %>
+                                selected="selected" <% } %>>
+                                <%- distributorType.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.contentRating) { %>
+                            <%- errors.contentRating.msg %>
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label class="bmd-label-static" for="datePublished">
+                            公開日
+                        </label>
+                        <input class="form-control datepicker" name="datePublished" id="datePublished"
+                            value="<%= forms.datePublished %>">
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors.datePublished) { %>
+                            <%- errors.datePublished.msg %>
+                            <% } %>
+                        </span>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label class="bmd-label-static" for="offers[availabilityEnds]">
+                            興行終了予定日
+                        </label>
+                        <input class="form-control datepicker" name="offers[availabilityEnds]"
+                            id="offers[availabilityEnds]"
+                            value="<%= (forms.offers !== undefined) ? forms.offers.availabilityEnds : '' %>">
+                        <span class="bmd-help text-danger d-block">
+                            <% if (errors && errors['offers.availabilityEnds']) { %>
+                            <%- errors['offers.availabilityEnds'].msg %>
+                            <% } %>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
             </div>
         </div>
-
-        <div class="form-row">
-            <div class="form-group bmd-form-group col-md-6">
-                <label class="bmd-label-static" for="datePublished">
-                    公開日
-                </label>
-                <input class="form-control datepicker" name="datePublished" id="datePublished"
-                    value="<%= forms.datePublished %>">
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors.datePublished) { %>
-                    <%- errors.datePublished.msg %>
-                    <% } %>
-                </span>
-            </div>
-
-            <div class="form-group bmd-form-group col-md-6">
-                <label class="bmd-label-static" for="offers[availabilityEnds]">
-                    興行終了予定日
-                </label>
-                <input class="form-control datepicker" name="offers[availabilityEnds]" id="offers[availabilityEnds]"
-                    value="<%= (forms.offers !== undefined) ? forms.offers.availabilityEnds : '' %>">
-                <span class="bmd-help text-danger d-block">
-                    <% if (errors && errors['offers.availabilityEnds']) { %>
-                    <%- errors['offers.availabilityEnds'].msg %>
-                    <% } %>
-                </span>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end card -->
-
-<div class="card">
-    <div class="card-header card-header-primary card-header-text">
-        <div class="card-text">
-            <h4 class="card-title">追加特性</h4>
-        </div>
-    </div>
-    <div class="card-body">
-        <%- include('../../common/part/_additionalProperty', {
-            additionalProperty: forms.additionalProperty
-        }) %>
-
     </div>
 </div>
 <!-- end card -->
