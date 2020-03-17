@@ -1,136 +1,139 @@
 <div class="card">
-    <div class="card-header card-header-primary card-header-text">
-        <div class="card-text">
-            <h4 class="card-title">基本設定</h4>
-        </div>
-    </div>
-
     <div class="card-body">
-        <div class="form-group bmd-form-group">
-            <label for="branchCode" class="bmd-label-static">
-                枝番号<span class="text-danger">＊</span>
-            </label>
-            <% if (isNew) { %>
-            <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder="" maxlength="20"
-                value="<%= forms.branchCode %>">
-            <span class="bmd-help">半角20文字以内でご入力ください</span>
-            <% } else { %>
-            <input readonly type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
-                maxlength="20" value="<%= forms.branchCode %>">
-            <% } %>
-            <% if (errors && errors.branchCode) { %>
-            <p class="text-danger">
-                <%- errors.branchCode.msg %>
-            </p>
-            <% } %>
+        <ul class="nav nav-pills nav-pills-primary" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-group bmd-form-group">
+                    <label for="branchCode" class="bmd-label-static">
+                        枝番号<span class="text-danger">＊</span>
+                    </label>
+                    <% if (isNew) { %>
+                    <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                        maxlength="20" value="<%= forms.branchCode %>">
+                    <span class="bmd-help">半角20文字以内でご入力ください</span>
+                    <% } else { %>
+                    <input readonly type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                        maxlength="20" value="<%= forms.branchCode %>">
+                    <% } %>
+                    <% if (errors && errors.branchCode) { %>
+                    <p class="text-danger">
+                        <%- errors.branchCode.msg %>
+                    </p>
+                    <% } %>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="name[ja]" class="bmd-label-static">
+                        名称<span class="text-danger">＊</span>
+                    </label>
+                    <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength="64"
+                        value="<%= forms.name.ja %>">
+                    <span class="bmd-help">全角64文字以内でご入力ください</span>
+                    <% if (errors && errors['name.ja']) { %>
+                    <p class="text-danger">
+                        <%- errors['name.ja'].msg %>
+                    </p>
+                    <% } %>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="name[en]" class="bmd-label-static">
+                        英語名称
+                    </label>
+                    <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength="64"
+                        value="<%= forms.name.en %>">
+                    <span class="bmd-help">半角64文字以内でご入力ください</span>
+                    <% if (errors && errors['name.en']) { %>
+                    <p class="text-danger">
+                        <%- errors['name.en'].msg %>
+                    </p>
+                    <% } %>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="kanaName" class="bmd-label-static">
+                        カナ名称
+                    </label>
+                    <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength="64"
+                        value="<%= forms.kanaName %>">
+                    <span class="bmd-help">全角64文字以内でご入力ください</span>
+                    <% if (errors && errors.kanaName) { %>
+                    <p class="text-danger">
+                        <%- errors.kanaName.msg %>
+                    </p>
+                    <% } %>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="telephone" class="bmd-label-static">
+                        電話番号
+                    </label>
+                    <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
+                        value="<%= forms.telephone %>">
+                    <% if (errors && errors.telephone) { %>
+                    <p class="text-danger">
+                        <%- errors.telephone.msg %>
+                    </p>
+                    <% } %>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="containsPlaceStr" class="bmd-label-static">
+                        スクリーン
+                    </label>
+                    <textarea class="d-none" name="containsPlaceStr">
+                    <%-(!isNew) ? forms.containsPlaceStr : JSON.stringify([]) %>
+                    </textarea>
+                    <div class="json-editor" id="containsPlaceStr"></div>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="offersStr" class="bmd-label-static">
+                        オファー
+                    </label>
+                    <textarea class="d-none" name="offersStr">
+                    <%-(!isNew) ? forms.offersStr : JSON.stringify({
+                        "typeOf": "Offer",
+                        "eligibleQuantity": {
+                        "typeOf": "QuantitativeValue",
+                        "maxValue": 0,
+                        "unitCode": ""
+                        },
+                        "availabilityStartsGraceTime": {
+                        "typeOf": "QuantitativeValue",
+                        "value": 0,
+                        "unitCode": ""
+                        },
+                        "availabilityEndsGraceTime": {
+                        "typeOf": "QuantitativeValue",
+                        "value": 0,
+                        "unitCode": ""
+                        }
+                    }) %>
+                    </textarea>
+                    <div class="json-editor" id="offersStr"></div>
+                </div>
+
+            </div>
+            <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
+            </div>
         </div>
 
-        <div class="form-group bmd-form-group">
-            <label for="name[ja]" class="bmd-label-static">
-                名称<span class="text-danger">＊</span>
-            </label>
-            <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength="64"
-                value="<%= forms.name.ja %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <% if (errors && errors['name.ja']) { %>
-            <p class="text-danger">
-                <%- errors['name.ja'].msg %>
-            </p>
-            <% } %>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="name[en]" class="bmd-label-static">
-                英語名称
-            </label>
-            <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength="64"
-                value="<%= forms.name.en %>">
-            <span class="bmd-help">半角64文字以内でご入力ください</span>
-            <% if (errors && errors['name.en']) { %>
-            <p class="text-danger">
-                <%- errors['name.en'].msg %>
-            </p>
-            <% } %>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="kanaName" class="bmd-label-static">
-                カナ名称
-            </label>
-            <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength="64"
-                value="<%= forms.kanaName %>">
-            <span class="bmd-help">全角64文字以内でご入力ください</span>
-            <% if (errors && errors.kanaName) { %>
-            <p class="text-danger">
-                <%- errors.kanaName.msg %>
-            </p>
-            <% } %>
-        </div>
-
-        <div class="form-group bmd-form-group">
-            <label for="telephone" class="bmd-label-static">
-                電話番号
-            </label>
-            <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
-                value="<%= forms.telephone %>">
-            <% if (errors && errors.telephone) { %>
-            <p class="text-danger">
-                <%- errors.telephone.msg %>
-            </p>
-            <% } %>
-        </div>
-
-    </div>
-</div>
-<!-- end card -->
-
-<div class="form-group bmd-form-group">
-    <label for="containsPlaceStr" class="bmd-label-static">
-        スクリーン
-    </label>
-    <textarea class="d-none" name="containsPlaceStr">
-<%-(!isNew) ? forms.containsPlaceStr : JSON.stringify([]) %>
-</textarea>
-    <div class="json-editor" id="containsPlaceStr"></div>
-</div>
-
-<div class="form-group bmd-form-group">
-    <label for="offersStr" class="bmd-label-static">
-        オファー
-    </label>
-    <textarea class="d-none" name="offersStr">
-<%-(!isNew) ? forms.offersStr : JSON.stringify({
-    "typeOf": "Offer",
-    "eligibleQuantity": {
-      "typeOf": "QuantitativeValue",
-      "maxValue": 0,
-      "unitCode": ""
-    },
-    "availabilityStartsGraceTime": {
-      "typeOf": "QuantitativeValue",
-      "value": 0,
-      "unitCode": ""
-    },
-    "availabilityEndsGraceTime": {
-      "typeOf": "QuantitativeValue",
-      "value": 0,
-      "unitCode": ""
-    }
-  }) %>
-</textarea>
-    <div class="json-editor" id="offersStr"></div>
-</div>
-
-<div class="card">
-    <div class="card-header card-header-primary card-header-text">
-        <div class="card-text">
-            <h4 class="card-title">追加特性</h4>
-        </div>
-    </div>
-    <div class="card-body">
-        <%- include('../../common/part/_additionalProperty', {
-            additionalProperty: forms.additionalProperty
-        }) %>
     </div>
 </div>
 <!-- end card -->
