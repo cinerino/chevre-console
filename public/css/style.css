@@ -201,9 +201,6 @@ body {
 .card {
   margin-top: 0; }
 
-.card .card-body .form-group {
-  margin: 1rem 0 0; }
-
 .card .material-datatables {
   margin-top: 1rem; }
 
