@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 
 import * as Message from '../../message';
 
@@ -15,14 +16,14 @@ const movieTheaterRouter = Router();
 
 movieTheaterRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     debug(req.body);
@@ -145,6 +146,7 @@ movieTheaterRouter.get(
 
 movieTheaterRouter.all(
     '/:id/update',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -159,9 +161,8 @@ movieTheaterRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = req.params.id;
@@ -262,22 +263,20 @@ movieTheaterRouter.get(
 );
 
 function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieTheater.IPlace {
-    const body = req.body;
-
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlace = {
         project: req.project,
-        id: body.id,
+        id: req.body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
-        branchCode: body.branchCode,
-        name: body.name,
-        kanaName: body.kanaName,
-        offers: JSON.parse(body.offersStr),
-        containsPlace: JSON.parse(body.containsPlaceStr),
-        telephone: body.telephone,
+        branchCode: req.body.branchCode,
+        name: req.body.name,
+        kanaName: req.body.kanaName,
+        offers: JSON.parse(req.body.offersStr),
+        containsPlace: JSON.parse(req.body.containsPlaceStr),
+        telephone: req.body.telephone,
         screenCount: 0,
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
                     return {
                         name: String(p.name),
@@ -290,24 +289,22 @@ function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieThe
     return movieTheater;
 }
 
-function validate(req: Request): void {
-    let colName: string = '';
+function validate() {
+    return [
+        body('branchCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
 
-    colName = '枝番号';
-    req.checkBody('branchCode')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .matches(/^[0-9a-zA-Z]+$/)
-        .len({ max: 20 })
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 20));
-
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 64));
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64))
+    ];
 }
 
 export default movieTheaterRouter;

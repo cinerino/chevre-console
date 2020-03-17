@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
@@ -27,7 +28,7 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 // 金額
 const CHAGE_MAX_LENGTH = 10;
 const offersRouter = express_1.Router();
-offersRouter.all('/add', 
+offersRouter.all('/add', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -52,9 +53,8 @@ offersRouter.all('/add',
     });
     if (req.method === 'POST') {
         // 検証
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         // 検証
         if (validatorResult.isEmpty()) {
             // 登録プロセス
@@ -109,7 +109,7 @@ offersRouter.all('/add',
         productTypes: productType_1.productTypes
     });
 }));
-offersRouter.all('/:id/update', 
+offersRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c;
@@ -143,9 +143,8 @@ offersRouter.all('/:id/update',
         }
         if (req.method === 'POST') {
             // 検証
-            validate(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = express_validator_1.validationResult(req);
+            errors = validatorResult.mapped();
             // 検証
             if (validatorResult.isEmpty()) {
                 try {
@@ -345,18 +344,17 @@ offersRouter.get('/getlist',
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         let offerCategory;
-        if (typeof ((_a = body.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && ((_b = body.category) === null || _b === void 0 ? void 0 : _b.codeValue.length) > 0) {
+        if (typeof ((_a = req.body.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && ((_b = req.body.category) === null || _b === void 0 ? void 0 : _b.codeValue.length) > 0) {
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-                codeValue: { $eq: (_c = body.category) === null || _c === void 0 ? void 0 : _c.codeValue }
+                codeValue: { $eq: (_c = req.body.category) === null || _c === void 0 ? void 0 : _c.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
                 throw new Error('オファーカテゴリーが見つかりません');
@@ -364,23 +362,23 @@ function createFromBody(req, isNew) {
             offerCategory = searchOfferCategoryTypesResult.data[0];
         }
         const availability = chevre.factory.itemAvailability.InStock;
-        const referenceQuantityValue = Number(body.priceSpecification.referenceQuantity.value);
+        const referenceQuantityValue = Number(req.body.priceSpecification.referenceQuantity.value);
         const referenceQuantity = {
             typeOf: 'QuantitativeValue',
             value: referenceQuantityValue,
-            unitCode: body.priceSpecification.referenceQuantity.unitCode
+            unitCode: req.body.priceSpecification.referenceQuantity.unitCode
         };
-        const eligibleQuantityMinValue = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleQuantity !== undefined
-            && body.priceSpecification.eligibleQuantity.minValue !== undefined
-            && body.priceSpecification.eligibleQuantity.minValue !== '')
-            ? Number(body.priceSpecification.eligibleQuantity.minValue)
+        const eligibleQuantityMinValue = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleQuantity !== undefined
+            && req.body.priceSpecification.eligibleQuantity.minValue !== undefined
+            && req.body.priceSpecification.eligibleQuantity.minValue !== '')
+            ? Number(req.body.priceSpecification.eligibleQuantity.minValue)
             : undefined;
-        const eligibleQuantityMaxValue = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleQuantity !== undefined
-            && body.priceSpecification.eligibleQuantity.maxValue !== undefined
-            && body.priceSpecification.eligibleQuantity.maxValue !== '')
-            ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+        const eligibleQuantityMaxValue = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleQuantity !== undefined
+            && req.body.priceSpecification.eligibleQuantity.maxValue !== undefined
+            && req.body.priceSpecification.eligibleQuantity.maxValue !== '')
+            ? Number(req.body.priceSpecification.eligibleQuantity.maxValue)
             : undefined;
         const eligibleQuantity = (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
             ? {
@@ -390,11 +388,11 @@ function createFromBody(req, isNew) {
                 unitCode: chevre.factory.unitCode.C62
             }
             : undefined;
-        const eligibleTransactionVolumePrice = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleTransactionVolume !== undefined
-            && body.priceSpecification.eligibleTransactionVolume.price !== undefined
-            && body.priceSpecification.eligibleTransactionVolume.price !== '')
-            ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+        const eligibleTransactionVolumePrice = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume.price !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume.price !== '')
+            ? Number(req.body.priceSpecification.eligibleTransactionVolume.price)
             : undefined;
         // tslint:disable-next-line:max-line-length
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
@@ -409,20 +407,20 @@ function createFromBody(req, isNew) {
         const accounting = {
             typeOf: 'Accounting',
             operatingRevenue: undefined,
-            accountsReceivable: Number(body.priceSpecification.price) // とりあえず発生金額に同じ
+            accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
         };
-        if (body.accountTitle !== undefined && body.accountTitle !== '') {
+        if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
             accounting.operatingRevenue = {
                 typeOf: 'AccountTitle',
-                codeValue: body.accountTitle,
-                identifier: body.accountTitle,
+                codeValue: req.body.accountTitle,
+                identifier: req.body.accountTitle,
                 name: ''
             };
         }
         let nameFromJson = {};
-        if (typeof body.nameStr === 'string' && body.nameStr.length > 0) {
+        if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
             try {
-                nameFromJson = JSON.parse(body.nameStr);
+                nameFromJson = JSON.parse(req.body.nameStr);
             }
             catch (error) {
                 throw new Error(`高度な名称の型が不適切です ${error.message}`);
@@ -445,8 +443,8 @@ function createFromBody(req, isNew) {
         const priceSpec = {
             project: req.project,
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-            name: body.name,
-            price: Number(body.priceSpecification.price),
+            name: req.body.name,
+            price: Number(req.body.priceSpecification.price),
             priceCurrency: chevre.factory.priceCurrency.JPY,
             valueAddedTaxIncluded: true,
             referenceQuantity: referenceQuantity,
@@ -455,7 +453,7 @@ function createFromBody(req, isNew) {
             eligibleTransactionVolume: eligibleTransactionVolume
         };
         let itemOffered;
-        const itemOfferedTypeOf = (_d = body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
+        const itemOfferedTypeOf = (_d = req.body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
         switch (itemOfferedTypeOf) {
             case productType_1.ProductType.Product:
                 itemOffered = {
@@ -471,12 +469,12 @@ function createFromBody(req, isNew) {
                 };
                 break;
             default:
-                throw new Error(`${(_e = body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
+                throw new Error(`${(_e = req.body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
-            priceSpecification: priceSpec, additionalProperty: (Array.isArray(body.additionalProperty))
-                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            priceSpecification: priceSpec, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
                         name: String(p.name),
@@ -506,38 +504,34 @@ function createFromBody(req, isNew) {
             : undefined);
     });
 }
-function validate(req) {
-    let colName = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
-    colName = '代替名称';
-    req.checkBody('alternateName.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
-    colName = '適用数';
-    req.checkBody('priceSpecification.referenceQuantity.value')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.unitCode')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = '発生金額';
-    req.checkBody('priceSpecification.price')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .isNumeric()
-        .len({ max: CHAGE_MAX_LENGTH })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH));
+function validate() {
+    return [
+        express_validator_1.body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
+            .notEmpty(),
+        express_validator_1.body('identifier', Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_CODE }),
+        express_validator_1.body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE)),
+        express_validator_1.body('alternateName.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '代替名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('代替名称', NAME_MAX_LENGTH_NAME_JA)),
+        express_validator_1.body('priceSpecification.referenceQuantity.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用数')),
+        express_validator_1.body('priceSpecification.referenceQuantity.unitCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用単位')),
+        express_validator_1.body('priceSpecification.price')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '発生金額'))
+            .isNumeric()
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+    ];
 }
 exports.default = offersRouter;

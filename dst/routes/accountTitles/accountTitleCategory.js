@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
 // 作品コード 半角64
@@ -60,14 +61,13 @@ accountTitleCategoryRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
 }));
-accountTitleCategoryRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitleCategoryRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 const accountTitleCategory = createFromBody(req, true);
@@ -93,7 +93,7 @@ accountTitleCategoryRouter.all('/new', (req, res) => __awaiter(void 0, void 0, v
         forms: forms
     });
 }));
-accountTitleCategoryRouter.all('/:codeValue', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';
         let errors = {};
@@ -111,9 +111,8 @@ accountTitleCategoryRouter.all('/:codeValue', (req, res, next) => __awaiter(void
         }
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = express_validator_1.validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
@@ -148,18 +147,18 @@ function createFromBody(req, isNew) {
 /**
  * 科目分類検証
  */
-function validate(req) {
-    let colName = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
-    colName = '名称';
-    req.checkBody('name')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
+function validate() {
+    return [
+        express_validator_1.body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+        express_validator_1.body('name')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+    ];
 }
 exports.default = accountTitleCategoryRouter;

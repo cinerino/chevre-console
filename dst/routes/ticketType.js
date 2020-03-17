@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const _ = require("underscore");
@@ -30,7 +31,7 @@ const NAME_MAX_LENGTH_NAME_EN = 64;
 const CHAGE_MAX_LENGTH = 10;
 const ticketTypeMasterRouter = express_1.Router();
 // 券種登録
-ticketTypeMasterRouter.all('/add', 
+ticketTypeMasterRouter.all('/add', ...validateFormAdd(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
@@ -49,9 +50,8 @@ ticketTypeMasterRouter.all('/add',
     });
     if (req.method === 'POST') {
         // 検証
-        validateFormAdd(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         // 検証
         if (validatorResult.isEmpty()) {
             // DB登録プロセス
@@ -130,7 +130,7 @@ ticketTypeMasterRouter.all('/add',
     });
 }));
 // 券種編集
-ticketTypeMasterRouter.all('/:id/update', 
+ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
@@ -151,9 +151,9 @@ ticketTypeMasterRouter.all('/:id/update',
         let ticketType = yield offerService.findById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
-            validateFormAdd(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = express_validator_1.validationResult(req);
+            errors = validatorResult.mapped();
+            console.error(errors);
             // 検証
             if (validatorResult.isEmpty()) {
                 // 券種DB更新プロセス
@@ -328,7 +328,6 @@ function searchAllAccountTitles(req) {
 function createFromBody(req, isNew) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -338,12 +337,12 @@ function createFromBody(req, isNew) {
             auth: req.user.authClient
         });
         let offerCategory;
-        if (typeof body.category === 'string' && body.category.length > 0) {
+        if (typeof req.body.category === 'string' && req.body.category.length > 0) {
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-                codeValue: { $eq: body.category }
+                codeValue: { $eq: req.body.category }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
                 throw new Error('オファーカテゴリーが見つかりません');
@@ -351,7 +350,7 @@ function createFromBody(req, isNew) {
             offerCategory = searchOfferCategoryTypesResult.data[0];
         }
         const availableAddOn = [];
-        let addOnItemOfferedIds = (_b = (_a = body.addOn) === null || _a === void 0 ? void 0 : _a.itemOffered) === null || _b === void 0 ? void 0 : _b.id;
+        let addOnItemOfferedIds = (_b = (_a = req.body.addOn) === null || _a === void 0 ? void 0 : _a.itemOffered) === null || _b === void 0 ? void 0 : _b.id;
         if (typeof addOnItemOfferedIds === 'string') {
             addOnItemOfferedIds = [addOnItemOfferedIds];
         }
@@ -376,32 +375,32 @@ function createFromBody(req, isNew) {
             }
         }
         let availability = chevre.factory.itemAvailability.OutOfStock;
-        if (body.isBoxTicket === '1' && body.isOnlineTicket === '1') {
+        if (req.body.isBoxTicket === '1' && req.body.isOnlineTicket === '1') {
             availability = chevre.factory.itemAvailability.InStock;
         }
-        else if (body.isBoxTicket === '1') {
+        else if (req.body.isBoxTicket === '1') {
             availability = chevre.factory.itemAvailability.InStoreOnly;
         }
-        else if (body.isOnlineTicket === '1') {
+        else if (req.body.isOnlineTicket === '1') {
             availability = chevre.factory.itemAvailability.OnlineOnly;
         }
-        const referenceQuantityValue = Number(body.seatReservationUnit);
+        const referenceQuantityValue = Number(req.body.seatReservationUnit);
         const referenceQuantity = {
             typeOf: 'QuantitativeValue',
             value: referenceQuantityValue,
             unitCode: chevre.factory.unitCode.C62
         };
-        const eligibleQuantityMinValue = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleQuantity !== undefined
-            && body.priceSpecification.eligibleQuantity.minValue !== undefined
-            && body.priceSpecification.eligibleQuantity.minValue !== '')
-            ? Number(body.priceSpecification.eligibleQuantity.minValue)
+        const eligibleQuantityMinValue = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleQuantity !== undefined
+            && req.body.priceSpecification.eligibleQuantity.minValue !== undefined
+            && req.body.priceSpecification.eligibleQuantity.minValue !== '')
+            ? Number(req.body.priceSpecification.eligibleQuantity.minValue)
             : undefined;
-        const eligibleQuantityMaxValue = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleQuantity !== undefined
-            && body.priceSpecification.eligibleQuantity.maxValue !== undefined
-            && body.priceSpecification.eligibleQuantity.maxValue !== '')
-            ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+        const eligibleQuantityMaxValue = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleQuantity !== undefined
+            && req.body.priceSpecification.eligibleQuantity.maxValue !== undefined
+            && req.body.priceSpecification.eligibleQuantity.maxValue !== '')
+            ? Number(req.body.priceSpecification.eligibleQuantity.maxValue)
             : undefined;
         const eligibleQuantity = (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
             ? {
@@ -411,11 +410,11 @@ function createFromBody(req, isNew) {
                 unitCode: chevre.factory.unitCode.C62
             }
             : undefined;
-        const eligibleTransactionVolumePrice = (body.priceSpecification !== undefined
-            && body.priceSpecification.eligibleTransactionVolume !== undefined
-            && body.priceSpecification.eligibleTransactionVolume.price !== undefined
-            && body.priceSpecification.eligibleTransactionVolume.price !== '')
-            ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+        const eligibleTransactionVolumePrice = (req.body.priceSpecification !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume.price !== undefined
+            && req.body.priceSpecification.eligibleTransactionVolume.price !== '')
+            ? Number(req.body.priceSpecification.eligibleTransactionVolume.price)
             : undefined;
         // tslint:disable-next-line:max-line-length
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
@@ -427,8 +426,8 @@ function createFromBody(req, isNew) {
                 valueAddedTaxIncluded: true
             }
             : undefined;
-        const appliesToMovieTicketType = (typeof body.appliesToMovieTicketType === 'string' && body.appliesToMovieTicketType.length > 0)
-            ? body.appliesToMovieTicketType
+        const appliesToMovieTicketType = (typeof req.body.appliesToMovieTicketType === 'string' && req.body.appliesToMovieTicketType.length > 0)
+            ? req.body.appliesToMovieTicketType
             : undefined;
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
@@ -436,20 +435,20 @@ function createFromBody(req, isNew) {
         const accounting = {
             typeOf: 'Accounting',
             operatingRevenue: undefined,
-            accountsReceivable: Number(body.accountsReceivable) * referenceQuantityValue
+            accountsReceivable: Number(req.body.accountsReceivable) * referenceQuantityValue
         };
-        if (body.accountTitle !== undefined && body.accountTitle !== '') {
+        if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
             accounting.operatingRevenue = {
                 typeOf: 'AccountTitle',
-                codeValue: body.accountTitle,
-                identifier: body.accountTitle,
+                codeValue: req.body.accountTitle,
+                identifier: req.body.accountTitle,
                 name: ''
             };
         }
         let nameFromJson = {};
-        if (typeof body.nameStr === 'string' && body.nameStr.length > 0) {
+        if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
             try {
-                nameFromJson = JSON.parse(body.nameStr);
+                nameFromJson = JSON.parse(req.body.nameStr);
             }
             catch (error) {
                 throw new Error(`高度な名称の型が不適切です ${error.message}`);
@@ -457,17 +456,17 @@ function createFromBody(req, isNew) {
         }
         // 適用座席区分があれば設定
         let eligibleSeatingTypes;
-        if (Array.isArray(body.eligibleSeatingType) && body.eligibleSeatingType.length > 0
-            && typeof body.eligibleSeatingType[0].id === 'string' && body.eligibleSeatingType[0].id.length > 0) {
+        if (Array.isArray(req.body.eligibleSeatingType) && req.body.eligibleSeatingType.length > 0
+            && typeof req.body.eligibleSeatingType[0].id === 'string' && req.body.eligibleSeatingType[0].id.length > 0) {
             const searchSeatingTypeResult = yield categoryCodeService.search({
                 limit: 1,
-                id: { $eq: body.eligibleSeatingType[0].id },
+                id: { $eq: req.body.eligibleSeatingType[0].id },
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
             const seatingType = searchSeatingTypeResult.data.shift();
             if (seatingType === undefined) {
-                throw new Error(`Seating Type ${body.eligibleSeatingType[0].id} Not Found`);
+                throw new Error(`Seating Type ${req.body.eligibleSeatingType[0].id} Not Found`);
             }
             eligibleSeatingTypes = [{
                     project: seatingType.project,
@@ -479,51 +478,51 @@ function createFromBody(req, isNew) {
         }
         // 適用口座があれば設定
         let eligibleMonetaryAmount;
-        if (Array.isArray(body.eligibleMonetaryAmount) && body.eligibleMonetaryAmount.length > 0
-            && typeof body.eligibleMonetaryAmount[0].currency === 'string' && body.eligibleMonetaryAmount[0].currency.length > 0
-            && typeof body.eligibleMonetaryAmount[0].value === 'string' && body.eligibleMonetaryAmount[0].value.length > 0) {
+        if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
+            && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
+            && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
             eligibleMonetaryAmount = [{
                     typeOf: 'MonetaryAmount',
-                    currency: body.eligibleMonetaryAmount[0].currency,
-                    value: Number(body.eligibleMonetaryAmount[0].value)
+                    currency: req.body.eligibleMonetaryAmount[0].currency,
+                    value: Number(req.body.eligibleMonetaryAmount[0].value)
                 }];
         }
         // 適用サブ予約条件があれば設定
         let eligibleSubReservation;
-        if (Array.isArray(body.eligibleSubReservation) && body.eligibleSubReservation.length > 0
-            && typeof body.eligibleSubReservation[0].typeOfGood !== undefined
-            && typeof body.eligibleSubReservation[0].typeOfGood !== null
-            && typeof body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
-            && body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
-            && typeof body.eligibleSubReservation[0].amountOfThisGood === 'string'
-            && body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
+        if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
+            && typeof req.body.eligibleSubReservation[0].typeOfGood !== undefined
+            && typeof req.body.eligibleSubReservation[0].typeOfGood !== null
+            && typeof req.body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
+            && req.body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
+            && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
+            && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
             const searchSeatingTypeResult = yield categoryCodeService.search({
                 limit: 1,
-                id: { $eq: body.eligibleSubReservation[0].typeOfGood.seatingType },
+                id: { $eq: req.body.eligibleSubReservation[0].typeOfGood.seatingType },
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
             const seatingType = searchSeatingTypeResult.data.shift();
             if (seatingType === undefined) {
-                throw new Error(`Seating Type ${body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
+                throw new Error(`Seating Type ${req.body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
             }
             eligibleSubReservation = [{
                     typeOfGood: {
                         seatingType: seatingType.codeValue
                     },
-                    amountOfThisGood: Number(body.eligibleSubReservation[0].amountOfThisGood)
+                    amountOfThisGood: Number(req.body.eligibleSubReservation[0].amountOfThisGood)
                 }];
         }
         let validFrom;
-        if (typeof body.validFrom === 'string' && body.validFrom.length > 0) {
-            validFrom = moment(`${body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        if (typeof req.body.validFrom === 'string' && req.body.validFrom.length > 0) {
+            validFrom = moment(`${req.body.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate();
             // validFrom = moment(req.body.validFrom)
             //     .toDate();
         }
         let validThrough;
-        if (typeof body.validThrough === 'string' && body.validThrough.length > 0) {
-            validThrough = moment(`${body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        if (typeof req.body.validThrough === 'string' && req.body.validThrough.length > 0) {
+            validThrough = moment(`${req.body.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate();
             // validThrough = moment(req.body.validThrough)
             //     .toDate();
@@ -532,13 +531,13 @@ function createFromBody(req, isNew) {
             project: req.project,
             typeOf: productType_1.ProductType.EventService
         };
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: body.id, identifier: body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: body.name.ja, en: body.name.en }), description: body.description, alternateName: { ja: body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
                 project: req.project,
                 typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-                name: body.name,
-                price: Number(body.price) * referenceQuantityValue,
+                name: req.body.name,
+                price: Number(req.body.price) * referenceQuantityValue,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true,
                 eligibleQuantity: eligibleQuantity,
@@ -546,15 +545,15 @@ function createFromBody(req, isNew) {
                 referenceQuantity: referenceQuantity,
                 appliesToMovieTicketType: appliesToMovieTicketType,
                 accounting: accounting
-            }, addOn: availableAddOn, additionalProperty: (Array.isArray(body.additionalProperty))
-                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            }, addOn: availableAddOn, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
                         name: String(p.name),
                         value: String(p.value)
                     };
                 })
-                : undefined, color: body.indicatorColor }, (offerCategory !== undefined)
+                : undefined, color: req.body.indicatorColor }, (offerCategory !== undefined)
             ? {
                 category: {
                     project: offerCategory.project,
@@ -595,69 +594,52 @@ function createFromBody(req, isNew) {
 /**
  * 券種マスタ新規登録画面検証
  */
-function validateFormAdd(req) {
-    // コード
-    let colName = 'コード';
-    req.checkBody('identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // .isAlphanumeric()
-        .matches(/^[0-9a-zA-Z\-_]+$/)
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
-    // 名称
-    colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // 名称(英)
-    colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_EN))
-        .len({ max: NAME_MAX_LENGTH_NAME_EN });
-    colName = '代替名称';
-    req.checkBody('alternateName.ja', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('alternateName.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // 購入席単位追加
-    colName = '購入席単位追加';
-    req.checkBody('seatReservationUnit', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    colName = '発生金額';
-    req.checkBody('price', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('price', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
-        .isNumeric()
-        .len({ max: CHAGE_MAX_LENGTH });
-    colName = '売上金額';
-    req.checkBody('accountsReceivable', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('accountsReceivable', Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH))
-        .isNumeric()
-        .len({ max: CHAGE_MAX_LENGTH });
-    colName = '適用口座条件';
-    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
-        && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
-        req.checkBody('eligibleMonetaryAmount.0.value')
-            .optional()
+function validateFormAdd() {
+    return [
+        express_validator_1.body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            // .isAlphanumeric()
+            .matches(/^[0-9a-zA-Z\-_]+$/)
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+        // 名称
+        express_validator_1.body('name.ja', Message.Common.required.replace('$fieldName$', '名称'))
+            .notEmpty(),
+        express_validator_1.body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        // 名称(英)
+        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+            .notEmpty(),
+        express_validator_1.body('name.en', Message.Common.getMaxLength('名称(英)', NAME_MAX_LENGTH_NAME_EN))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_EN }),
+        express_validator_1.body('alternateName.ja', Message.Common.required.replace('$fieldName$', '代替名称'))
+            .notEmpty(),
+        express_validator_1.body('alternateName.ja', Message.Common.getMaxLength('代替名称', NAME_MAX_LENGTH_NAME_JA))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        // 購入席単位追加
+        express_validator_1.body('seatReservationUnit', Message.Common.required.replace('$fieldName$', '購入席単位追加'))
+            .notEmpty(),
+        express_validator_1.body('price', Message.Common.required.replace('$fieldName$', '発生金額'))
+            .notEmpty(),
+        express_validator_1.body('price', Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
             .isNumeric()
-            .withMessage('数値を入力してください')
-            .len({ max: 10 });
-    }
-    colName = '適用サブ予約条件';
-    if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
-        && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
-        && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
-        req.checkBody('eligibleSubReservation.0.amountOfThisGood')
-            .optional()
+            .isLength({ max: CHAGE_MAX_LENGTH }),
+        express_validator_1.body('accountsReceivable', Message.Common.required.replace('$fieldName$', '売上金額'))
+            .notEmpty(),
+        express_validator_1.body('accountsReceivable', Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
             .isNumeric()
-            .withMessage('数値を入力してください')
-            .len({ max: 10 });
-    }
-    // colName = '細目';
-    // req.checkBody('accountTitle', Message.Common.required.replace('$fieldName$', colName)).notEmpty();
+            .isLength({ max: CHAGE_MAX_LENGTH })
+        // body('eligibleMonetaryAmount.*.value')
+        //     .optional()
+        //     .isNumeric()
+        //     .withMessage('数値を入力してください')
+        //     .isLength({ max: 10 }),
+        // body('eligibleSubReservation.*.amountOfThisGood')
+        //     .optional()
+        //     .isNumeric()
+        //     .withMessage('数値を入力してください')
+        //     .isLength({ max: 10 })
+    ];
 }
 exports.default = ticketTypeMasterRouter;

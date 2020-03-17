@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const categoryCodesRouter = express_1.Router();
@@ -62,7 +63,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
 }));
-categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -71,9 +72,8 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 let categoryCode = createMovieFromBody(req);
@@ -106,7 +106,7 @@ categoryCodesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
-categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -118,9 +118,8 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -145,38 +144,35 @@ categoryCodesRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     });
 }));
 function createMovieFromBody(req) {
-    const body = req.body;
     return {
         project: req.project,
         typeOf: 'CategoryCode',
-        codeValue: body.codeValue,
+        codeValue: req.body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
-            identifier: body.inCodeSet.identifier
+            identifier: req.body.inCodeSet.identifier
         },
-        name: { ja: body.name.ja }
+        name: { ja: req.body.name.ja }
     };
 }
-function validate(req) {
-    let colName = '';
-    colName = '区分分類';
-    req.checkBody('inCodeSet.identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // .isAlphanumeric()
-        .matches(/^[0-9a-zA-Z\+]+$/)
-        .len({ max: 20 })
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 20));
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
+function validate() {
+    return [
+        express_validator_1.body('inCodeSet.identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '区分分類')),
+        express_validator_1.body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            // .isAlphanumeric()
+            .matches(/^[0-9a-zA-Z\+]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
+        express_validator_1.body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
+    ];
 }
 exports.default = categoryCodesRouter;

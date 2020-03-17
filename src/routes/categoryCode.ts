@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 
 import * as Message from '../message';
 
@@ -77,6 +78,7 @@ categoryCodesRouter.get(
 
 categoryCodesRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -88,9 +90,8 @@ categoryCodesRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     let categoryCode = createMovieFromBody(req);
@@ -135,6 +136,7 @@ categoryCodesRouter.all(
 
 categoryCodesRouter.all(
     '/:id/update',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -149,9 +151,8 @@ categoryCodesRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
@@ -183,44 +184,39 @@ categoryCodesRouter.all(
 );
 
 function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategoryCode {
-    const body = req.body;
-
     return {
         project: req.project,
         typeOf: 'CategoryCode',
-        codeValue: body.codeValue,
+        codeValue: req.body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
-            identifier: body.inCodeSet.identifier
+            identifier: req.body.inCodeSet.identifier
         },
-        name: <any>{ ja: body.name.ja }
+        name: <any>{ ja: req.body.name.ja }
     };
 }
 
-function validate(req: Request): void {
-    let colName: string = '';
+function validate() {
+    return [
+        body('inCodeSet.identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '区分分類')),
 
-    colName = '区分分類';
-    req.checkBody('inCodeSet.identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            // .isAlphanumeric()
+            .matches(/^[0-9a-zA-Z\+]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
 
-    colName = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // .isAlphanumeric()
-        .matches(/^[0-9a-zA-Z\+]+$/)
-        .len({ max: 20 })
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 20));
-
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
+    ];
 }
 
 export default categoryCodesRouter;

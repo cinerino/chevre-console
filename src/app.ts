@@ -8,7 +8,7 @@ import * as express from 'express';
 // tslint:disable-next-line:no-require-imports no-var-requires
 import flash = require('express-flash');
 // tslint:disable-next-line:no-require-imports
-import expressValidator = require('express-validator');
+// import expressValidator = require('express-validator');
 import * as helmet from 'helmet';
 import * as multer from 'multer';
 import * as favicon from 'serve-favicon';
@@ -63,7 +63,7 @@ app.use(cookieParser());
 app.use(express.static(`${__dirname}/../public`));
 app.use('/node_modules', express.static(`${__dirname}/../node_modules`));
 
-app.use(expressValidator()); // バリデーション
+// app.use(expressValidator()); // バリデーション
 
 app.use(router);
 

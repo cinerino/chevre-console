@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import * as _ from 'underscore';
 
 import * as Message from '../../message';
@@ -60,14 +61,14 @@ accountTitleCategoryRouter.get(
 
 accountTitleCategoryRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     const accountTitleCategory = createFromBody(req, true);
@@ -101,6 +102,7 @@ accountTitleCategoryRouter.all(
 
 accountTitleCategoryRouter.all(
     '/:codeValue',
+    ...validate(),
     async (req, res, next) => {
         try {
             let message = '';
@@ -122,9 +124,8 @@ accountTitleCategoryRouter.all(
 
             if (req.method === 'POST') {
                 // バリデーション
-                validate(req);
-                const validatorResult = await req.getValidationResult();
-                errors = req.validationErrors(true);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     // 作品DB登録
                     try {
@@ -174,20 +175,20 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.accountTit
 /**
  * 科目分類検証
  */
-function validate(req: Request): void {
-    let colName: string = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
+function validate() {
+    return [
+        body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
 
-    colName = '名称';
-    req.checkBody('name')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
+        body('name')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+    ];
 }
 
 export default accountTitleCategoryRouter;

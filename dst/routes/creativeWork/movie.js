@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../message");
@@ -29,7 +30,7 @@ const NAME_MAX_LENGTH_NAME_JA = 64;
 // 上映時間・数字10
 const NAME_MAX_LENGTH_NAME_MINUTES = 10;
 const movieRouter = express_1.Router();
-movieRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const creativeWorkService = new chevre.service.CreativeWork({
@@ -42,9 +43,8 @@ movieRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = '';
@@ -93,10 +93,10 @@ movieRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function
         distributorTypes: searchDistributorTypesResult.data
     });
 }));
-movieRouter.all('', (__, res) => {
+movieRouter.get('', (__, res) => {
     res.render('creativeWorks/movie/index', {});
 });
-movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -157,7 +157,7 @@ movieRouter.all('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
         });
     }
 }));
-movieRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
@@ -174,9 +174,8 @@ movieRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, f
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -238,38 +237,37 @@ movieRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, f
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         let contentRating;
-        if (typeof body.contentRating === 'string' && body.contentRating.length > 0) {
-            contentRating = body.contentRating;
+        if (typeof req.body.contentRating === 'string' && req.body.contentRating.length > 0) {
+            contentRating = req.body.contentRating;
         }
         let duration;
-        if (typeof body.duration === 'string' && body.duration.length > 0) {
-            duration = moment.duration(Number(body.duration), 'm')
+        if (typeof req.body.duration === 'string' && req.body.duration.length > 0) {
+            duration = moment.duration(Number(req.body.duration), 'm')
                 .toISOString();
         }
         let headline;
-        if (typeof body.headline === 'string' && body.headline.length > 0) {
-            headline = body.headline;
+        if (typeof req.body.headline === 'string' && req.body.headline.length > 0) {
+            headline = req.body.headline;
         }
         let datePublished;
-        if (typeof body.datePublished === 'string' && body.datePublished.length > 0) {
-            datePublished = moment(`${body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        if (typeof req.body.datePublished === 'string' && req.body.datePublished.length > 0) {
+            datePublished = moment(`${req.body.datePublished}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate();
         }
         let availabilityEnds;
-        if (typeof ((_a = body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) === 'string' && ((_b = body.offers) === null || _b === void 0 ? void 0 : _b.availabilityEnds.length) > 0) {
-            availabilityEnds = moment(`${(_c = body.offers) === null || _c === void 0 ? void 0 : _c.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        if (typeof ((_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) === 'string' && ((_b = req.body.offers) === null || _b === void 0 ? void 0 : _b.availabilityEnds.length) > 0) {
+            availabilityEnds = moment(`${(_c = req.body.offers) === null || _c === void 0 ? void 0 : _c.availabilityEnds}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .add(1, 'day')
                 .toDate();
         }
         const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
         let distributor;
-        const distributorCodeParam = (_d = body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
+        const distributorCodeParam = (_d = req.body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
         if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
             const searchDistributorTypesResult = yield categoryCodeService.search({
                 limit: 1,
@@ -285,8 +283,8 @@ function createFromBody(req, isNew) {
                 distributorType: distributorType.codeValue
             });
         }
-        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: body.id, identifier: body.identifier, name: body.name, offers: offers, additionalProperty: (Array.isArray(body.additionalProperty))
-                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
                         name: String(p.name),
@@ -310,36 +308,32 @@ function createFromBody(req, isNew) {
 /**
  * 作品マスタ新規登録画面検証
  */
-function validate(req) {
-    let colName = 'コード';
-    req.checkBody('identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .matches(/^[0-9a-zA-Z]+$/)
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
-    colName = '名称';
-    req.checkBody('name', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '上映時間';
-    if (req.body.duration !== '') {
-        req.checkBody('duration', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_NAME_MINUTES))
+function validate() {
+    return [
+        express_validator_1.body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE)),
+        express_validator_1.body('name', Message.Common.required.replace('$fieldName$', '名称'))
+            .notEmpty(),
+        express_validator_1.body('name', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('duration', Message.Common.getMaxLengthHalfByte('上映時間', NAME_MAX_LENGTH_NAME_MINUTES))
             .optional()
             .isNumeric()
-            .len({ max: NAME_MAX_LENGTH_NAME_MINUTES });
-    }
-    colName = 'サブタイトル';
-    req.checkBody('headline', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    // colName = '公開日';
-    // req.checkBody('datePublished')
-    //     .notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    // colName = '興行終了予定日';
-    // req.checkBody('offers.availabilityEnds')
-    //     .notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+            .isLength({ max: NAME_MAX_LENGTH_NAME_MINUTES }),
+        express_validator_1.body('headline', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+        // colName = '公開日';
+        // body('datePublished')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        // colName = '興行終了予定日';
+        // body('offers.availabilityEnds')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+    ];
 }
 exports.default = movieRouter;

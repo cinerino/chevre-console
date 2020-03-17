@@ -14,13 +14,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const productsRouter = express_1.Router();
-productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
@@ -33,9 +34,8 @@ productsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, funct
     });
     if (req.method === 'POST') {
         // 検証
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         // 検証
         if (validatorResult.isEmpty()) {
             try {
@@ -111,7 +111,7 @@ productsRouter.get('/search',
         });
     }
 }));
-productsRouter.all('/:id', 
+productsRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -128,9 +128,8 @@ productsRouter.all('/:id',
         let product = yield productService.findById({ id: req.params.id });
         if (req.method === 'POST') {
             // 検証
-            validate(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = express_validator_1.validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     product = createFromBody(req, false);
@@ -174,40 +173,39 @@ productsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* 
 }));
 function createFromBody(req, isNew) {
     var _a, _b, _c;
-    const body = req.body;
     let hasOfferCatalog;
-    if (typeof ((_a = body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
+    if (typeof ((_a = req.body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = req.body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
         hasOfferCatalog = {
             typeOf: 'OfferCatalog',
-            id: (_c = body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
+            id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
     return Object.assign(Object.assign({ project: req.project, typeOf: productType_1.ProductType.Product, id: req.params.id, 
         // identifier: body.identifier,
-        name: body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
+        name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {
             $unset: Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined)
         }
         : undefined);
 }
-function validate(req) {
-    let colName = '';
-    // colName = '区分分類';
-    // req.checkBody('inCodeSet.identifier').notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    // colName = '区分コード';
-    // req.checkBody('codeValue')
-    //     .notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
-    //     .isAlphanumeric()
-    //     .len({ max: 20 })
-    //     // tslint:disable-next-line:no-magic-numbers
-    //     .withMessage(Message.Common.getMaxLength(colName, 20));
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
+function validate() {
+    return [
+        // colName = '区分分類';
+        // req.checkBody('inCodeSet.identifier').notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        // colName = '区分コード';
+        // req.checkBody('codeValue')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        //     .isAlphanumeric()
+        //     .len({ max: 20 })
+        //     // tslint:disable-next-line:no-magic-numbers
+        //     .withMessage(Message.Common.getMaxLength(colName, 20));
+        express_validator_1.body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
+    ];
 }
 exports.default = productsRouter;

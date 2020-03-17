@@ -15,18 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const movieTheaterRouter = express_1.Router();
-movieTheaterRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 debug(req.body);
@@ -118,7 +118,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
         });
     }
 }));
-movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
@@ -130,9 +130,8 @@ movieTheaterRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, vo
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = req.params.id;
@@ -210,21 +209,20 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
     }
 }));
 function createMovieTheaterFromBody(req) {
-    const body = req.body;
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater = {
         project: req.project,
-        id: body.id,
+        id: req.body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
-        branchCode: body.branchCode,
-        name: body.name,
-        kanaName: body.kanaName,
-        offers: JSON.parse(body.offersStr),
-        containsPlace: JSON.parse(body.containsPlaceStr),
-        telephone: body.telephone,
+        branchCode: req.body.branchCode,
+        name: req.body.name,
+        kanaName: req.body.kanaName,
+        offers: JSON.parse(req.body.offersStr),
+        containsPlace: JSON.parse(req.body.containsPlaceStr),
+        telephone: req.body.telephone,
         screenCount: 0,
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
                     name: String(p.name),
@@ -235,21 +233,20 @@ function createMovieTheaterFromBody(req) {
     };
     return movieTheater;
 }
-function validate(req) {
-    let colName = '';
-    colName = '枝番号';
-    req.checkBody('branchCode')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .matches(/^[0-9a-zA-Z]+$/)
-        .len({ max: 20 })
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 20));
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 64));
+function validate() {
+    return [
+        express_validator_1.body('branchCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+        express_validator_1.body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64))
+    ];
 }
 exports.default = movieTheaterRouter;

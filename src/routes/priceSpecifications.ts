@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 
 import * as Message from '../message';
 
@@ -132,6 +133,7 @@ priceSpecificationsRouter.get(
 
 priceSpecificationsRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -171,9 +173,8 @@ priceSpecificationsRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     let priceSpecification = createMovieFromBody(req, true);
@@ -215,6 +216,7 @@ priceSpecificationsRouter.all(
 
 priceSpecificationsRouter.all(
     '/:id/update',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -262,9 +264,8 @@ priceSpecificationsRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 // 作品DB登録
                 try {
@@ -305,17 +306,15 @@ priceSpecificationsRouter.all(
 );
 
 function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.priceSpecification.IPriceSpecification<any> {
-    const body = req.body;
-
     let appliesToCategoryCode: chevre.factory.categoryCode.ICategoryCode | undefined;
     let appliesToVideoFormat: string | undefined;
     let appliesToMovieTicketType: string | undefined;
 
-    switch (body.typeOf) {
+    switch (req.body.typeOf) {
         case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
             appliesToCategoryCode =
-                (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
-                    ? JSON.parse(body.appliesToCategoryCode)
+                (typeof req.body.appliesToCategoryCode === 'string' && req.body.appliesToCategoryCode.length > 0)
+                    ? JSON.parse(req.body.appliesToCategoryCode)
                     : undefined;
             appliesToVideoFormat = undefined;
             appliesToMovieTicketType = undefined;
@@ -324,8 +323,8 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
 
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
             appliesToCategoryCode = undefined;
-            appliesToVideoFormat = body.appliesToVideoFormat;
-            appliesToMovieTicketType = body.appliesToMovieTicketType;
+            appliesToVideoFormat = req.body.appliesToVideoFormat;
+            appliesToMovieTicketType = req.body.appliesToMovieTicketType;
 
             break;
 
@@ -334,10 +333,10 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
 
     return {
         project: req.project,
-        typeOf: body.typeOf,
-        price: Number(body.price),
+        typeOf: req.body.typeOf,
+        price: Number(req.body.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        name: body.name,
+        name: req.body.name,
         valueAddedTaxIncluded: true,
         ...(appliesToCategoryCode !== undefined)
             ? {
@@ -353,10 +352,10 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
             }
             : undefined,
         ...(typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
-            ? { appliesToVideoFormat: body.appliesToVideoFormat }
+            ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
             : undefined,
         ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
-            ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
+            ? { appliesToMovieTicketType: req.body.appliesToMovieTicketType }
             : undefined,
         ...(!isNew)
             ? {
@@ -375,45 +374,44 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
     };
 }
 
-function validate(req: Request): void {
-    let colName: string = '';
+function validate() {
+    return [
+        body('typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '価格仕様タイプ')),
 
-    colName = '価格仕様タイプ';
-    req.checkBody('typeOf')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
 
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
+        // switch (req.body.typeOf) {
+        //     case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+        //         colName = '適用区分';
+        //         body('appliesToCategoryCode')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-    switch (req.body.typeOf) {
-        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
-            colName = '適用区分';
-            req.checkBody('appliesToCategoryCode')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         break;
 
-            break;
+        //     case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+        //         colName = '適用ムビチケ券種区分';
+        //         body('appliesToMovieTicketType')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
-            colName = '適用ムビチケ券種区分';
-            req.checkBody('appliesToMovieTicketType')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         colName = 'ムビチケ適用上映方式区分';
+        //         body('appliesToVideoFormat')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-            colName = 'ムビチケ適用上映方式区分';
-            req.checkBody('appliesToVideoFormat')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         break;
 
-            break;
+        //     default:
+        // }
+    ];
 
-        default:
-    }
 }
 
 export default priceSpecificationsRouter;

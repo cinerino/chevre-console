@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
 import * as _ from 'underscore';
@@ -22,6 +23,7 @@ const offerCatalogsRouter = Router();
 
 offerCatalogsRouter.all(
     '/add',
+    ...validate(),
     // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         const offerService = new chevre.service.Offer({
@@ -42,9 +44,8 @@ offerCatalogsRouter.all(
         let errors: any = {};
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = '';
@@ -132,6 +133,7 @@ offerCatalogsRouter.all(
 
 offerCatalogsRouter.all(
     '/:id/update',
+    ...validate(),
     // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         const offerService = new chevre.service.Offer({
@@ -159,9 +161,8 @@ offerCatalogsRouter.all(
         let errors: any = {};
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     // DB登録
@@ -446,11 +447,9 @@ offerCatalogsRouter.get(
 );
 
 async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog.IOfferCatalog> {
-    const body = req.body;
-
     let itemListElement = [];
-    if (Array.isArray(body.itemListElement)) {
-        itemListElement = body.itemListElement.map((element: any) => {
+    if (Array.isArray(req.body.itemListElement)) {
+        itemListElement = req.body.itemListElement.map((element: any) => {
             return {
                 typeOf: chevre.factory.offerType.Offer,
                 id: element.id
@@ -492,18 +491,18 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
 
     return {
         project: req.project,
-        id: body.id,
+        id: req.body.id,
         identifier: req.body.identifier,
-        name: body.name,
-        description: body.description,
-        alternateName: body.alternateName,
+        name: req.body.name,
+        description: req.body.description,
+        alternateName: req.body.alternateName,
         itemListElement: itemListElement,
         itemOffered: {
-            typeOf: body.itemOffered?.typeOf,
+            typeOf: req.body.itemOffered?.typeOf,
             ...(serviceType !== undefined) ? { serviceType } : undefined
         },
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
                     return {
                         name: String(p.name),
@@ -514,43 +513,32 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
     };
 }
 
-function validate(req: Request): void {
-    let colName: string = 'コード';
-    req.checkBody('identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
+function validate() {
+    return [
+        body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE)),
 
-    colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
+        body('name.ja', Message.Common.required.replace('$fieldName$', '名称'))
+            .notEmpty(),
+        body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
 
-    colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    // tslint:disable-next-line:no-magic-numbers
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128))
-        .len({ max: 128 });
+        body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+            .notEmpty(),
+        // tslint:disable-next-line:no-magic-numbers
+        body('name.en', Message.Common.getMaxLength('名称(英)', 128))
+            .isLength({ max: 128 }),
 
-    colName = 'アイテム';
-    req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+        body('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', 'アイテム'))
+            .notEmpty(),
 
-    // サービス区分
-    // if (req.body.itemOffered?.typeOf === ProductType.EventService) {
-    //     colName = 'サービス区分';
-    //     req.checkBody('serviceType')
-    //         .notEmpty()
-    //         .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    // }
-
-    colName = 'オファーリスト';
-    req.checkBody('itemListElement')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        body('itemListElement')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'オファーリスト'))
+    ];
 }
 
 export default offerCatalogsRouter;

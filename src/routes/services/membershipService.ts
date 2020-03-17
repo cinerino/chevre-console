@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
@@ -16,6 +17,7 @@ const membershipServiceRouter = Router();
 
 membershipServiceRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -32,9 +34,8 @@ membershipServiceRouter.all(
 
         if (req.method === 'POST') {
             // 検証
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             // 検証
             if (validatorResult.isEmpty()) {
                 try {
@@ -132,6 +133,7 @@ membershipServiceRouter.get(
 
 membershipServiceRouter.all(
     '/:id',
+    ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
@@ -151,9 +153,8 @@ membershipServiceRouter.all(
 
             if (req.method === 'POST') {
                 // 検証
-                validate(req);
-                const validatorResult = await req.getValidationResult();
-                errors = req.validationErrors(true);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     try {
                         product = createFromBody(req, false);
@@ -206,13 +207,11 @@ membershipServiceRouter.get(
 );
 
 function createFromBody(req: Request, isNew: boolean): any {
-    const body = req.body;
-
     let hasOfferCatalog: any;
-    if (typeof body.hasOfferCatalog?.id === 'string' && body.hasOfferCatalog?.id.length > 0) {
+    if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
         hasOfferCatalog = {
             typeOf: 'OfferCatalog',
-            id: body.hasOfferCatalog?.id
+            id: req.body.hasOfferCatalog?.id
         };
     }
 
@@ -221,7 +220,7 @@ function createFromBody(req: Request, isNew: boolean): any {
         typeOf: ProductType.MembershipService,
         id: req.params.id,
         // identifier: body.identifier,
-        name: body.name,
+        name: req.body.name,
         ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
         ...(!isNew)
             ? {
@@ -233,28 +232,27 @@ function createFromBody(req: Request, isNew: boolean): any {
     };
 }
 
-function validate(req: Request): void {
-    let colName: string = '';
+function validate() {
+    return [
+        // colName = '区分分類';
+        // req.checkBody('inCodeSet.identifier').notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
 
-    // colName = '区分分類';
-    // req.checkBody('inCodeSet.identifier').notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        // colName = '区分コード';
+        // req.checkBody('codeValue')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        //     .isAlphanumeric()
+        //     .len({ max: 20 })
+        //     // tslint:disable-next-line:no-magic-numbers
+        //     .withMessage(Message.Common.getMaxLength(colName, 20));
 
-    // colName = '区分コード';
-    // req.checkBody('codeValue')
-    //     .notEmpty()
-    //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
-    //     .isAlphanumeric()
-    //     .len({ max: 20 })
-    //     // tslint:disable-next-line:no-magic-numbers
-    //     .withMessage(Message.Common.getMaxLength(colName, 20));
-
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
+    ];
 }
 
 export default membershipServiceRouter;

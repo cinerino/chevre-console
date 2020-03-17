@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const _ = require("underscore");
@@ -29,7 +30,7 @@ const NAME_MAX_LENGTH_CODE = 64;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 // import * as Message from '../../message';
 const screeningEventSeriesRouter = express_1.Router();
-screeningEventSeriesRouter.all('/add', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventSeriesRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -64,9 +65,8 @@ screeningEventSeriesRouter.all('/add', (req, res) => __awaiter(void 0, void 0, v
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -117,7 +117,7 @@ screeningEventSeriesRouter.all('/add', (req, res) => __awaiter(void 0, void 0, v
         contentRatingTypes: searchContentRatingTypesResult.data
     });
 }));
-screeningEventSeriesRouter.all('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -277,7 +277,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
         });
     }
 }));
-screeningEventSeriesRouter.all('/:eventId/update', 
+screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const creativeWorkService = new chevre.service.CreativeWork({
@@ -326,9 +326,8 @@ screeningEventSeriesRouter.all('/:eventId/update',
     }
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -422,11 +421,10 @@ screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awai
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createEventFromBody(req, movie, movieTheater, isNew) {
     var _a, _b, _c;
-    const body = req.body;
-    const videoFormat = (Array.isArray(body.videoFormatType)) ? body.videoFormatType.map((f) => {
+    const videoFormat = (Array.isArray(req.body.videoFormatType)) ? req.body.videoFormatType.map((f) => {
         return { typeOf: f, name: f };
     }) : [];
-    const soundFormat = (Array.isArray(body.soundFormatType)) ? body.soundFormatType.map((f) => {
+    const soundFormat = (Array.isArray(req.body.soundFormatType)) ? req.body.soundFormatType.map((f) => {
         return { typeOf: f, name: f };
     }) : [];
     let acceptedPaymentMethod;
@@ -437,7 +435,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
             acceptedPaymentMethod = [];
         }
         const paymentMethodType = chevre.factory.paymentMethodType[key];
-        if (body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
+        if (req.body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
             return;
         }
         acceptedPaymentMethod.push(paymentMethodType);
@@ -449,25 +447,25 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         acceptedPaymentMethod: acceptedPaymentMethod
     };
     let subtitleLanguage;
-    if (body.translationType === '0') {
+    if (req.body.translationType === '0') {
         subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
     let dubLanguage;
-    if (body.translationType === '1') {
+    if (req.body.translationType === '1') {
         dubLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
     if (typeof movie.duration !== 'string') {
         throw new Error('作品の上映時間が未登録です');
     }
     let description;
-    if (typeof body.description === 'string' && body.description.length > 0) {
-        description = { ja: body.description };
+    if (typeof req.body.description === 'string' && req.body.description.length > 0) {
+        description = { ja: req.body.description };
     }
     let headline;
-    if (typeof ((_a = body.headline) === null || _a === void 0 ? void 0 : _a.ja) === 'string' && ((_b = body.headline) === null || _b === void 0 ? void 0 : _b.ja.length) > 0) {
-        headline = { ja: (_c = body.headline) === null || _c === void 0 ? void 0 : _c.ja };
+    if (typeof ((_a = req.body.headline) === null || _a === void 0 ? void 0 : _a.ja) === 'string' && ((_b = req.body.headline) === null || _b === void 0 ? void 0 : _b.ja.length) > 0) {
+        headline = { ja: (_c = req.body.headline) === null || _c === void 0 ? void 0 : _c.ja };
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: body.nameJa }, (typeof body.nameEn === 'string' && body.nameEn.length > 0) ? { en: body.nameEn } : undefined), kanaName: body.kanaName, location: {
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
             project: req.project,
             id: movieTheater.id,
             typeOf: movieTheater.typeOf,
@@ -480,15 +478,15 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         //     identifier: params.movieTheater.identifier,
         //     name: params.movieTheater.name
         // },
-        videoFormat: videoFormat, soundFormat: soundFormat, workPerformed: movie, duration: movie.duration, startDate: (typeof body.startDate === 'string' && body.startDate.length > 0)
-            ? moment(`${body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+        videoFormat: videoFormat, soundFormat: soundFormat, workPerformed: movie, duration: movie.duration, startDate: (typeof req.body.startDate === 'string' && req.body.startDate.length > 0)
+            ? moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate()
-            : undefined, endDate: (typeof body.endDate === 'string' && body.endDate.length > 0)
-            ? moment(`${body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+            : undefined, endDate: (typeof req.body.endDate === 'string' && req.body.endDate.length > 0)
+            ? moment(`${req.body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .add(1, 'day')
                 .toDate()
-            : undefined, eventStatus: chevre.factory.eventStatusType.EventScheduled, additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            : undefined, eventStatus: chevre.factory.eventStatusType.EventScheduled, additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
                     name: String(p.name),
@@ -501,35 +499,29 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         }
         : undefined);
 }
-function validate(req) {
-    let colName = '';
-    colName = 'コード';
-    req.checkBody('workPerformed.identifier', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('workPerformed.identifier', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
-    colName = '名称';
-    req.checkBody('nameJa', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('nameJa', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '名称カナ';
-    req.checkBody('kanaName', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .optional()
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '上映開始日';
-    req.checkBody('startDate')
-        .isDate()
-        .withMessage('日付を入力してください');
-    colName = '上映終了日';
-    req.checkBody('endDate')
-        .isDate()
-        .withMessage('日付を入力してください');
-    colName = 'サブタイトル';
-    req.checkBody('headline.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '上映方式';
-    req.checkBody('videoFormatType', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
+function validate() {
+    return [
+        express_validator_1.body('workPerformed.identifier', Message.Common.required.replace('$fieldName$', 'コード'))
+            .notEmpty(),
+        express_validator_1.body('workPerformed.identifier', Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_CODE }),
+        express_validator_1.body('nameJa', Message.Common.required.replace('$fieldName$', '名称'))
+            .notEmpty(),
+        express_validator_1.body('nameJa', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('kanaName', Message.Common.getMaxLength('名称カナ', NAME_MAX_LENGTH_NAME_JA))
+            .optional()
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        // body('startDate')
+        //     .isDate()
+        //     .withMessage('日付を入力してください'),
+        // body('endDate')
+        //     .isDate()
+        //     .withMessage('日付を入力してください'),
+        express_validator_1.body('headline.ja', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('videoFormatType', Message.Common.required.replace('$fieldName$', '上映方式'))
+            .notEmpty()
+    ];
 }
 exports.default = screeningEventSeriesRouter;

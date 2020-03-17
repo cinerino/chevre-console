@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const _ = require("underscore");
@@ -25,7 +26,7 @@ const NAME_MAX_LENGTH_CODE = 64;
 // 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const offerCatalogsRouter = express_1.Router();
-offerCatalogsRouter.all('/add', 
+offerCatalogsRouter.all('/add', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const offerService = new chevre.service.Offer({
@@ -44,9 +45,8 @@ offerCatalogsRouter.all('/add',
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = '';
@@ -113,7 +113,7 @@ offerCatalogsRouter.all('/add',
         productTypes: productType_1.productTypes
     });
 }));
-offerCatalogsRouter.all('/:id/update', 
+offerCatalogsRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -139,9 +139,8 @@ offerCatalogsRouter.all('/:id/update',
     let errors = {};
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 // DB登録
@@ -375,10 +374,9 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
 function createFromBody(req) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
         let itemListElement = [];
-        if (Array.isArray(body.itemListElement)) {
-            itemListElement = body.itemListElement.map((element) => {
+        if (Array.isArray(req.body.itemListElement)) {
+            itemListElement = req.body.itemListElement.map((element) => {
                 return {
                     typeOf: chevre.factory.offerType.Offer,
                     id: element.id
@@ -416,15 +414,15 @@ function createFromBody(req) {
         }
         return {
             project: req.project,
-            id: body.id,
+            id: req.body.id,
             identifier: req.body.identifier,
-            name: body.name,
-            description: body.description,
-            alternateName: body.alternateName,
+            name: req.body.name,
+            description: req.body.description,
+            alternateName: req.body.alternateName,
             itemListElement: itemListElement,
-            itemOffered: Object.assign({ typeOf: (_a = body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf }, (serviceType !== undefined) ? { serviceType } : undefined),
-            additionalProperty: (Array.isArray(body.additionalProperty))
-                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            itemOffered: Object.assign({ typeOf: (_a = req.body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf }, (serviceType !== undefined) ? { serviceType } : undefined),
+            additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
                         name: String(p.name),
@@ -435,37 +433,27 @@ function createFromBody(req) {
         };
     });
 }
-function validate(req) {
-    let colName = 'コード';
-    req.checkBody('identifier')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
-    colName = '名称';
-    req.checkBody('name.ja', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('name.ja', Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA });
-    colName = '名称(英)';
-    req.checkBody('name.en', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    // tslint:disable-next-line:no-magic-numbers
-    req.checkBody('name.en', Message.Common.getMaxLength(colName, 128))
-        .len({ max: 128 });
-    colName = 'アイテム';
-    req.checkBody('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    // サービス区分
-    // if (req.body.itemOffered?.typeOf === ProductType.EventService) {
-    //     colName = 'サービス区分';
-    //     req.checkBody('serviceType')
-    //         .notEmpty()
-    //         .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    // }
-    colName = 'オファーリスト';
-    req.checkBody('itemListElement')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+function validate() {
+    return [
+        express_validator_1.body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE)),
+        express_validator_1.body('name.ja', Message.Common.required.replace('$fieldName$', '名称'))
+            .notEmpty(),
+        express_validator_1.body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+            .notEmpty(),
+        // tslint:disable-next-line:no-magic-numbers
+        express_validator_1.body('name.en', Message.Common.getMaxLength('名称(英)', 128))
+            .isLength({ max: 128 }),
+        express_validator_1.body('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', 'アイテム'))
+            .notEmpty(),
+        express_validator_1.body('itemListElement')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'オファーリスト'))
+    ];
 }
 exports.default = offerCatalogsRouter;

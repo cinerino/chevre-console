@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const productType_1 = require("../../factory/productType");
@@ -211,14 +212,14 @@ screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(
         });
     }
 }));
-screeningEventRouter.post('/regist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        addValidation(req);
-        const validatorResult = yield req.getValidationResult();
+        const validatorResult = express_validator_1.validationResult(req);
+        // errors = validatorResult.mapped();
         // const validations = req.validationErrors(true);
         if (!validatorResult.isEmpty()) {
             throw new Error('Invalid');
@@ -245,14 +246,14 @@ screeningEventRouter.post('/regist', (req, res) => __awaiter(void 0, void 0, voi
         }
     }
 }));
-screeningEventRouter.post('/:eventId/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        updateValidation(req);
-        const validatorResult = yield req.getValidationResult();
+        const validatorResult = express_validator_1.validationResult(req);
+        // errors = validatorResult.mapped();
         // const validations = req.validationErrors(true);
         if (!validatorResult.isEmpty()) {
             throw new Error('Invalid');
@@ -367,7 +368,6 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
 function createEventFromBody(req) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
         const user = req.user;
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -386,17 +386,17 @@ function createEventFromBody(req) {
             auth: user.authClient
         });
         const screeningEventSeries = yield eventService.findById({
-            id: body.screeningEventId
+            id: req.body.screeningEventId
         });
-        const movieTheater = yield placeService.findMovieTheaterById({ id: body.theater });
-        const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
+        const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
+        const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
         if (screeningRoom === undefined) {
             throw new Error('上映スクリーンが見つかりません');
         }
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
-        const catalog = yield offerCatalogService.findById({ id: body.ticketTypeGroup });
+        const catalog = yield offerCatalogService.findById({ id: req.body.ticketTypeGroup });
         if (typeof catalog.id !== 'string') {
             throw new Error('Offer Catalog ID undefined');
         }
@@ -415,8 +415,8 @@ function createEventFromBody(req) {
             }
         }
         let offersValidAfterStart;
-        if (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '') {
-            offersValidAfterStart = Number(body.endSaleTimeAfterScreening);
+        if (req.body.endSaleTimeAfterScreening !== undefined && req.body.endSaleTimeAfterScreening !== '') {
+            offersValidAfterStart = Number(req.body.endSaleTimeAfterScreening);
         }
         else if (movieTheater.offers !== undefined
             && movieTheater.offers.availabilityEndsGraceTime !== undefined
@@ -427,29 +427,30 @@ function createEventFromBody(req) {
         else {
             offersValidAfterStart = DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
         }
-        const doorTime = moment(`${body.day}T${body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ')
+        const doorTime = moment(`${req.body.day}T${req.body.doorTime}+09:00`, 'YYYYMMDDTHHmmZ')
             .toDate();
-        const startDate = moment(`${body.day}T${body.startTime}+09:00`, 'YYYYMMDDTHHmmZ')
+        const startDate = moment(`${req.body.day}T${req.body.startTime}+09:00`, 'YYYYMMDDTHHmmZ')
             .toDate();
-        const endDate = moment(`${body.endDay}T${body.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+        const endDate = moment(`${req.body.endDay}T${req.body.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
             .toDate();
-        const salesStartDate = moment(`${body.saleStartDate}T${body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+        const salesStartDate = moment(`${req.body.saleStartDate}T${req.body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
             .toDate();
         const salesEndDate = moment(startDate)
             .add(offersValidAfterStart, 'minutes')
             .toDate();
         // オンライン表示開始日時は、絶対指定or相対指定
-        const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+        const onlineDisplayStartDate = (String(req.body.onlineDisplayType) === OnlineDisplayType.Relative)
             ? moment(`${moment(startDate)
                 .tz('Asia/Tokyo')
                 .format('YYYY-MM-DD')}T00:00:00+09:00`)
-                .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+                .add(Number(req.body.onlineDisplayStartDate) * -1, 'days')
                 .toDate()
-            : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
+            // tslint:disable-next-line:max-line-length
+            : moment(`${String(req.body.onlineDisplayStartDate)}T${String(req.body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                 .toDate();
         let acceptedPaymentMethod;
         // ムビチケ除外の場合は対応決済方法を追加
-        if (body.mvtkExcludeFlg === '1') {
+        if (req.body.mvtkExcludeFlg === '1') {
             Object.keys(chevre.factory.paymentMethodType)
                 .forEach((key) => {
                 if (acceptedPaymentMethod === undefined) {
@@ -461,7 +462,7 @@ function createEventFromBody(req) {
                 }
             });
         }
-        const serviceOutput = (body.reservedSeatsAvailable === '1')
+        const serviceOutput = (req.body.reservedSeatsAvailable === '1')
             ? {
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservedTicket: {
@@ -488,7 +489,7 @@ function createEventFromBody(req) {
             eligibleQuantity: {
                 typeOf: 'QuantitativeValue',
                 unitCode: chevre.factory.unitCode.C62,
-                maxValue: Number(body.maxSeatNumber),
+                maxValue: Number(req.body.maxSeatNumber),
                 value: 1
             },
             itemOffered: {
@@ -520,8 +521,8 @@ function createEventFromBody(req) {
             offers: offers,
             checkInCount: undefined,
             attendeeCount: undefined,
-            additionalProperty: (Array.isArray(body.additionalProperty))
-                ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
                         name: String(p.name),
@@ -538,8 +539,6 @@ function createEventFromBody(req) {
 // tslint:disable-next-line:max-func-body-length
 function createMultipleEventFromBody(req, user) {
     return __awaiter(this, void 0, void 0, function* () {
-        const body = req.body;
-        debug('body:', body);
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
@@ -557,24 +556,24 @@ function createMultipleEventFromBody(req, user) {
             auth: user.authClient
         });
         const screeningEventSeries = yield eventService.findById({
-            id: body.screeningEventId
+            id: req.body.screeningEventId
         });
-        const movieTheater = yield placeService.findMovieTheaterById({ id: body.theater });
-        const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === body.screen);
+        const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
+        const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
         if (screeningRoom === undefined) {
             throw new Error('上映スクリーンが見つかりません');
         }
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
-        const startDate = moment(`${body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
+        const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
             .tz('Asia/Tokyo');
-        const toDate = moment(`${body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
+        const toDate = moment(`${req.body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
             .tz('Asia/Tokyo');
-        const weekDays = body.weekDayData;
-        const ticketTypeIds = body.ticketData;
-        const mvtkExcludeFlgs = body.mvtkExcludeFlgData;
-        const timeData = body.timeData;
+        const weekDays = req.body.weekDayData;
+        const ticketTypeIds = req.body.ticketData;
+        const mvtkExcludeFlgs = req.body.mvtkExcludeFlgData;
+        const timeData = req.body.timeData;
         const searchTicketTypeGroupsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -596,8 +595,9 @@ function createMultipleEventFromBody(req, user) {
                 // tslint:disable-next-line:max-func-body-length
                 timeData.forEach((data, i) => {
                     var _a;
-                    const offersValidAfterStart = (body.endSaleTimeAfterScreening !== undefined && body.endSaleTimeAfterScreening !== '')
-                        ? Number(body.endSaleTimeAfterScreening)
+                    // tslint:disable-next-line:max-line-length
+                    const offersValidAfterStart = (req.body.endSaleTimeAfterScreening !== undefined && req.body.endSaleTimeAfterScreening !== '')
+                        ? Number(req.body.endSaleTimeAfterScreening)
                         : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
                     const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                         .toDate();
@@ -614,32 +614,32 @@ function createMultipleEventFromBody(req, user) {
                         .format('YYYY/MM/DD');
                     // 販売開始日時は、劇場設定 or 絶対指定 or 相対指定
                     let salesStartDate;
-                    switch (String(body.saleStartDateType)) {
+                    switch (String(req.body.saleStartDateType)) {
                         case SaleStartDateType.Absolute:
-                            salesStartDate = moment(`${String(body.saleStartDate)}T${body.saleStartTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
+                            salesStartDate = moment(`${String(req.body.saleStartDate)}T${req.body.saleStartTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                                 .toDate();
                             break;
                         case SaleStartDateType.Relative:
                             salesStartDate = moment(`${moment(eventStartDate)
                                 .tz('Asia/Tokyo')
                                 .format('YYYY-MM-DD')}T00:00:00+09:00`)
-                                .add(Number(body.saleStartDate) * -1, 'days')
+                                .add(Number(req.body.saleStartDate) * -1, 'days')
                                 .toDate();
                             break;
                         default:
                             salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYY/MM/DDTHHmmZ')
-                                .add(parseInt(body.saleStartDays, 10) * -1, 'day')
+                                .add(parseInt(req.body.saleStartDays, 10) * -1, 'day')
                                 .toDate();
                     }
                     // オンライン表示開始日時は、絶対指定or相対指定
-                    const onlineDisplayStartDate = (String(body.onlineDisplayType) === OnlineDisplayType.Relative)
+                    const onlineDisplayStartDate = (String(req.body.onlineDisplayType) === OnlineDisplayType.Relative)
                         ? moment(`${moment(eventStartDate)
                             .tz('Asia/Tokyo')
                             .format('YYYY-MM-DD')}T00:00:00+09:00`)
-                            .add(Number(body.onlineDisplayStartDate) * -1, 'days')
+                            .add(Number(req.body.onlineDisplayStartDate) * -1, 'days')
                             .toDate()
                         // tslint:disable-next-line:max-line-length
-                        : moment(`${String(body.onlineDisplayStartDate)}T${String(body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
+                        : moment(`${String(req.body.onlineDisplayStartDate)}T${String(req.body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                     let acceptedPaymentMethod;
                     // ムビチケ除外の場合は対応決済方法を追加
@@ -670,7 +670,7 @@ function createMultipleEventFromBody(req, user) {
                             throw new chevre.factory.errors.NotFound('サービス区分');
                         }
                     }
-                    const serviceOutput = (body.reservedSeatsAvailable === '1')
+                    const serviceOutput = (req.body.reservedSeatsAvailable === '1')
                         ? {
                             typeOf: chevre.factory.reservationType.EventReservation,
                             reservedTicket: {
@@ -694,7 +694,7 @@ function createMultipleEventFromBody(req, user) {
                         eligibleQuantity: {
                             typeOf: 'QuantitativeValue',
                             unitCode: chevre.factory.unitCode.C62,
-                            maxValue: Number(body.maxSeatNumber),
+                            maxValue: Number(req.body.maxSeatNumber),
                             value: 1
                         },
                         itemOffered: {
@@ -740,41 +740,45 @@ function createMultipleEventFromBody(req, user) {
 /**
  * 新規登録バリデーション
  */
-function addValidation(req) {
-    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です')
-        .notEmpty();
-    req.checkBody('startDate', '上映日が未選択です')
-        .notEmpty();
-    req.checkBody('toDate', '上映日が未選択です')
-        .notEmpty();
-    req.checkBody('weekDayData', '曜日が未選択です')
-        .notEmpty();
-    req.checkBody('screen', 'スクリーンが未選択です')
-        .notEmpty();
-    req.checkBody('theater', '劇場が未選択です')
-        .notEmpty();
-    req.checkBody('timeData', '時間情報が未選択です')
-        .notEmpty();
-    req.checkBody('ticketData', '券種グループが未選択です')
-        .notEmpty();
+function addValidation() {
+    return [
+        express_validator_1.body('screeningEventId', '上映イベントシリーズが未選択です')
+            .notEmpty(),
+        express_validator_1.body('startDate', '上映日が未選択です')
+            .notEmpty(),
+        express_validator_1.body('toDate', '上映日が未選択です')
+            .notEmpty(),
+        express_validator_1.body('weekDayData', '曜日が未選択です')
+            .notEmpty(),
+        express_validator_1.body('screen', 'スクリーンが未選択です')
+            .notEmpty(),
+        express_validator_1.body('theater', '劇場が未選択です')
+            .notEmpty(),
+        express_validator_1.body('timeData', '時間情報が未選択です')
+            .notEmpty(),
+        express_validator_1.body('ticketData', '券種グループが未選択です')
+            .notEmpty()
+    ];
 }
 /**
  * 編集バリデーション
  */
-function updateValidation(req) {
-    req.checkBody('screeningEventId', '上映イベントシリーズが未選択です')
-        .notEmpty();
-    req.checkBody('day', '上映日が未選択です')
-        .notEmpty();
-    req.checkBody('doorTime', '開場時刻が未選択です')
-        .notEmpty();
-    req.checkBody('startTime', '開始時刻が未選択です')
-        .notEmpty();
-    req.checkBody('endTime', '終了時刻が未選択です')
-        .notEmpty();
-    req.checkBody('screen', 'スクリーンが未選択です')
-        .notEmpty();
-    req.checkBody('ticketTypeGroup', '券種グループが未選択です')
-        .notEmpty();
+function updateValidation() {
+    return [
+        express_validator_1.body('screeningEventId', '上映イベントシリーズが未選択です')
+            .notEmpty(),
+        express_validator_1.body('day', '上映日が未選択です')
+            .notEmpty(),
+        express_validator_1.body('doorTime', '開場時刻が未選択です')
+            .notEmpty(),
+        express_validator_1.body('startTime', '開始時刻が未選択です')
+            .notEmpty(),
+        express_validator_1.body('endTime', '終了時刻が未選択です')
+            .notEmpty(),
+        express_validator_1.body('screen', 'スクリーンが未選択です')
+            .notEmpty(),
+        express_validator_1.body('ticketTypeGroup', '券種グループが未選択です')
+            .notEmpty()
+    ];
 }
 exports.default = screeningEventRouter;

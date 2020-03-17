@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const priceSpecificationType_1 = require("../factory/priceSpecificationType");
@@ -111,7 +112,7 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
         });
     }
 }));
-priceSpecificationsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -144,9 +145,8 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, vo
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 let priceSpecification = createMovieFromBody(req, true);
@@ -178,7 +178,7 @@ priceSpecificationsRouter.all('/new', (req, res) => __awaiter(void 0, void 0, vo
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
-priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -218,9 +218,8 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, voi
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -255,27 +254,26 @@ priceSpecificationsRouter.all('/:id/update', (req, res) => __awaiter(void 0, voi
     });
 }));
 function createMovieFromBody(req, isNew) {
-    const body = req.body;
     let appliesToCategoryCode;
     let appliesToVideoFormat;
     let appliesToMovieTicketType;
-    switch (body.typeOf) {
+    switch (req.body.typeOf) {
         case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
             appliesToCategoryCode =
-                (typeof body.appliesToCategoryCode === 'string' && body.appliesToCategoryCode.length > 0)
-                    ? JSON.parse(body.appliesToCategoryCode)
+                (typeof req.body.appliesToCategoryCode === 'string' && req.body.appliesToCategoryCode.length > 0)
+                    ? JSON.parse(req.body.appliesToCategoryCode)
                     : undefined;
             appliesToVideoFormat = undefined;
             appliesToMovieTicketType = undefined;
             break;
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
             appliesToCategoryCode = undefined;
-            appliesToVideoFormat = body.appliesToVideoFormat;
-            appliesToMovieTicketType = body.appliesToMovieTicketType;
+            appliesToVideoFormat = req.body.appliesToVideoFormat;
+            appliesToMovieTicketType = req.body.appliesToMovieTicketType;
             break;
         default:
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: body.typeOf, price: Number(body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: body.name, valueAddedTaxIncluded: true }, (appliesToCategoryCode !== undefined)
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: req.body.typeOf, price: Number(req.body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: req.body.name, valueAddedTaxIncluded: true }, (appliesToCategoryCode !== undefined)
         ? {
             appliesToCategoryCode: [{
                     project: req.project,
@@ -288,9 +286,9 @@ function createMovieFromBody(req, isNew) {
                 }]
         }
         : undefined), (typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
-        ? { appliesToVideoFormat: body.appliesToVideoFormat }
+        ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
         : undefined), (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
-        ? { appliesToMovieTicketType: body.appliesToMovieTicketType }
+        ? { appliesToMovieTicketType: req.body.appliesToMovieTicketType }
         : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign(Object.assign({}, (appliesToCategoryCode === undefined)
@@ -302,36 +300,35 @@ function createMovieFromBody(req, isNew) {
                 : undefined)
         } : undefined);
 }
-function validate(req) {
-    let colName = '';
-    colName = '価格仕様タイプ';
-    req.checkBody('typeOf')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        // tslint:disable-next-line:no-magic-numbers
-        .withMessage(Message.Common.getMaxLength(colName, 30));
-    switch (req.body.typeOf) {
-        case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
-            colName = '適用区分';
-            req.checkBody('appliesToCategoryCode')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
-            break;
-        case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
-            colName = '適用ムビチケ券種区分';
-            req.checkBody('appliesToMovieTicketType')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
-            colName = 'ムビチケ適用上映方式区分';
-            req.checkBody('appliesToVideoFormat')
-                .notEmpty()
-                .withMessage(Message.Common.required.replace('$fieldName$', colName));
-            break;
-        default:
-    }
+function validate() {
+    return [
+        express_validator_1.body('typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '価格仕様タイプ')),
+        express_validator_1.body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 30))
+        // switch (req.body.typeOf) {
+        //     case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
+        //         colName = '適用区分';
+        //         body('appliesToCategoryCode')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         break;
+        //     case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+        //         colName = '適用ムビチケ券種区分';
+        //         body('appliesToMovieTicketType')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         colName = 'ムビチケ適用上映方式区分';
+        //         body('appliesToVideoFormat')
+        //             .notEmpty()
+        //             .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        //         break;
+        //     default:
+        // }
+    ];
 }
 exports.default = priceSpecificationsRouter;

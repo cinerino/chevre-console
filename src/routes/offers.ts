@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -24,6 +25,7 @@ const offersRouter = Router();
 
 offersRouter.all(
     '/add',
+    ...validate(),
     // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
@@ -51,9 +53,8 @@ offersRouter.all(
 
         if (req.method === 'POST') {
             // 検証
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             // 検証
             if (validatorResult.isEmpty()) {
                 // 登録プロセス
@@ -128,6 +129,7 @@ offersRouter.all(
 
 offersRouter.all(
     '/:id/update',
+    ...validate(),
     // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         let message = '';
@@ -167,9 +169,8 @@ offersRouter.all(
 
             if (req.method === 'POST') {
                 // 検証
-                validate(req);
-                const validatorResult = await req.getValidationResult();
-                errors = req.validationErrors(true);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
 
                 // 検証
                 if (validatorResult.isEmpty()) {
@@ -402,8 +403,6 @@ offersRouter.get(
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {
-    const body = req.body;
-
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -411,12 +410,12 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;
 
-    if (typeof body.category?.codeValue === 'string' && body.category?.codeValue.length > 0) {
+    if (typeof req.body.category?.codeValue === 'string' && req.body.category?.codeValue.length > 0) {
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 1,
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-            codeValue: { $eq: body.category?.codeValue }
+            codeValue: { $eq: req.body.category?.codeValue }
         });
         if (searchOfferCategoryTypesResult.data.length === 0) {
             throw new Error('オファーカテゴリーが見つかりません');
@@ -426,24 +425,24 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     const availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.InStock;
 
-    const referenceQuantityValue: number = Number(body.priceSpecification.referenceQuantity.value);
+    const referenceQuantityValue: number = Number(req.body.priceSpecification.referenceQuantity.value);
     const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
         value: referenceQuantityValue,
-        unitCode: body.priceSpecification.referenceQuantity.unitCode
+        unitCode: req.body.priceSpecification.referenceQuantity.unitCode
     };
 
-    const eligibleQuantityMinValue: number | undefined = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleQuantity !== undefined
-        && body.priceSpecification.eligibleQuantity.minValue !== undefined
-        && body.priceSpecification.eligibleQuantity.minValue !== '')
-        ? Number(body.priceSpecification.eligibleQuantity.minValue)
+    const eligibleQuantityMinValue: number | undefined = (req.body.priceSpecification !== undefined
+        && req.body.priceSpecification.eligibleQuantity !== undefined
+        && req.body.priceSpecification.eligibleQuantity.minValue !== undefined
+        && req.body.priceSpecification.eligibleQuantity.minValue !== '')
+        ? Number(req.body.priceSpecification.eligibleQuantity.minValue)
         : undefined;
-    const eligibleQuantityMaxValue: number | undefined = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleQuantity !== undefined
-        && body.priceSpecification.eligibleQuantity.maxValue !== undefined
-        && body.priceSpecification.eligibleQuantity.maxValue !== '')
-        ? Number(body.priceSpecification.eligibleQuantity.maxValue)
+    const eligibleQuantityMaxValue: number | undefined = (req.body.priceSpecification !== undefined
+        && req.body.priceSpecification.eligibleQuantity !== undefined
+        && req.body.priceSpecification.eligibleQuantity.maxValue !== undefined
+        && req.body.priceSpecification.eligibleQuantity.maxValue !== '')
+        ? Number(req.body.priceSpecification.eligibleQuantity.maxValue)
         : undefined;
     const eligibleQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> | undefined =
         (eligibleQuantityMinValue !== undefined || eligibleQuantityMaxValue !== undefined)
@@ -455,11 +454,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             }
             : undefined;
 
-    const eligibleTransactionVolumePrice: number | undefined = (body.priceSpecification !== undefined
-        && body.priceSpecification.eligibleTransactionVolume !== undefined
-        && body.priceSpecification.eligibleTransactionVolume.price !== undefined
-        && body.priceSpecification.eligibleTransactionVolume.price !== '')
-        ? Number(body.priceSpecification.eligibleTransactionVolume.price)
+    const eligibleTransactionVolumePrice: number | undefined = (req.body.priceSpecification !== undefined
+        && req.body.priceSpecification.eligibleTransactionVolume !== undefined
+        && req.body.priceSpecification.eligibleTransactionVolume.price !== undefined
+        && req.body.priceSpecification.eligibleTransactionVolume.price !== '')
+        ? Number(req.body.priceSpecification.eligibleTransactionVolume.price)
         : undefined;
     // tslint:disable-next-line:max-line-length
     const eligibleTransactionVolume: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType> | undefined =
@@ -476,21 +475,21 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const accounting = {
         typeOf: <'Accounting'>'Accounting',
         operatingRevenue: <any>undefined,
-        accountsReceivable: Number(body.priceSpecification.price) // とりあえず発生金額に同じ
+        accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
     };
-    if (body.accountTitle !== undefined && body.accountTitle !== '') {
+    if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
         accounting.operatingRevenue = {
             typeOf: 'AccountTitle',
-            codeValue: body.accountTitle,
-            identifier: body.accountTitle,
+            codeValue: req.body.accountTitle,
+            identifier: req.body.accountTitle,
             name: ''
         };
     }
 
     let nameFromJson: any = {};
-    if (typeof body.nameStr === 'string' && body.nameStr.length > 0) {
+    if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
         try {
-            nameFromJson = JSON.parse(body.nameStr);
+            nameFromJson = JSON.parse(req.body.nameStr);
         } catch (error) {
             throw new Error(`高度な名称の型が不適切です ${error.message}`);
         }
@@ -515,8 +514,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const priceSpec: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType.UnitPriceSpecification> = {
         project: req.project,
         typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-        name: body.name,
-        price: Number(body.priceSpecification.price),
+        name: req.body.name,
+        price: Number(req.body.priceSpecification.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,
         valueAddedTaxIncluded: true,
         referenceQuantity: referenceQuantity,
@@ -526,7 +525,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     };
 
     let itemOffered;
-    const itemOfferedTypeOf = body.itemOffered?.typeOf;
+    const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
         case ProductType.Product:
             itemOffered = {
@@ -544,28 +543,28 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             break;
 
         default:
-            throw new Error(`${body.itemOffered?.typeOf} not implemented`);
+            throw new Error(`${req.body.itemOffered?.typeOf} not implemented`);
     }
 
     return {
         project: req.project,
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        id: body.id,
+        id: req.body.id,
         identifier: req.body.identifier,
         name: {
             ...nameFromJson,
-            ja: body.name.ja,
-            en: body.name.en
+            ja: req.body.name.ja,
+            en: req.body.name.en
         },
-        description: body.description,
-        alternateName: { ja: <string>body.alternateName.ja, en: '' },
+        description: req.body.description,
+        alternateName: { ja: <string>req.body.alternateName.ja, en: '' },
         availability: availability,
         itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: priceSpec,
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
                     return {
                         name: String(p.name),
@@ -604,44 +603,40 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     };
 }
 
-function validate(req: Request): void {
-    let colName: string = 'コード';
-    req.checkBody('identifier', Message.Common.required.replace('$fieldName$', colName))
-        .notEmpty();
-    req.checkBody('identifier', Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE))
-        .len({ max: NAME_MAX_LENGTH_CODE });
+function validate() {
+    return [
+        body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
+            .notEmpty(),
+        body('identifier', Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_CODE }),
 
-    colName = '名称';
-    req.checkBody('name.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_CODE));
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE)),
 
-    colName = '代替名称';
-    req.checkBody('alternateName.ja')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
+        body('alternateName.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '代替名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('代替名称', NAME_MAX_LENGTH_NAME_JA)),
 
-    colName = '適用数';
-    req.checkBody('priceSpecification.referenceQuantity.value')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        body('priceSpecification.referenceQuantity.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用数')),
 
-    colName = '適用単位';
-    req.checkBody('priceSpecification.referenceQuantity.unitCode')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        body('priceSpecification.referenceQuantity.unitCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用単位')),
 
-    colName = '発生金額';
-    req.checkBody('priceSpecification.price')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .isNumeric()
-        .len({ max: CHAGE_MAX_LENGTH })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, CHAGE_MAX_LENGTH));
+        body('priceSpecification.price')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '発生金額'))
+            .isNumeric()
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+    ];
 }
 
 export default offersRouter;

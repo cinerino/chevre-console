@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+import { body, validationResult } from 'express-validator';
 import * as _ from 'underscore';
 
 import * as Message from '../../message';
@@ -74,6 +75,7 @@ accountTitleSetRouter.get(
 
 accountTitleSetRouter.all(
     '/new',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -85,9 +87,8 @@ accountTitleSetRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     const accountTitleSet = await createFromBody(req, true);
@@ -128,6 +129,7 @@ accountTitleSetRouter.all(
 
 accountTitleSetRouter.all(
     '/:codeValue',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -157,9 +159,8 @@ accountTitleSetRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     accountTitleSet = await createFromBody(req, false);
@@ -225,25 +226,24 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 /**
  * 科目バリデーション
  */
-function validate(req: Request): void {
-    let colName: string = '科目分類';
-    req.checkBody('inCodeSet.codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
+function validate() {
+    return [
+        body('inCodeSet.codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '科目分類')),
 
-    colName = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
+        body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
 
-    colName = '名称';
-    req.checkBody('name')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
+        body('name')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+    ];
 }
 
 export default accountTitleSetRouter;

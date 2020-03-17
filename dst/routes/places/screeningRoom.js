@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const screeningRoomRouter = express_1.Router();
@@ -150,9 +151,8 @@ screeningRoomRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     }
     if (req.method === 'POST') {
         // バリデーション
-        // validate(req, 'update');
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 screeningRoom = createFromBody(req, false);
@@ -182,17 +182,16 @@ screeningRoomRouter.all('/:id/update', (req, res) => __awaiter(void 0, void 0, v
     });
 }));
 function createFromBody(req, isNew) {
-    const body = req.body;
     let openSeatingAllowed;
-    if (body.openSeatingAllowed === '1') {
+    if (req.body.openSeatingAllowed === '1') {
         openSeatingAllowed = true;
     }
-    return Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: body.branchCode, name: body.name, address: body.address, containedInPlace: {
+    return Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
             project: req.project,
             typeOf: chevre.factory.placeType.MovieTheater,
-            branchCode: body.containedInPlace.branchCode
-        }, containsPlace: [], additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+            branchCode: req.body.containedInPlace.branchCode
+        }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
                     name: String(p.name),

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
+const express_validator_1 = require("express-validator");
 const Message = require("../message");
 const debug = createDebug('chevre-backend:routes');
 // 作品コード 半角64
@@ -93,7 +94,7 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         });
     }
 }));
-accountTitlesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
@@ -102,9 +103,9 @@ accountTitlesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
     });
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        // validate(req);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
                 const accountTitle = yield createFromBody(req);
@@ -140,7 +141,7 @@ accountTitlesRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, 
         accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
     });
 }));
-accountTitlesRouter.all('/:codeValue', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitlesRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
@@ -157,9 +158,10 @@ accountTitlesRouter.all('/:codeValue', (req, res) => __awaiter(void 0, void 0, v
     }
     if (req.method === 'POST') {
         // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
+        // validate(req);
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
+        console.error('errors', errors);
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -234,22 +236,21 @@ function createFromBody(req) {
 /**
  * 細目バリデーション
  */
-function validate(req) {
-    let colName = '科目';
-    req.checkBody('inCodeSet.codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName));
-    colName = 'コード';
-    req.checkBody('codeValue')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_CODE })
-        .withMessage(Message.Common.getMaxLengthHalfByte(colName, NAME_MAX_LENGTH_CODE));
-    colName = '名称';
-    req.checkBody('name')
-        .notEmpty()
-        .withMessage(Message.Common.required.replace('$fieldName$', colName))
-        .len({ max: NAME_MAX_LENGTH_NAME_JA })
-        .withMessage(Message.Common.getMaxLength(colName, NAME_MAX_LENGTH_NAME_JA));
+function validate() {
+    return [
+        express_validator_1.body('inCodeSet.codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '科目')),
+        express_validator_1.body('codeValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+        express_validator_1.body('name')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
+    ];
 }
 exports.default = accountTitlesRouter;

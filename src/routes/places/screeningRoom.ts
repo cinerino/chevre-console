@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+import { validationResult } from 'express-validator';
 
 const debug = createDebug('chevre-backend:router');
 
@@ -171,9 +172,8 @@ screeningRoomRouter.all(
 
         if (req.method === 'POST') {
             // バリデーション
-            // validate(req, 'update');
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
                     screeningRoom = createFromBody(req, false);
@@ -212,27 +212,25 @@ screeningRoomRouter.all(
 );
 
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoom.IPlace {
-    const body = req.body;
-
     let openSeatingAllowed: boolean | undefined;
-    if (body.openSeatingAllowed === '1') {
+    if (req.body.openSeatingAllowed === '1') {
         openSeatingAllowed = true;
     }
 
     return {
         project: req.project,
         typeOf: chevre.factory.placeType.ScreeningRoom,
-        branchCode: body.branchCode,
-        name: body.name,
-        address: body.address,
+        branchCode: req.body.branchCode,
+        name: req.body.name,
+        address: req.body.address,
         containedInPlace: {
             project: req.project,
             typeOf: chevre.factory.placeType.MovieTheater,
-            branchCode: body.containedInPlace.branchCode
+            branchCode: req.body.containedInPlace.branchCode
         },
         containsPlace: [], // 更新しないため空でよし
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
                     return {
                         name: String(p.name),

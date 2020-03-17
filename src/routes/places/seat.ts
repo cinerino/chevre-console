@@ -4,6 +4,7 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+import { validationResult } from 'express-validator';
 
 const debug = createDebug('chevre-backend:router');
 
@@ -206,9 +207,8 @@ seatRouter.all(
 
             if (req.method === 'POST') {
                 // バリデーション
-                // validate(req, 'update');
-                const validatorResult = await req.getValidationResult();
-                errors = req.validationErrors(true);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     try {
                         seat = createFromBody(req, false);
@@ -251,34 +251,32 @@ seatRouter.all(
 );
 
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat.IPlace {
-    const body = req.body;
-
     let seatingType: string[] | undefined;
-    if (typeof body.seatingType === 'string' && body.seatingType.length > 0) {
-        seatingType = [body.seatingType];
+    if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
+        seatingType = [req.body.seatingType];
     }
 
     return {
         project: req.project,
         typeOf: chevre.factory.placeType.Seat,
-        branchCode: body.branchCode,
+        branchCode: req.body.branchCode,
         containedInPlace: {
             project: req.project,
             typeOf: chevre.factory.placeType.ScreeningRoomSection,
-            branchCode: body.containedInPlace.branchCode,
+            branchCode: req.body.containedInPlace.branchCode,
             containedInPlace: {
                 project: req.project,
                 typeOf: chevre.factory.placeType.ScreeningRoom,
-                branchCode: body.containedInPlace.containedInPlace.branchCode,
+                branchCode: req.body.containedInPlace.containedInPlace.branchCode,
                 containedInPlace: {
                     project: req.project,
                     typeOf: chevre.factory.placeType.MovieTheater,
-                    branchCode: body.containedInPlace.containedInPlace.containedInPlace.branchCode
+                    branchCode: req.body.containedInPlace.containedInPlace.containedInPlace.branchCode
                 }
             }
         },
-        additionalProperty: (Array.isArray(body.additionalProperty))
-            ? body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
                     return {
                         name: String(p.name),
