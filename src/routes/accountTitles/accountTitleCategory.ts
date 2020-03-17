@@ -58,7 +58,7 @@ accountTitleCategoryRouter.get(
     }
 );
 
-accountTitleCategoryRouter.get(
+accountTitleCategoryRouter.all(
     '/new',
     async (req, res) => {
         let message = '';
@@ -99,106 +99,7 @@ accountTitleCategoryRouter.get(
     }
 );
 
-accountTitleCategoryRouter.post(
-    '/new',
-    async (req, res) => {
-        let message = '';
-        let errors: any = {};
-        if (req.method === 'POST') {
-            // バリデーション
-            validate(req);
-            const validatorResult = await req.getValidationResult();
-            errors = req.validationErrors(true);
-            if (validatorResult.isEmpty()) {
-                try {
-                    const accountTitleCategory = createFromBody(req, true);
-                    debug('saving account title...', accountTitleCategory);
-                    const accountTitleService = new chevre.service.AccountTitle({
-                        endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
-                    });
-                    await accountTitleService.createAccounTitleCategory(accountTitleCategory);
-                    req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
-
-                    return;
-                } catch (error) {
-                    message = error.message;
-                }
-            }
-        }
-
-        const forms = {
-            ...req.body
-        };
-
-        res.render('accountTitles/accountTitleCategory/add', {
-            message: message,
-            errors: errors,
-            forms: forms
-        });
-    }
-);
-
-accountTitleCategoryRouter.get(
-    '/:codeValue',
-    async (req, res, next) => {
-        try {
-            let message = '';
-            let errors: any = {};
-
-            const accountTitleService = new chevre.service.AccountTitle({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-
-            const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
-                project: { ids: [req.project.id] },
-                codeValue: { $eq: req.params.codeValue }
-            });
-            let accountTitleCategory = searchAccountTitlesResult.data.shift();
-            if (accountTitleCategory === undefined) {
-                throw new chevre.factory.errors.NotFound('AccounTitle');
-            }
-
-            if (req.method === 'POST') {
-                // バリデーション
-                validate(req);
-                const validatorResult = await req.getValidationResult();
-                errors = req.validationErrors(true);
-                if (validatorResult.isEmpty()) {
-                    // 作品DB登録
-                    try {
-                        accountTitleCategory = createFromBody(req, false);
-                        debug('saving account title...', accountTitleCategory);
-                        await accountTitleService.updateAccounTitleCategory(accountTitleCategory);
-                        req.flash('message', '更新しました');
-                        res.redirect(req.originalUrl);
-
-                        return;
-                    } catch (error) {
-                        message = error.message;
-                    }
-                }
-            }
-
-            const forms = {
-                ...accountTitleCategory,
-                ...req.body
-            };
-
-            res.render('accountTitles/accountTitleCategory/edit', {
-                message: message,
-                errors: errors,
-                forms: forms
-            });
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-accountTitleCategoryRouter.post(
+accountTitleCategoryRouter.all(
     '/:codeValue',
     async (req, res, next) => {
         try {

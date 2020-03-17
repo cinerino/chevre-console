@@ -60,7 +60,7 @@ accountTitleCategoryRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
         });
     }
 }));
-accountTitleCategoryRouter.get('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitleCategoryRouter.all('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -93,87 +93,7 @@ accountTitleCategoryRouter.get('/new', (req, res) => __awaiter(void 0, void 0, v
         forms: forms
     });
 }));
-accountTitleCategoryRouter.post('/new', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let message = '';
-    let errors = {};
-    if (req.method === 'POST') {
-        // バリデーション
-        validate(req);
-        const validatorResult = yield req.getValidationResult();
-        errors = req.validationErrors(true);
-        if (validatorResult.isEmpty()) {
-            try {
-                const accountTitleCategory = createFromBody(req, true);
-                debug('saving account title...', accountTitleCategory);
-                const accountTitleService = new chevre.service.AccountTitle({
-                    endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
-                });
-                yield accountTitleService.createAccounTitleCategory(accountTitleCategory);
-                req.flash('message', '登録しました');
-                res.redirect(`/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
-                return;
-            }
-            catch (error) {
-                message = error.message;
-            }
-        }
-    }
-    const forms = Object.assign({}, req.body);
-    res.render('accountTitles/accountTitleCategory/add', {
-        message: message,
-        errors: errors,
-        forms: forms
-    });
-}));
-accountTitleCategoryRouter.get('/:codeValue', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let message = '';
-        let errors = {};
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
-            project: { ids: [req.project.id] },
-            codeValue: { $eq: req.params.codeValue }
-        });
-        let accountTitleCategory = searchAccountTitlesResult.data.shift();
-        if (accountTitleCategory === undefined) {
-            throw new chevre.factory.errors.NotFound('AccounTitle');
-        }
-        if (req.method === 'POST') {
-            // バリデーション
-            validate(req);
-            const validatorResult = yield req.getValidationResult();
-            errors = req.validationErrors(true);
-            if (validatorResult.isEmpty()) {
-                // 作品DB登録
-                try {
-                    accountTitleCategory = createFromBody(req, false);
-                    debug('saving account title...', accountTitleCategory);
-                    yield accountTitleService.updateAccounTitleCategory(accountTitleCategory);
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
-                    return;
-                }
-                catch (error) {
-                    message = error.message;
-                }
-            }
-        }
-        const forms = Object.assign(Object.assign({}, accountTitleCategory), req.body);
-        res.render('accountTitles/accountTitleCategory/edit', {
-            message: message,
-            errors: errors,
-            forms: forms
-        });
-    }
-    catch (error) {
-        next(error);
-    }
-}));
-accountTitleCategoryRouter.post('/:codeValue', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitleCategoryRouter.all('/:codeValue', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';
         let errors = {};
