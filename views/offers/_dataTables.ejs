@@ -93,6 +93,7 @@
                     width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
                     <thead class="text-primary">
                         <tr>
+                            <th></th>
                             <th>コード</th>
                             <th>利用状況</th>
                             <th>アイテム</th>
@@ -109,6 +110,11 @@
 
                     <tbody>
                         <tr id="templateRow" _id="$id$">
+                            <td name="color">
+                                <a href="javascript:void(0)">
+                                    <i class="material-icons" style="font-size: 1.2em; color:$color$">color_lens</i>
+                                </a>
+                            </td>
                             <td name="id__identifier__itemOffered.typeOf">
                                 <a target="_blank" href="/offers/$id$/update?itemOffered[typeOf]=$itemOffered.typeOf$">
                                     $identifier$

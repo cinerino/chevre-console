@@ -612,6 +612,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         typeOf: ProductType.EventService
     };
 
+    let color: string = 'rgb(51, 51, 51)';
+    if (typeof req.body.color === 'string' && req.body.color.length > 0) {
+        color = req.body.color;
+    }
+
     return {
         project: req.project,
         typeOf: <chevre.factory.offerType>'Offer',
@@ -651,9 +656,9 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     };
                 })
             : undefined,
-        ...(typeof req.body.color === 'string')
+        ...(typeof color === 'string')
             ? {
-                color: <string>req.body.color
+                color: color
             }
             : undefined,
         ...(offerCategory !== undefined)
@@ -696,7 +701,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             // },
             ? {
                 $unset: {
-                    ...(typeof req.body.color !== 'string') ? { color: 1 } : undefined,
+                    ...(typeof color !== 'string') ? { color: 1 } : undefined,
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined,
                     ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined,

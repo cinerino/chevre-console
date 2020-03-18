@@ -531,6 +531,10 @@ function createFromBody(req, isNew) {
             project: req.project,
             typeOf: productType_1.ProductType.EventService
         };
+        let color = 'rgb(51, 51, 51)';
+        if (typeof req.body.color === 'string' && req.body.color.length > 0) {
+            color = req.body.color;
+        }
         return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
@@ -553,9 +557,9 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, (typeof req.body.color === 'string')
+                : undefined }, (typeof color === 'string')
             ? {
-                color: req.body.color
+                color: color
             }
             : undefined), (offerCategory !== undefined)
             ? {
@@ -590,7 +594,7 @@ function createFromBody(req, isNew) {
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof req.body.color !== 'string') ? { color: 1 } : undefined), (offerCategory === undefined) ? { category: 1 } : undefined), (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined), (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined), (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof color !== 'string') ? { color: 1 } : undefined), (offerCategory === undefined) ? { category: 1 } : undefined), (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined), (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined), (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
