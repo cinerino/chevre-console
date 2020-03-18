@@ -378,6 +378,9 @@ offersRouter.get(
                         ...t,
                         itemOfferedName: productType?.name,
                         availabilityName: itemAvailability?.name,
+                        availableAtOrFromCount: (Array.isArray(t.availableAtOrFrom))
+                            ? t.availableAtOrFrom.length
+                            : 0,
                         categoryName: (typeof categoryCode === 'string')
                             ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                             : '',

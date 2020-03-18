@@ -95,7 +95,6 @@
                         <tr>
                             <th></th>
                             <th>コード</th>
-                            <th>利用状況</th>
                             <th>アイテム</th>
                             <th>カテゴリー</th>
                             <th>名称</th>
@@ -104,6 +103,7 @@
                             <th>有効性</th>
                             <th>アドオン</th>
                             <th>カタログ</th>
+                            <th>Apps</th>
                             <th>追加特性</th>
                         </tr>
                     </thead>
@@ -121,7 +121,6 @@
                                     <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                 </a>
                             </td>
-                            <td name="availabilityName">$availabilityName$</td>
                             <td name="itemOfferedName">$itemOfferedName$</td>
                             <td name="categoryName">$categoryName$</td>
                             <td name="alternateName.ja|slice">$alternateName.ja$</td>
@@ -147,6 +146,11 @@
                             <td name="id__showCatalogs">
                                 <a href="javascript:void(0)" class="showCatalogs" data-id="$id$">
                                     <span>表示</span>
+                                </a>
+                            </td>
+                            <td name="availableAtOrFromCount">
+                                <a href="javascript:void(0)" class="" data-id="$id$">
+                                    $availableAtOrFromCount$
                                 </a>
                             </td>
                             <td name="id__additionalProperty">

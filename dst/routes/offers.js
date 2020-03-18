@@ -322,7 +322,9 @@ offersRouter.get('/getlist',
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                 const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
                 const itemAvailability = itemAvailability_1.itemAvailabilities.find((i) => i.codeValue === t.availability);
-                return Object.assign(Object.assign({}, t), { itemOfferedName: productType === null || productType === void 0 ? void 0 : productType.name, availabilityName: itemAvailability === null || itemAvailability === void 0 ? void 0 : itemAvailability.name, categoryName: (typeof categoryCode === 'string')
+                return Object.assign(Object.assign({}, t), { itemOfferedName: productType === null || productType === void 0 ? void 0 : productType.name, availabilityName: itemAvailability === null || itemAvailability === void 0 ? void 0 : itemAvailability.name, availableAtOrFromCount: (Array.isArray(t.availableAtOrFrom))
+                        ? t.availableAtOrFrom.length
+                        : 0, categoryName: (typeof categoryCode === 'string')
                         ? (_c = (_b = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                         ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                         : '', addOnCount: (Array.isArray(t.addOn))

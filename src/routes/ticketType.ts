@@ -2,6 +2,7 @@
  * 券種管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import { Request, Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import { CREATED } from 'http-status';
@@ -45,6 +46,11 @@ ticketTypeMasterRouter.all(
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
+        });
+        const iamService = new cinerino.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -136,6 +142,10 @@ ticketTypeMasterRouter.all(
             typeOf: { $eq: ProductType.Product }
         });
 
+        const searchApplicationsResult = await iamService.searchMembers({
+            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        });
+
         res.render('ticketType/add', {
             message: message,
             errors: errors,
@@ -145,7 +155,8 @@ ticketTypeMasterRouter.all(
             accountTypes: searchAccountTypesResult.data,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: accountTitles,
-            addOns: searchAddOnsResult.data
+            addOns: searchAddOnsResult.data,
+            applications: searchApplicationsResult.data.map((d) => d.member)
         });
     }
 );
@@ -170,6 +181,11 @@ ticketTypeMasterRouter.all(
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
+        });
+        const iamService = new cinerino.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {
@@ -298,6 +314,10 @@ ticketTypeMasterRouter.all(
 
             const accountTitles = await searchAllAccountTitles(req);
 
+            const searchApplicationsResult = await iamService.searchMembers({
+                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            });
+
             res.render('ticketType/update', {
                 message: message,
                 errors: errors,
@@ -307,7 +327,8 @@ ticketTypeMasterRouter.all(
                 accountTypes: searchAccountTypesResult.data,
                 ticketTypeCategories: searchOfferCategoryTypesResult.data,
                 accountTitles: accountTitles,
-                addOns: searchAddOnsResult.data
+                addOns: searchAddOnsResult.data,
+                applications: searchApplicationsResult.data.map((d) => d.member)
             });
         } catch (error) {
             next(error);
@@ -446,6 +467,19 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         availability = chevre.factory.itemAvailability.InStoreOnly;
     } else if (req.body.isOnlineTicket === '1') {
         availability = chevre.factory.itemAvailability.OnlineOnly;
+    }
+
+    // 利用可能なアプリケーション設定
+    const availableAtOrFrom: { id: string }[] = [];
+    const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+    if (Array.isArray(availableAtOrFromParams)) {
+        (<any[]>availableAtOrFromParams).forEach((applicationId) => {
+            if (typeof applicationId === 'string' && applicationId.length > 0) {
+                availableAtOrFrom.push({ id: applicationId });
+            }
+        });
+    } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+        availableAtOrFrom.push({ id: availableAtOrFromParams });
     }
 
     const referenceQuantityValue: number = Number(req.body.seatReservationUnit);
@@ -630,6 +664,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         },
         description: req.body.description,
         alternateName: { ja: <string>req.body.alternateName.ja, en: '' },
+        availableAtOrFrom: availableAtOrFrom,
         availability: availability,
         itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,

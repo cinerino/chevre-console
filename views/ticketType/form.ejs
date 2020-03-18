@@ -24,7 +24,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
-                    その他
+                    高度な設定
                 </a>
             </li>
             <li class="nav-item">
@@ -549,6 +549,33 @@
                     </div>
                 </div>
                 <% } %>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="availableAtOrFrom[][id]" class="bmd-label-static">
+                            利用可能アプリケーション
+                        </label>
+
+                        <% applications.forEach((application) => { %>
+                        <%
+                        let checked = false;
+                        if (Array.isArray(forms.availableAtOrFrom) && forms.availableAtOrFrom.some((a)=>a.id === application.id)) {
+                            checked = true;
+                        }
+                        %>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                                    <% } %> value="<%= application.id %>"
+                                    name="availableAtOrFrom[id]"><%= application.name %>
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
 
             </div>
 
