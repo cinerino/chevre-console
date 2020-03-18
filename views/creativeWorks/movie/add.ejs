@@ -8,12 +8,9 @@ Aa-9
 <script src="/js/master/creativeWorks/movieForm.js"></script>
 
 <%- contentFor('body') %>
-<% /* フォーム */ %>
 <form method="post">
     <%- include('../../common/errorMessage') %>
     <%- include('../../common/successMessage') %>
 
     <%- include('form', { forms: forms, isNew: true }) %>
-
-    <button type="button" class="btn btn-ok btn-primary">登録する</button>
 </form>

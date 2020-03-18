@@ -103,7 +103,7 @@ function submit() {
             .appendTo('#ticketTypeGroupsForm');
     });
 
-    $('.btn-ok').prop('disabled', true)
+    $('.btn-ok').addClass('disabled')
         .text('processing...');
 
     $('form').submit();

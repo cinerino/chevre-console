@@ -2,9 +2,15 @@
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
         </div>
 
-        <ul class="nav nav-pills nav-pills-primary" role="tablist">
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
                     基本設定
