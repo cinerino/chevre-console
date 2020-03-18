@@ -36,14 +36,14 @@
             <div class="tab-pane active show" id="link1">
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-3">
                         <label for="identifier" class="bmd-label-static">
                             コード<span class="text-danger">＊</span>
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
-                            maxlength=64 value="<%= forms.identifier %>">
-                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                            maxlength=30 value="<%= forms.identifier %>">
+                        <span class="bmd-help">半角30文字以内でご入力ください</span>
                         <% } else { %>
                         <label for="identifier" class="bmd-label-static">
                             コード<span class="text-danger">＊</span>
@@ -51,11 +51,11 @@
                         <input type="text" disabled class="form-control" value="<%= forms.identifier %>">
                         <input type="hidden" name="identifier" value="<%= forms.identifier %>">
                         <% } %>
+                        <% if (errors && errors.identifier) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.identifier) { %>
                             <%- errors.identifier.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -67,11 +67,11 @@
                         <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
                             maxlength=64 value="<%=forms.name.ja %>">
                         <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['name.ja']) { %>
                             <%- errors['name.ja'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-6">
@@ -81,11 +81,11 @@
                         <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder=""
                             maxlength=64 value="<%=forms.name.en %>">
                         <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.en']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['name.en']) { %>
                             <%- errors['name.en'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -97,11 +97,11 @@
                         <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]"
                             placeholder="" maxlength=64 value="<%= forms.alternateName.ja %>">
                         <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['alternateName.ja']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['alternateName.ja']) { %>
                             <%- errors['alternateName.ja'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -129,19 +129,19 @@
                         </div>
                         <span class="bmd-help">半角10文字以内でご入力ください</span>
 
+                        <% if (errors && errors.price) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.price) { %>
                             <%- errors.price.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
+                        <% if (errors && errors.seatReservationUnit) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.seatReservationUnit) { %>
                             <%- errors.seatReservationUnit.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-3">
+                    <div class="form-group bmd-form-group col-md-4">
                         <label for="accountsReceivable" class="bmd-label-static">
                             売上金額<span class="text-danger">＊</span>
                         </label>
@@ -153,14 +153,11 @@
                             </div>
                         </div>
                         <span class="bmd-help">半角10文字以内でご入力ください</span>
+                        <% if (errors && errors.accountsReceivable) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.accountsReceivable) { %>
                             <%- errors.accountsReceivable.msg %>
-                            <% } %>
                         </span>
-                    </div>
-
-                    <div class="form-group bmd-form-group col-md-3">
+                        <% } %>
                     </div>
                 </div>
 
@@ -198,11 +195,11 @@
                         <input type="text" class="form-control" name="description[ja]" id="description[ja]"
                             placeholder="" maxlength=64 value="<%=forms.description.ja %>">
                         <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['description.ja']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['description.ja']) { %>
                             <%- errors['description.ja'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-6">
@@ -212,11 +209,11 @@
                         <input type="text" class="form-control" name="description[en]" id="description[en]"
                             placeholder="" maxlength=64 value="<%=forms.description.en %>">
                         <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <% if (errors && errors['description.en']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['description.en']) { %>
                             <%- errors['description.en'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
             </div>
@@ -244,11 +241,11 @@
                             </div>
                         </div>
 
+                        <% if (errors && errors.appliesToMovieTicketType) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.appliesToMovieTicketType) { %>
                             <%- errors.appliesToMovieTicketType.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
@@ -282,11 +279,11 @@
                             </div>
                         </div>
 
+                        <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
                             <%- errors['eligibleMonetaryAmount.0.value'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
@@ -308,11 +305,11 @@
                             </div>
                         </div>
 
+                        <% if (errors && errors['eligibleSeatingType.id']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['eligibleSeatingType.id']) { %>
                             <%- errors['eligibleSeatingType.id'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
@@ -343,11 +340,11 @@
                             </div>
                         </div>
 
+                        <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
                             <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -495,11 +492,11 @@
                             </option>
                             <% } %>
                         </select>
+                        <% if (errors && errors.accountTitle) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.accountTitle) { %>
                             <%- errors.accountTitle.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 

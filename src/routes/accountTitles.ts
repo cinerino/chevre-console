@@ -11,9 +11,7 @@ import * as Message from '../message';
 
 const debug = createDebug('chevre-backend:routes');
 
-// 作品コード 半角64
-const NAME_MAX_LENGTH_CODE: number = 64;
-// 作品名・日本語 全角64
+const NAME_MAX_LENGTH_CODE: number = 30;
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const NUM_ADDITIONAL_PROPERTY = 5;
@@ -283,7 +281,9 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage(() => '英数字で入力してください'),
         body('name')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

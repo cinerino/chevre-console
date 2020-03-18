@@ -310,6 +310,12 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('price')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '金額'))
+            .isInt()
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(() => '数値を入力してください'),
         express_validator_1.body('appliesToCategoryCode')
             .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification)
             .notEmpty()

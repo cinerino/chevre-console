@@ -20,7 +20,7 @@
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-3">
                         <label for="locationId" class="bmd-label-static">
                             劇場<span class="text-danger">＊</span>
                         </label>
@@ -41,7 +41,7 @@
                         </select>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-3">
                         <label for="workPerformed[identifier]" class="bmd-label-static">
                             作品<span class="text-danger">＊</span>
                         </label>
@@ -122,7 +122,7 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="startDate" class="bmd-label-static">
                             上映開始日<span class="text-danger">＊</span>
                         </label>
@@ -135,7 +135,7 @@
                         <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="endDate" class="bmd-label-static">
                             上映終了日<span class="text-danger">＊</span>
                         </label>
@@ -150,23 +150,7 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
-                        <label for="description" class="bmd-label-static">
-                            補足説明
-                        </label>
-                        <input class="form-control" name="description" id="description" placeholder="" maxlength=30
-                            value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
-                        <span class="bmd-help">全角30文字以内でご入力ください</span>
-                        <% if (errors && errors.description) { %>
-                        <span class="bmd-help text-danger d-block">
-                            <%- errors.description.msg %>
-                        </span>
-                        <% } %>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="contentRating" class="bmd-label-static">
                             レイティング<span class="text-danger">＊</span>
                         </label>
@@ -180,14 +164,14 @@
                             </option>
                             <% } %>
                         </select>
-                        <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.contentRating) { %>
+                        <% if (errors && errors.contentRating) { %>
+                        <p class="text-danger">
                             <%- errors.contentRating.msg %>
-                            <% } %>
-                        </span>
+                        </p>
+                        <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="translationType" class="bmd-label-static">
                             字幕/吹替
                         </label>
@@ -206,6 +190,20 @@
                             </option>
                             <% } %>
                         </select>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-8">
+                        <label for="description" class="bmd-label-static">
+                            補足説明
+                        </label>
+                        <input class="form-control" name="description" id="description" placeholder="" maxlength=30
+                            value="<% if (forms.description !== undefined && forms.description.ja) { %> <%- forms.description.ja %> <% } %>">
+                        <span class="bmd-help">全角30文字以内でご入力ください</span>
+                        <% if (errors && errors.description) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.description.msg %>
+                        </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -231,9 +229,9 @@
                         <% }) %>
 
                         <% if (errors && errors.videoFormatType) { %>
-                        <span class="bmd-help text-danger d-block">
+                        <p class="text-danger">
                             <%- errors.videoFormatType.msg %>
-                        </span>
+                        </p>
                         <% } %>
                     </div>
                 </div>

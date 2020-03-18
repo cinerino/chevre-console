@@ -14,57 +14,64 @@
 
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
-                <div class="form-group bmd-form-group">
-                    <label for="inCodeSet[codeValue]" class="">
-                        科目分類<span class="text-danger">＊</span>
-                    </label>
-                    <% if (!isNew) { %>
-                    <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
-                    <% } %>
-                    <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
-                        <option value="">選択してください</option>
-                        <% for (const accountTitleCategory of accountTitleCategories) { %>
-                        <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
-                        { %> selected <% } %>>
-                            <%= accountTitleCategory.codeValue %>
-                            <%= accountTitleCategory.name %>
-                        </option>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="inCodeSet[codeValue]" class="bmd-label-static">
+                            科目分類<span class="text-danger">＊</span>
+                        </label>
+                        <% if (!isNew) { %>
+                        <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
                         <% } %>
-                    </select>
-                    <% if (errors && errors['inCodeSet.codeValue']) { %>
-                    <p class="error message text-danger">
-                        <%- errors['inCodeSet.codeValue'].msg %>
-                    </p>
-                    <% } %>
+                        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
+                            <option value="">選択してください</option>
+                            <% for (const accountTitleCategory of accountTitleCategories) { %>
+                            <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
+                            { %> selected <% } %>>
+                                <%= accountTitleCategory.codeValue %>
+                                <%= accountTitleCategory.name %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <% if (errors && errors['inCodeSet.codeValue']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['inCodeSet.codeValue'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
 
-                <div class="form-group bmd-form-group">
-                    <label for="codeValue" class="bmd-label-static">
-                        コード<span class="text-danger">＊</span>
-                    </label>
-                    <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=64
-                        value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
-                    <span class="bmd-help">半角64文字以内でご入力ください</span>
-                    <% if (errors && errors['codeValue']) { %>
-                    <p class="error message text-danger">
-                        <%- errors['codeValue'].msg %>
-                    </p>
-                    <% } %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="codeValue" class="bmd-label-static">
+                            コード<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=30
+                            value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
+                        <span class="bmd-help">半角30文字以内でご入力ください</span>
+                        <% if (errors && errors['codeValue']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['codeValue'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
 
-                <div class="form-group bmd-form-group">
-                    <label for="name" class="bmd-label-static">
-                        名称<span class="text-danger">＊</span>
-                    </label>
-                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64
-                        value="<%= forms.name %>">
-                    <span class="bmd-help">64文字以内でご入力ください</span>
-                    <% if (errors && errors['name']) { %>
-                    <p class="error message text-danger">
-                        <%- errors['name'].msg %>
-                    </p>
-                    <% } %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="name" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="name" id="name" placeholder="" maxlength=64
+                            value="<%= forms.name %>">
+                        <span class="bmd-help">64文字以内でご入力ください</span>
+                        <% if (errors && errors['name']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
+
             </div>
             <div class="tab-pane" id="link2">
             </div>

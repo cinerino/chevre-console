@@ -15,7 +15,7 @@ import { ProductType, productTypes } from '../factory/productType';
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 // コード 半角64
-const NAME_MAX_LENGTH_CODE = 64;
+const NAME_MAX_LENGTH_CODE = 30;
 // 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 // 金額
@@ -606,9 +606,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 function validate() {
     return [
         body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
-            .notEmpty(),
-        body('identifier', Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_CODE }),
+            .notEmpty()
+            .isLength({ max: NAME_MAX_LENGTH_CODE })
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .matches(/^[0-9a-zA-Z\-_]+$/)
+            .withMessage(() => '英数字で入力してください'),
 
         body('name.ja')
             .notEmpty()

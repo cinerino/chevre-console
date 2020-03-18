@@ -20,7 +20,7 @@
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
+                    <div class="form-group bmd-form-group col-md-3">
                         <label for="identifier" class="bmd-label-static">
                             コード<span class="text-danger">＊</span>
                         </label>
@@ -34,11 +34,11 @@
                             value="<%= forms.identifier %>">
                         <% } %>
                         <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <% if (errors && errors.identifier) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.identifier) { %>
                             <%- errors.identifier.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
@@ -50,11 +50,11 @@
                         <input class="form-control" name="name" id="name" placeholder="" maxlength=64
                             value="<%= forms.name %>">
                         <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors.name) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.name) { %>
                             <%- errors.name.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-6">
@@ -64,16 +64,16 @@
                         <input class="form-control" name="headline" id="headline" placeholder="" maxlength=64
                             value="<%= forms.headline %>">
                         <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors.headline) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.headline) { %>
                             <%- errors.headline.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-3">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="duration" class="bmd-label-static">
                             上映時間
                         </label>
@@ -85,14 +85,14 @@
                             </div>
                         </div>
                         <span class="bmd-help">半角10文字以内でご入力ください</span>
+                        <% if (errors && errors.duration) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.duration) { %>
                             <%- errors.duration.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-3">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="contentRating" class="bmd-label-static">
                             レイティング
                         </label>
@@ -105,14 +105,14 @@
                             </option>
                             <% } %>
                         </select>
+                        <% if (errors && errors.contentRating) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.contentRating) { %>
                             <%- errors.contentRating.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-3">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="distributor[codeValue]" class="bmd-label-static">
                             配給
                         </label>
@@ -126,40 +126,40 @@
                             </option>
                             <% } %>
                         </select>
+                        <% if (errors && errors.contentRating) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.contentRating) { %>
                             <%- errors.contentRating.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label class="bmd-label-static" for="datePublished">
                             公開日
                         </label>
                         <input class="form-control datepicker" name="datePublished" id="datePublished"
                             value="<%= forms.datePublished %>">
+                        <% if (errors && errors.datePublished) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors.datePublished) { %>
                             <%- errors.datePublished.msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
 
-                    <div class="form-group bmd-form-group col-md-6">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label class="bmd-label-static" for="offers[availabilityEnds]">
                             興行終了予定日
                         </label>
                         <input class="form-control datepicker" name="offers[availabilityEnds]"
                             id="offers[availabilityEnds]"
                             value="<%= (forms.offers !== undefined) ? forms.offers.availabilityEnds : '' %>">
+                        <% if (errors && errors['offers.availabilityEnds']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <% if (errors && errors['offers.availabilityEnds']) { %>
                             <%- errors['offers.availabilityEnds'].msg %>
-                            <% } %>
                         </span>
+                        <% } %>
                     </div>
                 </div>
             </div>

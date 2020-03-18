@@ -386,6 +386,13 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30)),
 
+        body('price')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '金額'))
+            .isInt()
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(() => '数値を入力してください'),
+
         body('appliesToCategoryCode')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification)
             .notEmpty()

@@ -14,45 +14,50 @@
 
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
-                <div class="form-group bmd-form-group">
-                    <label for="typeOf" class="bmd-label-static">
-                        価格仕様タイプ
-                    </label>
-                    <% if (isNew) { %>
-                    <select class="form-control" name="typeOf">
-                        <option value="" selected>選択してください</option>
-                        <% priceSpecificationTypes.forEach((priceSpecificationType) => { %>
-                        <option value="<%= priceSpecificationType.codeValue %>"
-                            <% if (priceSpecificationType.codeValue === forms.typeOf) { %> selected<% } %>>
-                            <%= priceSpecificationType.name %>
-                        </option>
-                        <% }) %>
-                    </select>
-                    <% } else { %>
-                    <% const priceSpecificationType = priceSpecificationTypes.find((p) => p.codeValue === forms.typeOf) %>
-                    <input class="form-control" disabled type="text"
-                        value="<%= (priceSpecificationType !== undefined) ? priceSpecificationType.name : '' %>">
-                    <input type="hidden" name="typeOf" value="<%= forms.typeOf %>">
-                    <% } %>
-                    <p class="error message text-danger">
-                        <% if (errors && errors.typeOf) { %>
-                        <%- errors.typeOf.msg %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="typeOf" class="bmd-label-static">
+                            価格仕様タイプ
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control" name="typeOf">
+                            <option value="" selected>選択してください</option>
+                            <% priceSpecificationTypes.forEach((priceSpecificationType) => { %>
+                            <option value="<%= priceSpecificationType.codeValue %>"
+                                <% if (priceSpecificationType.codeValue === forms.typeOf) { %> selected<% } %>>
+                                <%= priceSpecificationType.name %>
+                            </option>
+                            <% }) %>
+                        </select>
+                        <% } else { %>
+                        <% const priceSpecificationType = priceSpecificationTypes.find((p) => p.codeValue === forms.typeOf) %>
+                        <input class="form-control" disabled type="text"
+                            value="<%= (priceSpecificationType !== undefined) ? priceSpecificationType.name : '' %>">
+                        <input type="hidden" name="typeOf" value="<%= forms.typeOf %>">
                         <% } %>
-                    </p>
+                        <% if (errors && errors.typeOf) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.typeOf.msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
 
-                <div class="form-group bmd-form-group">
-                    <label for="name[ja]" class="bmd-label-static">
-                        名称<span class="text-danger">＊</span>
-                    </label>
-                    <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=30
-                        value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
-                    <span class="bmd-help">30文字以内でご入力ください</span>
-                    <% if (errors && errors['name.ja']) { %>
-                    <p class="text-danger">
-                        <%- errors['name.ja'].msg %>
-                    </p>
-                    <% } %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="name[ja]" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
+                            maxlength=30
+                            value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.ja'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -61,21 +66,19 @@
                             金額<span class="text-danger">＊</span>
                         </label>
                         <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
-                            value=<%=forms.price %>>
-                        <p class="message">
-                            半角10文字以内でご入力ください。
-                        </p>
-                        <p class="error message text-danger">
-                            <% if (errors && errors.price) { %>
+                            value="<%= (typeof forms.price === 'string' || typeof forms.price === 'number') ? forms.price : '' %>">
+                        <span class="bmd-help">半角10文字以内でご入力ください</span>
+                        <% if (errors && errors.price) { %>
+                        <span class="bmd-help text-danger d-block">
                             <%- errors.price.msg %>
-                            <% } %>
-                        </p>
+                        </span>
+                        <% } %>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div
-                        class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
+                        class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.CategoryCodeChargeSpecification %>">
                         <label for="appliesToCategoryCode" class="bmd-label-static">
                             適用区分
                         </label>
@@ -113,16 +116,16 @@
                             <% }) %>
                         </select>
                         <% if (errors && errors['appliesToCategoryCode']) { %>
-                        <p class="text-danger">
+                        <span class="bmd-help text-danger d-block">
                             <%- errors['appliesToCategoryCode'].msg %>
-                        </p>
+                        </span>
                         <% } %>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div
-                        class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
+                        class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
                         <label for="appliesToMovieTicketType" class="bmd-label-static">
                             適用ムビチケ券種区分
                         </label>
@@ -138,14 +141,14 @@
                             <% }) %>
                         </select>
                         <% if (errors && errors['appliesToMovieTicketType']) { %>
-                        <p class="text-danger">
+                        <span class="bmd-help text-danger d-block">
                             <%- errors['appliesToMovieTicketType'].msg %>
-                        </p>
+                        </span>
                         <% } %>
                     </div>
 
                     <div
-                        class="form-group bmd-form-group col-md-6 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
+                        class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
                         <label for="appliesToVideoFormat" class="bmd-label-static">
                             ムビチケ適用上映方式
                         </label>
@@ -160,9 +163,9 @@
                             <% }) %>
                         </select>
                         <% if (errors && errors['appliesToVideoFormat']) { %>
-                        <p class="text-danger">
+                        <span class="bmd-help text-danger d-block">
                             <%- errors['appliesToVideoFormat'].msg %>
-                        </p>
+                        </span>
                         <% } %>
                     </div>
                 </div>

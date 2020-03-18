@@ -18,9 +18,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
-// 作品コード 半角64
-const NAME_MAX_LENGTH_CODE = 64;
-// 作品名・日本語 全角64
+const NAME_MAX_LENGTH_CODE = 30;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const accountTitleSetRouter = express_1.Router();
 accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -196,7 +194,9 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage(() => '英数字で入力してください'),
         express_validator_1.body('name')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

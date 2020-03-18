@@ -15,7 +15,7 @@ import { ProductType } from '../factory/productType';
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 // 券種コード 半角64
-const NAME_MAX_LENGTH_CODE = 64;
+const NAME_MAX_LENGTH_CODE = 30;
 // 券種名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 // 券種名・英語 半角128

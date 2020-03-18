@@ -12,6 +12,11 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    高度な設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
                     追加特性
                 </a>
             </li>
@@ -19,23 +24,26 @@
 
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
-                <div class="form-group bmd-form-group">
-                    <label for="branchCode" class="bmd-label-static">
-                        枝番号<span class="text-danger">＊</span>
-                    </label>
-                    <% if (isNew) { %>
-                    <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
-                        maxlength="20" value="<%= forms.branchCode %>">
-                    <span class="bmd-help">半角20文字以内でご入力ください</span>
-                    <% } else { %>
-                    <input readonly type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
-                        maxlength="20" value="<%= forms.branchCode %>">
-                    <% } %>
-                    <% if (errors && errors.branchCode) { %>
-                    <p class="text-danger">
-                        <%- errors.branchCode.msg %>
-                    </p>
-                    <% } %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="branchCode" class="bmd-label-static">
+                            枝番号<span class="text-danger">＊</span>
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                            maxlength="20" value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                        <% } else { %>
+                        <input readonly type="text" class="form-control" name="branchCode" id="branchCode"
+                            placeholder="" maxlength="20" value="<%= forms.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors.branchCode) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.branchCode.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
                 </div>
 
                 <div class="form-group bmd-form-group">
@@ -46,9 +54,9 @@
                         value="<%= forms.name.ja %>">
                     <span class="bmd-help">全角64文字以内でご入力ください</span>
                     <% if (errors && errors['name.ja']) { %>
-                    <p class="text-danger">
+                    <span class="bmd-help text-danger d-block">
                         <%- errors['name.ja'].msg %>
-                    </p>
+                    </span>
                     <% } %>
                 </div>
 
@@ -60,9 +68,9 @@
                         value="<%= forms.name.en %>">
                     <span class="bmd-help">半角64文字以内でご入力ください</span>
                     <% if (errors && errors['name.en']) { %>
-                    <p class="text-danger">
+                    <span class="bmd-help text-danger d-block">
                         <%- errors['name.en'].msg %>
-                    </p>
+                    </span>
                     <% } %>
                 </div>
 
@@ -74,9 +82,9 @@
                         value="<%= forms.kanaName %>">
                     <span class="bmd-help">全角64文字以内でご入力ください</span>
                     <% if (errors && errors.kanaName) { %>
-                    <p class="text-danger">
+                    <span class="bmd-help text-danger d-block">
                         <%- errors.kanaName.msg %>
-                    </p>
+                    </span>
                     <% } %>
                 </div>
 
@@ -87,11 +95,14 @@
                     <input type="tel" class="form-control" name="telephone" id="telephone" placeholder="" maxlength=64
                         value="<%= forms.telephone %>">
                     <% if (errors && errors.telephone) { %>
-                    <p class="text-danger">
+                    <span class="bmd-help text-danger d-block">
                         <%- errors.telephone.msg %>
-                    </p>
+                    </span>
                     <% } %>
                 </div>
+
+            </div>
+            <div class="tab-pane" id="link2">
 
                 <div class="form-group bmd-form-group">
                     <label for="containsPlaceStr" class="bmd-label-static">
@@ -131,7 +142,7 @@
                 </div>
 
             </div>
-            <div class="tab-pane" id="link2">
+            <div class="tab-pane" id="link3">
                 <%- include('../../common/part/_additionalProperty', {
                     additionalProperty: forms.additionalProperty
                 }) %>
