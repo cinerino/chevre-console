@@ -6,7 +6,7 @@ $(function () {
         $('form').submit();
     });
 
-    $("input#indicatorColor").ColorPickerSliders({
+    $("input#color").ColorPickerSliders({
         placement: 'bottom',
         color: '#333333',
         swatches: [

@@ -651,7 +651,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     };
                 })
             : undefined,
-        color: <string>req.body.indicatorColor,
+        ...(typeof req.body.color === 'string')
+            ? {
+                color: <string>req.body.color
+            }
+            : undefined,
         ...(offerCategory !== undefined)
             ? {
                 category: {
@@ -692,6 +696,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             // },
             ? {
                 $unset: {
+                    ...(typeof req.body.color !== 'string') ? { color: 1 } : undefined,
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined,
                     ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined,

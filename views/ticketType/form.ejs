@@ -453,13 +453,13 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-4">
-                        <label for="indicatorColor" class="bmd-label-static">
+                        <label for="color" class="bmd-label-static">
                             カラー
                         </label>
                         <div class="row pt-2 pb-2 px-3">
-                            <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="indicatorColor"
-                                id="indicatorColor" value="<%= forms.indicatorColor %>"
-                                style="background: rgb(0, 0, 255); color: rgb(255, 255, 255);" title="">
+                            <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="color"
+                                id="color" value="<%= forms.color %>"
+                                style="background: <%= forms.color %>; color: rgb(255, 255, 255);" title="">
                             <input type="hidden" name="hiddenColor" id="hiddenColor">
                         </div>
                     </div>
