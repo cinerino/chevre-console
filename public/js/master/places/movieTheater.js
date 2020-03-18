@@ -1,6 +1,9 @@
 $(function () {
     $('.btn-ok').on('click', function () {
         $('.json-editor').remove();
+
+        $(this).addClass('disabled')
+            .text('processing...');
         $('form').submit();
     });
     // datepickerセット

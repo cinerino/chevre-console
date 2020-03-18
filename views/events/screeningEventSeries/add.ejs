@@ -8,11 +8,9 @@ Aa-2
 <script src="/js/master/events/screeningEventSeries/form.js"></script>
 
 <%- contentFor('body') %>
-<% /* フォーム */ %>
 <form method="post" id="movie_product">
     <%- include('../../common/errorMessage') %>
     <%- include('../../common/successMessage') %>
 
-    <% /* 登録・更新共通部 */ %>
     <%- include('form', { forms: forms }) %>
 </form>

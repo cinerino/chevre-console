@@ -8,28 +8,9 @@ MS-01
 <script src="/js/master/services/membershipService/form.js"></script>
 
 <%- contentFor('body') %>
-<% /* フォーム */ %>
 <form method="post">
     <%- include('../../common/errorMessage') %>
     <%- include('../../common/successMessage') %>
 
     <%- include('form', { forms: forms, isNew: false }) %>
 </form>
-
-<script>
-    $(function () {
-        $('.btn-ok').on('click', function () {
-            $('form').submit();
-        });
-        // datepickerセット
-        if ($('.datepicker').length > 0) {
-            $('.datepicker').datepicker({ language: 'ja' });
-        }
-        if ($('.datetimepicker').length > 0) {
-            $('.datetimepicker').datetimepicker({
-                locale: 'ja',
-                format: 'YYYY-MM-DDTHH:mm:ss+09:00'
-            });
-        }
-    });
-</script>

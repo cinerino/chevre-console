@@ -5,25 +5,12 @@ AT-03
 <%- contentFor('styles') %>
 
 <%- contentFor('scripts') %>
+<script src="/js/master/accountTitles/accountTitleSet/form.js"></script>
 
 <%- contentFor('body') %>
-<% /* フォーム */ %>
 <form method="post">
     <%- include('../../common/errorMessage') %>
     <%- include('../../common/successMessage') %>
 
-    <% /* 登録・更新共通部 */ %>
     <%- include('form', { forms: forms, isNew: true }) %>
 </form>
-
-<script>
-    $(function () {
-        $('.btn-ok').on('click', function () {
-            $('form').submit();
-        });
-        // datepickerセット
-        $('.datepicker').datepicker({
-            language: 'ja'
-        })
-    });
-</script>
