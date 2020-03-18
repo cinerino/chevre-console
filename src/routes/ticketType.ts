@@ -473,7 +473,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const availableAtOrFrom: { id: string }[] = [];
     const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
     if (Array.isArray(availableAtOrFromParams)) {
-        (<any[]>availableAtOrFromParams).forEach((applicationId) => {
+        availableAtOrFromParams.forEach((applicationId) => {
             if (typeof applicationId === 'string' && applicationId.length > 0) {
                 availableAtOrFrom.push({ id: applicationId });
             }
