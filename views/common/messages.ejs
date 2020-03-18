@@ -13,3 +13,19 @@
     });
 </script>
 <% } %>
+
+<% if (message !== '') { %>
+<script>
+    $.notify({
+        // options
+        message: '<%= message %>'
+    }, {
+        // settings
+        type: 'danger',
+        placement: {
+            from: 'top',
+            align: 'right'
+        },
+    });
+</script>
+<% } %>

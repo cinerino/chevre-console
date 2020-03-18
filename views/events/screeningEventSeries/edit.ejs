@@ -10,8 +10,7 @@ Aa-2
 <%- contentFor('body') %>
 <form method="post" id="movie_product">
     <input type="hidden" name="id" value="<%= forms.id %>">
-    <%- include('../../common/errorMessage') %>
-    <%- include('../../common/successMessage') %>
+    <%- include('../../common/messages') %>
 
     <%- include('form', { forms: forms }) %>
 </form>

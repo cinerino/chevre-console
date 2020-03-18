@@ -9,8 +9,7 @@ PR-01
 
 <%- contentFor('body') %>
 <form method="post">
-    <%- include('../common/errorMessage') %>
-    <%- include('../common/successMessage') %>
+    <%- include('../common/messages') %>
 
     <%- include('form', { forms: forms, isNew: false }) %>
 </form>
