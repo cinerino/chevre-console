@@ -1,9 +1,15 @@
 <% if (messages.message) { %>
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    <h4 class="alert-heading lead font-weight-bold mb-2"><i class="icon fa fa-check"></i> Congraturations!</h4>
-    <p><%= messages.message %></p>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
+<script>
+    $.notify({
+        // options
+        message: '<%= messages.message %>'
+    }, {
+        // settings
+        type: 'success',
+        placement: {
+            from: 'top',
+            align: 'right'
+        }
+    });
+</script>
 <% } %>

@@ -322,6 +322,11 @@ function cancelReservations() {
         return r.id;
     });
 
+    // キャンセルしようとしている予約のステータス
+    var reservationNodes = ids.map(function (id) {
+        return $('tr[data-id="' + id + '"]', $.CommonMasterList.getListBody());
+    });
+
     var confirmed = false;
     if (window.confirm(ids + 'をキャンセルしますか？')) {
         confirmed = true;
@@ -336,15 +341,32 @@ function cancelReservations() {
             type: 'POST',
             data: { ids: ids },
             beforeSend: function () {
+                reservationNodes.forEach(function (reservationNode) {
+                    $('.reservationStatusTypeName', reservationNode).text('更新中...');
+                });
+
                 $('#loadingModal').modal({ backdrop: 'static' });
             }
         }).done(function (data) {
-            alert('キャンセルしました');
+            $.notify({
+                message: 'キャンセルしました'
+            }, {
+                type: 'success'
+            });
             $('.btn-cancel').addClass('disabled');
             $('input[name="selectedReservations"]:checked').prop('checked', false);
-            search(1);
+
+            // 表示ステータス変更
+            reservationNodes.forEach(function (reservationNode) {
+                $('.reservationStatusTypeName', reservationNode).text('キャンセル済');
+            });
         }).fail(function (jqxhr, textStatus, error) {
-            alert(error);
+            console.error(error);
+            $.notify({
+                message: 'キャンセルできませんでした' + error
+            }, {
+                type: 'danger'
+            });
         }).always(function (data) {
             $('#loadingModal').modal('hide');
         });
@@ -406,7 +428,11 @@ function update() {
         }
     })
         .done(function (data) {
-            alert('変更しました');
+            $.notify({
+                message: '変更しました'
+            }, {
+                type: 'success'
+            });
             modal.modal('hide');
             search(1);
         })
