@@ -157,6 +157,16 @@ ticketTypeMasterRouter.all(
             accountTitles: accountTitles,
             addOns: searchAddOnsResult.data,
             applications: searchApplicationsResult.data.map((d) => d.member)
+                .sort((a, b) => {
+                    if (String(a.name) < String(b.name)) {
+                        return -1;
+                    }
+                    if (String(a.name) > String(b.name)) {
+                        return 1;
+                    }
+
+                    return 0;
+                })
         });
     }
 );
@@ -329,6 +339,16 @@ ticketTypeMasterRouter.all(
                 accountTitles: accountTitles,
                 addOns: searchAddOnsResult.data,
                 applications: searchApplicationsResult.data.map((d) => d.member)
+                    .sort((a, b) => {
+                        if (String(a.name) < String(b.name)) {
+                            return -1;
+                        }
+                        if (String(a.name) > String(b.name)) {
+                            return 1;
+                        }
+
+                        return 0;
+                    })
             });
         } catch (error) {
             next(error);
