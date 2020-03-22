@@ -274,13 +274,15 @@ offersRouter.get(
 
             let data: any[] = [];
             const offer = await offerService.findById({ id: req.params.id });
-            if (Array.isArray(offer.availableAtOrFrom)) {
+            if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
                 const searchApplicationsResult = await iamService.searchMembers({
-                    member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                    member: {
+                        typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication },
+                        id: { $in: offer.availableAtOrFrom.map((a: any) => a.id) }
+                    }
                 });
 
-                data = searchApplicationsResult.data.filter((m) => offer.availableAtOrFrom.some((a: any) => a.id === m.member.id))
-                    .map((m) => m.member);
+                data = searchApplicationsResult.data.map((m) => m.member);
             }
 
             res.json({

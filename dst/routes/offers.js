@@ -232,12 +232,14 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
         });
         let data = [];
         const offer = yield offerService.findById({ id: req.params.id });
-        if (Array.isArray(offer.availableAtOrFrom)) {
+        if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
             const searchApplicationsResult = yield iamService.searchMembers({
-                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                member: {
+                    typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication },
+                    id: { $in: offer.availableAtOrFrom.map((a) => a.id) }
+                }
             });
-            data = searchApplicationsResult.data.filter((m) => offer.availableAtOrFrom.some((a) => a.id === m.member.id))
-                .map((m) => m.member);
+            data = searchApplicationsResult.data.map((m) => m.member);
         }
         res.json({
             success: true,

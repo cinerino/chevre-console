@@ -205,7 +205,6 @@ ticketTypeMasterRouter.all(
                 // 検証
                 const validatorResult = validationResult(req);
                 errors = validatorResult.mapped();
-                console.error(errors);
                 // 検証
                 if (validatorResult.isEmpty()) {
                     // 券種DB更新プロセス
