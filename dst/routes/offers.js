@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerino = require("@cinerino/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");
@@ -206,6 +207,41 @@ offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data
+        });
+    }
+    catch (err) {
+        res.json({
+            success: false,
+            message: err.message,
+            count: 0,
+            results: []
+        });
+    }
+}));
+offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const iamService = new cinerino.service.IAM({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        let data = [];
+        const offer = yield offerService.findById({ id: req.params.id });
+        if (Array.isArray(offer.availableAtOrFrom)) {
+            const searchApplicationsResult = yield iamService.searchMembers({
+                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            });
+            data = searchApplicationsResult.data.filter((m) => offer.availableAtOrFrom.some((a) => a.id === m.member.id))
+                .map((m) => m.member);
+        }
+        res.json({
+            success: true,
+            count: data.length,
             results: data
         });
     }

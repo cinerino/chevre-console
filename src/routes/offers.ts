@@ -2,6 +2,7 @@
  * オファー管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import { Request, Router } from 'express';
 import { body, validationResult } from 'express-validator';
 import * as moment from 'moment-timezone';
@@ -244,6 +245,47 @@ offersRouter.get(
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data
+            });
+        } catch (err) {
+            res.json({
+                success: false,
+                message: err.message,
+                count: 0,
+                results: []
+            });
+        }
+    }
+);
+
+offersRouter.get(
+    '/:id/availableApplications',
+    async (req, res) => {
+        try {
+            const offerService = new chevre.service.Offer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const iamService = new cinerino.service.IAM({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            let data: any[] = [];
+            const offer = await offerService.findById({ id: req.params.id });
+            if (Array.isArray(offer.availableAtOrFrom)) {
+                const searchApplicationsResult = await iamService.searchMembers({
+                    member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                });
+
+                data = searchApplicationsResult.data.filter((m) => offer.availableAtOrFrom.some((a: any) => a.id === m.member.id))
+                    .map((m) => m.member);
+            }
+
+            res.json({
+                success: true,
+                count: data.length,
                 results: data
             });
         } catch (err) {

@@ -89,6 +89,13 @@ $(function () {
         showCatalogs(id);
     });
 
+    // 利用可能アプリケーション表示
+    $(document).on('click', '.showAvailableAtOrFrom', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        showAvailableAtOrFrom(id);
+    });
+
     $(document).on('click', '.showAddOn', function (event) {
         var id = $(this).attr('data-id');
         console.log('showing addOn...id:', id);
@@ -180,6 +187,54 @@ $(function () {
                 }
 
                 modal.find('.modal-title').text('関連カタログ');
+                modal.find('.modal-body').html(body);
+                modal.modal();
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert(error);
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
+    }
+
+    function showAvailableAtOrFrom(id) {
+        $.ajax({
+            dataType: 'json',
+            url: '/offers/' + id + '/availableApplications',
+            cache: false,
+            type: 'GET',
+            // data: conditions,
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            if (data.success) {
+                var modal = $('#modal-offer');
+
+                var body = $('<p>').text('データが見つかりませんでした');
+                if (data.results.length > 0) {
+                    var tbody = $('<tbody>');
+                    data.results.forEach(function (application) {
+                        tbody.append(
+                            $('<tr>')
+                                .append($('<td>').text(application.id))
+                                .append($('<td>').text(application.name))
+                        );
+                    });
+                    var thead = $('<thead>').addClass('text-primary')
+                        .append(
+                            $('<tr>')
+                                .append($('<th>').text('ID'))
+                                .append($('<th>').text('名称'))
+                        );
+                    var table = $('<table>').addClass('table table-sm')
+                        .append(thead)
+                        .append(tbody)
+                    body = $('<div>').addClass('table-responsive')
+                        .append(table)
+                }
+
+                modal.find('.modal-title').text('利用可能アプリケーション');
                 modal.find('.modal-body').html(body);
                 modal.modal();
             }
