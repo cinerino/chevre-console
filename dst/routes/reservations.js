@@ -53,6 +53,15 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         movieTheaters: searchMovieTheatersResult.data,
         applications: searchApplicationsResult.data.map((d) => d.member)
+            .sort((a, b) => {
+            if (String(a.name) < String(b.name)) {
+                return -1;
+            }
+            if (String(a.name) > String(b.name)) {
+                return 1;
+            }
+            return 0;
+        })
     });
 }));
 reservationsRouter.get('/search', 
