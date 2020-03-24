@@ -309,12 +309,12 @@ reservationsRouter.get(
                 project: { id: req.project.id }
             });
 
-            const limit = 100;
+            const limit = 10;
             const page = 1;
             const nameRegex = req.query.name;
 
             const { data } = await iamService.searchMembers({
-                limit: 10,
+                limit: limit,
                 member: {
                     typeOf: { $eq: cinerino.factory.personType.Person },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
