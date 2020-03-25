@@ -40,6 +40,15 @@ applicationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => d.member)
+                .sort((a, b) => {
+                if (String(a.name) < String(b.name)) {
+                    return -1;
+                }
+                if (String(a.name) > String(b.name)) {
+                    return 1;
+                }
+                return 0;
+            })
         });
     }
     catch (err) {

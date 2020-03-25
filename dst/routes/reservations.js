@@ -29,11 +29,6 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const iamService = new cinerino.service.IAM({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -43,25 +38,12 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
         limit: 100,
         project: { ids: [req.project.id] }
     });
-    const searchApplicationsResult = yield iamService.searchMembers({
-        member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
-    });
     res.render('reservations/index', {
         message: '',
         reservationStatusType: chevre.factory.reservationStatusType,
         reservationStatusTypes: reservationStatusType_1.reservationStatusTypes,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        movieTheaters: searchMovieTheatersResult.data,
-        applications: searchApplicationsResult.data.map((d) => d.member)
-            .sort((a, b) => {
-            if (String(a.name) < String(b.name)) {
-                return -1;
-            }
-            if (String(a.name) > String(b.name)) {
-                return 1;
-            }
-            return 0;
-        })
+        movieTheaters: searchMovieTheatersResult.data
     });
 }));
 reservationsRouter.get('/search', 
