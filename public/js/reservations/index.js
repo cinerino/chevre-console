@@ -48,6 +48,14 @@ $(function () {
         editAdditionalTicketText(id);
     });
 
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var id = $(this).attr('data-id');
+        console.log('showing additionalProperty...id:', id);
+
+        showAdditionalProperty(id);
+    });
+
     // キャンセルボタンイベント
     $(document).on('click', '.btn-cancel', function () {
         cancelReservations();
@@ -274,6 +282,47 @@ function showSubReservation(id) {
 
     modal.find('.modal-title').html(title);
     modal.find('.modal-body').html(body);
+    modal.modal();
+}
+
+function showAdditionalProperty(id) {
+    var reservation = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (reservation === undefined) {
+        alert('予約' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-reservation');
+    var div = $('<div>')
+
+    if (Array.isArray(reservation.additionalProperty)) {
+        var thead = $('<thead>').addClass('text-primary');
+        var tbody = $('<tbody>');
+        thead.append([
+            $('<tr>').append([
+                $('<th>').text('Name'),
+                $('<th>').text('Value')
+            ])
+        ]);
+        tbody.append(reservation.additionalProperty.map(function (property) {
+            return $('<tr>').append([
+                $('<td>').text(property.name),
+                $('<td>').text(property.value)
+            ]);
+        }));
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+        div.addClass('table-responsive')
+            .append(table);
+    } else {
+        div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+    }
+
+    modal.find('.modal-title').text('追加特性');
+    modal.find('.modal-body').html(div);
     modal.modal();
 }
 

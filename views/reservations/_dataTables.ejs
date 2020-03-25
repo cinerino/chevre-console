@@ -262,6 +262,7 @@
                             <th>サブ</th>
                             <th>発券</th>
                             <th>入場</th>
+                            <th>追加特性</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -312,7 +313,7 @@
                             <td name="underName.name|slice:10__id">
                                 $underName.name$<br>
                                 <a href="javascript:void(0)" class="showUnderName" data-id="$id$">
-                                    <span>表示</span>
+                                    表示
                                 </a>
                             </td>
                             <td name="application.name|slice:15">$application.name$</td>
@@ -322,7 +323,7 @@
                                 </a></td>
                             <td name="id__showSubReservation">
                                 <a href="javascript:void(0)" class="showSubReservation" data-id="$id$">
-                                    <span>表示</span>
+                                    表示
                                 </a>
                             </td>
                             <td name="checkedInText">
@@ -330,6 +331,11 @@
                             </td>
                             <td name="attendedText">
                                 <i class="material-icons" style="font-size: 1.2em;">$attendedText$</i>
+                            </td>
+                            <td name="id__additionalProperty">
+                                <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                    表示
+                                </a>
                             </td>
                         </tr>
                     </tbody>
