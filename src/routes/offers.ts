@@ -353,6 +353,13 @@ offersRouter.get(
                 limit: limit,
                 page: page,
                 sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+                availableAtOrFrom: {
+                    id: {
+                        $eq: (typeof req.query.application === 'string' && req.query.application.length > 0)
+                            ? req.query.application
+                            : undefined
+                    }
+                },
                 project: { id: { $eq: req.project.id } },
                 itemOffered: {
                     typeOf: {

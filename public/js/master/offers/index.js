@@ -103,6 +103,39 @@ $(function () {
         showAddOn(id);
     });
 
+    $('#application').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: 'アプリ選択',
+        allowClear: true,
+        ajax: {
+            url: '/applications/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (application) {
+                        return {
+                            id: application.id,
+                            text: application.name
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     /**
      * 追加特性を見る
      */

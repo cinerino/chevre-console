@@ -152,14 +152,13 @@ homeRouter.get(
             const result = await reservationService.search({
                 limit: 10,
                 page: 1,
-                sort: { modifiedTime: chevre.factory.sortType.Descending },
                 project: { ids: [req.project.id] },
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservationStatuses: [
                     chevre.factory.reservationStatusType.ReservationConfirmed,
                     chevre.factory.reservationStatusType.ReservationPending
                 ],
-                modifiedFrom: moment()
+                bookingFrom: moment()
                     .add(-1, 'day')
                     .toDate()
             });

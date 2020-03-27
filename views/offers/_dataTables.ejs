@@ -7,7 +7,7 @@
                     <%- include('../common/master/_hidden') %>
 
                     <div class="form-row">
-                        <div class="form-group bmd-form-group col-md-2">
+                        <div class="form-group bmd-form-group col-md-1">
                             <label for="itemOffered[typeOf]" class="bmd-label-static">
                                 アイテム
                             </label>
@@ -19,6 +19,20 @@
                                 <option value="<%= productType.codeValue %>"><%= productType.name %></option>
                                 <% }) %>
                                 <% } %>
+                            </select>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-1">
+                            <label for="category[codeValue]" class="bmd-label-static">
+                                カテゴリー
+                            </label>
+                            <select class="form-control" name="category[codeValue]">
+                                <option value="">---</option>
+                                <% ticketTypeCategories.forEach((category) => { %>
+                                <option value="<%= category.codeValue %>">
+                                    <%= category.name.ja %>
+                                </option>
+                                <% }) %>
                             </select>
                         </div>
 
@@ -35,19 +49,6 @@
                                 名称
                             </label>
                             <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
-                        </div>
-                        <div class="form-group bmd-form-group col-md-2">
-                            <label for="category[codeValue]" class="bmd-label-static">
-                                カテゴリー
-                            </label>
-                            <select class="form-control" name="category[codeValue]">
-                                <option value="">---</option>
-                                <% ticketTypeCategories.forEach((category) => { %>
-                                <option value="<%= category.codeValue %>">
-                                    <%= category.name.ja %>
-                                </option>
-                                <% }) %>
-                            </select>
                         </div>
 
                         <div class="form-group bmd-form-group col-md-4">
@@ -82,6 +83,14 @@
                                     <span class="input-group-text">円以下</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="application" class="bmd-label-static">
+                                利用可能アプリ
+                            </label>
+                            <select class="form-control" name="application" id="application" style="width: 100%;">
+                            </select>
                         </div>
                     </div>
                 </form>
