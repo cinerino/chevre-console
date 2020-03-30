@@ -178,6 +178,7 @@ priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(voi
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};

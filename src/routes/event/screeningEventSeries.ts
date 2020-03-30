@@ -563,6 +563,17 @@ function createEventFromBody(
         headline = { ja: req.body.headline?.ja };
     }
 
+    const workPerformed: chevre.factory.event.screeningEventSeries.IWorkPerformed = {
+        project: movie.project,
+        typeOf: movie.typeOf,
+        id: movie.id,
+        identifier: movie.identifier,
+        name: movie.name,
+        ...(typeof movie.duration === 'string') ? { duration: movie.duration } : undefined
+    };
+
+    const duration: string | undefined = (typeof movie.duration === 'string') ? movie.duration : undefined;
+
     return {
         project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -586,8 +597,7 @@ function createEventFromBody(
         // },
         videoFormat: videoFormat,
         soundFormat: soundFormat,
-        workPerformed: movie,
-        duration: movie.duration,
+        workPerformed: workPerformed,
         startDate: (typeof req.body.startDate === 'string' && req.body.startDate.length > 0)
             ? moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate()
@@ -608,6 +618,7 @@ function createEventFromBody(
                 })
             : undefined,
         offers: offers,
+        ...(typeof duration === 'string') ? { duration } : undefined,
         ...(subtitleLanguage !== undefined) ? { subtitleLanguage } : undefined,
         ...(dubLanguage !== undefined) ? { dubLanguage } : undefined,
         ...(headline !== undefined) ? { headline } : undefined,
@@ -615,6 +626,7 @@ function createEventFromBody(
         ...(!isNew)
             ? {
                 $unset: {
+                    ...(typeof duration !== 'string') ? { duration: 1 } : undefined,
                     ...(subtitleLanguage === undefined) ? { subtitleLanguage: 1 } : undefined,
                     ...(dubLanguage === undefined) ? { dubLanguage: 1 } : undefined,
                     ...(headline === undefined) ? { headline: 1 } : undefined,

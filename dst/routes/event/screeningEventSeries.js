@@ -277,6 +277,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
         });
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -465,7 +466,9 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
     if (typeof ((_a = req.body.headline) === null || _a === void 0 ? void 0 : _a.ja) === 'string' && ((_b = req.body.headline) === null || _b === void 0 ? void 0 : _b.ja.length) > 0) {
         headline = { ja: (_c = req.body.headline) === null || _c === void 0 ? void 0 : _c.ja };
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
+    const workPerformed = Object.assign({ project: movie.project, typeOf: movie.typeOf, id: movie.id, identifier: movie.identifier, name: movie.name }, (typeof movie.duration === 'string') ? { duration: movie.duration } : undefined);
+    const duration = (typeof movie.duration === 'string') ? movie.duration : undefined;
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
             project: req.project,
             id: movieTheater.id,
             typeOf: movieTheater.typeOf,
@@ -478,7 +481,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         //     identifier: params.movieTheater.identifier,
         //     name: params.movieTheater.name
         // },
-        videoFormat: videoFormat, soundFormat: soundFormat, workPerformed: movie, duration: movie.duration, startDate: (typeof req.body.startDate === 'string' && req.body.startDate.length > 0)
+        videoFormat: videoFormat, soundFormat: soundFormat, workPerformed: workPerformed, startDate: (typeof req.body.startDate === 'string' && req.body.startDate.length > 0)
             ? moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate()
             : undefined, endDate: (typeof req.body.endDate === 'string' && req.body.endDate.length > 0)
@@ -493,9 +496,9 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined, offers: offers }, (subtitleLanguage !== undefined) ? { subtitleLanguage } : undefined), (dubLanguage !== undefined) ? { dubLanguage } : undefined), (headline !== undefined) ? { headline } : undefined), (description !== undefined) ? { description } : undefined), (!isNew)
+            : undefined, offers: offers }, (typeof duration === 'string') ? { duration } : undefined), (subtitleLanguage !== undefined) ? { subtitleLanguage } : undefined), (dubLanguage !== undefined) ? { dubLanguage } : undefined), (headline !== undefined) ? { headline } : undefined), (description !== undefined) ? { description } : undefined), (!isNew)
         ? {
-            $unset: Object.assign(Object.assign(Object.assign(Object.assign({}, (subtitleLanguage === undefined) ? { subtitleLanguage: 1 } : undefined), (dubLanguage === undefined) ? { dubLanguage: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (description === undefined) ? { description: 1 } : undefined)
+            $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof duration !== 'string') ? { duration: 1 } : undefined), (subtitleLanguage === undefined) ? { subtitleLanguage: 1 } : undefined), (dubLanguage === undefined) ? { dubLanguage: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (description === undefined) ? { description: 1 } : undefined)
         }
         : undefined);
 }

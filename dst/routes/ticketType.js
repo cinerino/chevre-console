@@ -149,6 +149,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     });
 }));
 // 券種編集
+// tslint:disable-next-line:use-default-type-parameter
 ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

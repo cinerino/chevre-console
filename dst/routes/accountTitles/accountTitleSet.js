@@ -111,6 +111,7 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
         accountTitleCategories: accountTitleCategories
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};

@@ -157,6 +157,7 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
         });
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const creativeWorkService = new chevre.service.CreativeWork({

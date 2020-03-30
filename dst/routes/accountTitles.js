@@ -139,6 +139,7 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 accountTitlesRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};

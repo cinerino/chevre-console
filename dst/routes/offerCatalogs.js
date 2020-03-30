@@ -113,6 +113,7 @@ offerCatalogsRouter.all('/add', ...validate(),
         productTypes: productType_1.productTypes
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 offerCatalogsRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {

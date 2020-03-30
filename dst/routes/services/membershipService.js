@@ -111,6 +111,7 @@ membershipServiceRouter.get('/search',
         });
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 membershipServiceRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

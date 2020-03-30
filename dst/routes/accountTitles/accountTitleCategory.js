@@ -91,6 +91,7 @@ accountTitleCategoryRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
         forms: forms
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';

@@ -246,6 +246,7 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
         }
     }
 }));
+// tslint:disable-next-line:use-default-type-parameter
 screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({

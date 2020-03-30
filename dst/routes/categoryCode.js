@@ -106,6 +106,7 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
+// tslint:disable-next-line:use-default-type-parameter
 categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
