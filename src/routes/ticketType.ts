@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as cinerino from '@cinerino/api-nodejs-client';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as moment from 'moment-timezone';
@@ -27,7 +29,7 @@ const CHAGE_MAX_LENGTH = 10;
 const ticketTypeMasterRouter = Router();
 
 // 券種登録
-ticketTypeMasterRouter.all(
+ticketTypeMasterRouter.all<any>(
     '/add',
     ...validateFormAdd(),
     // tslint:disable-next-line:max-func-body-length
@@ -172,7 +174,8 @@ ticketTypeMasterRouter.all(
 );
 
 // 券種編集
-ticketTypeMasterRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+ticketTypeMasterRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validateFormAdd(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length

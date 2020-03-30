@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -242,7 +244,7 @@ screeningEventRouter.get(
     }
 );
 
-screeningEventRouter.post(
+screeningEventRouter.post<any>(
     '/regist',
     ...addValidation(),
     async (req, res) => {
@@ -280,7 +282,8 @@ screeningEventRouter.post(
     }
 );
 
-screeningEventRouter.post(
+// tslint:disable-next-line:use-default-type-parameter
+screeningEventRouter.post<ParamsDictionary>(
     '/:eventId/update',
     ...updateValidation(),
     async (req, res) => {

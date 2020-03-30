@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
@@ -15,7 +17,7 @@ const NUM_ADDITIONAL_PROPERTY = 10;
 
 const productsRouter = Router();
 
-productsRouter.all(
+productsRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -131,7 +133,8 @@ productsRouter.get(
     }
 );
 
-productsRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+productsRouter.all<ParamsDictionary>(
     '/:id',
     ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length

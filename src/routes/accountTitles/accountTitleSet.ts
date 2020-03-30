@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import * as _ from 'underscore';
 
@@ -71,7 +73,7 @@ accountTitleSetRouter.get(
     }
 );
 
-accountTitleSetRouter.all(
+accountTitleSetRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -125,7 +127,8 @@ accountTitleSetRouter.all(
     }
 );
 
-accountTitleSetRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+accountTitleSetRouter.all<ParamsDictionary>(
     '/:codeValue',
     ...validate(),
     async (req, res) => {

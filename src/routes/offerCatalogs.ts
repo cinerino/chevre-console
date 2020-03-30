@@ -3,6 +3,8 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -21,7 +23,7 @@ const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const offerCatalogsRouter = Router();
 
-offerCatalogsRouter.all(
+offerCatalogsRouter.all<any>(
     '/add',
     ...validate(),
     // tslint:disable-next-line:max-func-body-length
@@ -131,7 +133,8 @@ offerCatalogsRouter.all(
     }
 );
 
-offerCatalogsRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+offerCatalogsRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
     // tslint:disable-next-line:max-func-body-length

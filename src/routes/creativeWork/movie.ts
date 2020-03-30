@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
@@ -25,7 +27,7 @@ const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
 
 const movieRouter = Router();
 
-movieRouter.all(
+movieRouter.all<any>(
     '/add',
     ...validate(),
     async (req, res) => {
@@ -189,7 +191,8 @@ movieRouter.get(
     }
 );
 
-movieRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+movieRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
     async (req, res) => {

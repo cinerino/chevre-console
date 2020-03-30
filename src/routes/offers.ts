@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as cinerino from '@cinerino/api-nodejs-client';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
@@ -24,7 +26,7 @@ const CHAGE_MAX_LENGTH = 10;
 
 const offersRouter = Router();
 
-offersRouter.all(
+offersRouter.all<any>(
     '/add',
     ...validate(),
     // tslint:disable-next-line:max-func-body-length
@@ -128,7 +130,8 @@ offersRouter.all(
     }
 );
 
-offersRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+offersRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
     // tslint:disable-next-line:max-func-body-length

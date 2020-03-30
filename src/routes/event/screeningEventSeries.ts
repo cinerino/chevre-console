@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
@@ -26,7 +28,7 @@ const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const screeningEventSeriesRouter = Router();
 
-screeningEventSeriesRouter.all(
+screeningEventSeriesRouter.all<any>(
     '/add',
     ...validate(),
     async (req, res) => {
@@ -323,7 +325,8 @@ screeningEventSeriesRouter.get(
     }
 );
 
-screeningEventSeriesRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+screeningEventSeriesRouter.all<ParamsDictionary>(
     '/:eventId/update',
     ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length

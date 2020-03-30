@@ -4,6 +4,8 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 
 import * as Message from '../../message';
@@ -14,7 +16,7 @@ const NUM_ADDITIONAL_PROPERTY = 5;
 
 const movieTheaterRouter = Router();
 
-movieTheaterRouter.all(
+movieTheaterRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -144,7 +146,8 @@ movieTheaterRouter.get(
     }
 );
 
-movieTheaterRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+movieTheaterRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
     async (req, res) => {
