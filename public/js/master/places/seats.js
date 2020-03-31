@@ -38,7 +38,7 @@ $(function () {
                 var query = {
                     limit: 20,
                     page: 1,
-                    branchCode: { $regex: params.term }
+                    name: { $regex: params.term }
                 }
 
                 // Query parameters will be ?search=[term]&type=public
@@ -74,7 +74,7 @@ $(function () {
                 var query = {
                     limit: 20,
                     page: 1,
-                    branchCode: { $regex: params.term }
+                    name: { $regex: params.term }
                 }
 
                 // Query parameters will be ?search=[term]&type=public
