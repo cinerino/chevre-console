@@ -184,8 +184,10 @@ seatRouter.get(
     }
 );
 
-seatRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+seatRouter.all<ParamsDictionary>(
     '/:id/update',
+    ...validate(),
     async (req, res, next) => {
         try {
             let message = '';
@@ -388,6 +390,7 @@ function validate() {
         // body('name.ja')
         //     .notEmpty()
         //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+        //     .isLength({ max: 64 })
         //     // tslint:disable-next-line:no-magic-numbers
         //     .withMessage(Message.Common.getMaxLength('名称', 64))
     ];

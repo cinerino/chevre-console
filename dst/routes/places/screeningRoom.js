@@ -84,7 +84,7 @@ screeningRoomRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, func
     });
 }));
 screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+    var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -107,8 +107,12 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                         && ((_o = (_m = (_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace) === null || _m === void 0 ? void 0 : _m.branchCode) === null || _o === void 0 ? void 0 : _o.$eq.length) > 0)
                         ? (_r = (_q = (_p = req.query) === null || _p === void 0 ? void 0 : _p.containedInPlace) === null || _q === void 0 ? void 0 : _q.branchCode) === null || _r === void 0 ? void 0 : _r.$eq : undefined
                 }
+            },
+            name: {
+                $regex: (typeof ((_t = (_s = req.query) === null || _s === void 0 ? void 0 : _s.name) === null || _t === void 0 ? void 0 : _t.$regex) === 'string'
+                    && ((_v = (_u = req.query) === null || _u === void 0 ? void 0 : _u.name) === null || _v === void 0 ? void 0 : _v.$regex.length) > 0)
+                    ? (_x = (_w = req.query) === null || _w === void 0 ? void 0 : _w.name) === null || _x === void 0 ? void 0 : _x.$regex : undefined
             }
-            // name: req.query.name
         });
         const results = data.map((screeningRoom) => {
             return Object.assign({}, screeningRoom);

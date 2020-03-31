@@ -60,6 +60,13 @@ SRS-01
                                     </label>
                                     <input class="form-control" name="branchCode[$eq]">
                                 </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name[$regex]" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input class="form-control" name="name[$regex]">
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -72,6 +79,7 @@ SRS-01
                             <thead class="text-primary">
                                 <tr>
                                     <th>コード</th>
+                                    <th>名称</th>
                                     <th>劇場</th>
                                     <th>スクリーン</th>
                                     <th>追加特性</th>
@@ -87,6 +95,7 @@ SRS-01
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
+                                    <td name="name.ja|slice">$name.ja$</td>
                                     <td
                                         name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja|slice">
                                         <span

@@ -127,8 +127,13 @@ screeningRoomRouter.get(
                             ? req.query?.containedInPlace?.branchCode?.$eq
                             : undefined
                     }
+                },
+                name: {
+                    $regex: (typeof req.query?.name?.$regex === 'string'
+                        && req.query?.name?.$regex.length > 0)
+                        ? req.query?.name?.$regex
+                        : undefined
                 }
-                // name: req.query.name
             });
 
             const results = data.map((screeningRoom) => {
@@ -309,6 +314,7 @@ function validate() {
         body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64))
     ];

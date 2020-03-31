@@ -147,8 +147,13 @@ screeningRoomSectionRouter.get(
                                 : undefined
                         }
                     }
+                },
+                name: {
+                    $regex: (typeof req.query?.name?.$regex === 'string'
+                        && req.query?.name?.$regex.length > 0)
+                        ? req.query?.name?.$regex
+                        : undefined
                 }
-                // name: req.query.name
             });
 
             const results = data.map((seat, index) => {
@@ -175,8 +180,10 @@ screeningRoomSectionRouter.get(
     }
 );
 
-screeningRoomSectionRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomSectionRouter.all<ParamsDictionary>(
     '/:id/update',
+    ...validate(),
     async (req, res, next) => {
         try {
             let message = '';
@@ -236,7 +243,8 @@ screeningRoomSectionRouter.all(
             const forms = {
                 additionalProperty: [],
                 ...screeningRoomSection,
-                ...req.body
+                ...req.body,
+                containedInPlace: screeningRoomSection.containedInPlace
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
                 // tslint:disable-next-line:prefer-array-literal
@@ -345,11 +353,13 @@ function validate() {
         body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
         body('name.en')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];

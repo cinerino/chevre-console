@@ -155,7 +155,8 @@ seatRouter.get('/search',
         });
     }
 }));
-seatRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+seatRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';
         let errors = {};

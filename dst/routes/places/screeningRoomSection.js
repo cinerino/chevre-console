@@ -96,7 +96,7 @@ screeningRoomSectionRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
 screeningRoomSectionRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5;
+    var _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -126,8 +126,12 @@ screeningRoomSectionRouter.get('/search',
                             ? (_5 = (_4 = (_3 = (_2 = req.query) === null || _2 === void 0 ? void 0 : _2.containedInPlace) === null || _3 === void 0 ? void 0 : _3.containedInPlace) === null || _4 === void 0 ? void 0 : _4.branchCode) === null || _5 === void 0 ? void 0 : _5.$eq : undefined
                     }
                 }
+            },
+            name: {
+                $regex: (typeof ((_7 = (_6 = req.query) === null || _6 === void 0 ? void 0 : _6.name) === null || _7 === void 0 ? void 0 : _7.$regex) === 'string'
+                    && ((_9 = (_8 = req.query) === null || _8 === void 0 ? void 0 : _8.name) === null || _9 === void 0 ? void 0 : _9.$regex.length) > 0)
+                    ? (_11 = (_10 = req.query) === null || _10 === void 0 ? void 0 : _10.name) === null || _11 === void 0 ? void 0 : _11.$regex : undefined
             }
-            // name: req.query.name
         });
         const results = data.map((seat, index) => {
             return Object.assign(Object.assign({}, seat), { id: `${seat.branchCode}:${index}` });
@@ -148,7 +152,8 @@ screeningRoomSectionRouter.get('/search',
         });
     }
 }));
-screeningRoomSectionRouter.all('/:id/update', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';
         let errors = {};
@@ -196,7 +201,7 @@ screeningRoomSectionRouter.all('/:id/update', (req, res, next) => __awaiter(void
                 }
             }
         }
-        const forms = Object.assign(Object.assign({ additionalProperty: [] }, screeningRoomSection), req.body);
+        const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, screeningRoomSection), req.body), { containedInPlace: screeningRoomSection.containedInPlace });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -285,11 +290,13 @@ function validate() {
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
         express_validator_1.body('name.en')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
