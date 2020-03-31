@@ -62,42 +62,6 @@ $(function () {
         }
     });
 
-    var screeningRoomSectionBranchCodeSelection = $('#screeningRoomSectionBranchCode');
-    screeningRoomSectionBranchCodeSelection.select2({
-        // width: 'resolve', // need to override the changed default,
-        placeholder: 'セクション選択',
-        allowClear: true,
-        ajax: {
-            url: '/places/screeningRoomSection/search',
-            dataType: 'json',
-            data: function (params) {
-                var query = {
-                    limit: 20,
-                    page: 1,
-                    branchCode: { $regex: params.term }
-                }
-
-                // Query parameters will be ?search=[term]&type=public
-                return query;
-            },
-            delay: 250, // wait 250 milliseconds before triggering the request
-            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-            processResults: function (data) {
-                // movieOptions = data.data;
-
-                // Transforms the top-level key of the response object from 'items' to 'results'
-                return {
-                    results: data.results.map(function (screeningRoomSection) {
-                        return {
-                            id: screeningRoomSection.branchCode,
-                            text: screeningRoomSection.branchCode + ' ' + screeningRoomSection.name.ja
-                        }
-                    })
-                };
-            }
-        }
-    });
-
     $('.btn-ok').click();
 
     //--------------------------------
@@ -105,7 +69,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/places/seat/search';
+        var url = '/places/screeningRoomSection/search';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -148,7 +112,7 @@ $(function () {
             return data.id === id
         });
         if (seat === undefined) {
-            alert('座席' + id + 'が見つかりません');
+            alert('スクリーンセクション' + id + 'が見つかりません');
 
             return;
         }

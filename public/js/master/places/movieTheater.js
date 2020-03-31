@@ -13,8 +13,10 @@ $(function () {
 
     JSONEditor.defaults.options.theme = 'bootstrap4';
     JSONEditor.defaults.options.iconlib = 'materialicons';
-    initScreen();
-    initOffer();
+
+    // JSONエディタをいったん無効化
+    // initScreen();
+    // initOffer();
 });
 
 /**

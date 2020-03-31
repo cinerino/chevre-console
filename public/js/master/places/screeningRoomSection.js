@@ -11,7 +11,6 @@ $(function () {
 
         remove(id);
     });
-
 });
 
 /**
@@ -21,12 +20,12 @@ function remove(id) {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/places/screeningRoom/' + id,
+            url: '/places/screeningRoomSection/' + id,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/screeningRoom';
+                location.href = '/places/screeningRoomSection';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

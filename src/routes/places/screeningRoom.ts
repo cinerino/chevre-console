@@ -4,7 +4,12 @@
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
-import { validationResult } from 'express-validator';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body, validationResult } from 'express-validator';
+import { NO_CONTENT } from 'http-status';
+
+import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:router');
 
@@ -12,63 +17,69 @@ const NUM_ADDITIONAL_PROPERTY = 5;
 
 const screeningRoomRouter = Router();
 
-// screeningRoomRouter.all(
-//     '/new',
-//     async (req, res) => {
-//         let message = '';
-//         let errors: any = {};
-//         if (req.method === 'POST') {
-//             // バリデーション
-//             // validate(req, 'add');
-//             const validatorResult = await req.getValidationResult();
-//             errors = req.validationErrors(true);
-//             if (validatorResult.isEmpty()) {
-//                 try {
-//                     debug(req.body);
-//                     req.body.id = '';
-//                     const screeningRoom = createFromBody(req);
-//                     const placeService = new chevre.service.Place({
-//                         endpoint: <string>process.env.API_ENDPOINT,
-//                         auth: req.user.authClient
-//                     });
+screeningRoomRouter.all<any>(
+    '/new',
+    ...validate(),
+    async (req, res) => {
+        let message = '';
+        let errors: any = {};
 
-//                     const { data } = await placeService.searchMovieTheaters({});
-//                     const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
-//                     if (existingMovieTheater !== undefined) {
-//                         throw new Error('枝番号が重複しています');
-//                     }
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
 
-//                     debug('existingMovieTheater:', existingMovieTheater);
+        if (req.method === 'POST') {
+            // バリデーション
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
+            if (validatorResult.isEmpty()) {
+                try {
+                    debug(req.body);
+                    req.body.id = '';
+                    const screeningRoom = createFromBody(req, true);
 
-//                     await placeService.createMovieTheater(screeningRoom);
-//                     req.flash('message', '登録しました');
-//                     res.redirect(`/places/movieTheater/${screeningRoom.branchCode}/update`);
+                    // const { data } = await placeService.searchScreeningRooms({});
+                    // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
+                    // if (existingMovieTheater !== undefined) {
+                    //     throw new Error('枝番号が重複しています');
+                    // }
 
-//                     return;
-//                 } catch (error) {
-//                     message = error.message;
-//                 }
-//             }
-//         }
+                    await placeService.createScreeningRoom(screeningRoom);
+                    req.flash('message', '登録しました');
+                    res.redirect(`/places/screeningRoom/${screeningRoom.containedInPlace?.branchCode}:${screeningRoom.branchCode}/update`);
 
-//         const forms = {
-//             additionalProperty: [],
-//             name: {},
-//             ...req.body
-//         };
-//         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-//             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-//                 return {};
-//             }));
-//         }
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
+            }
+        }
 
-//         res.render('places/movieTheater/new', {
-//             message: message,
-//             errors: errors,
-//             forms: forms
-//         });
-//     }
-// );
+        const forms = {
+            additionalProperty: [],
+            name: {},
+            ...req.body
+        };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+
+        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+            project: { ids: [req.project.id] }
+        });
+
+        res.render('places/screeningRoom/new', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            movieTheaters: searchMovieTheatersResult.data
+        });
+    }
+);
 
 screeningRoomRouter.get(
     '',
@@ -103,6 +114,12 @@ screeningRoomRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
+                branchCode: {
+                    $regex: (typeof req.query?.branchCode?.$regex === 'string'
+                        && req.query?.branchCode?.$regex.length > 0)
+                        ? req.query?.branchCode?.$regex
+                        : undefined
+                },
                 containedInPlace: {
                     branchCode: {
                         $eq: (typeof req.query?.containedInPlace?.branchCode?.$eq === 'string'
@@ -129,6 +146,7 @@ screeningRoomRouter.get(
             });
         } catch (err) {
             res.json({
+                message: err.message,
                 success: false,
                 count: 0,
                 results: []
@@ -137,8 +155,10 @@ screeningRoomRouter.get(
     }
 );
 
-screeningRoomRouter.all(
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomRouter.all<ParamsDictionary>(
     '/:id/update',
+    ...validate(),
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -211,6 +231,30 @@ screeningRoomRouter.all(
     }
 );
 
+// tslint:disable-next-line:use-default-type-parameter
+screeningRoomRouter.delete<ParamsDictionary>(
+    '/:id',
+    async (req, res) => {
+        const splittedId = req.params.id.split(':');
+        const movieTheaterBranchCode = splittedId[0];
+        const screeningRoomBranchCode = splittedId[1];
+
+        const placeService = new chevre.service.Place({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        await placeService.deleteScreeningRoom({
+            project: req.project,
+            branchCode: screeningRoomBranchCode,
+            containedInPlace: { branchCode: movieTheaterBranchCode }
+        });
+
+        res.status(NO_CONTENT)
+            .end();
+    }
+);
+
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoom.IPlace {
     let openSeatingAllowed: boolean | undefined;
     if (req.body.openSeatingAllowed === '1') {
@@ -250,6 +294,24 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
             }
             : undefined
     };
+}
+
+function validate() {
+    return [
+        body('branchCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64))
+    ];
 }
 
 export default screeningRoomRouter;

@@ -16,6 +16,8 @@ ST-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/places/seat/new">
+                <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
         </div>
@@ -40,6 +42,26 @@ ST-01
                                             <%= movieTheater.name.ja %>
                                         </option>
                                         <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containedInPlace[containedInPlace][branchCode][$eq]"
+                                        class="bmd-label-static">
+                                        スクリーン
+                                    </label>
+                                    <select class="form-control"
+                                        name="containedInPlace[containedInPlace][branchCode][$eq]" id="screenBranchCode"
+                                        style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containedInPlace[branchCode][$eq]" class="bmd-label-static">
+                                        セクション
+                                    </label>
+                                    <select class="form-control" name="containedInPlace[branchCode][$eq]"
+                                        id="screeningRoomSectionBranchCode" style="width: 100%;">
                                     </select>
                                 </div>
 

@@ -1,5 +1,5 @@
 /**
- * 座席ルーター
+ * スクリーンセクションルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
@@ -15,9 +15,9 @@ const debug = createDebug('chevre-backend:router');
 
 const NUM_ADDITIONAL_PROPERTY = 5;
 
-const seatRouter = Router();
+const screeningRoomSectionRouter = Router();
 
-seatRouter.all<any>(
+screeningRoomSectionRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -42,7 +42,7 @@ seatRouter.all<any>(
                 try {
                     debug(req.body);
                     req.body.id = '';
-                    const seat = createFromBody(req, true);
+                    const screeningRoomSection = createFromBody(req, true);
 
                     // const { data } = await placeService.searchScreeningRooms({});
                     // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
@@ -50,9 +50,9 @@ seatRouter.all<any>(
                     //     throw new Error('枝番号が重複しています');
                     // }
 
-                    await placeService.createSeat(seat);
+                    await placeService.createScreeningRoomSection(screeningRoomSection);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/seat/${seat.containedInPlace?.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.branchCode}:${seat.branchCode}/update`);
+                    res.redirect(`/places/screeningRoomSection/${screeningRoomSection.containedInPlace?.containedInPlace?.branchCode}:${screeningRoomSection.containedInPlace?.branchCode}:${screeningRoomSection.branchCode}/update`);
 
                     return;
                 } catch (error) {
@@ -82,7 +82,7 @@ seatRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
-        res.render('places/seat/new', {
+        res.render('places/screeningRoomSection/new', {
             message: message,
             errors: errors,
             forms: forms,
@@ -92,7 +92,7 @@ seatRouter.all<any>(
     }
 );
 
-seatRouter.get(
+screeningRoomSectionRouter.get(
     '',
     async (req, res) => {
         const placeService = new chevre.service.Place({
@@ -103,14 +103,14 @@ seatRouter.get(
             project: { ids: [req.project.id] }
         });
 
-        res.render('places/seat/index', {
+        res.render('places/screeningRoomSection/index', {
             message: '',
             movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
 
-seatRouter.get(
+screeningRoomSectionRouter.get(
     '/search',
     // tslint:disable-next-line:cyclomatic-complexity
     async (req, res) => {
@@ -122,7 +122,7 @@ seatRouter.get(
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
-            const { data } = await placeService.searchSeats({
+            const { data } = await placeService.searchScreeningRoomSections({
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
@@ -145,14 +145,6 @@ seatRouter.get(
                                 && req.query?.containedInPlace?.containedInPlace?.branchCode?.$eq.length > 0)
                                 ? req.query?.containedInPlace?.containedInPlace?.branchCode?.$eq
                                 : undefined
-                        },
-                        containedInPlace: {
-                            branchCode: {
-                                $eq: (typeof req.query?.containedInPlace?.containedInPlace?.containedInPlace?.branchCode?.$eq === 'string'
-                                    && req.query?.containedInPlace?.containedInPlace?.containedInPlace?.branchCode?.$eq.length > 0)
-                                    ? req.query?.containedInPlace?.containedInPlace?.containedInPlace?.branchCode?.$eq
-                                    : undefined
-                            }
                         }
                     }
                 }
@@ -162,7 +154,6 @@ seatRouter.get(
             const results = data.map((seat, index) => {
                 return {
                     ...seat,
-                    seatingTypeStr: (Array.isArray(seat.seatingType)) ? seat.seatingType.join(',') : '',
                     id: `${seat.branchCode}:${index}`
                 };
             });
@@ -184,7 +175,7 @@ seatRouter.get(
     }
 );
 
-seatRouter.all(
+screeningRoomSectionRouter.all(
     '/:id/update',
     async (req, res, next) => {
         try {
@@ -196,15 +187,8 @@ seatRouter.all(
             const screeningRoomBranchCode = splittedId[1];
             // tslint:disable-next-line:no-magic-numbers
             const screeningRoomSectionBranchCode = splittedId[2];
-            // tslint:disable-next-line:no-magic-numbers
-            const seatBranchCode = splittedId[3];
 
             const placeService = new chevre.service.Place({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-
-            const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
@@ -213,30 +197,21 @@ seatRouter.all(
                 project: { ids: [req.project.id] }
             });
 
-            const searchSeatingTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-            });
-
-            const searchSeatsResult = await placeService.searchSeats({
+            const searchScreeningRoomSectionsResult = await placeService.searchScreeningRoomSections({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                branchCode: { $eq: seatBranchCode },
+                branchCode: { $eq: screeningRoomSectionBranchCode },
                 containedInPlace: {
-                    branchCode: { $eq: screeningRoomSectionBranchCode },
+                    branchCode: { $eq: screeningRoomBranchCode },
                     containedInPlace: {
-                        branchCode: { $eq: screeningRoomBranchCode },
-                        containedInPlace: {
-                            branchCode: { $eq: movieTheaterBranchCode }
-                        }
+                        branchCode: { $eq: movieTheaterBranchCode }
                     }
                 }
             });
 
-            let seat = searchSeatsResult.data[0];
-            if (seat === undefined) {
-                throw new Error('Screening Room Not Found');
+            let screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
+            if (screeningRoomSection === undefined) {
+                throw new Error('Screening Room Section Not Found');
             }
 
             if (req.method === 'POST') {
@@ -245,9 +220,8 @@ seatRouter.all(
                 errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     try {
-                        seat = createFromBody(req, false);
-                        debug('saving seat...', seat);
-                        await placeService.updateSeat(seat);
+                        screeningRoomSection = createFromBody(req, false);
+                        await placeService.updateScreeningRoomSection(screeningRoomSection);
 
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
@@ -261,7 +235,7 @@ seatRouter.all(
 
             const forms = {
                 additionalProperty: [],
-                ...seat,
+                ...screeningRoomSection,
                 ...req.body
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -271,12 +245,11 @@ seatRouter.all(
                 }));
             }
 
-            res.render('places/seat/update', {
+            res.render('places/screeningRoomSection/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                movieTheaters: searchMovieTheatersResult.data,
-                seatingTypes: searchSeatingTypesResult.data
+                movieTheaters: searchMovieTheatersResult.data
             });
         } catch (error) {
             next(error);
@@ -285,7 +258,7 @@ seatRouter.all(
 );
 
 // tslint:disable-next-line:use-default-type-parameter
-seatRouter.delete<ParamsDictionary>(
+screeningRoomSectionRouter.delete<ParamsDictionary>(
     '/:id',
     async (req, res) => {
         const splittedId = req.params.id.split(':');
@@ -293,22 +266,19 @@ seatRouter.delete<ParamsDictionary>(
         const screeningRoomBranchCode = splittedId[1];
         // tslint:disable-next-line:no-magic-numbers
         const screeningRoomSectionBranchCode = splittedId[2];
-        // tslint:disable-next-line:no-magic-numbers
-        const seatBranchCode = splittedId[3];
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
 
-        await placeService.deleteSeat({
+        await placeService.deleteScreeningRoomSection({
             project: req.project,
-            branchCode: seatBranchCode,
+            branchCode: screeningRoomSectionBranchCode,
             containedInPlace: {
-                branchCode: screeningRoomSectionBranchCode,
+                branchCode: screeningRoomBranchCode,
                 containedInPlace: {
-                    branchCode: screeningRoomBranchCode,
-                    containedInPlace: { branchCode: movieTheaterBranchCode }
+                    branchCode: movieTheaterBranchCode
                 }
             }
         });
@@ -318,31 +288,23 @@ seatRouter.delete<ParamsDictionary>(
     }
 );
 
-function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat.IPlace {
-    let seatingType: string[] | undefined;
-    if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
-        seatingType = [req.body.seatingType];
-    }
-
+function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoomSection.IPlace {
     return {
         project: req.project,
-        typeOf: chevre.factory.placeType.Seat,
+        typeOf: chevre.factory.placeType.ScreeningRoomSection,
         branchCode: req.body.branchCode,
+        name: req.body.name,
         containedInPlace: {
             project: req.project,
-            typeOf: chevre.factory.placeType.ScreeningRoomSection,
+            typeOf: chevre.factory.placeType.ScreeningRoom,
             branchCode: req.body.containedInPlace.branchCode,
             containedInPlace: {
                 project: req.project,
-                typeOf: chevre.factory.placeType.ScreeningRoom,
-                branchCode: req.body.containedInPlace.containedInPlace.branchCode,
-                containedInPlace: {
-                    project: req.project,
-                    typeOf: chevre.factory.placeType.MovieTheater,
-                    branchCode: req.body.containedInPlace.containedInPlace.containedInPlace.branchCode
-                }
+                typeOf: chevre.factory.placeType.MovieTheater,
+                branchCode: req.body.containedInPlace.containedInPlace.branchCode
             }
         },
+        containsPlace: [], // 更新しないため空でよし
         additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
@@ -352,14 +314,13 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat
                     };
                 })
             : undefined,
-        ...(Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
-                    noExistingAttributeName: 1, // $unsetは空だとエラーになるので
-                    ...(seatingType === undefined)
-                        ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
-                        : undefined
+                    noExistingAttributeName: 1 // $unsetは空だとエラーになるので
+                    // ...(seatingType === undefined)
+                    //     ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
+                    //     : undefined
                 }
             }
             : undefined
@@ -371,26 +332,27 @@ function validate() {
         body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
-            .matches(/^[0-9a-zA-Z\-]+$/)
+            .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('枝番号', 20)),
-        body('containedInPlace.containedInPlace.containedInPlace.branchCode')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '劇場')),
         body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'スクリーン')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '劇場')),
         body('containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'セクション'))
-
-        // body('name.ja')
-        //     .notEmpty()
-        //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
-        //     // tslint:disable-next-line:no-magic-numbers
-        //     .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'スクリーン')),
+        body('name.ja')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        body('name.en')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
 }
 
-export default seatRouter;
+export default screeningRoomSectionRouter;

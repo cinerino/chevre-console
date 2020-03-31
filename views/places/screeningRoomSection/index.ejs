@@ -1,14 +1,14 @@
 <%- contentFor('title') %>
-スクリーン検索
+スクリーンセクション検索
 <%- contentFor('displayId') %>
-SR-01
+SRS-01
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
-<script src="/js/master/places/screeningRooms.js"></script>
+<script src="/js/master/places/screeningRoomSections.js"></script>
 
 <%- contentFor('body') %>
 
@@ -16,7 +16,7 @@ SR-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/places/screeningRoom/new">
+            <a class="btn btn-primary" href="/places/screeningRoomSection/new">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -30,10 +30,12 @@ SR-01
 
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-2">
-                                    <label for="containedInPlace[branchCode][$eq]" class="bmd-label-static">
+                                    <label for="containedInPlace[containedInPlace][branchCode][$eq]"
+                                        class="bmd-label-static">
                                         劇場
                                     </label>
-                                    <select class="form-control" name="containedInPlace[branchCode][$eq]">
+                                    <select class="form-control"
+                                        name="containedInPlace[containedInPlace][branchCode][$eq]">
                                         <option value="">選択してください</option>
                                         <% for (const movieTheater of movieTheaters) { %>
                                         <option value="<%= movieTheater.branchCode %>">
@@ -44,10 +46,19 @@ SR-01
                                 </div>
 
                                 <div class="form-group bmd-form-group col-md-2">
-                                    <label for="branchCode[$regex]" class="bmd-label-static">
+                                    <label for="containedInPlace[containedInPlace][$eq]" class="bmd-label-static">
+                                        スクリーン
+                                    </label>
+                                    <select class="form-control" name="containedInPlace[branchCode][$eq]"
+                                        id="screenBranchCode" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="branchCode[$eq]" class="bmd-label-static">
                                         コード
                                     </label>
-                                    <input class="form-control" name="branchCode[$regex]">
+                                    <input class="form-control" name="branchCode[$eq]">
                                 </div>
                             </div>
                         </form>
@@ -62,36 +73,32 @@ SR-01
                                 <tr>
                                     <th>コード</th>
                                     <th>劇場</th>
-                                    <th>名称</th>
-                                    <th>アドレス</th>
-                                    <th>自由席</th>
+                                    <th>スクリーン</th>
                                     <th>追加特性</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow" identifier="">
-                                    <td name="containedInPlace.branchCode__branchCode__branchCode"><a target="_blank"
-                                            href="/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">
+                                    <td
+                                        name="containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
+                                        <a target="_blank"
+                                            href="/places/screeningRoomSection/$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
                                             $branchCode$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
+                                    </td>
+                                    <td
+                                        name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja|slice">
+                                        <span
+                                            class="font-italic text-muted">$containedInPlace.containedInPlace.branchCode$</span>
+                                        $containedInPlace.containedInPlace.name.ja$
                                     </td>
                                     <td name="containedInPlace.branchCode__containedInPlace.name.ja|slice">
                                         <span class="font-italic text-muted">$containedInPlace.branchCode$</span>
                                         $containedInPlace.name.ja$
                                     </td>
-                                    <td name="name.ja|slice">
-                                        $name.ja$
-                                    </td>
-                                    <td name="address.ja|slice">
-                                        $address.ja$
-                                    </td>
-                                    <td name="openSeatingAllowed">
-                                        $openSeatingAllowed$<br>
-                                    </td>
-                                    <td name="branchCode__id" class="">
-                                        <a href="javascript:void(0)" class="showAdditionalProperty"
-                                            data-branchCode="$branchCode$">
+                                    <td name="id" class="">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                             <span>表示</span>
                                         </a>
                                     </td>
@@ -114,18 +121,18 @@ SR-01
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="modal-additionalProperty" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title"></h4>
-            </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+    <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
             </div>
         </div>
     </div>
