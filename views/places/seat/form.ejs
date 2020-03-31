@@ -65,8 +65,9 @@
                             スクリーン
                         </label>
                         <% if (isNew) { %>
-                        <input class="form-control" type="text" name="containedInPlace[containedInPlace][branchCode]"
-                            value="">
+                        <select class="form-control" name="containedInPlace[containedInPlace][branchCode]"
+                            id="screenBranchCode" style="width: 100%;">
+                        </select>
                         <% } else { %>
                         <input readonly class="form-control" type="text"
                             name="containedInPlace[containedInPlace][branchCode]"
@@ -84,7 +85,9 @@
                             セクション
                         </label>
                         <% if (isNew) { %>
-                        <input class="form-control" type="text" name="containedInPlace[branchCode]" value="">
+                        <select class="form-control" name="containedInPlace[branchCode]"
+                            id="screeningRoomSectionBranchCode" style="width: 100%;">
+                        </select>
                         <% } else { %>
                         <input readonly class="form-control" type="text" name="containedInPlace[branchCode]"
                             value="<%= forms.containedInPlace.branchCode %>">

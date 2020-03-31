@@ -9,7 +9,7 @@
 
         <%
         let placesShow = false;
-        if (displayId.slice(0, 3) === 'MT-' || displayId.slice(0, 3) === 'SR-' || displayId.slice(0, 3) === 'ST-') {
+        if (displayId.slice(0, 3) === 'MT-' || displayId.slice(0, 3) === 'SR-' || displayId.slice(0, 3) === 'ST-' || displayId.slice(0, 4) === 'SRS-') {
             placesShow = true;
         }
         %>
@@ -24,19 +24,19 @@
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'MT-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/movieTheater">
-                            <span class="sidebar-mini"><i class="material-icons">theaters</i></span>
+                            <span class="sidebar-mini"><i class="material-icons">business</i></span>
                             <span class="sidebar-normal">劇場</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'SR-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/screeningRoom">
-                            <span class="sidebar-mini"><i class="material-icons">meeting_room</i></span>
+                            <span class="sidebar-mini"><i class="material-icons">theaters</i></span>
                             <span class="sidebar-normal">スクリーン</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'SRS-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/screeningRoomSection">
-                            <span class="sidebar-mini"><i class="material-icons">meeting_room</i></span>
+                            <span class="sidebar-mini"><i class="material-icons">view_compact</i></span>
                             <span class="sidebar-normal">セクション</span>
                         </a>
                     </li>
