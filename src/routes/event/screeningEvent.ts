@@ -568,6 +568,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         acceptedPaymentMethod: acceptedPaymentMethod
     };
 
+    const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
+        ? Number(req.body.maximumAttendeeCapacity)
+        : undefined;
+
     return {
         project: req.project,
         typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -581,7 +585,8 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             branchCode: <string>screeningRoom.branchCode,
             name: <chevre.factory.multilingualString>screeningRoom.name,
             alternateName: <chevre.factory.multilingualString>screeningRoom.alternateName,
-            address: screeningRoom.address
+            address: screeningRoom.address,
+            ...(typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined
         },
         superEvent: screeningEventSeries,
         name: screeningEventSeries.name,

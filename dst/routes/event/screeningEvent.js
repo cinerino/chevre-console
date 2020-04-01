@@ -501,6 +501,9 @@ function createEventFromBody(req) {
             validThrough: salesEndDate,
             acceptedPaymentMethod: acceptedPaymentMethod
         };
+        const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
+            ? Number(req.body.maximumAttendeeCapacity)
+            : undefined;
         return {
             project: req.project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -508,14 +511,7 @@ function createEventFromBody(req) {
             startDate: startDate,
             endDate: endDate,
             workPerformed: screeningEventSeries.workPerformed,
-            location: {
-                project: req.project,
-                typeOf: screeningRoom.typeOf,
-                branchCode: screeningRoom.branchCode,
-                name: screeningRoom.name,
-                alternateName: screeningRoom.alternateName,
-                address: screeningRoom.address
-            },
+            location: Object.assign({ project: req.project, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined),
             superEvent: screeningEventSeries,
             name: screeningEventSeries.name,
             eventStatus: chevre.factory.eventStatusType.EventScheduled,

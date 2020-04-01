@@ -191,6 +191,12 @@ $(function () {
             }
         }
     });
+
+    $('.example-popover').popover({
+        container: 'body',
+        placement: 'top',
+        trigger: 'hover'
+    })
 });
 
 /**
@@ -564,6 +570,7 @@ function update() {
     var screeningEventId = modal.find('input[name=screeningEventId]').val();
     var performance = modal.find('input[name=performance]').val();
     var screen = modal.find('select[name=screen]').val();
+    var maximumAttendeeCapacity = modal.find('input[name=maximumAttendeeCapacity]').val();
     var doorTime = modal.find('input[name=doorTime]').val().replace(':', '');
     var startTime = modal.find('input[name=startTime]').val().replace(':', '');
     var endTime = modal.find('input[name=endTime]').val().replace(':', '');
@@ -623,6 +630,7 @@ function update() {
             data: {
                 theater: theater,
                 screen: screen,
+                maximumAttendeeCapacity: maximumAttendeeCapacity,
                 day: day,
                 endDay: endDay,
                 screeningEventId: screeningEventId,
@@ -1042,6 +1050,7 @@ function createScheduler() {
                 modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', this.isReservedSeatsAvailable(performance));
                 modal.find('input[name=reservedSeatsAvailable]').val((this.isReservedSeatsAvailable(performance)) ? '1' : '0');
                 modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
+                modal.find('input[name=maximumAttendeeCapacity]').val(performance.location.maximumAttendeeCapacity);
                 modal.find('.film span').text(performance.name.ja);
                 modal.find('.film input').val(performance.name.ja);
 

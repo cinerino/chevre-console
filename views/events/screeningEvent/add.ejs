@@ -13,7 +13,7 @@
                     <div class="card-body">
                         <form>
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-3">
                                     <label class="bmd-label-static" for="theater">劇場<font color="red">＊</font>
                                     </label>
                                     <select class="form-control" name="theater">
@@ -40,7 +40,7 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-3">
                                     <label class="bmd-label-static" for="screen">作品
                                         <span class="text-danger">＊</span></label>
                                     <select class="form-control" name="screeningEventSeriesId">
@@ -48,12 +48,25 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-3">
                                     <label class="bmd-label-static" for="screen">スクリーン
                                         <span class="text-danger">＊</span></label>
                                     <select class="form-control" name="screen">
                                         <option value="">劇場を選択してください</option>
                                     </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="" for="maximumAttendeeCapacity">
+                                        キャパシティ
+                                        <a href="#" data-toggle="tooltip" title="最大収容人数を上書きできます">
+                                            <span class="material-icons" style="font-size: 1.2em;">
+                                                help
+                                            </span>
+                                        </a>
+                                    </label>
+                                    <input class="form-control" type="text" name="maximumAttendeeCapacity"
+                                        placeholder="10" maxlength=10>
                                 </div>
                             </div>
 
