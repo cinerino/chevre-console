@@ -192,11 +192,7 @@ $(function () {
         }
     });
 
-    $('.example-popover').popover({
-        container: 'body',
-        placement: 'top',
-        trigger: 'hover'
-    })
+    $('[data-toggle="tooltip"]').tooltip();
 });
 
 /**
@@ -399,6 +395,7 @@ function regist() {
     var modal = $('#newModal');
     var theater = modal.find('select[name=theater]').val();
     var screen = modal.find('select[name=screen]').val();
+    var maximumAttendeeCapacity = modal.find('input[name=maximumAttendeeCapacity]').val();
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
     var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
@@ -508,6 +505,7 @@ function regist() {
         data: {
             theater: theater,
             screen: screen,
+            maximumAttendeeCapacity: maximumAttendeeCapacity,
             screeningEventId: screeningEventId,
             startDate: startDate,
             toDate: toDate,

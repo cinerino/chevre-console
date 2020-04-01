@@ -563,6 +563,9 @@ function createMultipleEventFromBody(req, user) {
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
+        const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
+            ? Number(req.body.maximumAttendeeCapacity)
+            : undefined;
         const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
             .tz('Asia/Tokyo');
         const toDate = moment(`${req.body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
@@ -711,16 +714,9 @@ function createMultipleEventFromBody(req, user) {
                         endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(),
                         workPerformed: screeningEventSeries.workPerformed,
-                        location: {
-                            project: req.project,
-                            typeOf: screeningRoom.typeOf,
-                            branchCode: screeningRoom.branchCode,
-                            name: screeningRoom.name === undefined
+                        location: Object.assign({ project: req.project, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined
                                 ? { en: '', ja: '', kr: '' }
-                                : screeningRoom.name,
-                            alternateName: screeningRoom.alternateName,
-                            address: screeningRoom.address
-                        },
+                                : screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined),
                         superEvent: screeningEventSeries,
                         name: screeningEventSeries.name,
                         eventStatus: chevre.factory.eventStatusType.EventScheduled,

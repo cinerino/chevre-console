@@ -641,6 +641,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         throw new Error('上映スクリーン名が見つかりません');
     }
 
+    const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
+        ? Number(req.body.maximumAttendeeCapacity)
+        : undefined;
+
     const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
         .tz('Asia/Tokyo');
     const toDate = moment(`${req.body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
@@ -809,7 +813,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                             ? { en: '', ja: '', kr: '' }
                             : <chevre.factory.multilingualString>screeningRoom.name,
                         alternateName: <chevre.factory.multilingualString>screeningRoom.alternateName,
-                        address: screeningRoom.address
+                        address: screeningRoom.address,
+                        ...(typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined
                     },
                     superEvent: screeningEventSeries,
                     name: screeningEventSeries.name,
