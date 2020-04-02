@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 上映イベント管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerino = require("@cinerino/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -43,6 +44,11 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
         });
@@ -53,10 +59,12 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
         });
+        const searchSellersResult = yield sellerService.search({});
         res.render('events/screeningEvent/index', {
             movieTheaters: searchMovieTheatersResult.data,
             moment: moment,
-            ticketGroups: searchTicketTypeGroupsResult.data
+            ticketGroups: searchTicketTypeGroupsResult.data,
+            sellers: searchSellersResult.data
         });
     }
     catch (err) {
@@ -387,6 +395,11 @@ function createEventFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
         });
@@ -398,6 +411,7 @@ function createEventFromBody(req) {
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
+        const seller = yield sellerService.findById({ id: req.body.seller });
         const catalog = yield offerCatalogService.findById({ id: req.body.ticketTypeGroup });
         if (typeof catalog.id !== 'string') {
             throw new Error('Offer Catalog ID undefined');
@@ -480,28 +494,21 @@ function createEventFromBody(req) {
                     typeOf: 'Ticket'
                 }
             };
-        const offers = {
-            project: { typeOf: req.project.typeOf, id: req.project.id },
-            id: catalog.id,
-            name: catalog.name,
-            typeOf: chevre.factory.offerType.Offer,
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            availabilityEnds: salesEndDate,
-            availabilityStarts: onlineDisplayStartDate,
-            eligibleQuantity: {
+        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: catalog.id, name: catalog.name, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
                 typeOf: 'QuantitativeValue',
                 unitCode: chevre.factory.unitCode.C62,
                 maxValue: Number(req.body.maxSeatNumber),
                 value: 1
-            },
-            itemOffered: {
+            }, itemOffered: {
                 serviceType: serviceType,
                 serviceOutput: serviceOutput
-            },
-            validFrom: salesStartDate,
-            validThrough: salesEndDate,
-            acceptedPaymentMethod: acceptedPaymentMethod
-        };
+            }, validFrom: salesStartDate, validThrough: salesEndDate, acceptedPaymentMethod: acceptedPaymentMethod }, {
+            seller: {
+                typeOf: seller.typeOf,
+                id: seller.id,
+                name: seller.name
+            }
+        });
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
@@ -567,6 +574,11 @@ function createMultipleEventFromBody(req, user) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
         });
@@ -578,6 +590,7 @@ function createMultipleEventFromBody(req, user) {
         if (screeningRoom.name === undefined) {
             throw new Error('上映スクリーン名が見つかりません');
         }
+        const seller = yield sellerService.findById({ id: req.body.seller });
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
@@ -711,28 +724,21 @@ function createMultipleEventFromBody(req, user) {
                             typeOf: 'Ticket'
                         }
                     };
-                    const offers = {
-                        project: { typeOf: req.project.typeOf, id: req.project.id },
-                        id: ticketTypeGroup.id,
-                        name: ticketTypeGroup.name,
-                        typeOf: chevre.factory.offerType.Offer,
-                        priceCurrency: chevre.factory.priceCurrency.JPY,
-                        availabilityEnds: salesEndDate,
-                        availabilityStarts: onlineDisplayStartDate,
-                        eligibleQuantity: {
+                    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: ticketTypeGroup.id, name: ticketTypeGroup.name, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
                             typeOf: 'QuantitativeValue',
                             unitCode: chevre.factory.unitCode.C62,
                             maxValue: Number(req.body.maxSeatNumber),
                             value: 1
-                        },
-                        itemOffered: {
+                        }, itemOffered: {
                             serviceType: serviceType,
                             serviceOutput: serviceOutput
-                        },
-                        validFrom: salesStartDate,
-                        validThrough: salesEndDate,
-                        acceptedPaymentMethod: acceptedPaymentMethod
-                    };
+                        }, validFrom: salesStartDate, validThrough: salesEndDate, acceptedPaymentMethod: acceptedPaymentMethod }, {
+                        seller: {
+                            typeOf: seller.typeOf,
+                            id: seller.id,
+                            name: seller.name
+                        }
+                    });
                     attributes.push({
                         project: req.project,
                         typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -778,6 +784,8 @@ function addValidation() {
         express_validator_1.body('timeData', '時間情報が未選択です')
             .notEmpty(),
         express_validator_1.body('ticketData', '券種グループが未選択です')
+            .notEmpty(),
+        express_validator_1.body('seller', '販売者が未選択です')
             .notEmpty()
     ];
 }
@@ -799,6 +807,8 @@ function updateValidation() {
         express_validator_1.body('screen', 'スクリーンが未選択です')
             .notEmpty(),
         express_validator_1.body('ticketTypeGroup', '券種グループが未選択です')
+            .notEmpty(),
+        express_validator_1.body('seller', '販売者が未選択です')
             .notEmpty()
     ];
 }

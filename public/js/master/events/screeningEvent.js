@@ -401,6 +401,7 @@ function regist() {
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
     var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
+    var seller = modal.find('select[name=seller]').val();
 
     // 販売開始日時
     var saleStartDateType = modal.find('input[name=saleStartDateType]:checked').val();
@@ -426,6 +427,12 @@ function regist() {
 
     var weekDayData = getWeekDayData();
     var reservedSeatsAvailable = modal.find('input[name=reservedSeatsAvailable]:checked').val();
+
+    if (typeof seller !== 'string' || seller.length === 0) {
+        creatingSchedules = false;
+        alert('販売者を選択してください');
+        return;
+    }
 
     if (typeof theater !== 'string' || theater.length === 0
         || typeof screen !== 'string' || screen.length === 0
@@ -515,6 +522,7 @@ function regist() {
             timeData: tableData.timeData,
             ticketData: tableData.ticketData,
             mvtkExcludeFlgData: tableData.mvtkExcludeFlgData,
+            seller: seller,
             saleStartDateType: saleStartDateType,
             saleStartDate: saleStartDate,
             saleStartTime: saleStartTime,
@@ -572,6 +580,7 @@ function update() {
     var startTime = modal.find('input[name=startTime]').val().replace(':', '');
     var endTime = modal.find('input[name=endTime]').val().replace(':', '');
     var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    var seller = modal.find('select[name=seller]').val();
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var saleStartTime = modal.find('input[name=saleStartTime]').val().replace(':', '');
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
@@ -635,6 +644,7 @@ function update() {
                 startTime: startTime,
                 endTime: endTime,
                 ticketTypeGroup: ticketTypeGroup,
+                seller: seller,
                 saleStartDate: saleStartDate,
                 saleStartTime: saleStartTime,
                 onlineDisplayStartDate: onlineDisplayStartDate,
@@ -1067,6 +1077,13 @@ function createScheduler() {
                 modal.find('input[name=endDay]').datepicker('update', endDay);
                 modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
 
+                var seller = performance.offers.seller;
+                if (seller !== undefined && seller !== null) {
+                    modal.find('select[name=seller]').val(seller.id);
+                } else {
+                    modal.find('select[name=seller]').prop('selectedIndex', 0);
+                }
+
                 // 販売開始日時
                 var saleStartDate = (performance.offers === undefined)
                     ? '' : moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD');
@@ -1160,6 +1177,17 @@ function showOffers(id) {
         var table = $('<table>').addClass('table table-sm')
             .append([thead, tbody]);
 
+        var seller;
+        if (event.offers.seller !== undefined && event.offers.seller !== null) {
+            seller = $('<dl>').addClass('row')
+                .append($('<dt>').addClass('col-md-3').append('販売者'))
+                .append($('<dd>').addClass('col-md-9').append(
+                    event.offers.seller.id
+                    + ' '
+                    + event.offers.seller.name.ja
+                ));
+        }
+
         var availability = $('<dl>').addClass('row')
             .append($('<dt>').addClass('col-md-3').append('表示期間'))
             .append($('<dd>').addClass('col-md-9').append(
@@ -1177,6 +1205,7 @@ function showOffers(id) {
             ));
 
         var div = $('<div>')
+            .append(seller)
             .append(availability)
             .append(validity)
             .append($('<div>').addClass('table-responsive').append(table));

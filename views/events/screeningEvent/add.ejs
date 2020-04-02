@@ -144,6 +144,37 @@
                             </div>
 
                             <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label class="bmd-label-static">販売者</label>
+                                    <select class="form-control" name="seller">
+                                        <% for (seller of sellers) { %>
+                                        <option value="<%= seller.id %>">
+                                            <%= seller.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-3">
+                                </div>
+
+                                <% if (req.subscription.settings.useSeats) { %>
+                                <div class="form-group bmd-form-group col-md-6">
+                                    <label class="bmd-label-static">座席有無</label>
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                name="reservedSeatsAvailable" checked>座席有
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <% } %>
+                            </div>
+
+                            <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-5">
                                     <label class="bmd-label-static" for="saleStartDate">販売開始日時</label>
                                     <div class="checkbox-radios">
@@ -221,21 +252,6 @@
                                             placeholder="上映日からn日" maxlength=10>
                                     </div>
                                 </div>
-
-                                <% if (req.subscription.settings.useSeats) { %>
-                                <div class="form-group bmd-form-group col-md-2">
-                                    <label class="bmd-label-static">座席有無</label>
-                                    <div class="form-check form-check-inline">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" value="1"
-                                                name="reservedSeatsAvailable" checked>座席有
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <% } %>
                             </div>
 
                             <% for (let i = 1; i <= 6; i++) { %>

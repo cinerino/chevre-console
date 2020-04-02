@@ -2,6 +2,7 @@
  * 上映イベント管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
@@ -43,6 +44,11 @@ screeningEventRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+            const sellerService = new cinerino.service.Seller({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
 
             const searchMovieTheatersResult = await placeService.searchMovieTheaters({
                 project: { ids: [req.project.id] }
@@ -56,10 +62,13 @@ screeningEventRouter.get(
                 itemOffered: { typeOf: { $eq: ProductType.EventService } }
             });
 
+            const searchSellersResult = await sellerService.search({});
+
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
                 moment: moment,
-                ticketGroups: searchTicketTypeGroupsResult.data
+                ticketGroups: searchTicketTypeGroupsResult.data,
+                sellers: searchSellersResult.data
             });
         } catch (err) {
             next(err);
@@ -446,6 +455,11 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
+    const sellerService = new cinerino.service.Seller({
+        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
 
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
         id: req.body.screeningEventId
@@ -460,6 +474,8 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     if (screeningRoom.name === undefined) {
         throw new Error('上映スクリーン名が見つかりません');
     }
+
+    const seller = await sellerService.findById({ id: req.body.seller });
 
     const catalog = await offerCatalogService.findById({ id: req.body.ticketTypeGroup });
     if (typeof catalog.id !== 'string') {
@@ -568,7 +584,14 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         },
         validFrom: salesStartDate,
         validThrough: salesEndDate,
-        acceptedPaymentMethod: acceptedPaymentMethod
+        acceptedPaymentMethod: acceptedPaymentMethod,
+        ...{
+            seller: {
+                typeOf: seller.typeOf,
+                id: seller.id,
+                name: seller.name
+            }
+        }
     };
 
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
@@ -643,6 +666,11 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
+    const sellerService = new cinerino.service.Seller({
+        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
 
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
         id: req.body.screeningEventId
@@ -657,6 +685,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     if (screeningRoom.name === undefined) {
         throw new Error('上映スクリーン名が見つかりません');
     }
+
+    const seller = await sellerService.findById({ id: req.body.seller });
 
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
         ? Number(req.body.maximumAttendeeCapacity)
@@ -824,7 +854,14 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     },
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,
-                    acceptedPaymentMethod: acceptedPaymentMethod
+                    acceptedPaymentMethod: acceptedPaymentMethod,
+                    ...{
+                        seller: {
+                            typeOf: seller.typeOf,
+                            id: seller.id,
+                            name: seller.name
+                        }
+                    }
                 };
 
                 attributes.push({
@@ -880,6 +917,8 @@ function addValidation() {
         body('timeData', '時間情報が未選択です')
             .notEmpty(),
         body('ticketData', '券種グループが未選択です')
+            .notEmpty(),
+        body('seller', '販売者が未選択です')
             .notEmpty()
     ];
 }
@@ -901,6 +940,8 @@ function updateValidation() {
         body('screen', 'スクリーンが未選択です')
             .notEmpty(),
         body('ticketTypeGroup', '券種グループが未選択です')
+            .notEmpty(),
+        body('seller', '販売者が未選択です')
             .notEmpty()
     ];
 }
