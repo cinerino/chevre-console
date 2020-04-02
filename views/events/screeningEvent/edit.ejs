@@ -96,6 +96,8 @@
                                     <label class="bmd-label-static" for="maxSeatNumber">上限枚数</label>
                                     <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
                                 </div>
+
+                                <% if (req.subscription.settings.useSeats) { %>
                                 <div class="form-group bmd-form-group col-md-4">
                                     <label class="bmd-label-static">座席有無
                                     </label>
@@ -112,6 +114,7 @@
                                         </label>
                                     </div>
                                 </div>
+                                <% } %>
                             </div>
 
                             <div class="form-row">

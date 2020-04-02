@@ -270,13 +270,15 @@ screeningEventRouter.post<any>(
         } catch (err) {
             debug('regist error', err);
             const obj = {
+                message: err.message,
                 error: err.message
             };
             if (err.code === BAD_REQUEST) {
                 res.status(err.code)
                     .json(obj);
             } else {
-                res.json(obj);
+                res.status(INTERNAL_SERVER_ERROR)
+                    .json(obj);
             }
         }
     }
@@ -424,7 +426,7 @@ screeningEventRouter.post(
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createEventFromBody(req: Request): Promise<chevre.factory.event.screeningEvent.IAttributes> {
     const user = req.user;
 
@@ -575,6 +577,17 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
         throw new Error('キャパシティには正の値を入力してください');
     }
+    if (req.subscription?.settings.allowNoCapacity !== true) {
+        if (typeof maximumAttendeeCapacity !== 'number') {
+            throw new Error('キャパシティを入力してください');
+        }
+
+        if (typeof req.subscription?.settings.maximumAttendeeCapacity === 'number') {
+            if (maximumAttendeeCapacity > req.subscription?.settings.maximumAttendeeCapacity) {
+                throw new Error(`キャパシティの最大値は${req.subscription?.settings.maximumAttendeeCapacity}です`);
+            }
+        }
+    }
 
     return {
         project: req.project,
@@ -650,6 +663,17 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         : undefined;
     if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
         throw new Error('キャパシティには正の値を入力してください');
+    }
+    if (req.subscription?.settings.allowNoCapacity !== true) {
+        if (typeof maximumAttendeeCapacity !== 'number') {
+            throw new Error('キャパシティを入力してください');
+        }
+
+        if (typeof req.subscription?.settings.maximumAttendeeCapacity === 'number') {
+            if (maximumAttendeeCapacity > req.subscription?.settings.maximumAttendeeCapacity) {
+                throw new Error(`キャパシティの最大値は${req.subscription?.settings.maximumAttendeeCapacity}です`);
+            }
+        }
     }
 
     const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')

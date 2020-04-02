@@ -531,25 +531,22 @@ function regist() {
             $('.regist-button').text('登録中...');
         }
     }).done(function (data) {
-        if (!data.error) {
-            modal.modal('hide');
-            if ($('.search select[name=theater]').val() !== theater) {
-                getScreens(theater, 'none');
-                $('.search select[name=theater]').val(theater);
-            }
-            searchSchedule();
-
-            return;
+        modal.modal('hide');
+        if ($('.search select[name=theater]').val() !== theater) {
+            getScreens(theater, 'none');
+            $('.search select[name=theater]').val(theater);
         }
+        searchSchedule();
 
-        alert('登録に失敗しました');
+        return;
     }).fail(function (jqxhr, textStatus, error) {
+        var massage = '';
         console.error(jqxhr, textStatus, error);
-        if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
-            alert(jqxhr.responseJSON.error);
-        } else {
-            alert('登録に失敗しました');
+        if (jqxhr.responseJSON != undefined && jqxhr.responseJSON != null) {
+            massage = jqxhr.responseJSON.message;
         }
+
+        alert('登録に失敗しました:' + message);
     }).always(function () {
         creatingSchedules = false;
         $('.regist-button').prop('disabled', false);

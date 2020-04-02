@@ -235,6 +235,7 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
     catch (err) {
         debug('regist error', err);
         const obj = {
+            message: err.message,
             error: err.message
         };
         if (err.code === http_status_1.BAD_REQUEST) {
@@ -242,7 +243,8 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
                 .json(obj);
         }
         else {
-            res.json(obj);
+            res.status(http_status_1.INTERNAL_SERVER_ERROR)
+                .json(obj);
         }
     }
 }));
@@ -364,9 +366,9 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
 /**
  * リクエストボディからイベントオブジェクトを作成する
  */
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createEventFromBody(req) {
-    var _a;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         const user = req.user;
         const eventService = new chevre.service.Event({
@@ -506,6 +508,16 @@ function createEventFromBody(req) {
         if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
             throw new Error('キャパシティには正の値を入力してください');
         }
+        if (((_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.allowNoCapacity) !== true) {
+            if (typeof maximumAttendeeCapacity !== 'number') {
+                throw new Error('キャパシティを入力してください');
+            }
+            if (typeof ((_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity) === 'number') {
+                if (maximumAttendeeCapacity > ((_d = req.subscription) === null || _d === void 0 ? void 0 : _d.settings.maximumAttendeeCapacity)) {
+                    throw new Error(`キャパシティの最大値は${(_e = req.subscription) === null || _e === void 0 ? void 0 : _e.settings.maximumAttendeeCapacity}です`);
+                }
+            }
+        }
         return {
             project: req.project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -537,6 +549,7 @@ function createEventFromBody(req) {
  */
 // tslint:disable-next-line:max-func-body-length
 function createMultipleEventFromBody(req, user) {
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -570,6 +583,16 @@ function createMultipleEventFromBody(req, user) {
             : undefined;
         if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
             throw new Error('キャパシティには正の値を入力してください');
+        }
+        if (((_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.allowNoCapacity) !== true) {
+            if (typeof maximumAttendeeCapacity !== 'number') {
+                throw new Error('キャパシティを入力してください');
+            }
+            if (typeof ((_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.maximumAttendeeCapacity) === 'number') {
+                if (maximumAttendeeCapacity > ((_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity)) {
+                    throw new Error(`キャパシティの最大値は${(_d = req.subscription) === null || _d === void 0 ? void 0 : _d.settings.maximumAttendeeCapacity}です`);
+                }
+            }
         }
         const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
             .tz('Asia/Tokyo');

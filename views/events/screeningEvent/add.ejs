@@ -222,6 +222,7 @@
                                     </div>
                                 </div>
 
+                                <% if (req.subscription.settings.useSeats) { %>
                                 <div class="form-group bmd-form-group col-md-2">
                                     <label class="bmd-label-static">座席有無</label>
                                     <div class="form-check form-check-inline">
@@ -234,6 +235,7 @@
                                         </label>
                                     </div>
                                 </div>
+                                <% } %>
                             </div>
 
                             <% for (let i = 1; i <= 6; i++) { %>
