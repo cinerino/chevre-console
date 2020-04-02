@@ -192,7 +192,9 @@ $(function () {
         }
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip({
+        html: true
+    });
 });
 
 /**
@@ -563,11 +565,11 @@ function regist() {
 function update() {
     var modal = $('#editModal');
     var theater = modal.find('input[name=theater]').val();
+    var screen = modal.find('input[name=screen]').val();
     var day = modal.find('input[name=day]').val();
     var endDay = modal.find('input[name=endDay]').val();
     var screeningEventId = modal.find('input[name=screeningEventId]').val();
     var performance = modal.find('input[name=performance]').val();
-    var screen = modal.find('select[name=screen]').val();
     var maximumAttendeeCapacity = modal.find('input[name=maximumAttendeeCapacity]').val();
     var doorTime = modal.find('input[name=doorTime]').val().replace(':', '');
     var startTime = modal.find('input[name=startTime]').val().replace(':', '');
@@ -646,15 +648,17 @@ function update() {
                 additionalProperty: additionalProperty
             }
         }).done(function (data) {
-            if (!data.error) {
-                modal.modal('hide');
-                searchSchedule();
-                return;
-            }
-            alert('更新に失敗しました');
+            modal.modal('hide');
+            searchSchedule();
+            return;
         }).fail(function (jqxhr, textStatus, error) {
-            console.error(jqxhr, textStatus, error);
-            alert('更新に失敗しました');
+            var error = jqxhr.responseJSON;
+            var message = '';
+            if (error !== undefined && error !== null) {
+                message = error.message;
+            }
+            console.error(jqxhr.responseJSON);
+            alert('更新できませんでした:' + message);
         });
     }
 }
@@ -1042,6 +1046,7 @@ function createScheduler() {
 
                 modal.find('input[name=performance]').val(performance.id);
                 modal.find('input[name=theater]').val(performance.superEvent.location.id);
+                modal.find('input[name=screen]').val(performance.location.branchCode);
                 modal.find('input[name=day]').val(day);
                 modal.find('input[name=screeningEventId]').val(performance.superEvent.id);
                 modal.find('input[name=mvtkExcludeFlg]').prop('checked', this.isSupportMovieTicket(performance));
@@ -1051,6 +1056,8 @@ function createScheduler() {
                 modal.find('input[name=maximumAttendeeCapacity]').val(performance.location.maximumAttendeeCapacity);
                 modal.find('.film span').text(performance.name.ja);
                 modal.find('.film input').val(performance.name.ja);
+                modal.find('.theater input').val(performance.superEvent.location.name.ja);
+                modal.find('.screen input').val(performance.location.name.ja);
 
                 // 上映時間
                 var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HH:mm');
@@ -1061,7 +1068,6 @@ function createScheduler() {
                 modal.find('input[name=startTime]').val(startTime);
                 modal.find('input[name=endTime]').val(endTime);
                 modal.find('input[name=endDay]').datepicker('update', endDay);
-                modal.find('select[name=screen]').val(performance.location.branchCode);
                 modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
 
                 // 販売開始日時

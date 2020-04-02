@@ -257,22 +257,21 @@ screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) 
         // errors = validatorResult.mapped();
         // const validations = req.validationErrors(true);
         if (!validatorResult.isEmpty()) {
-            throw new Error('Invalid');
+            throw new Error('不適切な項目があります');
         }
-        debug('saving screening event...', req.body);
         const attributes = yield createEventFromBody(req);
         yield eventService.update({
             id: req.params.eventId,
             attributes: attributes
         });
-        res.json({
-            error: undefined
-        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
     }
     catch (err) {
-        debug('update error', err);
-        res.json({
-            error: err.message
+        res.status(http_status_1.BAD_REQUEST)
+            .json({
+            message: err.message,
+            error: err
         });
     }
 }));
@@ -504,6 +503,10 @@ function createEventFromBody(req) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
+        if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
+            throw new Error('キャパシティには正の値を入力してください');
+        }
+        console.log('maximumAttendeeCapacity;', maximumAttendeeCapacity);
         return {
             project: req.project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -566,6 +569,9 @@ function createMultipleEventFromBody(req, user) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
+        if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
+            throw new Error('キャパシティには正の値を入力してください');
+        }
         const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
             .tz('Asia/Tokyo');
         const toDate = moment(`${req.body.toDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')

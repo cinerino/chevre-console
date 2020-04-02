@@ -23,13 +23,15 @@
                                     <label class="bmd-label-static" for="startTime">劇場</label>
                                     <input class="form-control" disabled type="text">
                                 </div>
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-4 screen">
                                     <label class="bmd-label-static" for="screen">スクリーン</label>
-                                    <select class="form-control" name="screen"></select>
+                                    <input class="form-control" disabled type="text">
+                                    <!-- <select class="form-control" name="screen"></select> -->
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
                                     <label class="bmd-label-static" for="maximumAttendeeCapacity">キャパシティ
-                                        <a href="#" data-toggle="tooltip" title="最大収容人数を上書きできます"
+                                        <a href="#" data-toggle="tooltip"
+                                            title="<p class=&quot;text-left mb-0&quot;>最大収容人数を設定します。<br>座席有の場合、デフォルトでスクリーン座席数に従い、それより大きい値設定は無視されます。</p>"
                                             style="pointer-events: auto;">
                                             <span class="material-icons" style="font-size: 1.2em;">
                                                 help
@@ -95,7 +97,7 @@
                                     <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static">座席指定
+                                    <label class="bmd-label-static">座席有無
                                     </label>
                                     <div class="form-check">
                                         <input type="hidden" value="1" name="reservedSeatsAvailable">
@@ -103,7 +105,7 @@
                                             <input disabled class="form-check-input" type="checkbox"
                                                 name="reservedSeatsAvailableDisabled" value="1"
                                                 id="reservedSeatsAvailableDisabled">
-                                            座席指定あり
+                                            座席有
                                             <span class="form-check-sign">
                                                 <span class="check"></span>
                                             </span>
@@ -189,6 +191,7 @@
             <input type="hidden" name="performance" value="">
             <input type="hidden" name="film" value="">
             <input type="hidden" name="theater" value="">
+            <input type="hidden" name="screen" value="">
             <input type="hidden" name="day" value="">
 
             <div class="modal-footer">

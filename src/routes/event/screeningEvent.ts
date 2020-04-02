@@ -296,22 +296,23 @@ screeningEventRouter.post<ParamsDictionary>(
             // errors = validatorResult.mapped();
             // const validations = req.validationErrors(true);
             if (!validatorResult.isEmpty()) {
-                throw new Error('Invalid');
+                throw new Error('不適切な項目があります');
             }
-            debug('saving screening event...', req.body);
+
             const attributes = await createEventFromBody(req);
             await eventService.update({
                 id: req.params.eventId,
                 attributes: attributes
             });
-            res.json({
-                error: undefined
-            });
+
+            res.status(NO_CONTENT)
+                .end();
         } catch (err) {
-            debug('update error', err);
-            res.json({
-                error: err.message
-            });
+            res.status(BAD_REQUEST)
+                .json({
+                    message: err.message,
+                    error: err
+                });
         }
     }
 );
@@ -571,6 +572,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
         ? Number(req.body.maximumAttendeeCapacity)
         : undefined;
+    if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
+        throw new Error('キャパシティには正の値を入力してください');
+    }
+    console.log('maximumAttendeeCapacity;', maximumAttendeeCapacity);
 
     return {
         project: req.project,
@@ -644,6 +649,9 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
         ? Number(req.body.maximumAttendeeCapacity)
         : undefined;
+    if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
+        throw new Error('キャパシティには正の値を入力してください');
+    }
 
     const startDate = moment(`${req.body.startDate}T00:00:00+09:00`, 'YYYYMMDDTHHmmZ')
         .tz('Asia/Tokyo');
