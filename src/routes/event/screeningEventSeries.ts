@@ -661,10 +661,10 @@ function validate() {
         //     .withMessage('日付を入力してください'),
 
         body('headline.ja', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
 
-        body('videoFormatType', Message.Common.required.replace('$fieldName$', '上映方式'))
-            .notEmpty()
+        // body('videoFormatType', Message.Common.required.replace('$fieldName$', '上映方式'))
+        //     .notEmpty()
     ];
 }
 

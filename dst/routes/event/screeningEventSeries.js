@@ -522,9 +522,9 @@ function validate() {
         //     .isDate()
         //     .withMessage('日付を入力してください'),
         express_validator_1.body('headline.ja', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
-        express_validator_1.body('videoFormatType', Message.Common.required.replace('$fieldName$', '上映方式'))
-            .notEmpty()
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+        // body('videoFormatType', Message.Common.required.replace('$fieldName$', '上映方式'))
+        //     .notEmpty()
     ];
 }
 exports.default = screeningEventSeriesRouter;

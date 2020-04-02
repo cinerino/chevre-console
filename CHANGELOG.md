@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファー適用条件拡張
 - 券種グループをオファーカテゴリーに統合
 - 券種検索条件をオファー検索条件に統合
+- 劇場上映作品の上映方式を非必須に変更
 
 ### Deprecated
 
