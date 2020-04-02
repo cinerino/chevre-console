@@ -540,10 +540,10 @@ function regist() {
 
         return;
     }).fail(function (jqxhr, textStatus, error) {
-        var massage = '';
+        var message = '';
         console.error(jqxhr, textStatus, error);
         if (jqxhr.responseJSON != undefined && jqxhr.responseJSON != null) {
-            massage = jqxhr.responseJSON.message;
+            message = jqxhr.responseJSON.message;
         }
 
         alert('登録に失敗しました:' + message);
