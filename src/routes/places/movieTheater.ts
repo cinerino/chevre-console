@@ -220,7 +220,7 @@ movieTheaterRouter.get(
             });
             const screeningRooms = movieTheater.containsPlace.map((screen) => {
                 let numSeats = 0;
-                if (screen.containsPlace !== undefined) {
+                if (Array.isArray(screen.containsPlace)) {
                     numSeats += screen.containsPlace.reduce(
                         (a, b) => {
                             return a + ((b.containsPlace !== undefined) ? b.containsPlace.length : 0);

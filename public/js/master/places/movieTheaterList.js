@@ -161,14 +161,16 @@ $(function () {
                     .append(data.results.map(function (result) {
                         var screeningRoomId = movieTheater.branchCode + ':' + result.branchCode;
                         var editScreenUrl = '/places/screeningRoom/' + screeningRoomId + '/update';
+                        var numSections = 0;
+                        if (Array.isArray(result.containsPlace)) {
+                            numSections = result.containsPlace.length;
+                        }
 
                         return $('<tr>').append([
                             $('<td>').html('<a target="_blank" href="' + editScreenUrl + '">' + result.branchCode + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
                             $('<td>').text(result.name),
-                            $('<td>').attr('align', 'right')
-                                .text(result.containsPlace.length),
-                            $('<td>').attr('align', 'right')
-                                .text(result.numSeats)
+                            $('<td>').text(numSections),
+                            $('<td>').text(result.numSeats)
                         ]);
                     }))
                 var table = $('<table>').addClass('table table-sm')
