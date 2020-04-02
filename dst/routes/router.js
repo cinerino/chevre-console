@@ -42,7 +42,6 @@ router.use((req, res, next) => {
         };
         const subscriptionIdentifier = req.session.subscriptionIdentifier;
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
-        console.log('subscription is...', subscription);
         req.subscription = subscription;
     }
     else {

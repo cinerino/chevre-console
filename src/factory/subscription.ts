@@ -11,5 +11,5 @@ export interface ISubscription {
         useProducts: boolean;
         usePriceSpecifications: boolean;
         useAccountTitles: boolean;
-    }
+    };
 }
