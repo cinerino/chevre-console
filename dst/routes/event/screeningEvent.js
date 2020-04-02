@@ -506,7 +506,6 @@ function createEventFromBody(req) {
         if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
             throw new Error('キャパシティには正の値を入力してください');
         }
-        console.log('maximumAttendeeCapacity;', maximumAttendeeCapacity);
         return {
             project: req.project,
             typeOf: chevre.factory.eventType.ScreeningEvent,
