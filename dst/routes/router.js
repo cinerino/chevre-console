@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * デフォルトルーター
  */
 const express = require("express");
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions = require('../../subscriptions.json');
 const authentication_1 = require("../middlewares/authentication");
 const accountTitles_1 = require("./accountTitles");
 const applications_1 = require("./applications");
@@ -38,6 +40,10 @@ router.use((req, res, next) => {
             typeOf: 'Project',
             id: req.session.projectId
         };
+        const subscriptionIdentifier = req.session.subscriptionIdentifier;
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+        console.log('subscription is...', subscription);
+        req.subscription = subscription;
     }
     else {
         res.redirect('/');

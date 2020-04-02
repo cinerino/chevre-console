@@ -73,6 +73,19 @@ dashboardRouter.get(
         const projectId = req.params.id;
         (<any>req.session).projectId = projectId;
 
+        // サブスクリプション決定
+        const projectService = new cinerinoapi.service.Project({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: projectId });
+
+        let subscriptionIdentifier: string | undefined = (<any>project.settings).subscription?.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Business';
+        }
+        (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
+
         res.redirect('/home');
     }
 );

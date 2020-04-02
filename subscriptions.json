@@ -1,0 +1,48 @@
+[
+    {
+        "identifier": "Free",
+        "settings": {
+            "allowNoCapacity": false,
+            "maximumAttendeeCapacity": 50,
+            "useSeats": false,
+            "useCategoryCodes": false,
+            "useProducts": false,
+            "usePriceSpecifications": false,
+            "useAccountTitles": false
+        }
+    },
+    {
+        "identifier": "Basic",
+        "settings": {
+            "allowNoCapacity": false,
+            "maximumAttendeeCapacity": 50,
+            "useSeats": true,
+            "useCategoryCodes": true,
+            "useProducts": true,
+            "usePriceSpecifications": true,
+            "useAccountTitles": true
+        }
+    },
+    {
+        "identifier": "Business",
+        "settings": {
+            "allowNoCapacity": true,
+            "useSeats": true,
+            "useCategoryCodes": true,
+            "useProducts": true,
+            "usePriceSpecifications": true,
+            "useAccountTitles": true
+        }
+    },
+    {
+        "identifier": "Enterprise",
+        "settings": {
+            "allowNoCapacity": true,
+            "useSeats": true,
+            "useCategoryCodes": true,
+            "useProducts": true,
+            "usePriceSpecifications": true,
+            "useAccountTitles": true
+        }
+    }
+]

@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファー管理を追加
 - オファーカタログ管理を追加
 - イベント固有のキャパシティ設定による在庫管理を実装
+- サブスクリプション設定を追加
 
 ### Changed
 

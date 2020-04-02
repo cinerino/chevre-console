@@ -56,8 +56,20 @@ dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 
  * プロジェクト選択
  */
 dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const projectId = req.params.id;
     req.session.projectId = projectId;
+    // サブスクリプション決定
+    const projectService = new cinerinoapi.service.Project({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const project = yield projectService.findById({ id: projectId });
+    let subscriptionIdentifier = (_a = project.settings.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+    if (subscriptionIdentifier === undefined) {
+        subscriptionIdentifier = 'Business';
+    }
+    req.session.subscriptionIdentifier = subscriptionIdentifier;
     res.redirect('/home');
 }));
 exports.default = dashboardRouter;

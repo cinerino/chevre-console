@@ -3,7 +3,8 @@
  * ユーザーの型をここで定義しています。
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as express from 'express';
+// import * as express from 'express';
+import { ISubscription } from '../factory/subscription';
 
 import User from '../user';
 declare global {
@@ -12,6 +13,7 @@ declare global {
         export interface Request {
             user: User;
             project: chevre.factory.project.IProject;
+            subscription?: ISubscription;
         }
     }
 }

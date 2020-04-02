@@ -34,6 +34,8 @@
                             <span class="sidebar-normal">スクリーン</span>
                         </a>
                     </li>
+
+                    <% if (req.subscription.settings.useSeats) { %>
                     <li class="nav-item <%= (displayId === 'SRS-01') ? 'active': ''; %>">
                         <a class="nav-link" href="/places/screeningRoomSection">
                             <span class="sidebar-mini"><i class="material-icons">view_compact</i></span>
@@ -46,6 +48,7 @@
                             <span class="sidebar-normal">座席</span>
                         </a>
                     </li>
+                    <% } %>
                 </ul>
             </div>
         </li>
@@ -119,6 +122,7 @@
         </li>
 
         <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
+        <% if (req.subscription.settings.useProducts) { %>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#services">
                 <i class="material-icons">local_drink</i>
@@ -145,6 +149,7 @@
             </div>
         </li>
         <% } %>
+        <% } %>
 
         <%
         let offersCategoryCodes = false;
@@ -152,6 +157,7 @@
             offersCategoryCodes = true;
         }
         %>
+        <% if (req.subscription.settings.useCategoryCodes) { %>
         <li class="nav-item <%= (offersCategoryCodes) ? 'active': ''; %>">
             <a class="nav-link" data-toggle="collapse" href="#categoryCodes">
                 <i class="material-icons">category</i>
@@ -170,12 +176,16 @@
                 </ul>
             </div>
         </li>
+        <% } %>
+
+        <% if (req.subscription.settings.usePriceSpecifications) { %>
         <li class="nav-item <%= (displayId === 'PS-02') ? 'active': ''; %>">
             <a class="nav-link" href="/priceSpecifications">
                 <i class="material-icons">attach_money</i>
                 <p>価格仕様<span class="badge badge-secondary ml-2">Preview</span></p>
             </a>
         </li>
+        <% } %>
 
         <% if (process.env.USE_ACCOUNT_TITLE === '1') { %>
         <%
@@ -184,6 +194,7 @@
             offersAccountTitles = true;
         }
         %>
+        <% if (req.subscription.settings.useAccountTitles) { %>
         <li class="nav-item <% if (offersAccountTitles) { %>active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#accountTitles">
                 <i class="material-icons">account_balance</i>
@@ -214,6 +225,7 @@
                 </ul>
             </div>
         </li>
+        <% } %>
         <% } %>
 
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">

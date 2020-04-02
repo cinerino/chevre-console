@@ -2,6 +2,10 @@
  * デフォルトルーター
  */
 import * as express from 'express';
+import { ISubscription } from '../factory/subscription';
+
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions: ISubscription[] = require('../../subscriptions.json');
 
 import authentication from '../middlewares/authentication';
 
@@ -42,6 +46,11 @@ router.use((req, res, next) => {
             typeOf: 'Project',
             id: (<any>req.session).projectId
         };
+
+        const subscriptionIdentifier = (<any>req.session).subscriptionIdentifier;
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+        console.log('subscription is...', subscription);
+        req.subscription = subscription;
     } else {
         res.redirect('/');
 
