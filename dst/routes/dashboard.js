@@ -56,7 +56,7 @@ dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 
  * プロジェクト選択
  */
 dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     const projectId = req.params.id;
     req.session.projectId = projectId;
     // サブスクリプション決定
@@ -65,7 +65,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(vo
         auth: req.user.authClient
     });
     const project = yield projectService.findById({ id: projectId });
-    let subscriptionIdentifier = (_a = project.settings.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+    let subscriptionIdentifier = (_b = (_a = project.settings) === null || _a === void 0 ? void 0 : _a.subscription) === null || _b === void 0 ? void 0 : _b.identifier;
     if (subscriptionIdentifier === undefined) {
         subscriptionIdentifier = 'Business';
     }
