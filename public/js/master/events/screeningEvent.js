@@ -85,7 +85,7 @@ $(function () {
 
     $(document).on('change', '#newModal select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
-        var theaterName = $(this).find('option:selected').text();
+        var theaterName = $(this).find('option:selected').attr('data-name');
 
         // 販売者に同名称の選択肢があれば自動選択
         $('#newModal select[name=seller] option').each(function () {
@@ -1090,11 +1090,12 @@ function createScheduler() {
                 if (seller !== undefined && seller !== null) {
                     modal.find('select[name=seller]').val(seller.id);
                 } else {
-                    var theaterName = modal.find('.theater input').val();
+                    var theaterName = performance.superEvent.location.name.ja;
 
                     // 販売者に同名称の選択肢があれば自動選択
                     modal.find('select[name=seller] option').each(function () {
                         if ($(this).text() === theaterName) {
+                            console.log('matched!');
                             $(this).prop('selected', true);
                         }
                     });

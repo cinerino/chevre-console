@@ -85,9 +85,7 @@
                                     <label class="bmd-label-static" for="seller">販売者</label>
                                     <select class="form-control" name="seller">
                                         <% for (seller of sellers) { %>
-                                        <option value="<%= seller.id %>">
-                                            <%= seller.name.ja %>
-                                        </option>
+                                        <option value="<%= seller.id %>"><%= seller.name.ja %></option>
                                         <% } %>
                                     </select>
                                 </div>
