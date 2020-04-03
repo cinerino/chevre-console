@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * スクリーンセクションルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const csvtojson = require("csvtojson");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -41,7 +42,7 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
             try {
                 debug(req.body);
                 req.body.id = '';
-                const screeningRoomSection = createFromBody(req, true);
+                const screeningRoomSection = yield createFromBody(req, true);
                 // const { data } = await placeService.searchScreeningRooms({});
                 // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
                 // if (existingMovieTheater !== undefined) {
@@ -190,7 +191,7 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    screeningRoomSection = createFromBody(req, false);
+                    screeningRoomSection = yield createFromBody(req, false);
                     yield placeService.updateScreeningRoomSection(screeningRoomSection);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -244,33 +245,58 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
         .end();
 }));
 function createFromBody(req, isNew) {
-    return Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
-            project: req.project,
-            typeOf: chevre.factory.placeType.ScreeningRoom,
-            branchCode: req.body.containedInPlace.branchCode,
-            containedInPlace: {
-                project: req.project,
-                typeOf: chevre.factory.placeType.MovieTheater,
-                branchCode: req.body.containedInPlace.containedInPlace.branchCode
-            }
-        }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))
-            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
-                .map((p) => {
-                return {
-                    name: String(p.name),
-                    value: String(p.value)
-                };
-            })
-            : undefined }, (!isNew)
-        ? {
-            $unset: {
-                noExistingAttributeName: 1 // $unsetは空だとエラーになるので
-                // ...(seatingType === undefined)
-                //     ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
-                //     : undefined
+    return __awaiter(this, void 0, void 0, function* () {
+        let containsPlace = [];
+        const containsPlaceCsv = req.body.containsPlace;
+        const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
+        if (typeof containsPlaceCsv === 'string' && containsPlaceCsv.length > 0) {
+            // tslint:disable-next-line:await-promise
+            const containsPlaceFronCsv = yield csvtojson()
+                .fromString(containsPlaceCsv);
+            if (Array.isArray(containsPlaceFronCsv)) {
+                containsPlace = containsPlaceFronCsv.filter((p) => {
+                    return typeof p.branchCode === 'string'
+                        && p.branchCode.length > 0
+                        && seatBranchCodeRegex.test(p.branchCode);
+                })
+                    .map((p) => {
+                    return {
+                        project: req.project,
+                        typeOf: chevre.factory.placeType.Seat,
+                        branchCode: p.branchCode,
+                        additionalProperty: []
+                    };
+                });
             }
         }
-        : undefined);
+        return Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
+                project: req.project,
+                typeOf: chevre.factory.placeType.ScreeningRoom,
+                branchCode: req.body.containedInPlace.branchCode,
+                containedInPlace: {
+                    project: req.project,
+                    typeOf: chevre.factory.placeType.MovieTheater,
+                    branchCode: req.body.containedInPlace.containedInPlace.branchCode
+                }
+            }, containsPlace: containsPlace, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined }, (!isNew)
+            ? {
+                $unset: {
+                    noExistingAttributeName: 1 // $unsetは空だとエラーになるので
+                    // ...(seatingType === undefined)
+                    //     ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
+                    //     : undefined
+                }
+            }
+            : undefined);
+    });
 }
 function validate() {
     return [

@@ -21,6 +21,11 @@
                     追加特性
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                    高度な設定
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -135,6 +140,33 @@
                 <%- include('../../common/part/_additionalProperty', {
                     additionalProperty: forms.additionalProperty
                 }) %>
+            </div>
+            <div class="tab-pane" id="link3">
+                <% if (!isNew) { %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            座席CSV
+                            <a href="#" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>CSVで座席を登録します。セクションの座席リストが全て上書きされます。また、不適切なフォーマットは無視されます。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
+                        </label>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#containsPlaceCsv" role="button"
+                            aria-expanded="false" aria-controls="editNameJson">
+                            編集する
+                        </a>
+
+                        <div class="collapse" id="containsPlaceCsv">
+                            <textarea class="form-control" name="containsPlace" rows=10
+                                placeholder="branchCode&#13;&#10;A-0&#13;&#10;A-1&#13;&#10;A-2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
             </div>
         </div>
 

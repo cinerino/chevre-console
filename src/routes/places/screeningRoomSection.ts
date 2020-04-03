@@ -2,6 +2,7 @@
  * スクリーンセクションルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as csvtojson from 'csvtojson';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
@@ -42,7 +43,7 @@ screeningRoomSectionRouter.all<any>(
                 try {
                     debug(req.body);
                     req.body.id = '';
-                    const screeningRoomSection = createFromBody(req, true);
+                    const screeningRoomSection = await createFromBody(req, true);
 
                     // const { data } = await placeService.searchScreeningRooms({});
                     // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
@@ -227,7 +228,7 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
                 errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     try {
-                        screeningRoomSection = createFromBody(req, false);
+                        screeningRoomSection = await createFromBody(req, false);
                         await placeService.updateScreeningRoomSection(screeningRoomSection);
 
                         req.flash('message', '更新しました');
@@ -296,7 +297,31 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
     }
 );
 
-function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoomSection.IPlace {
+async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.place.screeningRoomSection.IPlace> {
+    let containsPlace: chevre.factory.place.seat.IPlace[] = [];
+    const containsPlaceCsv = req.body.containsPlace;
+    const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
+    if (typeof containsPlaceCsv === 'string' && containsPlaceCsv.length > 0) {
+        // tslint:disable-next-line:await-promise
+        const containsPlaceFronCsv = await csvtojson()
+            .fromString(containsPlaceCsv);
+        if (Array.isArray(containsPlaceFronCsv)) {
+            containsPlace = containsPlaceFronCsv.filter((p) => {
+                return typeof p.branchCode === 'string'
+                    && p.branchCode.length > 0
+                    && seatBranchCodeRegex.test(p.branchCode);
+            })
+                .map((p) => {
+                    return {
+                        project: req.project,
+                        typeOf: chevre.factory.placeType.Seat,
+                        branchCode: p.branchCode,
+                        additionalProperty: []
+                    };
+                });
+        }
+    }
+
     return {
         project: req.project,
         typeOf: chevre.factory.placeType.ScreeningRoomSection,
@@ -312,7 +337,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
                 branchCode: req.body.containedInPlace.containedInPlace.branchCode
             }
         },
-        containsPlace: [], // 更新しないため空でよし
+        containsPlace: containsPlace, // 更新しないため空でよし
         additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {
