@@ -85,6 +85,15 @@ $(function () {
 
     $(document).on('change', '#newModal select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
+        var theaterName = $(this).find('option:selected').text();
+
+        // 販売者に同名称の選択肢があれば自動選択
+        $('#newModal select[name=seller] option').each(function () {
+            if ($(this).text() === theaterName) {
+                $(this).prop('selected', true);
+            }
+        });
+
         getScreens(theater, 'add');
         getEventSeries(theater);
     }, 500));
