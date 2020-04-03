@@ -1090,7 +1090,7 @@ function createScheduler() {
                 if (seller !== undefined && seller !== null) {
                     modal.find('select[name=seller]').val(seller.id);
                 } else {
-                    var theaterName = modal.find('input[name=theater]').val();
+                    var theaterName = modal.find('.theater input').val();
 
                     // 販売者に同名称の選択肢があれば自動選択
                     modal.find('select[name=seller] option').each(function () {
