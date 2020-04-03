@@ -80,7 +80,7 @@ dashboardRouter.get(
         });
         const project = await projectService.findById({ id: projectId });
 
-        let subscriptionIdentifier: string | undefined = (<any>project).settings?.subscription?.identifier;
+        let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
         if (subscriptionIdentifier === undefined) {
             subscriptionIdentifier = 'Business';
         }
