@@ -1090,7 +1090,16 @@ function createScheduler() {
                 if (seller !== undefined && seller !== null) {
                     modal.find('select[name=seller]').val(seller.id);
                 } else {
-                    modal.find('select[name=seller]').prop('selectedIndex', 0);
+                    var theaterName = modal.find('input[name=theater]').val();
+
+                    // 販売者に同名称の選択肢があれば自動選択
+                    modal.find('select[name=seller] option').each(function () {
+                        if ($(this).text() === theaterName) {
+                            $(this).prop('selected', true);
+                        }
+                    });
+
+                    // modal.find('select[name=seller]').prop('selectedIndex', 0);
                 }
 
                 // 販売開始日時
