@@ -918,6 +918,7 @@ function createScheduler() {
                     onlyReservedSeatsAvailable: $('.search input[name=onlyReservedSeatsAvailable]:checked').val(),
                     offersAvailable: $('.search input[name="offersAvailable"]:checked').val(),
                     offersValid: $('.search input[name="offersValid"]:checked').val(),
+                    onlyEventScheduled: $('.search input[name="onlyEventScheduled"]:checked').val(),
                     'superEvent[workPerformed][identifier]': $('.search select[name="superEvent\\[workPerformed\\]\\[identifier\\]"]').val()
                 };
             },
@@ -1016,11 +1017,18 @@ function createScheduler() {
                     borderRadius = '0px 0px 6px 6px';
                 }
 
+                var opacity = 1;
+                if (performance.eventStatus === 'EventCancelled') {
+                    opacity = 0.5;
+                }
+
                 return {
                     parent: {
                         top: top + 'px',
                         left: left + 'px',
                         height: height + 'px',
+                        '-moz-opacity': opacity,
+                        opacity: opacity
                     },
                     child: {
                         backgroundColor: this.getAdditionalProperty(performance.superEvent.additionalProperty, 'color'),
@@ -1053,11 +1061,20 @@ function createScheduler() {
                 var modal = $('#editModal');
                 modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
                 modal.find('.day input').val(moment(day).format('YYYY年MM月DD日(ddd)'));
+
                 // チェックstartTime削除ボタン表示
                 if (moment(day).isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
                     modal.find('.delete-button').show();
                 } else {
                     modal.find('.delete-button').hide();
+                }
+
+                // ボタン有効性
+                modal.find('.update-button').prop('disabled', false);
+                modal.find('.delete-button').prop('disabled', false);
+                if (performance.eventStatus === 'EventCancelled') {
+                    modal.find('.update-button').prop('disabled', true);
+                    modal.find('.delete-button').prop('disabled', true);
                 }
 
                 modal.find('input[name=performance]').val(performance.id);

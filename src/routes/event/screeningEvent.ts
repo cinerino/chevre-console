@@ -102,12 +102,13 @@ screeningEventRouter.get(
             const locationId = req.query.theater;
             const screeningRoomBranchCode = req.query.screen;
             const superEventWorkPerformedIdentifierEq = req.query.superEvent?.workPerformed?.identifier;
+            const onlyEventScheduled = req.query.onlyEventScheduled === '1';
 
             const searchConditions: chevre.factory.event.ISearchConditions<chevre.factory.eventType.ScreeningEvent>
                 = {
                 project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEvent,
-                eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
+                eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined,
                 inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .toDate(),
                 inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
