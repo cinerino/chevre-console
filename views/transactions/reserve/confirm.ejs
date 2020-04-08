@@ -17,7 +17,7 @@ RT-00
     <!-- /.card-header -->
     <div class="card-body">
         <dl class="row">
-            <% const firstReservation = transaction.object.subReservation[0]; %>
+            <% const firstReservation = transaction.object.acceptedOffer[0].itemOffered.serviceOutput; %>
             <dt class="col-md-2">取引ID</dt>
             <dd class="col-md-10"><%= transaction.id %></dd>
             <dt class="col-md-2">名称</dt>
@@ -38,11 +38,11 @@ RT-00
             </dd>
             <dt class="col-md-2">座席</dt>
             <dd class="col-md-10">
-                <%= transaction.object.subReservation.length %> 席
+                <%= transaction.object.acceptedOffer.length %> 席
                 <br>
                 <%=
-                transaction.object.subReservation.filter((r) => r.reservedTicket.ticketedSeat !== undefined)
-                    .map((r) => r.reservedTicket.ticketedSeat.seatNumber)
+                transaction.object.acceptedOffer.filter((o) => o.itemOffered.serviceOutput.reservedTicket.ticketedSeat !== undefined)
+                    .map((o) => o.itemOffered.serviceOutput.reservedTicket.ticketedSeat.seatNumber)
                     .join(' ');
                 %>
             </dd>

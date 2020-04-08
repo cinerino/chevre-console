@@ -135,7 +135,7 @@ transactionsRouter.all('/reserve/start',
                     .add(1, 'minutes')
                     .toDate();
                 debug('取引を開始します...', values, acceptedOffer);
-                let transaction = yield reserveService.start({
+                const transaction = yield reserveService.start({
                     project: req.project,
                     typeOf: chevre.factory.transactionType.Reserve,
                     expires: expires,
@@ -147,16 +147,19 @@ transactionsRouter.all('/reserve/start',
                     object: {}
                 });
                 debug('取引が開始されました', transaction.id);
-                transaction = yield reserveService.addReservations({
-                    id: transaction.id,
-                    object: {
-                        acceptedOffer: acceptedOffer,
-                        event: {
-                            id: event.id
-                        }
-                        // onReservationStatusChanged?: IOnReservationStatusChanged;
+                const object = {
+                    acceptedOffer: acceptedOffer,
+                    event: {
+                        id: event.id
                     }
+                    // onReservationStatusChanged?: IOnReservationStatusChanged;
+                };
+                yield reserveService.addReservationsWithNoResponse({
+                    id: transaction.id,
+                    object: object
                 });
+                // 確認画面へ情報を引き継ぐために
+                transaction.object = object;
                 // セッションに取引追加
                 req.session[`transaction:${transaction.id}`] = transaction;
                 res.redirect(`/transactions/reserve/${transaction.id}/confirm`);
@@ -197,7 +200,7 @@ transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const eventId = (_d = transaction.object.reservationFor) === null || _d === void 0 ? void 0 : _d.id;
+        const eventId = (_d = transaction.object.event) === null || _d === void 0 ? void 0 : _d.id;
         if (typeof eventId !== 'string') {
             throw new chevre.factory.errors.NotFound('Event not specified');
         }
@@ -241,7 +244,7 @@ transactionsRouter.all('/reserve/:transactionId/cancel', (req, res, next) => __a
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const eventId = (_e = transaction.object.reservationFor) === null || _e === void 0 ? void 0 : _e.id;
+        const eventId = (_e = transaction.object.event) === null || _e === void 0 ? void 0 : _e.id;
         if (typeof eventId !== 'string') {
             throw new chevre.factory.errors.NotFound('Event not specified');
         }

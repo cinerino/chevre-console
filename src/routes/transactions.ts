@@ -138,7 +138,7 @@ transactionsRouter.all(
                         .toDate();
 
                     debug('取引を開始します...', values, acceptedOffer);
-                    let transaction = await reserveService.start({
+                    const transaction = await reserveService.start({
                         project: req.project,
                         typeOf: chevre.factory.transactionType.Reserve,
                         expires: expires,
@@ -152,16 +152,21 @@ transactionsRouter.all(
                     });
                     debug('取引が開始されました', transaction.id);
 
-                    transaction = await reserveService.addReservations({
-                        id: transaction.id,
-                        object: {
-                            acceptedOffer: acceptedOffer,
-                            event: {
-                                id: event.id
-                            }
-                            // onReservationStatusChanged?: IOnReservationStatusChanged;
+                    const object: chevre.factory.transaction.reserve.IObjectWithoutDetail = {
+                        acceptedOffer: acceptedOffer,
+                        event: {
+                            id: event.id
                         }
+                        // onReservationStatusChanged?: IOnReservationStatusChanged;
+                    };
+
+                    await reserveService.addReservationsWithNoResponse({
+                        id: transaction.id,
+                        object: object
                     });
+
+                    // 確認画面へ情報を引き継ぐために
+                    (<any>transaction.object) = object;
 
                     // セッションに取引追加
                     (<Express.Session>req.session)[`transaction:${transaction.id}`] = transaction;
@@ -211,7 +216,7 @@ transactionsRouter.all(
                 auth: req.user.authClient
             });
 
-            const eventId = transaction.object.reservationFor?.id;
+            const eventId = transaction.object.event?.id;
             if (typeof eventId !== 'string') {
                 throw new chevre.factory.errors.NotFound('Event not specified');
             }
@@ -263,7 +268,7 @@ transactionsRouter.all(
                 auth: req.user.authClient
             });
 
-            const eventId = transaction.object.reservationFor?.id;
+            const eventId = transaction.object.event?.id;
             if (typeof eventId !== 'string') {
                 throw new chevre.factory.errors.NotFound('Event not specified');
             }
