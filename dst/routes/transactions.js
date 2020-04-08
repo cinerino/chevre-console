@@ -76,7 +76,6 @@ transactionsRouter.all('/reserve/start',
         const ticketedSeat = (_c = (_b = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.itemOffered.serviceOutput) === null || _b === void 0 ? void 0 : _b.reservedTicket) === null || _c === void 0 ? void 0 : _c.ticketedSeat;
         if (req.method === 'POST') {
             values = req.body;
-            console.log(values);
             try {
                 const seatNumbers = req.body.seatNumbers;
                 const numSeats = req.body.numSeats;
