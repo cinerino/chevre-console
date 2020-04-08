@@ -396,39 +396,21 @@ screeningEventRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const placeService = new chevre.service.Place({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
 
             const event = await eventService.findById<chevre.factory.eventType.ScreeningEvent>({ id: req.params.id });
 
-            const { data } = await placeService.searchSeats({
+            const { data } = await eventService.searchSeats({
+                id: event.id,
                 limit: 100,
                 page: 1,
-                project: { id: { $eq: req.project.id } },
-                branchCode: {
-                    $regex: (typeof req.query?.branchCode?.$eq === 'string'
-                        && req.query?.branchCode?.$eq.length > 0)
-                        ? req.query?.branchCode?.$eq
-                        : undefined
-                },
-                containedInPlace: {
+                ...{
                     branchCode: {
-                        $eq: req.query.seatSection
-                    },
-                    containedInPlace: {
-                        branchCode: {
-                            $eq: event.location.branchCode
-                        },
-                        containedInPlace: {
-                            branchCode: {
-                                $eq: event.superEvent.location.branchCode
-                            }
-                        }
+                        $regex: (typeof req.query?.branchCode?.$eq === 'string'
+                            && req.query?.branchCode?.$eq.length > 0)
+                            ? req.query?.branchCode?.$eq
+                            : undefined
                     }
                 }
-                // name: req.query.name
             });
 
             res.json(data);

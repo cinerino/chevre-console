@@ -48,7 +48,7 @@ transactionsRouter.all(
             });
 
             const event = await eventService.findById<chevre.factory.eventType.ScreeningEvent>({ id: req.query.event });
-            const searchSeatSectionsRestul = await placeService.searchScreeningRoomSections({
+            const searchSeatSectionsResult = await placeService.searchScreeningRoomSections({
                 limit: 100,
                 page: 1,
                 project: { id: { $eq: req.project.id } },
@@ -74,7 +74,7 @@ transactionsRouter.all(
                 values = req.body;
 
                 try {
-                    const seatNumbers = req.body.seatNumbers;
+                    const seatNumbers = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
                     const numSeats = req.body.numSeats;
                     const additionalTicketText: string | undefined
                         = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
@@ -182,7 +182,7 @@ transactionsRouter.all(
                 message: message,
                 moment: moment,
                 event: event,
-                seatSections: searchSeatSectionsRestul.data
+                seatSections: searchSeatSectionsResult.data
             });
         } catch (error) {
             next(error);

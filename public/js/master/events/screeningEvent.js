@@ -784,7 +784,7 @@ function modalInit(theater, date, ticketGroups) {
 
     var newModal = $('#newModal');
     newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
-    newModal.find('.day span').text(moment(date).format('YYYY年MM月DD日(ddd)'));
+    newModal.find('.day span').text(moment(date, 'YYYY/MM/DD').format('YYYY年MM月DD日(ddd)'));
     newModal.find('input[name=theater]').val(theater);
     newModal.find('input[name=day]').val(date);
     newModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
@@ -946,7 +946,7 @@ function createScheduler() {
             createScheduleData: function (data) {
                 this.scheduleData.dates = [];
                 for (var i = 0; i < Number(this.searchCondition.format); i++) {
-                    var date = moment(this.searchCondition.date)
+                    var date = moment(this.searchCondition.date, 'YYYY/MM/DD')
                         .add(i, 'days')
                         .toISOString();
                     this.scheduleData.dates.push({
@@ -1069,9 +1069,12 @@ function createScheduler() {
                         window.open(url, '_blank');
                     });
 
-                var seller = { name: {} };
+                var seller = {};
                 if (performance.offers.seller !== undefined) {
                     seller = performance.offers.seller;
+                }
+                if (seller.name === undefined) {
+                    seller.name = {};
                 }
 
                 var seatsAvailable = (this.isReservedSeatsAvailable(performance)) ? '有' : '無';

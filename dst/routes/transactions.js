@@ -53,7 +53,7 @@ transactionsRouter.all('/reserve/start',
             auth: req.user.authClient
         });
         const event = yield eventService.findById({ id: req.query.event });
-        const searchSeatSectionsRestul = yield placeService.searchScreeningRoomSections({
+        const searchSeatSectionsResult = yield placeService.searchScreeningRoomSections({
             limit: 100,
             page: 1,
             project: { id: { $eq: req.project.id } },
@@ -77,7 +77,7 @@ transactionsRouter.all('/reserve/start',
         if (req.method === 'POST') {
             values = req.body;
             try {
-                const seatNumbers = req.body.seatNumbers;
+                const seatNumbers = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
                 const numSeats = req.body.numSeats;
                 const additionalTicketText = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
                     ? req.body.additionalTicketText
@@ -173,7 +173,7 @@ transactionsRouter.all('/reserve/start',
             message: message,
             moment: moment,
             event: event,
-            seatSections: searchSeatSectionsRestul.data
+            seatSections: searchSeatSectionsResult.data
         });
     }
     catch (error) {

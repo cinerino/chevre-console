@@ -340,37 +340,41 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const placeService = new chevre.service.Place({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const event = yield eventService.findById({ id: req.params.id });
-        const { data } = yield placeService.searchSeats({
-            limit: 100,
-            page: 1,
-            project: { id: { $eq: req.project.id } },
+        const { data } = yield eventService.searchSeats(Object.assign({ id: event.id, limit: 100, page: 1 }, {
             branchCode: {
                 $regex: (typeof ((_d = (_c = req.query) === null || _c === void 0 ? void 0 : _c.branchCode) === null || _d === void 0 ? void 0 : _d.$eq) === 'string'
                     && ((_f = (_e = req.query) === null || _e === void 0 ? void 0 : _e.branchCode) === null || _f === void 0 ? void 0 : _f.$eq.length) > 0)
                     ? (_h = (_g = req.query) === null || _g === void 0 ? void 0 : _g.branchCode) === null || _h === void 0 ? void 0 : _h.$eq : undefined
-            },
-            containedInPlace: {
-                branchCode: {
-                    $eq: req.query.seatSection
-                },
-                containedInPlace: {
-                    branchCode: {
-                        $eq: event.location.branchCode
-                    },
-                    containedInPlace: {
-                        branchCode: {
-                            $eq: event.superEvent.location.branchCode
-                        }
-                    }
-                }
             }
-            // name: req.query.name
-        });
+        }));
+        // const { data } = await placeService.searchSeats({
+        //     limit: 100,
+        //     page: 1,
+        //     project: { id: { $eq: req.project.id } },
+        //     branchCode: {
+        //         $regex: (typeof req.query?.branchCode?.$eq === 'string'
+        //             && req.query?.branchCode?.$eq.length > 0)
+        //             ? req.query?.branchCode?.$eq
+        //             : undefined
+        //     },
+        //     containedInPlace: {
+        //         branchCode: {
+        //             $eq: req.query.seatSection
+        //         },
+        //         containedInPlace: {
+        //             branchCode: {
+        //                 $eq: event.location.branchCode
+        //             },
+        //             containedInPlace: {
+        //                 branchCode: {
+        //                     $eq: event.superEvent.location.branchCode
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     // name: req.query.name
+        // });
         res.json(data);
     }
     catch (error) {

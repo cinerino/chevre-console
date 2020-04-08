@@ -29,9 +29,15 @@ $(function () {
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
                     results: data.map(function (seat) {
+                        var disabled = true;
+                        if (Array.isArray(seat.offers) && seat.offers.length > 0 && seat.offers[0].availability === 'InStock') {
+                            disabled = false;
+                        }
+
                         return {
                             id: seat.branchCode,
-                            text: seat.branchCode
+                            text: seat.containedInPlace.branchCode + ' ' + seat.branchCode,
+                            disabled: disabled
                         }
                     })
                 };
