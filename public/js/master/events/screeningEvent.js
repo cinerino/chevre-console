@@ -1049,6 +1049,35 @@ function createScheduler() {
                 return filterResult.length;
             },
             /**
+             * パフォーマンス表示
+             */
+            showPerformance: function (performance) {
+                var _this = this;
+
+                var modal = $('#showModal');
+
+                modal.find('a.edit')
+                    .off('click')
+                    .on('click', function () {
+                        _this.editPerformance(performance);
+                    });
+
+                var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
+                var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HH:mm');
+                var startTime = moment(performance.startDate).tz('Asia/Tokyo').format('HH:mm');
+                var endDay = moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD');
+                var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HH:mm');
+
+                modal.find('.card-body').html(
+                    '<h4>' + performance.name.ja + '</h4>'
+                    + '<br>' + moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime
+                    + '<br>' + performance.superEvent.location.name.ja
+                    + '<br>' + performance.location.name.ja
+                );
+
+                modal.modal();
+            },
+            /**
              * パフォーマンス編集
              */
             editPerformance: function (performance) {

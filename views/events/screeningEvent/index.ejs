@@ -285,7 +285,7 @@ Aa-4
                                     class="border-bottom w-100"></div>
                                 <div v-for="performance in screen.performances"
                                     class="performance w-100 overflow-hidden px-1"
-                                    v-on:click="editPerformance(performance)"
+                                    v-on:click="showPerformance(performance)"
                                     v-bind:style="getPerformanceStyle(performance, date).parent">
                                     <div v-bind:class="{ 
                                     'bg-danger': getOverlapPerformanceCount(performance, screen.performances) > 0,
@@ -296,14 +296,13 @@ Aa-4
                                             {{ performance.superEvent.name.ja }}
                                         </div>
                                         <div class="overflow-hidden">
-                                            <a class="badge badge-info mw-100" target="_blank"
-                                                v-bind:href="'/offerCatalogs/' + performance.offers.id + '/update'">
+                                            <span class="text-white mw-100">
                                                 {{ performance.offers.name.ja }}
-                                            </a>
+                                            </span>
                                         </div>
                                         <div class="overflow-hidden">
                                             <span v-if="isReservedSeatsAvailable(performance)"
-                                                class="badge badge-success">
+                                                class="badge badge-light">
                                                 座席指定</span>
                                         </div>
                                     </div>
@@ -319,4 +318,5 @@ Aa-4
 
 <%- include('add') %>
 <%- include('edit') %>
+<%- include('show') %>
 <%- include('../../common/master/_loading') %>
