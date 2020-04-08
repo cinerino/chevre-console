@@ -33,11 +33,18 @@ transactionsRouter.get('/', (req, _, next) => __awaiter(void 0, void 0, void 0, 
 /**
  * 予約取引開始
  */
-transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+transactionsRouter.all('/reserve/start', 
+// tslint:disable-next-line:max-func-body-length
+(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         let values = {};
         let message = '';
         const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const reserveService = new chevre.service.transaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -47,17 +54,67 @@ transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, v
         if (selectedOffer === undefined) {
             throw new Error('selectedOffer undefined');
         }
+        const ticketedSeat = (_c = (_b = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.itemOffered.serviceOutput) === null || _b === void 0 ? void 0 : _b.reservedTicket) === null || _c === void 0 ? void 0 : _c.ticketedSeat;
         if (req.method === 'POST') {
             values = req.body;
             try {
-                const reserveService = new chevre.service.transaction.Reserve({
-                    endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
-                });
+                const seatNumbersStr = req.body.seatNumbers;
+                const numSeats = req.body.numSeats;
+                const additionalTicketText = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
+                    ? req.body.additionalTicketText
+                    : undefined;
+                let acceptedOffer;
+                if (ticketedSeat !== undefined) {
+                    if (typeof seatNumbersStr !== 'string' || seatNumbersStr.length === 0) {
+                        throw new Error('座席番号が指定されていませ');
+                    }
+                    const seatNumbers = seatNumbersStr.split(',');
+                    // tslint:disable-next-line:prefer-array-literal
+                    acceptedOffer = seatNumbers.map((seatNumber) => {
+                        return {
+                            id: selectedOffer.id,
+                            itemOffered: {
+                                serviceOutput: {
+                                    typeOf: chevre.factory.reservationType.EventReservation,
+                                    additionalTicketText: additionalTicketText,
+                                    reservedTicket: {
+                                        typeOf: 'Ticket',
+                                        ticketedSeat: {
+                                            typeOf: chevre.factory.placeType.Seat,
+                                            seatNumber: seatNumber,
+                                            seatRow: '',
+                                            seatSection: 'Default'
+                                        }
+                                    }
+                                }
+                            }
+                        };
+                    });
+                }
+                else {
+                    if (typeof numSeats !== 'string' || numSeats.length === 0) {
+                        throw new Error('座席数が指定されていません');
+                    }
+                    // tslint:disable-next-line:prefer-array-literal
+                    acceptedOffer = [...Array(Number(numSeats))].map(() => {
+                        return {
+                            id: selectedOffer.id,
+                            itemOffered: {
+                                serviceOutput: {
+                                    typeOf: chevre.factory.reservationType.EventReservation,
+                                    additionalTicketText: additionalTicketText,
+                                    reservedTicket: {
+                                        typeOf: 'Ticket'
+                                    }
+                                }
+                            }
+                        };
+                    });
+                }
                 const expires = moment()
                     .add(1, 'minutes')
                     .toDate();
-                debug('取引を開始します...', values);
+                debug('取引を開始します...', values, acceptedOffer);
                 let transaction = yield reserveService.start({
                     project: req.project,
                     typeOf: chevre.factory.transactionType.Reserve,
@@ -70,26 +127,10 @@ transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, v
                     object: {}
                 });
                 debug('取引が開始されました。', transaction.id);
-                const numSeats = Number(req.body.numSeats);
                 transaction = yield reserveService.addReservations({
                     id: transaction.id,
                     object: {
-                        // tslint:disable-next-line:prefer-array-literal
-                        acceptedOffer: [...Array(numSeats)].map(() => {
-                            return {
-                                id: selectedOffer.id,
-                                itemOffered: {
-                                    serviceOutput: {
-                                        typeOf: chevre.factory.reservationType.EventReservation,
-                                        // additionalProperty?: IPropertyValue < string > [];
-                                        additionalTicketText: req.body.additionalTicketText,
-                                        reservedTicket: {
-                                            typeOf: 'Ticket',
-                                        }
-                                    }
-                                }
-                            };
-                        }),
+                        acceptedOffer: acceptedOffer,
                         event: {
                             id: event.id
                         }
@@ -119,28 +160,27 @@ transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, v
  * 予約取引確認
  */
 transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _d;
     try {
         let message = '';
         const transaction = req.session[`transaction:${req.params.transactionId}`];
         if (transaction === undefined) {
             throw new chevre.factory.errors.NotFound('Transaction in session');
         }
-        const eventId = (_a = transaction.object.reservationFor) === null || _a === void 0 ? void 0 : _a.id;
-        if (typeof eventId !== 'string') {
-            throw new chevre.factory.errors.NotFound('Event not specified');
-        }
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const event = yield eventService.findById({ id: eventId });
+        const reserveService = new chevre.service.transaction.Reserve({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventId = (_d = transaction.object.reservationFor) === null || _d === void 0 ? void 0 : _d.id;
+        if (typeof eventId !== 'string') {
+            throw new chevre.factory.errors.NotFound('Event not specified');
+        }
         if (req.method === 'POST') {
             // 確定
-            const reserveService = new chevre.service.transaction.Reserve({
-                endpoint: process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
             yield reserveService.confirm({ id: transaction.id });
             debug('取引確定です。');
             message = '予約取引を実行しました。';
@@ -148,31 +188,17 @@ transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.id}`];
             req.flash('message', message);
-            res.redirect(`/transactions/reserve/start?event=${event.id}`);
+            res.redirect(`/transactions/reserve/start?event=${eventId}`);
             return;
         }
         else {
-            // 入金先口座情報を検索
-            // const accountService = new pecorinoapi.service.Account({
-            //     endpoint: <string>process.env.API_ENDPOINT,
-            //     auth: req.user.authClient
-            // });
-            // const searchAccountsResult = await accountService.search({
-            //     accountType: transaction.object.toLocation.accountType,
-            //     accountNumbers: [transaction.object.toLocation.accountNumber],
-            //     statuses: [],
-            //     limit: 1
-            // });
-            // toAccount = searchAccountsResult.data.shift();
-            // if (toAccount === undefined) {
-            //     throw new Error('To Location Not Found');
-            // }
+            const event = yield eventService.findById({ id: eventId });
+            res.render('transactions/reserve/confirm', {
+                transaction: transaction,
+                message: message,
+                event: event
+            });
         }
-        res.render('transactions/reserve/confirm', {
-            transaction: transaction,
-            message: message,
-            event: event
-        });
     }
     catch (error) {
         next(error);

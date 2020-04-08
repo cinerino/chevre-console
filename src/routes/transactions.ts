@@ -28,6 +28,7 @@ transactionsRouter.get(
  */
 transactionsRouter.all(
     '/reserve/start',
+    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         try {
             let values: any = {};
@@ -37,26 +38,86 @@ transactionsRouter.all(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const event = await eventService.findById({ id: req.query.event });
+            const reserveService = new chevre.service.transaction.Reserve({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const event = await eventService.findById<chevre.factory.eventType.ScreeningEvent>({ id: req.query.event });
             const offers = await eventService.searchTicketOffers({ id: event.id });
             const selectedOffer = offers[0];
             if (selectedOffer === undefined) {
                 throw new Error('selectedOffer undefined');
             }
 
+            const ticketedSeat = event.offers?.itemOffered.serviceOutput?.reservedTicket?.ticketedSeat;
             if (req.method === 'POST') {
                 values = req.body;
 
                 try {
-                    const reserveService = new chevre.service.transaction.Reserve({
-                        endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
-                    });
+                    const seatNumbersStr = req.body.seatNumbers;
+                    const numSeats = req.body.numSeats;
+                    const additionalTicketText: string | undefined
+                        = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
+                            ? req.body.additionalTicketText
+                            : undefined;
+                    let acceptedOffer: chevre.factory.event.screeningEvent.IAcceptedTicketOfferWithoutDetail[];
+
+                    if (ticketedSeat !== undefined) {
+                        if (typeof seatNumbersStr !== 'string' || seatNumbersStr.length === 0) {
+                            throw new Error('座席番号が指定されていませ');
+                        }
+
+                        const seatNumbers: string[] = seatNumbersStr.split(',');
+
+                        // tslint:disable-next-line:prefer-array-literal
+                        acceptedOffer = seatNumbers.map((seatNumber) => {
+                            return {
+                                id: <string>selectedOffer.id,
+                                itemOffered: {
+                                    serviceOutput: {
+                                        typeOf: chevre.factory.reservationType.EventReservation,
+                                        additionalTicketText: additionalTicketText,
+                                        reservedTicket: {
+                                            typeOf: 'Ticket',
+                                            ticketedSeat: {
+                                                typeOf: chevre.factory.placeType.Seat,
+                                                seatNumber: seatNumber,
+                                                seatRow: '',
+                                                seatSection: 'Default'
+                                            }
+                                        }
+                                    }
+                                }
+                            };
+                        });
+                    } else {
+                        if (typeof numSeats !== 'string' || numSeats.length === 0) {
+                            throw new Error('座席数が指定されていません');
+                        }
+
+                        // tslint:disable-next-line:prefer-array-literal
+                        acceptedOffer = [...Array(Number(numSeats))].map(() => {
+                            return {
+                                id: <string>selectedOffer.id,
+                                itemOffered: {
+                                    serviceOutput: {
+                                        typeOf: chevre.factory.reservationType.EventReservation,
+                                        additionalTicketText: additionalTicketText,
+                                        reservedTicket: {
+                                            typeOf: 'Ticket'
+                                        }
+                                    }
+                                }
+                            };
+                        });
+                    }
 
                     const expires = moment()
                         .add(1, 'minutes')
                         .toDate();
-                    debug('取引を開始します...', values);
+
+                    debug('取引を開始します...', values, acceptedOffer);
                     let transaction = await reserveService.start({
                         project: req.project,
                         typeOf: chevre.factory.transactionType.Reserve,
@@ -71,33 +132,10 @@ transactionsRouter.all(
                     });
                     debug('取引が開始されました。', transaction.id);
 
-                    const numSeats = Number(req.body.numSeats);
-
                     transaction = await reserveService.addReservations({
                         id: transaction.id,
                         object: {
-                            // tslint:disable-next-line:prefer-array-literal
-                            acceptedOffer: [...Array(numSeats)].map(() => {
-                                return {
-                                    id: <string>selectedOffer.id,
-                                    itemOffered: {
-                                        serviceOutput: {
-                                            typeOf: chevre.factory.reservationType.EventReservation,
-                                            // additionalProperty?: IPropertyValue < string > [];
-                                            additionalTicketText: req.body.additionalTicketText,
-                                            reservedTicket: {
-                                                typeOf: 'Ticket',
-                                                /**
-                                                 * 予約座席指定
-                                                 * 指定席イベントの場合、座席を指定
-                                                 * 自由席イベントの場合、あるいは、最大収容人数がないイベントの場合は、座席指定不要
-                                                 */
-                                                // ticketedSeat?: ReservationFactory.ISeat;
-                                            };
-                                        }
-                                    }
-                                };
-                            }),
+                            acceptedOffer: acceptedOffer,
                             event: {
                                 id: event.id
                             }
@@ -135,29 +173,29 @@ transactionsRouter.all(
     async (req, res, next) => {
         try {
             let message = '';
+
             const transaction = <chevre.factory.transaction.reserve.ITransaction>
                 (<Express.Session>req.session)[`transaction:${req.params.transactionId}`];
             if (transaction === undefined) {
                 throw new chevre.factory.errors.NotFound('Transaction in session');
             }
 
+            const eventService = new chevre.service.Event({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const reserveService = new chevre.service.transaction.Reserve({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
             const eventId = transaction.object.reservationFor?.id;
             if (typeof eventId !== 'string') {
                 throw new chevre.factory.errors.NotFound('Event not specified');
             }
 
-            const eventService = new chevre.service.Event({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const event = await eventService.findById({ id: eventId });
-
             if (req.method === 'POST') {
                 // 確定
-                const reserveService = new chevre.service.transaction.Reserve({
-                    endpoint: <string>process.env.API_ENDPOINT,
-                    auth: req.user.authClient
-                });
                 await reserveService.confirm({ id: transaction.id });
                 debug('取引確定です。');
                 message = '予約取引を実行しました。';
@@ -165,32 +203,18 @@ transactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.id}`];
                 req.flash('message', message);
-                res.redirect(`/transactions/reserve/start?event=${event.id}`);
+                res.redirect(`/transactions/reserve/start?event=${eventId}`);
 
                 return;
             } else {
-                // 入金先口座情報を検索
-                // const accountService = new pecorinoapi.service.Account({
-                //     endpoint: <string>process.env.API_ENDPOINT,
-                //     auth: req.user.authClient
-                // });
-                // const searchAccountsResult = await accountService.search({
-                //     accountType: transaction.object.toLocation.accountType,
-                //     accountNumbers: [transaction.object.toLocation.accountNumber],
-                //     statuses: [],
-                //     limit: 1
-                // });
-                // toAccount = searchAccountsResult.data.shift();
-                // if (toAccount === undefined) {
-                //     throw new Error('To Location Not Found');
-                // }
-            }
+                const event = await eventService.findById({ id: eventId });
 
-            res.render('transactions/reserve/confirm', {
-                transaction: transaction,
-                message: message,
-                event: event
-            });
+                res.render('transactions/reserve/confirm', {
+                    transaction: transaction,
+                    message: message,
+                    event: event
+                });
+            }
         } catch (error) {
             next(error);
         }
