@@ -348,33 +348,6 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
                     ? (_h = (_g = req.query) === null || _g === void 0 ? void 0 : _g.branchCode) === null || _h === void 0 ? void 0 : _h.$eq : undefined
             }
         }));
-        // const { data } = await placeService.searchSeats({
-        //     limit: 100,
-        //     page: 1,
-        //     project: { id: { $eq: req.project.id } },
-        //     branchCode: {
-        //         $regex: (typeof req.query?.branchCode?.$eq === 'string'
-        //             && req.query?.branchCode?.$eq.length > 0)
-        //             ? req.query?.branchCode?.$eq
-        //             : undefined
-        //     },
-        //     containedInPlace: {
-        //         branchCode: {
-        //             $eq: req.query.seatSection
-        //         },
-        //         containedInPlace: {
-        //             branchCode: {
-        //                 $eq: event.location.branchCode
-        //             },
-        //             containedInPlace: {
-        //                 branchCode: {
-        //                     $eq: event.superEvent.location.branchCode
-        //                 }
-        //             }
-        //         }
-        //     }
-        //     // name: req.query.name
-        // });
         res.json(data);
     }
     catch (error) {
