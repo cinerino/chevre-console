@@ -74,7 +74,7 @@ transactionsRouter.all(
                 values = req.body;
 
                 try {
-                    const seatNumbersStr = req.body.seatNumbers;
+                    const seatNumbers = req.body.seatNumbers;
                     const numSeats = req.body.numSeats;
                     const additionalTicketText: string | undefined
                         = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
@@ -84,11 +84,9 @@ transactionsRouter.all(
                     let acceptedOffer: chevre.factory.event.screeningEvent.IAcceptedTicketOfferWithoutDetail[];
 
                     if (ticketedSeat !== undefined) {
-                        if (typeof seatNumbersStr !== 'string' || seatNumbersStr.length === 0) {
+                        if (!Array.isArray(seatNumbers) || seatNumbers.length === 0) {
                             throw new Error('座席番号が指定されていません');
                         }
-
-                        const seatNumbers: string[] = seatNumbersStr.split(',');
 
                         // tslint:disable-next-line:prefer-array-literal
                         acceptedOffer = seatNumbers.map((seatNumber) => {

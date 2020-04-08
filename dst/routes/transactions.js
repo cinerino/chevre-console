@@ -76,8 +76,9 @@ transactionsRouter.all('/reserve/start',
         const ticketedSeat = (_c = (_b = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.itemOffered.serviceOutput) === null || _b === void 0 ? void 0 : _b.reservedTicket) === null || _c === void 0 ? void 0 : _c.ticketedSeat;
         if (req.method === 'POST') {
             values = req.body;
+            console.log(values);
             try {
-                const seatNumbersStr = req.body.seatNumbers;
+                const seatNumbers = req.body.seatNumbers;
                 const numSeats = req.body.numSeats;
                 const additionalTicketText = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
                     ? req.body.additionalTicketText
@@ -85,10 +86,9 @@ transactionsRouter.all('/reserve/start',
                 const seatSection = req.body.seatSection;
                 let acceptedOffer;
                 if (ticketedSeat !== undefined) {
-                    if (typeof seatNumbersStr !== 'string' || seatNumbersStr.length === 0) {
+                    if (!Array.isArray(seatNumbers) || seatNumbers.length === 0) {
                         throw new Error('座席番号が指定されていません');
                     }
-                    const seatNumbers = seatNumbersStr.split(',');
                     // tslint:disable-next-line:prefer-array-literal
                     acceptedOffer = seatNumbers.map((seatNumber) => {
                         return {
