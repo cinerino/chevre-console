@@ -160,11 +160,11 @@ $(function () {
         showAdditionalProperty(id);
     });
 
-    $(document).on('click', '.editPerformance', function (event) {
+    $(document).on('click', '.showPerformance', function (event) {
         var id = $(this).attr('data-id');
-        console.log('editing...id:', id);
+        console.log('showing event...id:', id);
 
-        editPerformance(id);
+        showPerformance(id);
     });
 
     var movieSelection = $('#superEvent\\[workPerformed\\]\\[identifier\\]');
@@ -1068,12 +1068,43 @@ function createScheduler() {
                 var endDay = moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD');
                 var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HH:mm');
 
-                modal.find('.card-body').html(
-                    '<h4>' + performance.name.ja + '</h4>'
-                    + '<br>' + moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime
-                    + '<br>' + performance.superEvent.location.name.ja
-                    + '<br>' + performance.location.name.ja
-                );
+                // modal.find('.card-body').html(
+                //     '<h4>' + performance.name.ja + '</h4>'
+                //     + '<br>' + moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime
+                //     + '<br>' + performance.superEvent.location.name.ja
+                //     + '<br>' + performance.location.name.ja
+                // );
+
+                var seller = { name: {} };
+                if (performance.offers.seller !== undefined) {
+                    seller = performance.offers.seller;
+                }
+                var details = $('<dl>').addClass('row')
+                    .append($('<dt>').addClass('col-md-3').append('ID'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.id))
+                    .append($('<dt>').addClass('col-md-3').append('名称'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.name.ja))
+                    .append($('<dt>').addClass('col-md-3').append('日時'))
+                    .append($('<dd>').addClass('col-md-9').append(moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime))
+                    .append($('<dt>').addClass('col-md-3').append('場所'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.superEvent.location.name.ja + ' ' + performance.location.name.ja))
+                    .append($('<dt>').addClass('col-md-3').append('ステータス'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.eventStatus))
+                    .append($('<dt>').addClass('col-md-3').append('キャパシティ'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.remainingAttendeeCapacity + ' / ' + performance.maximumAttendeeCapacity))
+                    .append($('<dt>').addClass('col-md-3').append('販売者'))
+                    .append($('<dd>').addClass('col-md-9').append(seller.id + ' ' + seller.name.ja))
+                    .append($('<dt>').addClass('col-md-3').append('カタログ'))
+                    .append($('<dd>').addClass('col-md-9').append($('<a>').attr({
+                        target: '_blank',
+                        'href': '/offerCatalogs/' + performance.offers.id + '/update'
+                    }).text(performance.offers.name.ja)));
+
+                var div = $('<div>')
+                    .append(details);
+
+                // modal.find('.modal-title').text('イベントオファー');
+                modal.find('.modal-body').html(div);
 
                 modal.modal();
             },
@@ -1329,7 +1360,7 @@ function showAdditionalProperty(id) {
     modal.modal();
 }
 
-function editPerformance(id) {
+function showPerformance(id) {
     var event = $.CommonMasterList.getDatas().find(function (data) {
         return data.id === id
     });
@@ -1340,5 +1371,5 @@ function editPerformance(id) {
     }
 
     // 編集モーダルオープン
-    scheduler.editPerformance(event);
+    scheduler.showPerformance(event);
 }
