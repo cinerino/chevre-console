@@ -16,34 +16,51 @@ RT-00
     </div>
     <!-- /.card-header -->
     <div class="card-body">
-        <dl class="dl-horizontal">
-            <dt>取引ID</dt>
-            <dd>
-                <%= transaction.id %>
+        <dl class="row">
+            <% const firstReservation = transaction.object.subReservation[0]; %>
+            <dt class="col-md-2">取引ID</dt>
+            <dd class="col-md-10"><%= transaction.id %></dd>
+            <dt class="col-md-2">名称</dt>
+            <dd class="col-md-10"><%= event.name.ja %></dd>
+            <dt class="col-md-2">期間</dt>
+            <dd class="col-md-10">
+                <%= moment(event.startDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
+                -
+                <%= moment(event.endDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
             </dd>
-            <dt>イベント</dt>
-            <dd>
-                <%= event.name.ja %>
+            <dt class="col-md-2">場所</dt>
+            <dd class="col-md-10"><%= event.superEvent.location.name.ja%> <%= event.location.name.ja %></dd>
+            <dt class="col-md-2">座席セクション</dt>
+            <dd class="col-md-10">
+                <% if (firstReservation.reservedTicket.ticketedSeat !== undefined) { %>
+                <%= firstReservation.reservedTicket.ticketedSeat.seatSection %>
+                <% } %>
             </dd>
-            <dt>座席番号</dt>
-            <dd>
+            <dt class="col-md-2">座席</dt>
+            <dd class="col-md-10">
+                <%= transaction.object.subReservation.length %> 席
+                <br>
+                <%=
+                transaction.object.subReservation.filter((r) => r.reservedTicket.ticketedSeat !== undefined)
+                    .map((r) => r.reservedTicket.ticketedSeat.seatNumber)
+                    .join(' ');
+                %>
             </dd>
-            <dt>座席数</dt>
-            <dd>
-            </dd>
-            <dt>追加テキスト</dt>
-            <dd>
-            </dd>
+            <dt class="col-md-2">追加テキスト</dt>
+            <dd class="col-md-10"><%= firstReservation.additionalTicketText %></dd>
         </dl>
     </div>
     <!-- /.card-body -->
 
     <!-- form start -->
-    <form role="form" method="post">
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">確認して予約取引確定</button>
-        </div>
-    </form>
+    <div class="card-footer">
+        <form role="form" method="post" action="/transactions/reserve/<%= transaction.id %>/cancel">
+            <button type="submit" class="btn btn-default">中止</button>
+        </form>
+
+        <form role="form" method="post">
+            <button type="submit" class="btn btn-primary">取引確定</button>
+    </div>
 </div>
 <!-- /.card -->
 

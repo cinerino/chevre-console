@@ -44,11 +44,30 @@ transactionsRouter.all('/reserve/start',
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const reserveService = new chevre.service.transaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         const event = yield eventService.findById({ id: req.query.event });
+        const searchSeatSectionsRestul = yield placeService.searchScreeningRoomSections({
+            limit: 100,
+            page: 1,
+            project: { id: { $eq: req.project.id } },
+            containedInPlace: {
+                branchCode: {
+                    $eq: event.location.branchCode
+                },
+                containedInPlace: {
+                    branchCode: {
+                        $eq: event.superEvent.location.branchCode
+                    }
+                }
+            }
+        });
         const offers = yield eventService.searchTicketOffers({ id: event.id });
         const selectedOffer = offers[0];
         if (selectedOffer === undefined) {
@@ -63,10 +82,11 @@ transactionsRouter.all('/reserve/start',
                 const additionalTicketText = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
                     ? req.body.additionalTicketText
                     : undefined;
+                const seatSection = req.body.seatSection;
                 let acceptedOffer;
                 if (ticketedSeat !== undefined) {
                     if (typeof seatNumbersStr !== 'string' || seatNumbersStr.length === 0) {
-                        throw new Error('座席番号が指定されていませ');
+                        throw new Error('座席番号が指定されていません');
                     }
                     const seatNumbers = seatNumbersStr.split(',');
                     // tslint:disable-next-line:prefer-array-literal
@@ -83,7 +103,7 @@ transactionsRouter.all('/reserve/start',
                                             typeOf: chevre.factory.placeType.Seat,
                                             seatNumber: seatNumber,
                                             seatRow: '',
-                                            seatSection: 'Default'
+                                            seatSection: seatSection
                                         }
                                     }
                                 }
@@ -126,7 +146,7 @@ transactionsRouter.all('/reserve/start',
                     },
                     object: {}
                 });
-                debug('取引が開始されました。', transaction.id);
+                debug('取引が開始されました', transaction.id);
                 transaction = yield reserveService.addReservations({
                     id: transaction.id,
                     object: {
@@ -149,7 +169,9 @@ transactionsRouter.all('/reserve/start',
         res.render('transactions/reserve/start', {
             values: values,
             message: message,
-            event: event
+            moment: moment,
+            event: event,
+            seatSections: searchSeatSectionsRestul.data
         });
     }
     catch (error) {
@@ -182,8 +204,7 @@ transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __
         if (req.method === 'POST') {
             // 確定
             yield reserveService.confirm({ id: transaction.id });
-            debug('取引確定です。');
-            message = '予約取引を実行しました。';
+            message = '予約取引を確定しました';
             // セッション削除
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.id}`];
@@ -195,10 +216,47 @@ transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __
             const event = yield eventService.findById({ id: eventId });
             res.render('transactions/reserve/confirm', {
                 transaction: transaction,
+                moment: moment,
                 message: message,
                 event: event
             });
         }
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+/**
+ * 取引中止
+ */
+transactionsRouter.all('/reserve/:transactionId/cancel', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _e;
+    try {
+        let message = '';
+        const transaction = req.session[`transaction:${req.params.transactionId}`];
+        if (transaction === undefined) {
+            throw new chevre.factory.errors.NotFound('Transaction in session');
+        }
+        const reserveService = new chevre.service.transaction.Reserve({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const eventId = (_e = transaction.object.reservationFor) === null || _e === void 0 ? void 0 : _e.id;
+        if (typeof eventId !== 'string') {
+            throw new chevre.factory.errors.NotFound('Event not specified');
+        }
+        if (req.method === 'POST') {
+            // 確定
+            yield reserveService.cancel({ id: transaction.id });
+            message = '予約取引を中止しました';
+            // セッション削除
+            // tslint:disable-next-line:no-dynamic-delete
+            delete req.session[`transaction:${transaction.id}`];
+            req.flash('message', message);
+            res.redirect(`/transactions/reserve/start?event=${eventId}`);
+            return;
+        }
+        throw new Error('not implemented');
     }
     catch (error) {
         next(error);

@@ -18,26 +18,55 @@ RT-00
         <%- include('../../common/messages') %>
 
         <div class="card-body">
-            <div class="form-group">
-                <label>イベント</label>
-                <input type="text" class="form-control" value="<%= event.name.ja %>" disabled>
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-12">
+                    <label class="bmd-label-static">イベント</label>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="seatNumbers">座席番号</label>
-                <input type="text" class="form-control" id="seatNumbers" name="seatNumbers"
-                    placeholder="A-1,A-2,B-1,B-2" value="">
+            <dl class="row">
+                <dt class="col-md-1">名称</dt>
+                <dd class="col-md-11"><%= event.name.ja %></dd>
+                <dt class="col-md-1">期間</dt>
+                <dd class="col-md-11">
+                    <%= moment(event.startDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
+                    -
+                    <%= moment(event.endDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
+                </dd>
+                <dt class="col-md-1">場所</dt>
+                <dd class="col-md-11"><%= event.superEvent.location.name.ja%> <%= event.location.name.ja %></dd>
+            </dl>
+
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="seatSection">座席セクション</label>
+                    <select class="form-control" id="seatSection" name="seatSection">
+                        <% for (const seatSection of seatSections) { %>
+                        <option value="<%= seatSection.branchCode %>">
+                            <%= seatSection.name.ja %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="form-group bmd-form-group col-md-6">
+                    <label class="bmd-label-static" for="seatNumbers">座席番号</label>
+                    <input type="text" class="form-control" id="seatNumbers" name="seatNumbers"
+                        placeholder="A-1,A-2,B-1,B-2" value="">
+                </div>
+
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="numSeats">座席数</label>
+                    <input type="number" class="form-control" id="numSeats" name="numSeats" placeholder="2" value="">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="numSeats">座席数</label>
-                <input type="number" class="form-control" id="numSeats" name="numSeats" placeholder="2" value="">
-            </div>
-
-            <div class="form-group">
-                <label for="additionalTicketText">追加テキスト</label>
-                <input type="text" class="form-control" id="additionalTicketText" name="additionalTicketText"
-                    placeholder="追加テキスト" value="">
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-12">
+                    <label class="bmd-label-static" for="additionalTicketText">追加テキスト</label>
+                    <input type="text" class="form-control" id="additionalTicketText" name="additionalTicketText"
+                        placeholder="追加テキスト" value="">
+                </div>
             </div>
         </div>
         <!-- /.card-body -->
