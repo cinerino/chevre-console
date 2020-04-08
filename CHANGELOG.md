@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファーカタログ管理を追加
 - イベント固有のキャパシティ設定による在庫管理を実装
 - サブスクリプション設定を追加
+- 予約取引追加
 
 ### Changed
 

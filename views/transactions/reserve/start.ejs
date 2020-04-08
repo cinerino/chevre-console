@@ -15,46 +15,28 @@ RT-00
 
     <!-- form start -->
     <form role="form" method="post">
+        <%- include('../../common/messages') %>
+
         <div class="card-body">
-            <% if (messages.message) { %>
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <h5>
-                    <i class="icon fa fa-check"></i> Congraturations!</h5>
-                <%= messages.message %>
-            </div>
-            <% } %>
-
-            <% if (message) { %>
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                <%- message.replace(/\n/g, '<br>') %>
-            </div>
-            <% } %>
-
             <div class="form-group">
-                <label for="accountType">口座タイプ</label>
+                <label>イベント</label>
+                <input type="text" class="form-control" value="<%= event.name.ja %>" disabled>
             </div>
 
             <div class="form-group">
-                <label for="fromName">入金者名</label>
-                <input type="text" class="form-control" id="fromName" name="fromName" placeholder="入金者名"
-                    value="<%= values.fromName %>">
+                <label for="seatNumbers">座席番号</label>
+                <input type="text" class="form-control" id="seatNumbers" name="seatNumbers" placeholder="座席番号" value="">
             </div>
+
             <div class="form-group">
-                <label for="toAccountNumber">入金先口座番号</label>
-                <input type="text" class="form-control" id="toAccountNumber" name="toAccountNumber"
-                    placeholder="入金先口座番号" value="<%= values.toAccountNumber %>">
+                <label for="numSeats">座席数</label>
+                <input type="number" class="form-control" id="numSeats" name="numSeats" placeholder="座席数" value="">
             </div>
+
             <div class="form-group">
-                <label for="amount">入金金額</label>
-                <input type="text" class="form-control" id="amount" name="amount" placeholder="入金金額"
-                    value="<%= values.amount %>">
-            </div>
-            <div class="form-group">
-                <label for="description">説明</label>
-                <input type="text" class="form-control" id="description" name="description" placeholder="説明"
-                    value="<%= values.description %>">
+                <label for="additionalTicketText">追加テキスト</label>
+                <input type="text" class="form-control" id="additionalTicketText" name="additionalTicketText"
+                    placeholder="追加テキスト" value="">
             </div>
         </div>
         <!-- /.card-body -->

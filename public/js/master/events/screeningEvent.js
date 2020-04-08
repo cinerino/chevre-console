@@ -1062,6 +1062,13 @@ function createScheduler() {
                         _this.editPerformance(performance);
                     });
 
+                modal.find('a.reserve')
+                    .off('click')
+                    .on('click', function () {
+                        var url = '/transactions/reserve/start?event=' + performance.id;
+                        window.open(url, '_blank');
+                    });
+
                 var seller = { name: {} };
                 if (performance.offers.seller !== undefined) {
                     seller = performance.offers.seller;

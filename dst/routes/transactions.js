@@ -12,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 取引ルーター
  */
-// import * as chevre from '@chevre/api-nodejs-client';
+const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express = require("express");
-// import * as moment from 'moment';
+const moment = require("moment");
 const debug = createDebug('chevre-console:router');
 const transactionsRouter = express.Router();
 /**
@@ -36,45 +36,68 @@ transactionsRouter.get('/', (req, _, next) => __awaiter(void 0, void 0, void 0, 
 transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let values = {};
-        let message;
+        let message = '';
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const event = yield eventService.findById({ id: req.query.event });
+        const offers = yield eventService.searchTicketOffers({ id: event.id });
+        const selectedOffer = offers[0];
+        if (selectedOffer === undefined) {
+            throw new Error('selectedOffer undefined');
+        }
         if (req.method === 'POST') {
             values = req.body;
             try {
-                // const reserveService = new chevre.service.transaction.Reserve({
-                //     endpoint: <string>process.env.API_ENDPOINT,
-                //     auth: req.user.authClient
-                // });
-                // debug('取引を開始します...', values);
-                const transaction = { id: 'test' };
-                // const transaction = await depositTransactionService.start({
-                //     project: req.project,
-                //     typeOf: pecorinoapi.factory.transactionType.Deposit,
-                //     expires: moment().add(1, 'minutes').toDate(),
-                //     agent: {
-                //         typeOf: 'Organization',
-                //         id: 'agent-id',
-                //         name: values.fromName,
-                //         url: ''
-                //     },
-                //     recipient: {
-                //         typeOf: 'Person',
-                //         id: 'recipient-id',
-                //         name: 'recipient name',
-                //         url: ''
-                //     },
-                //     object: {
-                //         amount: Number(values.amount),
-                //         description: values.description,
-                //         toLocation: {
-                //             typeOf: pecorinoapi.factory.account.TypeOf.Account,
-                //             accountType: values.accountType,
-                //             accountNumber: values.toAccountNumber
-                //         }
-                //     }
-                // });
-                // debug('取引が開始されました。', transaction.id);
-                // // セッションに取引追加
-                // (<Express.Session>req.session)[`transaction:${transaction.id}`] = transaction;
+                const reserveService = new chevre.service.transaction.Reserve({
+                    endpoint: process.env.API_ENDPOINT,
+                    auth: req.user.authClient
+                });
+                const expires = moment()
+                    .add(1, 'minutes')
+                    .toDate();
+                debug('取引を開始します...', values);
+                let transaction = yield reserveService.start({
+                    project: req.project,
+                    typeOf: chevre.factory.transactionType.Reserve,
+                    expires: expires,
+                    agent: {
+                        typeOf: 'Person',
+                        id: req.user.profile.sub,
+                        name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
+                    },
+                    object: {}
+                });
+                debug('取引が開始されました。', transaction.id);
+                const numSeats = Number(req.body.numSeats);
+                transaction = yield reserveService.addReservations({
+                    id: transaction.id,
+                    object: {
+                        // tslint:disable-next-line:prefer-array-literal
+                        acceptedOffer: [...Array(numSeats)].map(() => {
+                            return {
+                                id: selectedOffer.id,
+                                itemOffered: {
+                                    serviceOutput: {
+                                        typeOf: chevre.factory.reservationType.EventReservation,
+                                        // additionalProperty?: IPropertyValue < string > [];
+                                        additionalTicketText: req.body.additionalTicketText,
+                                        reservedTicket: {
+                                            typeOf: 'Ticket',
+                                        }
+                                    }
+                                }
+                            };
+                        }),
+                        event: {
+                            id: event.id
+                        }
+                        // onReservationStatusChanged?: IOnReservationStatusChanged;
+                    }
+                });
+                // セッションに取引追加
+                req.session[`transaction:${transaction.id}`] = transaction;
                 res.redirect(`/transactions/reserve/${transaction.id}/confirm`);
                 return;
             }
@@ -84,7 +107,8 @@ transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, v
         }
         res.render('transactions/reserve/start', {
             values: values,
-            message: message
+            message: message,
+            event: event
         });
     }
     catch (error) {
@@ -95,28 +119,36 @@ transactionsRouter.all('/reserve/start', (req, res, next) => __awaiter(void 0, v
  * 予約取引確認
  */
 transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
-        let message;
-        // let toAccount: pecorinoapi.factory.account.IAccount<pecorinoapi.factory.account.AccountType> | undefined;
-        // const transaction = <pecorinoapi.factory.transaction.deposit.ITransaction<pecorinoapi.factory.account.AccountType>>
-        //     (<Express.Session>req.session)[`transaction:${req.params.transactionId}`];
-        // if (transaction === undefined) {
-        //     throw new pecorinoapi.factory.errors.NotFound('Transaction in session');
-        // }
-        const transaction = { id: 'test' };
+        let message = '';
+        const transaction = req.session[`transaction:${req.params.transactionId}`];
+        if (transaction === undefined) {
+            throw new chevre.factory.errors.NotFound('Transaction in session');
+        }
+        const eventId = (_a = transaction.object.reservationFor) === null || _a === void 0 ? void 0 : _a.id;
+        if (typeof eventId !== 'string') {
+            throw new chevre.factory.errors.NotFound('Event not specified');
+        }
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const event = yield eventService.findById({ id: eventId });
         if (req.method === 'POST') {
             // 確定
-            // const reserveService = new chevre.service.transaction.Reserve({
-            //     endpoint: <string>process.env.API_ENDPOINT,
-            //     auth: req.user.authClient
-            // });
-            // await depositTransactionService.confirm(transaction);
+            const reserveService = new chevre.service.transaction.Reserve({
+                endpoint: process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            yield reserveService.confirm({ id: transaction.id });
             debug('取引確定です。');
             message = '予約取引を実行しました。';
             // セッション削除
-            // delete (<Express.Session>req.session)[`transaction:${req.params.transactionId}`];
-            req.flash('message', '入金取引を実行しました。');
-            res.redirect(`/transactions/reserve/start`);
+            // tslint:disable-next-line:no-dynamic-delete
+            delete req.session[`transaction:${transaction.id}`];
+            req.flash('message', message);
+            res.redirect(`/transactions/reserve/start?event=${event.id}`);
             return;
         }
         else {
@@ -138,8 +170,8 @@ transactionsRouter.all('/reserve/:transactionId/confirm', (req, res, next) => __
         }
         res.render('transactions/reserve/confirm', {
             transaction: transaction,
-            message: message
-            // toAccount: toAccount
+            message: message,
+            event: event
         });
     }
     catch (error) {
