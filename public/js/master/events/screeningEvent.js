@@ -1062,43 +1062,60 @@ function createScheduler() {
                         _this.editPerformance(performance);
                     });
 
-                var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
-                var doorTime = moment(performance.doorTime).tz('Asia/Tokyo').format('HH:mm');
-                var startTime = moment(performance.startDate).tz('Asia/Tokyo').format('HH:mm');
-                var endDay = moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD');
-                var endTime = moment(performance.endDate).tz('Asia/Tokyo').format('HH:mm');
-
-                // modal.find('.card-body').html(
-                //     '<h4>' + performance.name.ja + '</h4>'
-                //     + '<br>' + moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime
-                //     + '<br>' + performance.superEvent.location.name.ja
-                //     + '<br>' + performance.location.name.ja
-                // );
-
                 var seller = { name: {} };
                 if (performance.offers.seller !== undefined) {
                     seller = performance.offers.seller;
                 }
+
+                var seatsAvailable = (this.isReservedSeatsAvailable(performance)) ? '有' : '無';
+                var remainingAttendeeCapacity = '';
+                var maximumAttendeeCapacity = '';
+                if (typeof performance.remainingAttendeeCapacity === 'number') {
+                    remainingAttendeeCapacity = String(performance.remainingAttendeeCapacity);
+                }
+                if (typeof performance.maximumAttendeeCapacity === 'number') {
+                    maximumAttendeeCapacity = String(performance.maximumAttendeeCapacity);
+                }
+
                 var details = $('<dl>').addClass('row')
                     .append($('<dt>').addClass('col-md-3').append('ID'))
                     .append($('<dd>').addClass('col-md-9').append(performance.id))
-                    .append($('<dt>').addClass('col-md-3').append('名称'))
-                    .append($('<dd>').addClass('col-md-9').append(performance.name.ja))
-                    .append($('<dt>').addClass('col-md-3').append('日時'))
-                    .append($('<dd>').addClass('col-md-9').append(moment(day).format('YYYY年MM月DD日(ddd)') + ' ' + startTime))
-                    .append($('<dt>').addClass('col-md-3').append('場所'))
-                    .append($('<dd>').addClass('col-md-9').append(performance.superEvent.location.name.ja + ' ' + performance.location.name.ja))
                     .append($('<dt>').addClass('col-md-3').append('ステータス'))
                     .append($('<dd>').addClass('col-md-9').append(performance.eventStatus))
+                    .append($('<dt>').addClass('col-md-3').append('名称'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.name.ja))
+                    .append($('<dt>').addClass('col-md-3').append('期間'))
+                    .append($('<dd>').addClass('col-md-9').append(
+                        moment(performance.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + ' - '
+                        + moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                    ))
+                    .append($('<dt>').addClass('col-md-3').append('場所'))
+                    .append($('<dd>').addClass('col-md-9').append(performance.superEvent.location.name.ja + ' ' + performance.location.name.ja))
                     .append($('<dt>').addClass('col-md-3').append('キャパシティ'))
-                    .append($('<dd>').addClass('col-md-9').append(performance.remainingAttendeeCapacity + ' / ' + performance.maximumAttendeeCapacity))
+                    .append($('<dd>').addClass('col-md-9').append(remainingAttendeeCapacity + ' / ' + maximumAttendeeCapacity))
                     .append($('<dt>').addClass('col-md-3').append('販売者'))
                     .append($('<dd>').addClass('col-md-9').append(seller.id + ' ' + seller.name.ja))
                     .append($('<dt>').addClass('col-md-3').append('カタログ'))
                     .append($('<dd>').addClass('col-md-9').append($('<a>').attr({
                         target: '_blank',
                         'href': '/offerCatalogs/' + performance.offers.id + '/update'
-                    }).text(performance.offers.name.ja)));
+                    }).text(performance.offers.name.ja)))
+                    .append($('<dt>').addClass('col-md-3').append('座席'))
+                    .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
+                    .append($('<dt>').addClass('col-md-3').append('表示期間'))
+                    .append($('<dd>').addClass('col-md-9').append(
+                        moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + ' - '
+                        + moment(performance.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                    ))
+                    .append($('<dt>').addClass('col-md-3').append('販売期間'))
+                    .append($('<dd>').addClass('col-md-9').append(
+                        moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + ' - '
+                        + moment(performance.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                    ))
+                    ;
 
                 var div = $('<div>')
                     .append(details);

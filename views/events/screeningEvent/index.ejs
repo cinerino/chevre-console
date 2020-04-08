@@ -292,18 +292,11 @@ Aa-4
                                     'bg-primary': !getAdditionalProperty(performance.superEvent.additionalProperty, 'color') && getOverlapPerformanceCount(performance, screen.performances) === 0
                                     }" v-bind:style="getPerformanceStyle(performance, date).child"
                                         class="inner h-100 p-1 pointer border border-white overflow-hidden">
-                                        <div class="overflow-hidden nowrap mw-100 text-x-small text-white">
+                                        <div class="overflow-hidden mw-100 text-x-small text-white">
                                             {{ performance.superEvent.name.ja }}
                                         </div>
-                                        <div class="overflow-hidden">
-                                            <span class="text-white mw-100">
-                                                {{ performance.offers.name.ja }}
-                                            </span>
-                                        </div>
-                                        <div class="overflow-hidden">
-                                            <span v-if="isReservedSeatsAvailable(performance)"
-                                                class="badge badge-light">
-                                                座席指定</span>
+                                        <div class="overflow-hidden mw-100 text-x-small text-white">
+                                            {{ performance.offers.name.ja }}
                                         </div>
                                     </div>
                                 </div>
