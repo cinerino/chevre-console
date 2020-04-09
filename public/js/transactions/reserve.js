@@ -44,4 +44,70 @@ $(function () {
             }
         }
     });
+
+    var result = $('#result');
+
+    // File APIに対応しているか確認
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+        function loadLocalCsv(e) {
+            // ファイル情報を取得
+            var fileData = e.target.files[0];
+            console.log('file changed.', fileData);
+
+            if (fileData === undefined) {
+                // 表示データリセット
+                result.html('');
+                $('textarea[name=seatNumbersCsv]').val('');
+
+                return;
+            }
+
+            // CSVファイル以外は処理を止める
+            if (!fileData.name.match('.csv$')) {
+                alert('CSVファイルを選択してください');
+
+                return;
+            }
+
+            // FileReaderオブジェクトを使ってファイル読み込み
+            var reader = new FileReader();
+            // ファイル読み込みに成功したときの処理
+            reader.onload = function () {
+                var cols = reader.result.split('\n');
+                var data = [];
+                for (var i = 0; i < cols.length; i++) {
+                    data[i] = cols[i].split(',');
+                }
+                var insert = createTable(data);
+
+                result.html(insert);
+
+                $('textarea[name=seatNumbersCsv]').val(reader.result);
+            }
+            // ファイル読み込みを実行
+            reader.readAsText(fileData);
+        }
+
+        $(document).on('change', '#file', loadLocalCsv);
+
+    } else {
+        $('#file').hide();
+        result.text('File APIに対応したブラウザでご確認ください');
+    }
+
 });
+
+function createTable(data) {
+    var table = $('<table>').addClass('table table-sm');
+    for (var i = 0; i < data.length; i++) {
+        var tr = $('<tr>');
+        for (var j = 0; j < data[i].length; j++) {
+            var td = $('<td>');
+            td.text(data[i][j]);
+            tr.append(td);
+        }
+        table.append(tr);
+    }
+
+    return table;
+}

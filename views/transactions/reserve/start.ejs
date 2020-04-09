@@ -55,7 +55,7 @@ RT-00
             <% if (useSeats) { %>
 
             <div class="form-row">
-                <div class="form-group bmd-form-group col-md-12">
+                <div class="form-group bmd-form-group form-file-upload form-file-simple col-md-12">
                     <label class="bmd-label-static" for="seatNumbers">座席コード
                         <a href="#" data-toggle="tooltip"
                             title="<p class=&quot;text-left mb-0&quot;>CSVで入力された場合、セレクトボックスでの選択は無視されます</p>"
@@ -85,35 +85,43 @@ RT-00
                                 id="seatNumbers" style="width: 100%;"></select>
                         </div>
                         <div class="tab-pane" id="link2">
-                            <textarea class="form-control" name="seatNumbersCsv" rows=10
-                                placeholder="branchCode&#13;&#10;A-0&#13;&#10;A-1&#13;&#10;A-2"></textarea>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="file" id="file" class="form-control-file" name="seatNumbersFile"
+                                        style="opacity:initial;position:initial;width: initial;height: initial;"
+                                        accept="text/csv">
+                                    <textarea class="form-control" name="seatNumbersCsv" rows=10
+                                        placeholder="branchCode&#13;&#10;A-0&#13;&#10;A-1&#13;&#10;A-2"></textarea>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div id="result"></div>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <% } else { %>
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="numSeats">座席数</label>
+                    <input type="number" class="form-control" id="numSeats" name="numSeats" placeholder="2" value="">
+                </div>
+                <% } %>
 
-
-            <% } else { %>
-            <div class="form-group bmd-form-group col-md-3">
-                <label class="bmd-label-static" for="numSeats">座席数</label>
-                <input type="number" class="form-control" id="numSeats" name="numSeats" placeholder="2" value="">
-            </div>
-            <% } %>
-
-
-            <div class="form-row">
-                <div class="form-group bmd-form-group col-md-12">
-                    <label class="bmd-label-static" for="additionalTicketText">追加テキスト</label>
-                    <input type="text" class="form-control" id="additionalTicketText" name="additionalTicketText"
-                        placeholder="追加テキスト" value="">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label class="bmd-label-static" for="additionalTicketText">追加テキスト</label>
+                        <input type="text" class="form-control" id="additionalTicketText" name="additionalTicketText"
+                            placeholder="追加テキスト" value="">
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- /.card-body -->
+            <!-- /.card-body -->
 
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">確認</button>
-        </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">確認</button>
+            </div>
     </form>
 </div>
 <!-- /.card -->
