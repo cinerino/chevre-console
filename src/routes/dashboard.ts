@@ -82,7 +82,7 @@ dashboardRouter.get(
 
         let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
         if (subscriptionIdentifier === undefined) {
-            subscriptionIdentifier = 'Business';
+            subscriptionIdentifier = 'Free';
         }
         (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
 

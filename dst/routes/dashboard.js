@@ -67,7 +67,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(vo
     const project = yield projectService.findById({ id: projectId });
     let subscriptionIdentifier = (_a = project.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
     if (subscriptionIdentifier === undefined) {
-        subscriptionIdentifier = 'Business';
+        subscriptionIdentifier = 'Free';
     }
     req.session.subscriptionIdentifier = subscriptionIdentifier;
     res.redirect('/home');
