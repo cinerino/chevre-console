@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 取引ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const csvtojson = require("csvtojson");
 const createDebug = require("debug");
 const express = require("express");
 const moment = require("moment");
@@ -73,18 +74,34 @@ transactionsRouter.all('/reserve/start',
         if (selectedOffer === undefined) {
             throw new Error('selectedOffer undefined');
         }
-        const ticketedSeat = (_c = (_b = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.itemOffered.serviceOutput) === null || _b === void 0 ? void 0 : _b.reservedTicket) === null || _c === void 0 ? void 0 : _c.ticketedSeat;
+        const useSeats = ((_c = (_b = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.itemOffered.serviceOutput) === null || _b === void 0 ? void 0 : _b.reservedTicket) === null || _c === void 0 ? void 0 : _c.ticketedSeat) !== undefined;
         if (req.method === 'POST') {
             values = req.body;
             try {
-                const seatNumbers = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
+                let seatNumbers = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
                 const numSeats = req.body.numSeats;
                 const additionalTicketText = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
                     ? req.body.additionalTicketText
                     : undefined;
                 const seatSection = req.body.seatSection;
+                const seatNumbersCsv = req.body.seatNumbersCsv;
+                const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
+                if (typeof seatNumbersCsv === 'string' && seatNumbersCsv.length > 0) {
+                    seatNumbers = [];
+                    // tslint:disable-next-line:await-promise
+                    const seatNumbersFromCsv = yield csvtojson()
+                        .fromString(seatNumbersCsv);
+                    if (Array.isArray(seatNumbersFromCsv)) {
+                        seatNumbers = seatNumbersFromCsv.filter((p) => {
+                            return typeof p.branchCode === 'string'
+                                && p.branchCode.length > 0
+                                && seatBranchCodeRegex.test(p.branchCode);
+                        })
+                            .map((p) => p.branchCode);
+                    }
+                }
                 let acceptedOffer;
-                if (ticketedSeat !== undefined) {
+                if (useSeats) {
                     if (!Array.isArray(seatNumbers) || seatNumbers.length === 0) {
                         throw new Error('座席番号が指定されていません');
                     }
@@ -173,7 +190,8 @@ transactionsRouter.all('/reserve/start',
             message: message,
             moment: moment,
             event: event,
-            seatSections: searchSeatSectionsResult.data
+            seatSections: searchSeatSectionsResult.data,
+            useSeats
         });
     }
     catch (error) {

@@ -2,6 +2,7 @@
  * 取引ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as csvtojson from 'csvtojson';
 import * as createDebug from 'debug';
 import * as express from 'express';
 import * as moment from 'moment';
@@ -69,21 +70,41 @@ transactionsRouter.all(
                 throw new Error('selectedOffer undefined');
             }
 
-            const ticketedSeat = event.offers?.itemOffered.serviceOutput?.reservedTicket?.ticketedSeat;
+            const useSeats = event.offers?.itemOffered.serviceOutput?.reservedTicket?.ticketedSeat !== undefined;
+
             if (req.method === 'POST') {
                 values = req.body;
 
                 try {
-                    const seatNumbers = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
+                    let seatNumbers: string[] = (typeof req.body.seatNumbers === 'string') ? [req.body.seatNumbers] : req.body.seatNumbers;
                     const numSeats = req.body.numSeats;
                     const additionalTicketText: string | undefined
                         = (typeof req.body.additionalTicketText === 'string' && req.body.additionalTicketText.length > 0)
                             ? req.body.additionalTicketText
                             : undefined;
                     const seatSection = req.body.seatSection;
+
+                    const seatNumbersCsv = req.body.seatNumbersCsv;
+                    const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
+                    if (typeof seatNumbersCsv === 'string' && seatNumbersCsv.length > 0) {
+                        seatNumbers = [];
+
+                        // tslint:disable-next-line:await-promise
+                        const seatNumbersFromCsv = await csvtojson()
+                            .fromString(seatNumbersCsv);
+                        if (Array.isArray(seatNumbersFromCsv)) {
+                            seatNumbers = seatNumbersFromCsv.filter((p) => {
+                                return typeof p.branchCode === 'string'
+                                    && p.branchCode.length > 0
+                                    && seatBranchCodeRegex.test(p.branchCode);
+                            })
+                                .map((p) => p.branchCode);
+                        }
+                    }
+
                     let acceptedOffer: chevre.factory.event.screeningEvent.IAcceptedTicketOfferWithoutDetail[];
 
-                    if (ticketedSeat !== undefined) {
+                    if (useSeats) {
                         if (!Array.isArray(seatNumbers) || seatNumbers.length === 0) {
                             throw new Error('座席番号が指定されていません');
                         }
@@ -182,7 +203,8 @@ transactionsRouter.all(
                 message: message,
                 moment: moment,
                 event: event,
-                seatSections: searchSeatSectionsResult.data
+                seatSections: searchSeatSectionsResult.data,
+                useSeats
             });
         } catch (error) {
             next(error);
