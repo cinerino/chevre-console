@@ -12,16 +12,35 @@ HO-01
 <div class="container-fluid">
 
     <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-                <div class="card-header card-header-primary card-header-icon">
-                    <div class="card-icon">
-                        <i class="icon fa fa-database"></i>
-                    </div>
-                    <p class="card-category">Database Used Space</p>
-                    <h3 class="card-title"><span class="usedSpace"></span>
+        <div class="col-md-4">
+            <div class="card">
+                <!-- <div class="card-header card-header-primary">
+                    <h4 class="card-title">本日のイベント</h4>
+                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
+                </div> -->
+                <div class="card-body ">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">business</i>
+                        <span class="pl-1">プロジェクト</span></h4>
+                    </h4>
+                    <dl>
+                        <dt>プロジェクト名称</dt>
+                        <dd><%= req.project.name %></dd>
+                        <dt>プロジェクト ID</dt>
+                        <dd><%= req.project.id %></dd>
+                    </dl>
+
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">storage</i>
+                        <span class="pl-1">Database Used Space</span></h4>
+                    </h4>
+                    <p class="card-category mb-0"><span class="usedSpace"></span>
                         <small>GB</small>
-                    </h3>
+                    </p>
                 </div>
                 <div class="card-footer">
                     <div class="stats">
@@ -30,6 +49,108 @@ HO-01
                 </div>
             </div>
         </div>
+
+        <div class="col-md-4">
+            <div class="card eventsWithAggregation">
+                <!-- <div class="card-header card-header-primary">
+                    <h4 class="card-title">本日のイベント</h4>
+                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
+                </div> -->
+                <div class="card-body ">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">event</i>
+                        <span class="pl-1">本日のイベント</span></h4>
+                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="text-primary">
+                                <th>開始日時</th>
+                                <th>名称</th>
+                                <th class="w-25">場所</th>
+                                <th>予約</th>
+                                <th>発券</th>
+                                <th>入場</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/events/screeningEvent" class="btn btn-sm btn-outline-primary">もっと見る</a>
+                </div>
+            </div>
+            <div class="card">
+                <!-- <div class="card-header card-header-tabs card-header-primary">
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#latestReservations" data-toggle="tab">
+                                        <i class="material-icons">event_seat</i> 直近の予約
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">event_seat</i>
+                        <span class="pl-1">直近の予約</span></h4>
+                    </h4>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="latestReservations">
+                            <table class="table table-hover">
+                                <thead class="text-primary">
+                                    <th class="w-25">予約番号</th>
+                                    <th>日時</th>
+                                    <th>イベント</th>
+                                    <!-- <th>ステータス</th> -->
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/reservations" class="btn btn-sm btn-outline-primary">もっと見る</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">http</i>
+                        <span class="pl-1">API Health</span></h4>
+                    </h4>
+                    <p class="card-category mb-0">
+                        <span class="health"></span>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        v<span class="version"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">report</i>
+                        <span class="pl-1">Error Reporting</span></h4>
+                    </h4>
+                    <p class="card-category errorReporting"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
         <div class="col-lg-3 col-md-6 col-sm-6">
             <!-- <div class="card card-stats">
                 <div class="card-header card-header-success card-header-icon">
@@ -47,22 +168,6 @@ HO-01
             </div> -->
         </div>
         <div class="col-lg-3 col-md-6 col-sm-6">
-            <div class="card card-stats">
-                <div class="card-header card-header-danger card-header-icon">
-                    <div class="card-icon">
-                        <i class="icon fa fa-heartbeat"></i>
-                    </div>
-                    <p class="card-category">API Health</p>
-                    <h3 class="card-title"><span class="health"></span></h3>
-                </div>
-                <div class="card-footer">
-                    <div class="stats">
-                        v<span class="version"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
             <!-- <div class="card card-stats">
                 <div class="card-header card-header-info card-header-icon">
                     <div class="card-icon">
@@ -78,7 +183,6 @@ HO-01
             </div> -->
         </div>
     </div>
-
 
     <!--
     <div class="row">
@@ -136,73 +240,10 @@ HO-01
     -->
 
     <div class="row">
-        <div class="col-lg-6 col-md-12">
-            <div class="card eventsWithAggregation">
-                <!-- <div class="card-header card-header-primary">
-                    <h4 class="card-title">本日のイベント</h4>
-                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
-                </div> -->
-                <div class="card-body ">
-                    <h4 class="card-title">本日のイベント</h4>
-                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="text-primary">
-                                <th>開始日時</th>
-                                <th>名称</th>
-                                <th class="w-25">場所</th>
-                                <th>予約</th>
-                                <th>発券</th>
-                                <th>入場</th>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="/events/screeningEvent" class="btn btn-sm btn-outline-primary">もっと見る</a>
-                </div>
-            </div>
+        <div class="col-md-4">
         </div>
 
-        <div class="col-lg-6 col-md-12">
-            <div class="card">
-                <!-- <div class="card-header card-header-tabs card-header-primary">
-                    <div class="nav-tabs-navigation">
-                        <div class="nav-tabs-wrapper">
-                            <ul class="nav nav-tabs" data-tabs="tabs">
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="#latestReservations" data-toggle="tab">
-                                        <i class="material-icons">event_seat</i> 直近の予約
-                                        <div class="ripple-container"></div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div> -->
-                <div class="card-body">
-                    <h4 class="card-title">直近の予約</h4>
-                    <div class="tab-content">
-                        <div class="tab-pane active" id="latestReservations">
-                            <table class="table table-hover">
-                                <thead class="text-primary">
-                                    <th class="w-25">予約番号</th>
-                                    <th>更新日時</th>
-                                    <th>イベント</th>
-                                    <th>ステータス</th>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="/reservations" class="btn btn-sm btn-outline-primary">もっと見る</a>
-                </div>
-            </div>
+        <div class="col-md-4">
         </div>
     </div>
 </div>

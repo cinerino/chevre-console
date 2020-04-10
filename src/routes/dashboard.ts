@@ -79,6 +79,7 @@ dashboardRouter.get(
             auth: req.user.authClient
         });
         const project = await projectService.findById({ id: projectId });
+        (<any>req.session).project = project;
 
         let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
         if (subscriptionIdentifier === undefined) {

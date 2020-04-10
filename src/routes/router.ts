@@ -41,11 +41,8 @@ router.use('/', dashboardRouter);
 // プロジェクト決定
 router.use((req, res, next) => {
     // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
-    if (typeof (<any>req.session).projectId === 'string') {
-        req.project = {
-            typeOf: 'Project',
-            id: (<any>req.session).projectId
-        };
+    if (typeof (<any>req.session).project?.id === 'string') {
+        req.project = (<any>req.session).project;
 
         const subscriptionIdentifier = (<any>req.session).subscriptionIdentifier;
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);

@@ -34,12 +34,10 @@ router.use(authentication_1.default);
 router.use('/', dashboard_1.default);
 // プロジェクト決定
 router.use((req, res, next) => {
+    var _a;
     // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
-    if (typeof req.session.projectId === 'string') {
-        req.project = {
-            typeOf: 'Project',
-            id: req.session.projectId
-        };
+    if (typeof ((_a = req.session.project) === null || _a === void 0 ? void 0 : _a.id) === 'string') {
+        req.project = req.session.project;
         const subscriptionIdentifier = req.session.subscriptionIdentifier;
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         req.subscription = subscription;

@@ -206,4 +206,36 @@ homeRouter.get(
     }
 );
 
+homeRouter.get(
+    '/errorReporting',
+    async (req, res) => {
+        try {
+            const taskService = new chevre.service.Task({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const runsThrough = moment()
+                .toDate();
+            const result = await taskService.search({
+                limit: 10,
+                page: 1,
+                project: { ids: [req.project.id] },
+                statuses: [chevre.factory.taskStatus.Aborted],
+                runsFrom: moment(runsThrough)
+                    .add(-1, 'day')
+                    .toDate(),
+                runsThrough: runsThrough
+            });
+
+            res.json(result);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
+        }
+    }
+);
+
 export default homeRouter;

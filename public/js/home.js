@@ -48,6 +48,9 @@ function updateCharts() {
 
     updateEventsWithAggregation(function () {
     });
+
+    updateErrorReporting(function () {
+    });
 }
 
 function updateReservationCount(cb) {
@@ -135,9 +138,9 @@ function updateLatestReservations(cb) {
 
         $.each(data.data, function (_, reservation) {
             var html = '<td>' + reservation.reservationNumber + '</td>'
-                + '<td>' + moment(reservation.modifiedTime).format('MM/DD HH:mm') + '</td>'
-                + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>'
-                + '<td><span class="text-muted">' + reservation.reservationStatus + '</span></td>';
+                + '<td>' + moment(reservation.bookingTime).format('MM/DD HH:mm') + '</td>'
+                + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>';
+            // + '<td><span class="text-muted">' + reservation.reservationStatus + '</span></td>';
             $('<tr>').html(html)
                 .appendTo('#latestReservations tbody');
         });
@@ -201,5 +204,70 @@ function updateEventsWithAggregation(cb) {
         $('<p>').addClass('display-4 text-danger')
             .text(textStatus)
             .appendTo('.eventsWithAggregation tbody');
+    });
+}
+
+function updateErrorReporting(cb) {
+    $.getJSON(
+        '/home/errorReporting',
+        {
+            limit: 10,
+            page: 1,
+            sort: { orderDate: -1 },
+            orderDateFrom: moment().add(-1, 'day').toISOString(),
+            orderDateThrough: moment().toISOString()
+        }
+    ).done(function (data) {
+        $('.errorReporting').empty();
+
+        if (data.data.length === 0) {
+            $('.errorReporting').text('過去24時間以内に発生したエラーはありません');
+        } else {
+            $('.errorReporting').html(data.data.map(function (task) {
+                var message = task.name;
+
+                if (Array.isArray(task.executionResults) && task.executionResults.length > 0) {
+                    message += ' ' + task.executionResults[0].message;
+                }
+
+                return message;
+            }).join('<br>'));
+        }
+
+        // $.each(data.data, function (_, event) {
+        //     var name = '?';
+        //     var reservationCount = '?';
+        //     var checkInCount = '?';
+        //     var attendeeCount = '?';
+
+        //     if (event.name !== undefined && event.name !== null) {
+        //         if (typeof event.name === 'string') {
+        //             name = event.name.slice(0, 5);
+        //         } else {
+        //             name = event.name.ja.slice(0, 5);
+        //         }
+        //     }
+
+        //     if (event.aggregateReservation !== undefined && event.aggregateReservation !== null) {
+        //         reservationCount = String(event.aggregateReservation.reservationCount);
+        //         checkInCount = String(event.aggregateReservation.checkInCount);
+        //         attendeeCount = String(event.aggregateReservation.attendeeCount);
+        //     }
+
+        //     var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'
+        //         + '<td>' + name + '...</td>'
+        //         + '<td>' + event.superEvent.location.name.ja + '</td>'
+        //         + '<td>' + reservationCount + '</td>'
+        //         + '<td>' + checkInCount + '</td>'
+        //         + '<td>' + attendeeCount + '</td>';
+        //     $('<tr>').html(html).appendTo('.eventsWithAggregation tbody');
+        // });
+
+        cb();
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('エラーレポートを検索できませんでした', jqXHR);
+        $('<p>').addClass('display-4 text-danger')
+            .text(textStatus)
+            .appendTo('.errorReporting');
     });
 }

@@ -65,6 +65,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res) => __awaiter(vo
         auth: req.user.authClient
     });
     const project = yield projectService.findById({ id: projectId });
+    req.session.project = project;
     let subscriptionIdentifier = (_a = project.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
     if (subscriptionIdentifier === undefined) {
         subscriptionIdentifier = 'Free';

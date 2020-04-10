@@ -183,4 +183,31 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
         });
     }
 }));
+homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const taskService = new chevre.service.Task({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const runsThrough = moment()
+            .toDate();
+        const result = yield taskService.search({
+            limit: 10,
+            page: 1,
+            project: { ids: [req.project.id] },
+            statuses: [chevre.factory.taskStatus.Aborted],
+            runsFrom: moment(runsThrough)
+                .add(-1, 'day')
+                .toDate(),
+            runsThrough: runsThrough
+        });
+        res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            error: { message: error.message }
+        });
+    }
+}));
 exports.default = homeRouter;
