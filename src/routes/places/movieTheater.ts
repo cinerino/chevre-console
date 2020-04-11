@@ -113,6 +113,7 @@ movieTheaterRouter.get(
 
                 return {
                     ...movieTheater,
+                    posCount: (Array.isArray((<any>movieTheater).hasPOS)) ? (<any>movieTheater).hasPOS.length : 0,
                     availabilityStartsGraceTimeInDays:
                         (movieTheater.offers !== undefined
                             && movieTheater.offers.availabilityStartsGraceTime !== undefined

@@ -91,7 +91,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
                 // tslint:disable-next-line:no-magic-numbers
                 ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                 : undefined;
-            return Object.assign(Object.assign({}, movieTheater), { availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
+            return Object.assign(Object.assign({}, movieTheater), { posCount: (Array.isArray(movieTheater.hasPOS)) ? movieTheater.hasPOS.length : 0, availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
                     // tslint:disable-next-line:no-magic-numbers
