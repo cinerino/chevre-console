@@ -24,31 +24,22 @@ homeRouter.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
     res.render('home', {});
 }));
-// homeRouter.get(
-//     '/reservationCount',
-//     async (req, res) => {
-//         try {
-//             const reservationService = new chevre.service.Reservation({
-//                 endpoint: <string>process.env.API_ENDPOINT,
-//                 auth: req.user.authClient
-//             });
-//             const searchConditions = {
-//                 limit: 1,
-//                 project: { ids: [req.project.id] },
-//                 typeOf: chevre.factory.reservationType.EventReservation,
-//                 reservationStatuses: [chevre.factory.reservationStatusType.ReservationConfirmed],
-//                 bookingFrom: moment().tz('Asia/Tokyo').startOf('day').toDate(),
-//                 bookingThrough: moment().tz('Asia/Tokyo').endOf('day').toDate()
-//             };
-//             const result = await reservationService.search(searchConditions);
-//             res.json(result);
-//         } catch (error) {
-//             res.status(INTERNAL_SERVER_ERROR).json({
-//                 error: { message: error.message }
-//             });
-//         }
-//     }
-// );
+homeRouter.get('/projectAggregation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = yield projectService.findById({ id: req.project.id });
+        res.json(project);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            error: { message: error.message }
+        });
+    }
+}));
 homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
@@ -164,6 +155,7 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
             typeOf: chevre.factory.eventType.ScreeningEvent,
             limit: 10,
             page: 1,
+            eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
             sort: { startDate: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             inSessionFrom: moment()

@@ -54,18 +54,23 @@ function updateCharts() {
 }
 
 function updateReservationCount(cb) {
-    // $.getJSON(
-    //     '/home/reservationCount',
-    //     {}
-    // ).done(function (data) {
-    //     console.log('reservationCount:', data);
-    //     $('.reservationCount').removeClass('text-danger').text(data.totalCount);
+    $.getJSON(
+        '/home/projectAggregation',
+        {}
+    ).done(function (data) {
+        console.log('projectAggregation:', data);
 
-    //     cb();
-    // }).fail(function (jqXHR, textStatus, error) {
-    //     console.error('本日の予約数を検索できませんでした', jqXHR);
-    //     $('.reservationCount').addClass('text-danger').text(textStatus);
-    // });
+        if (data.aggregateReservation !== undefined && data.aggregateReservation !== null) {
+            $('.reservationCount').text(data.aggregateReservation.reservationCount);
+            $('.checkInCount').text(data.aggregateReservation.checkInCount);
+            $('.attendeeCount').text(data.aggregateReservation.attendeeCount);
+        }
+
+        cb();
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('予約数を検索できませんでした', jqXHR);
+        // $('.reservationCount').addClass('text-danger').text(textStatus);
+    });
 }
 
 function updateHealth(cb) {
