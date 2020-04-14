@@ -29,7 +29,7 @@ Aa-3
                             <%- include('../../common/master/_hidden') %>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="locationBranchCode" class="bmd-label-static">
                                         劇場
                                     </label>
@@ -49,7 +49,7 @@ Aa-3
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="movieIdentifier" class="bmd-label-static">
                                         作品
                                     </label>
@@ -58,7 +58,7 @@ Aa-3
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="name" class="bmd-label-static">
                                         名称
                                     </label>
@@ -66,7 +66,7 @@ Aa-3
                                         value="">
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="containsEnded" class="bmd-label-static">
                                     </label>
                                     <div class="form-check">
@@ -97,7 +97,7 @@ Aa-3
                                     <th class="text-left">名称</th>
                                     <th>開始</th>
                                     <th>終了</th>
-                                    <th>上映形態</th>
+                                    <th>上映方式</th>
                                     <th>追加特性</th>
                                     <th></th>
                                 </tr>
@@ -123,8 +123,8 @@ Aa-3
                                     <td name="name.ja|slice">
                                         $name.ja$
                                     </td>
-                                    <td name="startDate|date:YYYY/MM/DD">$startDate$</td>
-                                    <td name="endDate|date:YYYY/MM/DD HH:mm:ss">$endDate$</td>
+                                    <td name="startDate|date:YYYY-MM-DD HH:mm:ss">$startDate$</td>
+                                    <td name="endDate|date:YYYY-MM-DD HH:mm:ss">$endDate$</td>
                                     <td name="videoFormat.0.typeOf__videoFormat.1.typeOf__videoFormat.2.typeOf">
                                         $videoFormat.0.typeOf$ $videoFormat.1.typeOf$ $videoFormat.2.typeOf$
                                     </td>

@@ -213,7 +213,7 @@ reservationsRouter.get('/search',
                 ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
                 : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
             results: data.map((t) => {
-                var _a, _b, _c;
+                var _a, _b, _c, _d;
                 const priceSpecification = t.price;
                 const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
                 let clientId;
@@ -228,20 +228,17 @@ reservationsRouter.get('/search',
                 //         && t.reservedTicket.ticketType.category !== undefined
                 //         && c.codeValue === t.reservedTicket.ticketType.category.id
                 // );
-                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, 
-                    // ticketType: ticketTYpe,
-                    unitPriceSpec: unitPriceSpec, ticketedSeat: (t.reservedTicket !== undefined
-                        && t.reservedTicket !== null
-                        && t.reservedTicket.ticketedSeat !== undefined)
-                        ? util_1.format('%s %s', (t.reservedTicket.ticketedSeat.seatingType !== undefined
-                            && t.reservedTicket.ticketedSeat.seatingType !== null)
-                            ? (typeof t.reservedTicket.ticketedSeat.seatingType === 'string')
-                                ? t.reservedTicket.ticketedSeat.seatingType
-                                : (Array.isArray(t.reservedTicket.ticketedSeat.seatingType))
-                                    ? t.reservedTicket.ticketedSeat.seatingType.join(',')
-                                    : t.reservedTicket.ticketedSeat.seatingType.typeOf // 旧データへの互換性対応
-                            : '', t.reservedTicket.ticketedSeat.seatNumber)
-                        : '非指定' });
+                const ticketedSeat = (_d = t.reservedTicket) === null || _d === void 0 ? void 0 : _d.ticketedSeat;
+                const ticketedSeatStr = (ticketedSeat !== undefined)
+                    ? util_1.format('%s %s %s', (ticketedSeat.seatingType !== undefined && ticketedSeat.seatingType !== null)
+                        ? (typeof ticketedSeat.seatingType === 'string')
+                            ? ticketedSeat.seatingType
+                            : (Array.isArray(ticketedSeat.seatingType))
+                                ? ticketedSeat.seatingType.join(',')
+                                : ticketedSeat.seatingType.typeOf // 旧データへの互換性対応
+                        : '', ticketedSeat.seatSection, ticketedSeat.seatNumber)
+                    : 'なし';
+                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, unitPriceSpec: unitPriceSpec, ticketedSeat: ticketedSeatStr });
             })
         });
     }

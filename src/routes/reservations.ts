@@ -240,30 +240,30 @@ reservationsRouter.get(
                     //         && c.codeValue === t.reservedTicket.ticketType.category.id
                     // );
 
+                    const ticketedSeat = t.reservedTicket?.ticketedSeat;
+                    const ticketedSeatStr: string = (ticketedSeat !== undefined)
+                        ? format(
+                            '%s %s %s',
+                            (ticketedSeat.seatingType !== undefined && ticketedSeat.seatingType !== null)
+                                ? (typeof ticketedSeat.seatingType === 'string')
+                                    ? ticketedSeat.seatingType
+                                    : (Array.isArray(ticketedSeat.seatingType))
+                                        ? ticketedSeat.seatingType.join(',')
+                                        : (<any>ticketedSeat.seatingType).typeOf // 旧データへの互換性対応
+                                : '',
+                            ticketedSeat.seatSection,
+                            ticketedSeat.seatNumber
+                        )
+                        : 'なし';
+
                     return {
                         ...t,
                         application: application,
                         reservationStatusTypeName: reservationStatusType?.name,
                         checkedInText: (t.checkedIn === true) ? 'done' : undefined,
                         attendedText: (t.attended === true) ? 'done' : undefined,
-                        // ticketType: ticketTYpe,
                         unitPriceSpec: unitPriceSpec,
-                        ticketedSeat: (t.reservedTicket !== undefined
-                            && t.reservedTicket !== null
-                            && t.reservedTicket.ticketedSeat !== undefined)
-                            ? format(
-                                '%s %s',
-                                (t.reservedTicket.ticketedSeat.seatingType !== undefined
-                                    && t.reservedTicket.ticketedSeat.seatingType !== null)
-                                    ? (typeof t.reservedTicket.ticketedSeat.seatingType === 'string')
-                                        ? t.reservedTicket.ticketedSeat.seatingType
-                                        : (Array.isArray(t.reservedTicket.ticketedSeat.seatingType))
-                                            ? t.reservedTicket.ticketedSeat.seatingType.join(',')
-                                            : (<any>t.reservedTicket.ticketedSeat.seatingType).typeOf // 旧データへの互換性対応
-                                    : '',
-                                t.reservedTicket.ticketedSeat.seatNumber
-                            )
-                            : '非指定'
+                        ticketedSeat: ticketedSeatStr
                     };
                 })
             });
