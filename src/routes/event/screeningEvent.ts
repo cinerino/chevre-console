@@ -68,7 +68,8 @@ screeningEventRouter.get(
                 movieTheaters: searchMovieTheatersResult.data,
                 moment: moment,
                 ticketGroups: searchTicketTypeGroupsResult.data,
-                sellers: searchSellersResult.data
+                sellers: searchSellersResult.data,
+                allowMultipleEventTimeTables: req.subscription?.settings.allowMultipleEventTimeTables
             });
         } catch (err) {
             next(err);

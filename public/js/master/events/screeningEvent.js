@@ -800,7 +800,7 @@ function deletePerformance() {
  */
 function modalInit(theater, date, ticketGroups) {
     var ticketGroupDom = [];
-    ticketGroupDom.push('<option value="">券種グループを選択</option>');
+    ticketGroupDom.push('<option value="">カタログ選択</option>');
     for (var i = 0; i < ticketGroups.length; i++) {
         var ticketGroup = ticketGroups[i];
         ticketGroupDom.push('<option value="' + ticketGroup._id + '">' + ticketGroup.name.ja + '</option>')

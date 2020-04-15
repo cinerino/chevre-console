@@ -35,6 +35,7 @@ var OnlineDisplayType;
 const debug = createDebug('chevre-backend:routes');
 const screeningEventRouter = express_1.Router();
 screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
@@ -64,7 +65,8 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             movieTheaters: searchMovieTheatersResult.data,
             moment: moment,
             ticketGroups: searchTicketTypeGroupsResult.data,
-            sellers: searchSellersResult.data
+            sellers: searchSellersResult.data,
+            allowMultipleEventTimeTables: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.allowMultipleEventTimeTables
         });
     }
     catch (err) {
@@ -74,7 +76,7 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
 screeningEventRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _b, _c;
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -95,7 +97,7 @@ screeningEventRouter.get('/search',
         const days = Number(format);
         const locationId = req.query.theater;
         const screeningRoomBranchCode = req.query.screen;
-        const superEventWorkPerformedIdentifierEq = (_b = (_a = req.query.superEvent) === null || _a === void 0 ? void 0 : _a.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier;
+        const superEventWorkPerformedIdentifierEq = (_c = (_b = req.query.superEvent) === null || _b === void 0 ? void 0 : _b.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier;
         const onlyEventScheduled = req.query.onlyEventScheduled === '1';
         const searchConditions = Object.assign({ project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
@@ -334,7 +336,7 @@ screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, 
     }
 }));
 screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e, _f, _g, _h;
+    var _d, _e, _f, _g, _h, _j;
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -343,9 +345,9 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
         const event = yield eventService.findById({ id: req.params.id });
         const { data } = yield eventService.searchSeats(Object.assign({ id: event.id, limit: 100, page: 1 }, {
             branchCode: {
-                $regex: (typeof ((_d = (_c = req.query) === null || _c === void 0 ? void 0 : _c.branchCode) === null || _d === void 0 ? void 0 : _d.$eq) === 'string'
-                    && ((_f = (_e = req.query) === null || _e === void 0 ? void 0 : _e.branchCode) === null || _f === void 0 ? void 0 : _f.$eq.length) > 0)
-                    ? (_h = (_g = req.query) === null || _g === void 0 ? void 0 : _g.branchCode) === null || _h === void 0 ? void 0 : _h.$eq : undefined
+                $regex: (typeof ((_e = (_d = req.query) === null || _d === void 0 ? void 0 : _d.branchCode) === null || _e === void 0 ? void 0 : _e.$eq) === 'string'
+                    && ((_g = (_f = req.query) === null || _f === void 0 ? void 0 : _f.branchCode) === null || _g === void 0 ? void 0 : _g.$eq.length) > 0)
+                    ? (_j = (_h = req.query) === null || _h === void 0 ? void 0 : _h.branchCode) === null || _j === void 0 ? void 0 : _j.$eq : undefined
             }
         }));
         res.json(data);
