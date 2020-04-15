@@ -36,7 +36,10 @@ movieTheaterRouter.all<any>(
                         auth: req.user.authClient
                     });
 
-                    const { data } = await placeService.searchMovieTheaters({});
+                    const { data } = await placeService.searchMovieTheaters({
+                        limit: 100,
+                        project: { ids: [req.project.id] }
+                    });
                     const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
                     if (existingMovieTheater !== undefined) {
                         throw new Error('枝番号が重複しています');
