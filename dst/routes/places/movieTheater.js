@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
@@ -119,6 +120,21 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             count: 0,
             results: []
         });
+    }
+}));
+movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        yield placeService.deleteMovieTheater({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter

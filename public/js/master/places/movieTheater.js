@@ -1,4 +1,8 @@
+var placeId = '';
+
 $(function () {
+    placeId = $('input[name="id"]').val();
+
     $('.btn-ok').on('click', function () {
         $('.json-editor').remove();
 
@@ -17,7 +21,36 @@ $(function () {
     // JSONエディタをいったん無効化
     // initScreen();
     // initOffer();
+
+    // 削除ボタン
+    $('.btn-delete').on('click', remove);
 });
+
+/**
+ * 削除
+ */
+function remove() {
+    if (window.confirm('元には戻せません。本当に削除しますか？')) {
+        $.ajax({
+            dataType: 'json',
+            url: '/places/movieTheater/' + placeId,
+            type: 'DELETE'
+        })
+            .done(function () {
+                alert('削除しました');
+                location.href = '/places/movieTheater';
+            })
+            .fail(function (jqxhr, textStatus, error) {
+                var message = '削除できませんでした';
+                if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
+                    message += ': ' + jqxhr.responseJSON.error.message;
+                }
+                alert(message);
+            })
+            .always(function () {
+            });
+    }
+}
 
 /**
  * スクリーンエディタ初期化

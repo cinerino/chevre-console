@@ -4,6 +4,10 @@
             <!--        Here you can write extra buttons/actions for the toolbar              -->
             <a class="btn btn-primary btn-ok" href="javascript:void(0)">
                 <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
         </div>
 
         <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
@@ -38,6 +42,7 @@
                         <% } else { %>
                         <input readonly type="text" class="form-control" name="branchCode" id="branchCode"
                             placeholder="" maxlength="20" value="<%= forms.branchCode %>">
+                        <input type="hidden" name="id" value="<%= forms.id %>">
                         <% } %>
                         <% if (errors && errors.branchCode) { %>
                         <span class="bmd-help text-danger d-block">
