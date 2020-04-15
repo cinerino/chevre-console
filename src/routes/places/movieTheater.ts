@@ -30,7 +30,7 @@ movieTheaterRouter.all<any>(
                 try {
                     debug(req.body);
                     req.body.id = '';
-                    const movieTheater = createMovieTheaterFromBody(req);
+                    let movieTheater = createMovieTheaterFromBody(req);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -47,9 +47,9 @@ movieTheaterRouter.all<any>(
 
                     debug('existingMovieTheater:', existingMovieTheater);
 
-                    await placeService.createMovieTheater(movieTheater);
+                    movieTheater = await placeService.createMovieTheater(movieTheater);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/movieTheater/${movieTheater.branchCode}/update`);
+                    res.redirect(`/places/movieTheater/${movieTheater.id}/update`);
 
                     return;
                 } catch (error) {

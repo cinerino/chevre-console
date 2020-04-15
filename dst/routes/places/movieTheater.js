@@ -31,7 +31,7 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             try {
                 debug(req.body);
                 req.body.id = '';
-                const movieTheater = createMovieTheaterFromBody(req);
+                let movieTheater = createMovieTheaterFromBody(req);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -45,9 +45,9 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
                     throw new Error('枝番号が重複しています');
                 }
                 debug('existingMovieTheater:', existingMovieTheater);
-                yield placeService.createMovieTheater(movieTheater);
+                movieTheater = yield placeService.createMovieTheater(movieTheater);
                 req.flash('message', '登録しました');
-                res.redirect(`/places/movieTheater/${movieTheater.branchCode}/update`);
+                res.redirect(`/places/movieTheater/${movieTheater.id}/update`);
                 return;
             }
             catch (error) {
