@@ -27,6 +27,7 @@
         "identifier": "Business",
         "settings": {
             "allowNoCapacity": true,
+            "maximumAttendeeCapacity": 10000,
             "useSeats": true,
             "useCategoryCodes": true,
             "useProducts": true,

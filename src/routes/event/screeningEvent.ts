@@ -633,17 +633,22 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
         ? Number(req.body.maximumAttendeeCapacity)
         : undefined;
-    if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
-        throw new Error('キャパシティには正の値を入力してください');
-    }
+
     if (req.subscription?.settings.allowNoCapacity !== true) {
         if (typeof maximumAttendeeCapacity !== 'number') {
             throw new Error('キャパシティを入力してください');
         }
+    }
 
-        if (typeof req.subscription?.settings.maximumAttendeeCapacity === 'number') {
-            if (maximumAttendeeCapacity > req.subscription?.settings.maximumAttendeeCapacity) {
-                throw new Error(`キャパシティの最大値は${req.subscription?.settings.maximumAttendeeCapacity}です`);
+    if (typeof maximumAttendeeCapacity === 'number') {
+        if (maximumAttendeeCapacity < 0) {
+            throw new Error('キャパシティには正の値を入力してください');
+        }
+
+        const maximumAttendeeCapacitySetting = req.subscription?.settings.maximumAttendeeCapacity;
+        if (typeof maximumAttendeeCapacitySetting === 'number') {
+            if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
+                throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
             }
         }
     }
@@ -727,17 +732,22 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
         ? Number(req.body.maximumAttendeeCapacity)
         : undefined;
-    if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
-        throw new Error('キャパシティには正の値を入力してください');
-    }
+
     if (req.subscription?.settings.allowNoCapacity !== true) {
         if (typeof maximumAttendeeCapacity !== 'number') {
             throw new Error('キャパシティを入力してください');
         }
+    }
 
-        if (typeof req.subscription?.settings.maximumAttendeeCapacity === 'number') {
-            if (maximumAttendeeCapacity > req.subscription?.settings.maximumAttendeeCapacity) {
-                throw new Error(`キャパシティの最大値は${req.subscription?.settings.maximumAttendeeCapacity}です`);
+    if (typeof maximumAttendeeCapacity === 'number') {
+        if (maximumAttendeeCapacity < 0) {
+            throw new Error('キャパシティには正の値を入力してください');
+        }
+
+        const maximumAttendeeCapacitySetting = req.subscription?.settings.maximumAttendeeCapacity;
+        if (typeof maximumAttendeeCapacitySetting === 'number') {
+            if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
+                throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
             }
         }
     }

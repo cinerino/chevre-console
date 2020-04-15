@@ -401,7 +401,7 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
  */
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createEventFromBody(req) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const user = req.user;
         const eventService = new chevre.service.Event({
@@ -537,16 +537,19 @@ function createEventFromBody(req) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
-        if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
-            throw new Error('キャパシティには正の値を入力してください');
-        }
         if (((_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.allowNoCapacity) !== true) {
             if (typeof maximumAttendeeCapacity !== 'number') {
                 throw new Error('キャパシティを入力してください');
             }
-            if (typeof ((_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity) === 'number') {
-                if (maximumAttendeeCapacity > ((_d = req.subscription) === null || _d === void 0 ? void 0 : _d.settings.maximumAttendeeCapacity)) {
-                    throw new Error(`キャパシティの最大値は${(_e = req.subscription) === null || _e === void 0 ? void 0 : _e.settings.maximumAttendeeCapacity}です`);
+        }
+        if (typeof maximumAttendeeCapacity === 'number') {
+            if (maximumAttendeeCapacity < 0) {
+                throw new Error('キャパシティには正の値を入力してください');
+            }
+            const maximumAttendeeCapacitySetting = (_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity;
+            if (typeof maximumAttendeeCapacitySetting === 'number') {
+                if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
+                    throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
                 }
             }
         }
@@ -581,7 +584,7 @@ function createEventFromBody(req) {
  */
 // tslint:disable-next-line:max-func-body-length
 function createMultipleEventFromBody(req, user) {
-    var _a, _b, _c, _d;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -619,16 +622,19 @@ function createMultipleEventFromBody(req, user) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
-        if (typeof maximumAttendeeCapacity === 'number' && maximumAttendeeCapacity < 0) {
-            throw new Error('キャパシティには正の値を入力してください');
-        }
         if (((_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.allowNoCapacity) !== true) {
             if (typeof maximumAttendeeCapacity !== 'number') {
                 throw new Error('キャパシティを入力してください');
             }
-            if (typeof ((_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.maximumAttendeeCapacity) === 'number') {
-                if (maximumAttendeeCapacity > ((_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity)) {
-                    throw new Error(`キャパシティの最大値は${(_d = req.subscription) === null || _d === void 0 ? void 0 : _d.settings.maximumAttendeeCapacity}です`);
+        }
+        if (typeof maximumAttendeeCapacity === 'number') {
+            if (maximumAttendeeCapacity < 0) {
+                throw new Error('キャパシティには正の値を入力してください');
+            }
+            const maximumAttendeeCapacitySetting = (_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.maximumAttendeeCapacity;
+            if (typeof maximumAttendeeCapacitySetting === 'number') {
+                if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
+                    throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
                 }
             }
         }

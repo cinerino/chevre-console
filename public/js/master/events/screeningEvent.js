@@ -832,6 +832,8 @@ function add() {
         .html('<option selected disabled>劇場を選択してください</option>');
     modal.find('select[name=screen]')
         .html('<option selected disabled>劇場を選択してください</option>');
+
+    modal.find('input[name=maximumAttendeeCapacity]').val('');
     modal.find('input[name=doorTime]').val('');
     modal.find('input[name=startTime]').val('');
     modal.find('input[name=endTime]').val('');
