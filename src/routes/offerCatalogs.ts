@@ -59,7 +59,7 @@ offerCatalogsRouter.all<any>(
                         identifier: { $eq: offerCatalog.identifier }
                     });
                     if (searchOfferCatalogsResult.data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
+                        throw new Error('既に存在するコードです');
                     }
 
                     offerCatalog = await offerCatalogService.create(offerCatalog);

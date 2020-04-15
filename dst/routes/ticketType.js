@@ -70,7 +70,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
                     identifier: { $eq: ticketType.identifier }
                 });
                 if (data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${ticketType.identifier}`);
+                    throw new Error('既に存在するコードです');
                 }
                 ticketType = yield offerService.create(ticketType);
                 req.flash('message', '登録しました');

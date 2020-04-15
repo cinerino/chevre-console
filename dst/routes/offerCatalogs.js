@@ -57,7 +57,7 @@ offerCatalogsRouter.all('/add', ...validate(),
                     identifier: { $eq: offerCatalog.identifier }
                 });
                 if (searchOfferCatalogsResult.data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${offerCatalog.identifier}`);
+                    throw new Error('既に存在するコードです');
                 }
                 offerCatalog = yield offerCatalogService.create(offerCatalog);
                 req.flash('message', '登録しました');

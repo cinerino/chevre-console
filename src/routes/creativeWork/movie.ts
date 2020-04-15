@@ -59,7 +59,7 @@ movieRouter.all<any>(
                         identifier: { $eq: movie.identifier }
                     });
                     if (data.length > 0) {
-                        throw new Error('既に存在する作品コードです');
+                        throw new Error('既に存在するコードです');
                     }
 
                     debug('saving an movie...', movie);

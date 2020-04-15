@@ -1096,9 +1096,9 @@ function createScheduler() {
                     .append($('<dd>').addClass('col-md-9').append(performance.name.ja))
                     .append($('<dt>').addClass('col-md-3').append('期間'))
                     .append($('<dd>').addClass('col-md-9').append(
-                        moment(performance.startDate).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        moment(performance.startDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                         + ' - '
-                        + moment(performance.endDate).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + moment(performance.endDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                     ))
                     .append($('<dt>').addClass('col-md-3').append('場所'))
                     .append($('<dd>').addClass('col-md-9').append(performance.superEvent.location.name.ja + ' ' + performance.location.name.ja))
@@ -1115,15 +1115,15 @@ function createScheduler() {
                     .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
                     .append($('<dt>').addClass('col-md-3').append('表示期間'))
                     .append($('<dd>').addClass('col-md-9').append(
-                        moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                         + ' - '
-                        + moment(performance.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + moment(performance.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                     ))
                     .append($('<dt>').addClass('col-md-3').append('販売期間'))
                     .append($('<dd>').addClass('col-md-9').append(
-                        moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                         + ' - '
-                        + moment(performance.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm')
+                        + moment(performance.offers.validThrough).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                     ))
                     ;
 

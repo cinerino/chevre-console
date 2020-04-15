@@ -72,7 +72,7 @@ ticketTypeMasterRouter.all<any>(
                         identifier: { $eq: ticketType.identifier }
                     });
                     if (data.length > 0) {
-                        throw new Error(`既に存在するコードです: ${ticketType.identifier}`);
+                        throw new Error('既に存在するコードです');
                     }
 
                     ticketType = await offerService.create(ticketType);

@@ -61,6 +61,9 @@ function updateReservationCount(cb) {
         console.log('projectAggregation:', data);
 
         if (data.aggregateReservation !== undefined && data.aggregateReservation !== null) {
+            if (data.aggregateReservation.reservationFor !== undefined && data.aggregateReservation.reservationFor !== null) {
+                $('.reservationFor').text(data.aggregateReservation.reservationFor.startDate);
+            }
             $('.reservationCount').text(data.aggregateReservation.reservationCount);
             $('.checkInCount').text(data.aggregateReservation.checkInCount);
             $('.attendeeCount').text(data.aggregateReservation.attendeeCount);

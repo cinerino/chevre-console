@@ -69,7 +69,7 @@ offersRouter.all('/add', ...validate(),
                     identifier: { $eq: offer.identifier }
                 });
                 if (searchOffersResult.data.length > 0) {
-                    throw new Error(`既に存在するコードです: ${offer.identifier}`);
+                    throw new Error('既に存在するコードです');
                 }
                 offer = yield offerService.create(offer);
                 req.flash('message', '登録しました');

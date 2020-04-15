@@ -55,7 +55,7 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
                     identifier: { $eq: movie.identifier }
                 });
                 if (data.length > 0) {
-                    throw new Error('既に存在する作品コードです');
+                    throw new Error('既に存在するコードです');
                 }
                 debug('saving an movie...', movie);
                 movie = yield creativeWorkService.createMovie(movie);
