@@ -29,6 +29,12 @@ $(function () {
 
     $('.btn-ok').click();
 
+    $(document).on('click', '.showReservation', function (event) {
+        var id = $(this).attr('data-id');
+
+        showReservation(id);
+    });
+
     $(document).on('click', '.showUnderName', function (event) {
         var id = $(this).attr('data-id');
         console.log('showing underName...id:', id);
@@ -185,6 +191,43 @@ $(function () {
         }
     });
 });
+
+function showReservation(id) {
+    var reservation = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (reservation === undefined) {
+        alert('予約' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#showModal');
+    var title = '予約 `' + reservation.id + '`';
+
+    var underName = reservation.underName;
+    var body = $('<dl>').addClass('row');
+    if (underName !== undefined && underName !== null) {
+        body.append($('<dt>').addClass('col-md-3').append('ID'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.id))
+            .append($('<dt>').addClass('col-md-3').append('予約番号'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.reservationNumber))
+            .append($('<dt>').addClass('col-md-3').append('予約日時'))
+            .append($('<dd>').addClass('col-md-9').append(moment(reservation.bookingTime).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm:ss')))
+            .append($('<dt>').addClass('col-md-3').append('ステータス'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.reservationStatus))
+            .append($('<dt>').addClass('col-md-3').append('イベントID'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.reservationFor.id))
+            .append($('<dt>').addClass('col-md-3').append('発券'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.checkedIn))
+            .append($('<dt>').addClass('col-md-3').append('入場'))
+            .append($('<dd>').addClass('col-md-9').append(reservation.attended));
+    }
+
+    modal.find('.modal-title').html(title);
+    modal.find('.modal-body').html(body);
+    modal.modal();
+}
 
 function showUnderName(id) {
     var reservation = $.CommonMasterList.getDatas().find(function (data) {
