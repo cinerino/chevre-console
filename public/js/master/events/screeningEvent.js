@@ -201,6 +201,30 @@ $(function () {
         }
     });
 
+    $('select[name=endDayRelative]').select2({
+        placeholder: 'n日後',
+        tags: true,
+        createTag: function (params) {
+            var term = $.trim(params.term);
+
+            if (term === '') {
+                return null;
+            }
+
+            if (isNaN(term)) {
+                return null;
+            }
+
+            var relativeDay = Number(term);
+
+            return {
+                id: relativeDay,
+                text: relativeDay + '日後',
+                newTag: true // add additional parameters
+            }
+        }
+    });
+
     $('[data-toggle="tooltip"]').tooltip({
         html: true
     });
@@ -811,7 +835,8 @@ function add() {
     modal.find('input[name=doorTime]').val('');
     modal.find('input[name=startTime]').val('');
     modal.find('input[name=endTime]').val('');
-    modal.find('select[name=endDayRelative]').val('0');
+    // modal.find('select[name=endDayRelative]').val('0');
+    modal.find('select[name=endDayRelative]').select2('val', '0');
     modal.find('input[name=mvtkExcludeFlg]').removeAttr('checked');
     modal.find('select[name=ticketTypeGroup]').val('');
     modal.find('input[name=saleStartDateAbsolute]').datepicker('update', '');

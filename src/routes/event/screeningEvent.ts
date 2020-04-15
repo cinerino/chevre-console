@@ -785,8 +785,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     .toDate();
                 const endDayRelative = Number(data.endDayRelative);
                 // tslint:disable-next-line:no-magic-numbers
-                if (endDayRelative < 0 || endDayRelative > 3) {
-                    throw new Error('終了日の相対設定が不適切です');
+                if (endDayRelative < 0 || endDayRelative > 31) {
+                    throw new Error('終了日の相対設定は1カ月以内で設定してください');
                 }
                 const formattedEndDate = moment(date)
                     .add(endDayRelative, 'days')
