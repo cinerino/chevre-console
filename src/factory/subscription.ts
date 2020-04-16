@@ -6,7 +6,7 @@ export interface ISubscription {
     settings: {
         allowNoCapacity: boolean;
         maximumAttendeeCapacity: number;
-        allowMultipleEventTimeTables: boolean;
+        useAdvancedScheduling: boolean;
         useSeats: boolean;
         useCategoryCodes: boolean;
         useProducts: boolean;

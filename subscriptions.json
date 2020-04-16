@@ -4,7 +4,7 @@
         "settings": {
             "allowNoCapacity": false,
             "maximumAttendeeCapacity": 50,
-            "allowMultipleEventTimeTables": false,
+            "useAdvancedScheduling": false,
             "useSeats": false,
             "useCategoryCodes": false,
             "useProducts": false,
@@ -17,7 +17,7 @@
         "settings": {
             "allowNoCapacity": false,
             "maximumAttendeeCapacity": 50,
-            "allowMultipleEventTimeTables": false,
+            "useAdvancedScheduling": false,
             "useSeats": true,
             "useCategoryCodes": true,
             "useProducts": true,
@@ -30,7 +30,7 @@
         "settings": {
             "allowNoCapacity": true,
             "maximumAttendeeCapacity": 10000,
-            "allowMultipleEventTimeTables": true,
+            "useAdvancedScheduling": true,
             "useSeats": true,
             "useCategoryCodes": true,
             "useProducts": true,
@@ -42,7 +42,7 @@
         "identifier": "Enterprise",
         "settings": {
             "allowNoCapacity": true,
-            "allowMultipleEventTimeTables": true,
+            "useAdvancedScheduling": true,
             "useSeats": true,
             "useCategoryCodes": true,
             "useProducts": true,

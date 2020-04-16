@@ -69,7 +69,7 @@ screeningEventRouter.get(
                 moment: moment,
                 ticketGroups: searchTicketTypeGroupsResult.data,
                 sellers: searchSellersResult.data,
-                allowMultipleEventTimeTables: req.subscription?.settings.allowMultipleEventTimeTables
+                useAdvancedScheduling: req.subscription?.settings.useAdvancedScheduling
             });
         } catch (err) {
             next(err);

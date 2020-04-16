@@ -66,7 +66,7 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             moment: moment,
             ticketGroups: searchTicketTypeGroupsResult.data,
             sellers: searchSellersResult.data,
-            allowMultipleEventTimeTables: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.allowMultipleEventTimeTables
+            useAdvancedScheduling: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.useAdvancedScheduling
         });
     }
     catch (err) {
