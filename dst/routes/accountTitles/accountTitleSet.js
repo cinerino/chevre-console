@@ -178,7 +178,7 @@ function createFromBody(req, isNew) {
         if (accountTitleCategory === undefined) {
             throw new Error('科目分類が見つかりません');
         }
-        return Object.assign({ project: req.project, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name, hasCategoryCode: [], inCodeSet: accountTitleCategory }, (isNew)
+        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name, hasCategoryCode: [], inCodeSet: accountTitleCategory }, (isNew)
             ? { hasCategoryCode: [] }
             : undefined);
     });

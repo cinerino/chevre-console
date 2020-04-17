@@ -232,7 +232,7 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
         auth: req.user.authClient
     });
     yield placeService.deleteScreeningRoomSection({
-        project: req.project,
+        project: { id: req.project.id },
         branchCode: screeningRoomSectionBranchCode,
         containedInPlace: {
             branchCode: screeningRoomBranchCode,
@@ -261,7 +261,7 @@ function createFromBody(req, isNew) {
                 })
                     .map((p) => {
                     return {
-                        project: req.project,
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
                         branchCode: p.branchCode,
                         additionalProperty: []
@@ -269,12 +269,12 @@ function createFromBody(req, isNew) {
                 });
             }
         }
-        return Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
-                project: req.project,
+        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.placeType.ScreeningRoom,
                 branchCode: req.body.containedInPlace.branchCode,
                 containedInPlace: {
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: chevre.factory.placeType.MovieTheater,
                     branchCode: req.body.containedInPlace.containedInPlace.branchCode
                 }

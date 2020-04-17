@@ -146,7 +146,7 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
 }));
 function createMovieFromBody(req) {
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'CategoryCode',
         codeValue: req.body.codeValue,
         inCodeSet: {

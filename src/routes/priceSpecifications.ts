@@ -335,7 +335,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: req.body.typeOf,
         price: Number(req.body.price),
         priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -344,7 +344,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
         ...(appliesToCategoryCode !== undefined)
             ? {
                 appliesToCategoryCode: [{
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: 'CategoryCode',
                     codeValue: appliesToCategoryCode.codeValue,
                     inCodeSet: {

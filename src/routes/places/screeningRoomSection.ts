@@ -282,7 +282,7 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
         });
 
         await placeService.deleteScreeningRoomSection({
-            project: req.project,
+            project: { id: req.project.id },
             branchCode: screeningRoomSectionBranchCode,
             containedInPlace: {
                 branchCode: screeningRoomBranchCode,
@@ -313,7 +313,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             })
                 .map((p) => {
                     return {
-                        project: req.project,
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
                         branchCode: p.branchCode,
                         additionalProperty: []
@@ -323,16 +323,16 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.ScreeningRoomSection,
         branchCode: req.body.branchCode,
         name: req.body.name,
         containedInPlace: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.ScreeningRoom,
             branchCode: req.body.containedInPlace.branchCode,
             containedInPlace: {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.placeType.MovieTheater,
                 branchCode: req.body.containedInPlace.containedInPlace.branchCode
             }

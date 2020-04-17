@@ -211,7 +211,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: <'AccountTitle'>'AccountTitle',
         codeValue: req.body.codeValue,
         name: req.body.name,

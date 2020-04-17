@@ -380,7 +380,7 @@ ticketTypeMasterRouter.post(
             // タスク作成
             const taskAttributes = data.map((d) => {
                 return {
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     name: <chevre.factory.taskName.ImportOffersFromCOA>chevre.factory.taskName.ImportOffersFromCOA,
                     status: chevre.factory.taskStatus.Ready,
                     runsAt: new Date(),
@@ -582,7 +582,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const eligibleTransactionVolume: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType> | undefined =
         (eligibleTransactionVolumePrice !== undefined)
             ? {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -703,7 +703,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     const itemOffered = {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: ProductType.EventService
     };
 
@@ -713,7 +713,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: <chevre.factory.offerType>'Offer',
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: req.body.id,
@@ -730,7 +730,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             name: req.body.name,
             price: Number(req.body.price) * referenceQuantityValue,

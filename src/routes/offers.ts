@@ -521,7 +521,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const eligibleTransactionVolume: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType> | undefined =
         (eligibleTransactionVolumePrice !== undefined)
             ? {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -569,7 +569,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     const priceSpec: chevre.factory.priceSpecification.IPriceSpecification<chevre.factory.priceSpecificationType.UnitPriceSpecification> = {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
         name: req.body.name,
         price: Number(req.body.priceSpecification.price),
@@ -586,14 +586,14 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     switch (itemOfferedTypeOf) {
         case ProductType.Product:
             itemOffered = {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: itemOfferedTypeOf
             };
             break;
 
         case ProductType.MembershipService:
             itemOffered = {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: itemOfferedTypeOf,
                 serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
             };
@@ -604,7 +604,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
         id: req.body.id,

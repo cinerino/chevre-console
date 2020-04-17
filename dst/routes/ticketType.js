@@ -316,7 +316,7 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
         // タスク作成
         const taskAttributes = data.map((d) => {
             return {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 name: chevre.factory.taskName.ImportOffersFromCOA,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
@@ -500,7 +500,7 @@ function createFromBody(req, isNew) {
         // tslint:disable-next-line:max-line-length
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
             ? {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -609,17 +609,17 @@ function createFromBody(req, isNew) {
             //     .toDate();
         }
         const itemOffered = {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: productType_1.ProductType.EventService
         };
         let color = 'rgb(51, 51, 51)';
         if (typeof req.body.color === 'string' && req.body.color.length > 0) {
             color = req.body.color;
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
                 name: req.body.name,
                 price: Number(req.body.price) * referenceQuantityValue,

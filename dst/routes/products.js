@@ -181,7 +181,7 @@ function createFromBody(req, isNew) {
             id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
-    return Object.assign(Object.assign({ project: req.project, typeOf: productType_1.ProductType.Product, id: req.params.id, 
+    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: productType_1.ProductType.Product, id: req.params.id, 
         // identifier: body.identifier,
         name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {

@@ -414,7 +414,7 @@ function createFromBody(req) {
             };
         }
         return {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             id: req.body.id,
             identifier: req.body.identifier,
             name: req.body.name,

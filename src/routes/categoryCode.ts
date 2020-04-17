@@ -188,7 +188,7 @@ categoryCodesRouter.all<ParamsDictionary>(
 
 function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategoryCode {
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'CategoryCode',
         codeValue: req.body.codeValue,
         inCodeSet: {

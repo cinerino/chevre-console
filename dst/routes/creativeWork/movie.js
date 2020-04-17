@@ -284,7 +284,7 @@ function createFromBody(req, isNew) {
                 distributorType: distributorType.codeValue
             });
         }
-        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

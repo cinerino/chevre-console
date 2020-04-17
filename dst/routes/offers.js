@@ -445,7 +445,7 @@ function createFromBody(req, isNew) {
         // tslint:disable-next-line:max-line-length
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
             ? {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
                 priceCurrency: chevre.factory.priceCurrency.JPY,
@@ -489,7 +489,7 @@ function createFromBody(req, isNew) {
             //     .toDate();
         }
         const priceSpec = {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
             name: req.body.name,
             price: Number(req.body.priceSpecification.price),
@@ -505,13 +505,13 @@ function createFromBody(req, isNew) {
         switch (itemOfferedTypeOf) {
             case productType_1.ProductType.Product:
                 itemOffered = {
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: itemOfferedTypeOf
                 };
                 break;
             case productType_1.ProductType.MembershipService:
                 itemOffered = {
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: itemOfferedTypeOf,
                     serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
                 };
@@ -519,7 +519,7 @@ function createFromBody(req, isNew) {
             default:
                 throw new Error(`${(_e = req.body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: priceSpec, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')

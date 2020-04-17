@@ -300,7 +300,7 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
         for (const id of ids) {
             const transaction = yield cancelReservationService.start({
                 typeOf: chevre.factory.transactionType.CancelReservation,
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 agent: {
                     typeOf: 'Person',
                     id: req.user.profile.sub,

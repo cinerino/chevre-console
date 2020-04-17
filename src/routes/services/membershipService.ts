@@ -219,7 +219,7 @@ function createFromBody(req: Request, isNew: boolean): any {
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: ProductType.MembershipService,
         id: req.params.id,
         // identifier: body.identifier,

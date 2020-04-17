@@ -353,7 +353,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
 
     const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.creativeWorkType.Movie,
         id: req.body.id,
         identifier: req.body.identifier,

@@ -274,10 +274,10 @@ function createMovieFromBody(req, isNew) {
             break;
         default:
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: req.body.typeOf, price: Number(req.body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: req.body.name, valueAddedTaxIncluded: true }, (appliesToCategoryCode !== undefined)
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, price: Number(req.body.price), priceCurrency: chevre.factory.priceCurrency.JPY, name: req.body.name, valueAddedTaxIncluded: true }, (appliesToCategoryCode !== undefined)
         ? {
             appliesToCategoryCode: [{
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: 'CategoryCode',
                     codeValue: appliesToCategoryCode.codeValue,
                     inCodeSet: {

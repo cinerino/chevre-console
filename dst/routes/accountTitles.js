@@ -215,7 +215,7 @@ function createFromBody(req) {
             throw new Error('科目が見つかりません');
         }
         return {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: 'AccountTitle',
             codeValue: req.body.codeValue,
             name: req.body.name,

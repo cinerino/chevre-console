@@ -161,7 +161,7 @@ accountTitleCategoryRouter.all<ParamsDictionary>(
 
 function createFromBody(req: Request, isNew: boolean): chevre.factory.accountTitle.IAccountTitle {
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: <'AccountTitle'>'AccountTitle',
         codeValue: req.body.codeValue,
         name: req.body.name,

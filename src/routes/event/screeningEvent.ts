@@ -443,7 +443,7 @@ screeningEventRouter.post(
                 .add(2, 'months')
                 .toDate();
             const taskAttributes = [{
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 name: <chevre.factory.taskName.ImportEventsFromCOA>chevre.factory.taskName.ImportEventsFromCOA,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
@@ -655,14 +655,14 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.eventType.ScreeningEvent,
         doorTime: doorTime,
         startDate: startDate,
         endDate: endDate,
         workPerformed: screeningEventSeries.workPerformed,
         location: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
             branchCode: <string>screeningRoom.branchCode,
             name: <chevre.factory.multilingualString>screeningRoom.name,
@@ -912,7 +912,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 };
 
                 attributes.push({
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: chevre.factory.eventType.ScreeningEvent,
                     doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                         .toDate(),
@@ -921,7 +921,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         .toDate(),
                     workPerformed: screeningEventSeries.workPerformed,
                     location: {
-                        project: req.project,
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: <chevre.factory.placeType.ScreeningRoom>screeningRoom.typeOf,
                         branchCode: <string>screeningRoom.branchCode,
                         name: screeningRoom.name === undefined

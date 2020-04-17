@@ -338,7 +338,7 @@ reservationsRouter.post(
             for (const id of ids) {
                 const transaction = await cancelReservationService.start({
                     typeOf: chevre.factory.transactionType.CancelReservation,
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     agent: {
                         typeOf: 'Person',
                         id: req.user.profile.sub,

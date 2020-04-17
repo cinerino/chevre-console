@@ -375,7 +375,7 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
             .add(2, 'months')
             .toDate();
         const taskAttributes = [{
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 name: chevre.factory.taskName.ImportEventsFromCOA,
                 status: chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
@@ -556,13 +556,13 @@ function createEventFromBody(req) {
             }
         }
         return {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.eventType.ScreeningEvent,
             doorTime: doorTime,
             startDate: startDate,
             endDate: endDate,
             workPerformed: screeningEventSeries.workPerformed,
-            location: Object.assign({ project: req.project, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined),
+            location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined),
             superEvent: screeningEventSeries,
             name: screeningEventSeries.name,
             eventStatus: chevre.factory.eventStatusType.EventScheduled,
@@ -773,7 +773,7 @@ function createMultipleEventFromBody(req, user) {
                         }
                     });
                     attributes.push({
-                        project: req.project,
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.eventType.ScreeningEvent,
                         doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(),
@@ -781,7 +781,7 @@ function createMultipleEventFromBody(req, user) {
                         endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(),
                         workPerformed: screeningEventSeries.workPerformed,
-                        location: Object.assign({ project: req.project, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined
+                        location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined
                                 ? { en: '', ja: '', kr: '' }
                                 : screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined),
                         superEvent: screeningEventSeries,

@@ -139,7 +139,7 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
     }
 }));
 function createFromBody(req, isNew) {
-    return Object.assign({ project: req.project, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name }, (isNew)
+    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name }, (isNew)
         ? { hasCategoryCode: [] }
         : undefined);
 }

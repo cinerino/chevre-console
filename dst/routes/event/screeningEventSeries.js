@@ -468,8 +468,8 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
     }
     const workPerformed = Object.assign({ project: movie.project, typeOf: movie.typeOf, id: movie.id, identifier: movie.identifier, name: movie.name }, (typeof movie.duration === 'string') ? { duration: movie.duration } : undefined);
     const duration = (typeof movie.duration === 'string') ? movie.duration : undefined;
-    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
-            project: req.project,
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             id: movieTheater.id,
             typeOf: movieTheater.typeOf,
             branchCode: movieTheater.branchCode,

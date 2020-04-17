@@ -304,7 +304,7 @@ seatRouter.delete<ParamsDictionary>(
         });
 
         await placeService.deleteSeat({
-            project: req.project,
+            project: { id: req.project.id },
             branchCode: seatBranchCode,
             containedInPlace: {
                 branchCode: screeningRoomSectionBranchCode,
@@ -327,19 +327,19 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.Seat,
         branchCode: req.body.branchCode,
         containedInPlace: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.ScreeningRoomSection,
             branchCode: req.body.containedInPlace.branchCode,
             containedInPlace: {
-                project: req.project,
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.placeType.ScreeningRoom,
                 branchCode: req.body.containedInPlace.containedInPlace.branchCode,
                 containedInPlace: {
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: chevre.factory.placeType.MovieTheater,
                     branchCode: req.body.containedInPlace.containedInPlace.containedInPlace.branchCode
                 }

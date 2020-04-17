@@ -152,7 +152,7 @@ transactionsRouter.all('/reserve/start',
                     .toDate();
                 debug('取引を開始します...', values, acceptedOffer);
                 const transaction = yield reserveService.start({
-                    project: req.project,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: chevre.factory.transactionType.Reserve,
                     expires: expires,
                     agent: {

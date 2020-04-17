@@ -250,7 +250,7 @@ screeningRoomRouter.delete<ParamsDictionary>(
         });
 
         await placeService.deleteScreeningRoom({
-            project: req.project,
+            project: { id: req.project.id },
             branchCode: screeningRoomBranchCode,
             containedInPlace: { branchCode: movieTheaterBranchCode }
         });
@@ -267,13 +267,13 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
     }
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.ScreeningRoom,
         branchCode: req.body.branchCode,
         name: req.body.name,
         address: req.body.address,
         containedInPlace: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.MovieTheater,
             branchCode: req.body.containedInPlace.branchCode
         },

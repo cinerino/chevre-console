@@ -202,7 +202,7 @@ screeningRoomRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         auth: req.user.authClient
     });
     yield placeService.deleteScreeningRoom({
-        project: req.project,
+        project: { id: req.project.id },
         branchCode: screeningRoomBranchCode,
         containedInPlace: { branchCode: movieTheaterBranchCode }
     });
@@ -214,8 +214,8 @@ function createFromBody(req, isNew) {
     if (req.body.openSeatingAllowed === '1') {
         openSeatingAllowed = true;
     }
-    return Object.assign(Object.assign({ project: req.project, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
-            project: req.project,
+    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.MovieTheater,
             branchCode: req.body.containedInPlace.branchCode
         }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))

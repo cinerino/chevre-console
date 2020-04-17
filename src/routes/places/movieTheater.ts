@@ -293,7 +293,7 @@ movieTheaterRouter.get(
 function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieTheater.IPlace {
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlace = {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         id: req.body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
         branchCode: req.body.branchCode,

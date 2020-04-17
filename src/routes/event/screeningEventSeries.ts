@@ -575,7 +575,7 @@ function createEventFromBody(
     const duration: string | undefined = (typeof movie.duration === 'string') ? movie.duration : undefined;
 
     return {
-        project: req.project,
+        project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
         name: {
             ja: req.body.nameJa,
@@ -583,7 +583,7 @@ function createEventFromBody(
         },
         kanaName: req.body.kanaName,
         location: {
-            project: req.project,
+            project: { typeOf: req.project.typeOf, id: req.project.id },
             id: movieTheater.id,
             typeOf: <chevre.factory.placeType.MovieTheater>movieTheater.typeOf,
             branchCode: movieTheater.branchCode,
