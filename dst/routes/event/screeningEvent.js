@@ -364,10 +364,15 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
  */
 screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
         const importFrom = moment()
             .toDate();
         const importThrough = moment(importFrom)
@@ -383,7 +388,8 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
                 numberOfTried: 0,
                 executionResults: [],
                 data: {
-                    locationBranchCode: req.body.theater,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    locationBranchCode: movieTheater.branchCode,
                     importFrom: importFrom,
                     importThrough: importThrough
                 }

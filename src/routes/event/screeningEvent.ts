@@ -431,10 +431,16 @@ screeningEventRouter.post(
     '/importFromCOA',
     async (req, res, next) => {
         try {
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+
+            const movieTheater = await placeService.findMovieTheaterById({ id: req.body.theater });
 
             const importFrom = moment()
                 .toDate();
@@ -442,7 +448,7 @@ screeningEventRouter.post(
                 // tslint:disable-next-line:no-magic-numbers
                 .add(2, 'months')
                 .toDate();
-            const taskAttributes = [{
+            const taskAttributes: chevre.factory.task.importEventsFromCOA.IAttributes[] = [{
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 name: <chevre.factory.taskName.ImportEventsFromCOA>chevre.factory.taskName.ImportEventsFromCOA,
                 status: chevre.factory.taskStatus.Ready,
@@ -451,7 +457,8 @@ screeningEventRouter.post(
                 numberOfTried: 0,
                 executionResults: [],
                 data: {
-                    locationBranchCode: req.body.theater,
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    locationBranchCode: movieTheater.branchCode,
                     importFrom: importFrom,
                     importThrough: importThrough
                 }
