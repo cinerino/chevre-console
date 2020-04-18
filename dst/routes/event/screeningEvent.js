@@ -377,7 +377,7 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
             .toDate();
         const importThrough = moment(importFrom)
             // tslint:disable-next-line:no-magic-numbers
-            .add(2, 'months')
+            .add(1, 'week')
             .toDate();
         const taskAttributes = [{
                 project: { typeOf: req.project.typeOf, id: req.project.id },

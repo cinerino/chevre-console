@@ -446,7 +446,7 @@ screeningEventRouter.post(
                 .toDate();
             const importThrough = moment(importFrom)
                 // tslint:disable-next-line:no-magic-numbers
-                .add(2, 'months')
+                .add(1, 'week')
                 .toDate();
             const taskAttributes: chevre.factory.task.importEventsFromCOA.IAttributes[] = [{
                 project: { typeOf: req.project.typeOf, id: req.project.id },
