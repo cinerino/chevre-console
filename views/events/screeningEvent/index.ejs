@@ -146,6 +146,7 @@ Aa-4
                                     <th>ID</th>
                                     <th>ステータス</th>
                                     <th>作品</th>
+                                    <th>劇場</th>
                                     <th>場所</th>
                                     <th>開始</th>
                                     <th>終了</th>
@@ -166,10 +167,13 @@ Aa-4
                                         </a>
                                     </td>
                                     <td name="eventStatus">$eventStatus$</td>
-                                    <td name="superEvent.workPerformed.id__superEvent.workPerformed.name|slice">
+                                    <td name="superEvent.id__superEvent.name.ja|slice">
                                         <a target="_blank"
-                                            href="/creativeWorks/movie/$superEvent.workPerformed.id$/update">$superEvent.workPerformed.name$
+                                            href="/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
+                                    </td>
+                                    <td name="superEvent.location.branchCode">
+                                        $superEvent.location.branchCode$
                                     </td>
                                     <td name="location.name.ja|slice">
                                         $location.name.ja$
