@@ -226,50 +226,39 @@ function updateErrorReporting(cb) {
             orderDateThrough: moment().toISOString()
         }
     ).done(function (data) {
-        $('.errorReporting').empty();
+        $('.errorReporting .table,.card-category').empty();
 
         if (data.data.length === 0) {
-            $('.errorReporting').text('過去24時間以内に発生したエラーはありません');
+            $('.errorReporting .card-category').text('過去24時間以内に発生したエラーはありません');
         } else {
-            $('.errorReporting').html(data.data.map(function (task) {
-                var message = task.name;
+            var thead = $('<thead>').addClass('text-primary')
+                .append($('<th>').text('Name'))
+                .append($('<th>').text('Runs'))
+                .append($('<th>').text('Message'));
+            var tbody = $('<tbody>');
+
+            $.each(data.data, function (_, task) {
+                var message = '';
 
                 if (Array.isArray(task.executionResults) && task.executionResults.length > 0) {
-                    message += ' ' + task.executionResults[0].message;
+                    var firstResult = task.executionResults[0];
+                    if (typeof firstResult.error === 'string') {
+                        message += firstResult.error;
+                    } else if (firstResult.error !== undefined && firstResult.error !== null) {
+                        message += firstResult.error.message;
+                    }
                 }
 
-                return message;
-            }).join('<br>'));
+                var tr = $('<tr>')
+                    .append($('<td>').text(task.name))
+                    .append($('<td>').text(moment(task.runsAt).format('MM-DD HH:mm:ss')))
+                    .append($('<td>').text(message));
+
+                tbody.append(tr);
+            });
+
+            $('.errorReporting .table').append([thead, tbody]);
         }
-
-        // $.each(data.data, function (_, event) {
-        //     var name = '?';
-        //     var reservationCount = '?';
-        //     var checkInCount = '?';
-        //     var attendeeCount = '?';
-
-        //     if (event.name !== undefined && event.name !== null) {
-        //         if (typeof event.name === 'string') {
-        //             name = event.name.slice(0, 5);
-        //         } else {
-        //             name = event.name.ja.slice(0, 5);
-        //         }
-        //     }
-
-        //     if (event.aggregateReservation !== undefined && event.aggregateReservation !== null) {
-        //         reservationCount = String(event.aggregateReservation.reservationCount);
-        //         checkInCount = String(event.aggregateReservation.checkInCount);
-        //         attendeeCount = String(event.aggregateReservation.attendeeCount);
-        //     }
-
-        //     var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'
-        //         + '<td>' + name + '...</td>'
-        //         + '<td>' + event.superEvent.location.name.ja + '</td>'
-        //         + '<td>' + reservationCount + '</td>'
-        //         + '<td>' + checkInCount + '</td>'
-        //         + '<td>' + attendeeCount + '</td>';
-        //     $('<tr>').html(html).appendTo('.eventsWithAggregation tbody');
-        // });
 
         cb();
     }).fail(function (jqXHR, textStatus, error) {
