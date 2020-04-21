@@ -230,18 +230,7 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
 }));
 function createMovieTheaterFromBody(req) {
     // tslint:disable-next-line:no-unnecessary-local-variable
-    const movieTheater = {
-        project: { typeOf: req.project.typeOf, id: req.project.id },
-        id: req.body.id,
-        typeOf: chevre.factory.placeType.MovieTheater,
-        branchCode: req.body.branchCode,
-        name: req.body.name,
-        kanaName: req.body.kanaName,
-        offers: JSON.parse(req.body.offersStr),
-        containsPlace: JSON.parse(req.body.containsPlaceStr),
-        telephone: req.body.telephone,
-        screenCount: 0,
-        additionalProperty: (Array.isArray(req.body.additionalProperty))
+    const movieTheater = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, offers: JSON.parse(req.body.offersStr), containsPlace: JSON.parse(req.body.containsPlaceStr), telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {
@@ -249,8 +238,7 @@ function createMovieTheaterFromBody(req) {
                     value: String(p.value)
                 };
             })
-            : undefined
-    };
+            : undefined }, (typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined);
     return movieTheater;
 }
 function validate() {

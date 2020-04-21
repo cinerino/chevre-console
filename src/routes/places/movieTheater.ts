@@ -311,7 +311,8 @@ function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieThe
                         value: String(p.value)
                     };
                 })
-            : undefined
+            : undefined,
+        ...(typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined
     };
 
     return movieTheater;
