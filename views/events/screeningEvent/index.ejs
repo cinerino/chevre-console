@@ -5,11 +5,13 @@ Aa-4
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script>window.Vue || document.write('<script src="/node_modules/vue/dist/vue.min.js"><\/script>');</script>
 <script src="/js/lodash.debounce.min.js"></script>
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/master/commonMaster.js"></script>
 <script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/events/scheduler.js"></script>
 <script src="/js/master/events/screeningEvent.js"></script>
 
 <%- contentFor('body') %>

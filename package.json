@@ -38,7 +38,8 @@
     "redis": "^2.7.1",
     "select2": "^4.0.13",
     "serve-favicon": "^2.4.3",
-    "underscore": "^1.9.2"
+    "underscore": "^1.9.2",
+    "vue": "^2.6.11"
   },
   "description": "Chevre Console",
   "devDependencies": {
