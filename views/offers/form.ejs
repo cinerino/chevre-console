@@ -167,15 +167,10 @@
                                 <span class="input-group-text">円 /</span>
                             </div>
 
-                            <select class="form-control" name="priceSpecification[referenceQuantity][value]">
-                                <% for (let i = 1; i <= 10; i++) { %>
-                                <option value="<%= i %>"
-                                    <% if (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.referenceQuantity !== undefined && String(forms.priceSpecification.referenceQuantity.value) === String(i)) { %>
-                                    selected <% } %>>
-                                    <%= i %>
-                                </option>
-                                <% } %>
-                            </select>
+                            <input type="number" class="form-control"
+                                name="priceSpecification[referenceQuantity][value]"
+                                id="priceSpecification[referenceQuantity][value]" placeholder="" maxlength=10
+                                value="<%= (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.referenceQuantity !== undefined) ? String(forms.priceSpecification.referenceQuantity.value) : '' %>">
 
                             <%
                             const unitCodes = [
