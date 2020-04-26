@@ -32,6 +32,10 @@ membershipServiceRouter.all('/new', ...validate(), (req, res) => __awaiter(void 
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     if (req.method === 'POST') {
         // 検証
         const validatorResult = express_validator_1.validationResult(req);
@@ -62,6 +66,12 @@ membershipServiceRouter.all('/new', ...validate(), (req, res) => __awaiter(void 
             return {};
         }));
     }
+    // 口座タイプ検索
+    const searchAccountTypesResult = yield categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+    });
     const searchOfferCatalogsResult = yield offerCatalogService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -71,6 +81,7 @@ membershipServiceRouter.all('/new', ...validate(), (req, res) => __awaiter(void 
         message: message,
         errors: errors,
         forms: forms,
+        accountTypes: searchAccountTypesResult.data,
         offerCatalogs: searchOfferCatalogsResult.data
     });
 }));
@@ -97,9 +108,7 @@ membershipServiceRouter.get('/search',
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data.map((t) => {
-                return Object.assign({}, t);
-            })
+            results: data
         });
     }
     catch (err) {
@@ -123,6 +132,10 @@ membershipServiceRouter.all('/:id', ...validate(),
             auth: req.user.authClient
         });
         const productService = new chevre.service.Product({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -150,7 +163,13 @@ membershipServiceRouter.all('/:id', ...validate(),
                 .end();
             return;
         }
-        const forms = Object.assign({}, product);
+        const forms = Object.assign(Object.assign({}, product), req.body);
+        // 口座タイプ検索
+        const searchAccountTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
+        });
         const searchOfferCatalogsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -160,6 +179,7 @@ membershipServiceRouter.all('/:id', ...validate(),
             message: message,
             errors: errors,
             forms: forms,
+            accountTypes: searchAccountTypesResult.data,
             offerCatalogs: searchOfferCatalogsResult.data
         });
     }
@@ -181,9 +201,27 @@ function createFromBody(req, isNew) {
             id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
+    let serviceOutput = [];
+    if (Array.isArray(req.body.serviceOutput)) {
+        serviceOutput = req.body.serviceOutput.map((s) => {
+            var _a, _b, _c, _d, _e, _f;
+            let membershipPointsEarned;
+            if (typeof ((_a = s.membershipPointsEarned) === null || _a === void 0 ? void 0 : _a.name) === 'string' && ((_b = s.membershipPointsEarned) === null || _b === void 0 ? void 0 : _b.name.length) > 0
+                && typeof ((_c = s.membershipPointsEarned) === null || _c === void 0 ? void 0 : _c.unitText) === 'string' && ((_d = s.membershipPointsEarned) === null || _d === void 0 ? void 0 : _d.unitText.length) > 0
+                && typeof ((_e = s.membershipPointsEarned) === null || _e === void 0 ? void 0 : _e.value) === 'string' && ((_f = s.membershipPointsEarned) === null || _f === void 0 ? void 0 : _f.value.length) > 0) {
+                membershipPointsEarned = {
+                    name: s.membershipPointsEarned.name,
+                    typeOf: 'QuantitativeValue',
+                    unitText: s.membershipPointsEarned.unitText,
+                    value: Number(s.membershipPointsEarned.value)
+                };
+            }
+            return Object.assign({ typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }, (membershipPointsEarned !== undefined) ? { membershipPointsEarned } : undefined);
+        });
+    }
     return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: productType_1.ProductType.MembershipService, id: req.params.id, 
         // identifier: body.identifier,
-        name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
+        name: req.body.name, serviceOutput: serviceOutput }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {
             $unset: Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined)
         }
