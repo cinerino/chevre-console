@@ -148,21 +148,24 @@
                         <label for="" class="bmd-label-static">
                             座席CSV
                             <a href="#" data-toggle="tooltip"
-                                title="<p class=&quot;text-left mb-0&quot;>CSVで座席を登録します。セクションの座席リストが全て上書きされます。また、不適切なフォーマットは無視されます。</p>"
+                                title="<p class=&quot;text-left mb-0&quot;>CSVで座席を登録します。セクションの座席リストが全て上書きされます。また、不適切なCSVフォーマット、不適切な座席コード、存在しない座席区分は無視されます。</p>"
                                 style="pointer-events: auto;">
                                 <span class="material-icons" style="font-size: 1.2em;">
                                     help
                                 </span>
                             </a>
                         </label>
-                        <a class="d-block pt-1" data-toggle="collapse" href="#containsPlaceCsv" role="button"
+                        <a class="pt-1" data-toggle="collapse" href="#containsPlaceCsv" role="button"
                             aria-expanded="false" aria-controls="editNameJson">
                             編集する
+                        </a>
+                        <a class="ml-1" target="_blank" href="/csv/sampleSeats.csv">
+                            サンプルCSV
                         </a>
 
                         <div class="collapse" id="containsPlaceCsv">
                             <textarea class="form-control" name="containsPlace" rows=10
-                                placeholder="branchCode&#13;&#10;A-0&#13;&#10;A-1&#13;&#10;A-2"></textarea>
+                                placeholder="branchCode,seatingType&#13;&#10;A-0,Premium&#13;&#10;A-1&#13;&#10;A-2"></textarea>
                         </div>
                     </div>
                 </div>

@@ -298,6 +298,18 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
 );
 
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.place.screeningRoomSection.IPlace> {
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchSeatingTypesResult = await categoryCodeService.search({
+        limit: 100,
+        project: { id: { $eq: req.project.id } },
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+    });
+    const seatingTypes = searchSeatingTypesResult.data;
+
     let containsPlace: chevre.factory.place.seat.IPlace[] = [];
     const containsPlaceCsv = req.body.containsPlace;
     const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
@@ -312,10 +324,16 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     && seatBranchCodeRegex.test(p.branchCode);
             })
                 .map((p) => {
+                    let seatingTypeCodeValue: string | undefined;
+                    if (typeof p.seatingType === 'string') {
+                        seatingTypeCodeValue = seatingTypes.find((s) => s.codeValue === p.seatingType)?.codeValue;
+                    }
+
                     return {
                         project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
                         branchCode: p.branchCode,
+                        seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [],
                         additionalProperty: []
                     };
                 });
@@ -337,7 +355,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 branchCode: req.body.containedInPlace.containedInPlace.branchCode
             }
         },
-        containsPlace: containsPlace, // 更新しないため空でよし
+        containsPlace: containsPlace,
         additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
                 .map((p: any) => {

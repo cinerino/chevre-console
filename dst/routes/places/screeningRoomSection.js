@@ -246,6 +246,16 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
 }));
 function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchSeatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+        });
+        const seatingTypes = searchSeatingTypesResult.data;
         let containsPlace = [];
         const containsPlaceCsv = req.body.containsPlace;
         const seatBranchCodeRegex = /^[0-9a-zA-Z\-]+$/;
@@ -260,10 +270,16 @@ function createFromBody(req, isNew) {
                         && seatBranchCodeRegex.test(p.branchCode);
                 })
                     .map((p) => {
+                    var _a;
+                    let seatingTypeCodeValue;
+                    if (typeof p.seatingType === 'string') {
+                        seatingTypeCodeValue = (_a = seatingTypes.find((s) => s.codeValue === p.seatingType)) === null || _a === void 0 ? void 0 : _a.codeValue;
+                    }
                     return {
                         project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
                         branchCode: p.branchCode,
+                        seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [],
                         additionalProperty: []
                     };
                 });
