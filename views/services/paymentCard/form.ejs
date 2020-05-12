@@ -1,0 +1,127 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <input type="hidden" name="id" value="<%= forms.id %>">
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[ja]" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
+                            maxlength=30
+                            value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.ja'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="hasOfferCatalog[id]" class="bmd-label-static">
+                            オファーカタログ
+                        </label>
+                        <select class="form-control" name="hasOfferCatalog[id]">
+                            <option value="">選択してください</option>
+                            <% for (const offerCatalog of offerCatalogs) { %>
+                            <option value="<%= offerCatalog.id %>"
+                                <% if (forms.hasOfferCatalog !== undefined && forms.hasOfferCatalog.id === offerCatalog.id) { %>
+                                selected<% } %>>
+                                <%= offerCatalog.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
+                            特典ポイント
+                        </label>
+                        <div class="input-group">
+                            <%
+                            let membershipPointsEarnedName = '';
+                            if (forms.serviceOutput !== undefined
+                                && Array.isArray(forms.serviceOutput)
+                                && forms.serviceOutput.length > 0
+                                && forms.serviceOutput[0].membershipPointsEarned !== undefined
+                            ) {
+                                membershipPointsEarnedName = forms.serviceOutput[0].membershipPointsEarned.name;;
+                            }
+                            %>
+                            <input type="text" class="form-control" name="serviceOutput[][membershipPointsEarned][name]"
+                                id="serviceOutput[][membershipPointsEarned][name]" placeholder="" maxlength=64
+                                value="<%= membershipPointsEarnedName %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">として</span>
+                            </div>
+                            <select class="form-control" name="serviceOutput[][membershipPointsEarned][unitText]">
+                                <option value="" selected>指定しない</option>
+                                <% Object.values(accountTypes).forEach((accountType) => { %>
+                                <%
+                                const selected = forms.serviceOutput !== undefined
+                                    && Array.isArray(forms.serviceOutput)
+                                    && forms.serviceOutput.length > 0
+                                    && forms.serviceOutput[0].membershipPointsEarned !== undefined
+                                    && accountType.codeValue === forms.serviceOutput[0].membershipPointsEarned.unitText;
+                                %>
+                                <option value="<%= accountType.codeValue %>" <% if (selected) { %> selected<% } %>>
+                                    <%= accountType.codeValue %> <%= accountType.name.ja %>
+                                </option>
+                                <% }) %>
+                            </select>
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">を</span>
+                            </div>
+                            <%
+                            let membershipPointsEarnedValue = '';
+                            if (forms.serviceOutput !== undefined
+                                && Array.isArray(forms.serviceOutput)
+                                && forms.serviceOutput.length > 0
+                                && forms.serviceOutput[0].membershipPointsEarned !== undefined
+                            ) {
+                                membershipPointsEarnedValue = forms.serviceOutput[0].membershipPointsEarned.value;;
+                            }
+                            %>
+                            <input type="number" class="form-control"
+                                name="serviceOutput[][membershipPointsEarned][value]"
+                                id="serviceOutput[][membershipPointsEarned][value]" placeholder="" maxlength=10
+                                value="<%= membershipPointsEarnedValue %>">
+                        </div>
+
+                        <% if (errors && errors['membershipPointsEarned.0.value']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['membershipPointsEarned.0.value'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->
