@@ -691,7 +691,13 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
                         value: String(p.value)
                     };
                 })
-            : []
+            : [],
+        ...{
+            hasOfferCatalog: {
+                typeOf: 'OfferCatalog',
+                id: catalog.id
+            }
+        }
     };
 }
 /**
@@ -943,7 +949,13 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     eventStatus: chevre.factory.eventStatusType.EventScheduled,
                     offers: offers,
                     checkInCount: <any>undefined,
-                    attendeeCount: <any>undefined
+                    attendeeCount: <any>undefined,
+                    ...{
+                        hasOfferCatalog: {
+                            typeOf: 'OfferCatalog',
+                            id: ticketTypeGroup.id
+                        }
+                    }
                 });
             });
         }
