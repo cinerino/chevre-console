@@ -151,7 +151,7 @@ $(function () {
     $(document).on('click', '.showOffers', function (event) {
         var id = $(this).attr('data-id');
 
-        showOffers(id);
+        showOffersById(id);
     });
 
     $(document).on('click', '.showAdditionalProperty', function (event) {
@@ -1286,7 +1286,7 @@ function changeInputType() {
     parent.find('.input-type[data-input-type=' + inputType + ']').removeClass('d-none');
 }
 
-function showOffers(id) {
+function showOffersById(id) {
     var event = $.CommonMasterList.getDatas().find(function (data) {
         return data.id === id
     });
@@ -1296,78 +1296,86 @@ function showOffers(id) {
         return;
     }
 
-    $.ajax({
-        dataType: 'json',
-        url: '/events/screeningEvent/' + id + '/offers',
-        cache: false,
-        type: 'GET',
-        data: {},
-        beforeSend: function () {
-            $('#loadingModal').modal({ backdrop: 'static' });
-        }
-    }).done(function (data) {
-        var modal = $('#modal-event');
+    if (event.hasOfferCatalog !== undefined && typeof event.hasOfferCatalog.id === 'string' && event.hasOfferCatalog.id.length > 0) {
+        $.ajax({
+            dataType: 'json',
+            url: '/events/screeningEvent/' + id + '/offers',
+            cache: false,
+            type: 'GET',
+            data: {},
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            showOffers(event, data);
+        }).fail(function (jqxhr, textStatus, error) {
+            alert('検索できませんでした');
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
+    } else {
+        showOffers(event, []);
+    }
+}
 
-        var thead = $('<thead>').addClass('text-primary')
-            .append([
-                $('<tr>').append([
-                    $('<th>').text('コード'),
-                    $('<th>').text('名称')
-                ])
+function showOffers(event, offers) {
+    var modal = $('#modal-event');
+
+    var thead = $('<thead>').addClass('text-primary')
+        .append([
+            $('<tr>').append([
+                $('<th>').text('コード'),
+                $('<th>').text('名称')
+            ])
+        ]);
+    var tbody = $('<tbody>')
+        .append(offers.map(function (result) {
+            var url = '/offers/' + result.id + '/update';
+
+            return $('<tr>').append([
+                $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
+                $('<td>').text(result.name.ja)
             ]);
-        var tbody = $('<tbody>')
-            .append(data.map(function (result) {
-                var url = '/offers/' + result.id + '/update';
+        }))
+    var table = $('<table>').addClass('table table-sm')
+        .append([thead, tbody]);
 
-                return $('<tr>').append([
-                    $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),
-                    $('<td>').text(result.name.ja)
-                ]);
-            }))
-        var table = $('<table>').addClass('table table-sm')
-            .append([thead, tbody]);
-
-        var seller;
-        if (event.offers.seller !== undefined && event.offers.seller !== null) {
-            seller = $('<dl>').addClass('row')
-                .append($('<dt>').addClass('col-md-3').append('販売者'))
-                .append($('<dd>').addClass('col-md-9').append(
-                    event.offers.seller.id
-                    + ' '
-                    + event.offers.seller.name.ja
-                ));
-        }
-
-        var availability = $('<dl>').addClass('row')
-            .append($('<dt>').addClass('col-md-3').append('表示期間'))
+    var seller;
+    if (event.offers.seller !== undefined && event.offers.seller !== null) {
+        seller = $('<dl>').addClass('row')
+            .append($('<dt>').addClass('col-md-3').append('販売者'))
             .append($('<dd>').addClass('col-md-9').append(
-                moment(event.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
-                + ' - '
-                + moment(event.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+                event.offers.seller.id
+                + ' '
+                + event.offers.seller.name.ja
             ));
+    }
 
-        var validity = $('<dl>').addClass('row')
-            .append($('<dt>').addClass('col-md-3').append('販売期間'))
-            .append($('<dd>').addClass('col-md-9').append(
-                moment(event.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
-                + ' - '
-                + moment(event.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
-            ));
+    var availability = $('<dl>').addClass('row')
+        .append($('<dt>').addClass('col-md-3').append('表示期間'))
+        .append($('<dd>').addClass('col-md-9').append(
+            moment(event.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+            + ' - '
+            + moment(event.offers.availabilityEnds).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        ));
 
-        var div = $('<div>')
-            .append(seller)
-            .append(availability)
-            .append(validity)
-            .append($('<div>').addClass('table-responsive').append(table));
+    var validity = $('<dl>').addClass('row')
+        .append($('<dt>').addClass('col-md-3').append('販売期間'))
+        .append($('<dd>').addClass('col-md-9').append(
+            moment(event.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+            + ' - '
+            + moment(event.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        ));
 
-        modal.find('.modal-title').text('イベントオファー');
-        modal.find('.modal-body').html(div);
-        modal.modal();
-    }).fail(function (jqxhr, textStatus, error) {
-        alert('検索できませんでした');
-    }).always(function (data) {
-        $('#loadingModal').modal('hide');
-    });
+    var div = $('<div>')
+        .append(seller)
+        .append(availability)
+        .append(validity)
+        .append($('<div>').addClass('table-responsive').append(table));
+
+    modal.find('.modal-title').text('イベントオファー');
+    modal.find('.modal-body').html(div);
+    modal.modal();
 }
 
 /**
