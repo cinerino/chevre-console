@@ -374,7 +374,7 @@ ticketTypeMasterRouter.post(
                 auth: req.user.authClient
             });
 
-            // インポート対象の劇場ブランチコードを検索
+            // インポート対象の施設ブランチコードを検索
             const { data } = await placeService.searchMovieTheaters({ limit: 100 });
 
             // タスク作成

@@ -68,7 +68,7 @@ $(function () {
         showAdditionalProperty(branchCode);
     });
 
-    // スクリーン情報
+    // ルーム情報
     $(document).on('click', '.showContainsPlace', function (event) {
         var id = $(this).attr('data-id');
         console.log('showing containsPlace...id:', id);
@@ -84,7 +84,7 @@ $(function () {
             return data.branchCode === branchCode
         });
         if (movieTheater === undefined) {
-            alert('劇場' + branchCode + 'が見つかりません');
+            alert('施設' + branchCode + 'が見つかりません');
 
             return;
         }
@@ -121,14 +121,14 @@ $(function () {
     }
 
     /**
-     * スクリーン情報
+     * ルーム情報
      */
     function showContainsPlace(id) {
         var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
             return data.id === id
         });
         if (movieTheater === undefined) {
-            alert('劇場' + id + 'が見つかりません');
+            alert('施設' + id + 'が見つかりません');
 
             return;
         }

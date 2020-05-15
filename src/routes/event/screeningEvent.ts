@@ -54,7 +54,7 @@ screeningEventRouter.get(
                 project: { ids: [req.project.id] }
             });
             if (searchMovieTheatersResult.data.length === 0) {
-                throw new Error('劇場が見つかりません');
+                throw new Error('施設が見つかりません');
             }
 
             const searchTicketTypeGroupsResult = await offerCatalogService.search({
@@ -513,10 +513,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
 
     const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
     if (screeningRoom === undefined) {
-        throw new Error('上映スクリーンが見つかりません');
+        throw new Error('ルームが見つかりません');
     }
     if (screeningRoom.name === undefined) {
-        throw new Error('上映スクリーン名が見つかりません');
+        throw new Error('ルーム名称が見つかりません');
     }
 
     const seller = await sellerService.findById({ id: req.body.seller });
@@ -735,10 +735,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
     const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
     if (screeningRoom === undefined) {
-        throw new Error('上映スクリーンが見つかりません');
+        throw new Error('ルームが見つかりません');
     }
     if (screeningRoom.name === undefined) {
-        throw new Error('上映スクリーン名が見つかりません');
+        throw new Error('ルーム名称が見つかりません');
     }
 
     const seller = await sellerService.findById({ id: req.body.seller });
@@ -816,7 +816,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     .add(endDayRelative, 'days')
                     .format('YYYY/MM/DD');
 
-                // 販売開始日時は、劇場設定 or 絶対指定 or 相対指定
+                // 販売開始日時は、施設設定 or 絶対指定 or 相対指定
                 let salesStartDate: Date;
                 switch (String(req.body.saleStartDateType)) {
                     case SaleStartDateType.Absolute:
@@ -968,17 +968,17 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
  */
 function addValidation() {
     return [
-        body('screeningEventId', '上映イベントシリーズが未選択です')
+        body('screeningEventId', '施設作品が未選択です')
             .notEmpty(),
-        body('startDate', '上映日が未選択です')
+        body('startDate', '開催日が未選択です')
             .notEmpty(),
-        body('toDate', '上映日が未選択です')
+        body('toDate', '開催日が未選択です')
             .notEmpty(),
         body('weekDayData', '曜日が未選択です')
             .notEmpty(),
-        body('screen', 'スクリーンが未選択です')
+        body('screen', 'ルームが未選択です')
             .notEmpty(),
-        body('theater', '劇場が未選択です')
+        body('theater', '施設が未選択です')
             .notEmpty(),
         body('timeData', '時間情報が未選択です')
             .notEmpty(),
@@ -995,7 +995,7 @@ function updateValidation() {
     return [
         body('screeningEventId', '上映イベントシリーズが未選択です')
             .notEmpty(),
-        body('day', '上映日が未選択です')
+        body('day', '開催日が未選択です')
             .notEmpty(),
         body('doorTime', '開場時刻が未選択です')
             .notEmpty(),
@@ -1003,7 +1003,7 @@ function updateValidation() {
             .notEmpty(),
         body('endTime', '終了時刻が未選択です')
             .notEmpty(),
-        body('screen', 'スクリーンが未選択です')
+        body('screen', 'ルームが未選択です')
             .notEmpty(),
         body('ticketTypeGroup', '券種グループが未選択です')
             .notEmpty(),

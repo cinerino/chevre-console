@@ -24,7 +24,7 @@ $(function () {
         if (movieAvailabilityEnds !== '' && endDate !== '') {
             var endDate = moment(`${endDateValue}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate();
             if (endDate > moment(movieAvailabilityEnds).toDate()) {
-                alert('上映終了日は作品の興行終了予定日以前としてください');
+                alert('終了日は作品の興行終了予定日以前としてください');
 
                 return false;
             }

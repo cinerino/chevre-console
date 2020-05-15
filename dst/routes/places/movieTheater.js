@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 劇場ルーター
+ * 施設ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");

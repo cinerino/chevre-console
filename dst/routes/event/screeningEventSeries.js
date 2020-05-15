@@ -216,7 +216,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
         if (branchCode === undefined) {
             throw new Error();
         }
-        // 上映終了して「いない」劇場上映作品を検索
+        // 上映終了して「いない」施設作品を検索
         const limit = 100;
         const page = 1;
         const { data } = yield eventService.search({

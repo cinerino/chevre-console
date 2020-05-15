@@ -379,10 +379,10 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('枝番号', 20)),
         body('containedInPlace.containedInPlace.containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '劇場')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'スクリーン')),
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ルーム')),
         body('containedInPlace.branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'セクション'))

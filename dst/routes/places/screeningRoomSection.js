@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * スクリーンセクションルーター
+ * ルームセクションルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const csvtojson = require("csvtojson");
@@ -325,10 +325,10 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('枝番号', 20)),
         express_validator_1.body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '劇場')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         express_validator_1.body('containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'スクリーン')),
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ルーム')),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

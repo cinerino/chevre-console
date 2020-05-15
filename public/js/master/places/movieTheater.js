@@ -53,7 +53,7 @@ function remove() {
 }
 
 /**
- * スクリーンエディタ初期化
+ * ルームエディタ初期化
  */
 function initScreen() {
     var schema = {

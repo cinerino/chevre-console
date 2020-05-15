@@ -311,7 +311,7 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // インポート対象の劇場ブランチコードを検索
+        // インポート対象の施設ブランチコードを検索
         const { data } = yield placeService.searchMovieTheaters({ limit: 100 });
         // タスク作成
         const taskAttributes = data.map((d) => {

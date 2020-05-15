@@ -1,5 +1,5 @@
 /**
- * スクリーンセクションルーター
+ * ルームセクションルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as csvtojson from 'csvtojson';
@@ -389,10 +389,10 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('枝番号', 20)),
         body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '劇場')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         body('containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'スクリーン')),
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ルーム')),
         body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

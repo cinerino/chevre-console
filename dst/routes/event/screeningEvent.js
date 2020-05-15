@@ -54,7 +54,7 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             project: { ids: [req.project.id] }
         });
         if (searchMovieTheatersResult.data.length === 0) {
-            throw new Error('劇場が見つかりません');
+            throw new Error('施設が見つかりません');
         }
         const searchTicketTypeGroupsResult = yield offerCatalogService.search({
             project: { id: { $eq: req.project.id } },
@@ -439,10 +439,10 @@ function createEventFromBody(req) {
         const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
         if (screeningRoom === undefined) {
-            throw new Error('上映スクリーンが見つかりません');
+            throw new Error('ルームが見つかりません');
         }
         if (screeningRoom.name === undefined) {
-            throw new Error('上映スクリーン名が見つかりません');
+            throw new Error('ルーム名称が見つかりません');
         }
         const seller = yield sellerService.findById({ id: req.body.seller });
         const catalog = yield offerCatalogService.findById({ id: req.body.ticketTypeGroup });
@@ -611,10 +611,10 @@ function createMultipleEventFromBody(req, user) {
         const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
         const screeningRoom = movieTheater.containsPlace.find((p) => p.branchCode === req.body.screen);
         if (screeningRoom === undefined) {
-            throw new Error('上映スクリーンが見つかりません');
+            throw new Error('ルームが見つかりません');
         }
         if (screeningRoom.name === undefined) {
-            throw new Error('上映スクリーン名が見つかりません');
+            throw new Error('ルーム名称が見つかりません');
         }
         const seller = yield sellerService.findById({ id: req.body.seller });
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
@@ -682,7 +682,7 @@ function createMultipleEventFromBody(req, user) {
                     const formattedEndDate = moment(date)
                         .add(endDayRelative, 'days')
                         .format('YYYY/MM/DD');
-                    // 販売開始日時は、劇場設定 or 絶対指定 or 相対指定
+                    // 販売開始日時は、施設設定 or 絶対指定 or 相対指定
                     let salesStartDate;
                     switch (String(req.body.saleStartDateType)) {
                         case SaleStartDateType.Absolute:
@@ -789,17 +789,17 @@ function createMultipleEventFromBody(req, user) {
  */
 function addValidation() {
     return [
-        express_validator_1.body('screeningEventId', '上映イベントシリーズが未選択です')
+        express_validator_1.body('screeningEventId', '施設作品が未選択です')
             .notEmpty(),
-        express_validator_1.body('startDate', '上映日が未選択です')
+        express_validator_1.body('startDate', '開催日が未選択です')
             .notEmpty(),
-        express_validator_1.body('toDate', '上映日が未選択です')
+        express_validator_1.body('toDate', '開催日が未選択です')
             .notEmpty(),
         express_validator_1.body('weekDayData', '曜日が未選択です')
             .notEmpty(),
-        express_validator_1.body('screen', 'スクリーンが未選択です')
+        express_validator_1.body('screen', 'ルームが未選択です')
             .notEmpty(),
-        express_validator_1.body('theater', '劇場が未選択です')
+        express_validator_1.body('theater', '施設が未選択です')
             .notEmpty(),
         express_validator_1.body('timeData', '時間情報が未選択です')
             .notEmpty(),
@@ -816,7 +816,7 @@ function updateValidation() {
     return [
         express_validator_1.body('screeningEventId', '上映イベントシリーズが未選択です')
             .notEmpty(),
-        express_validator_1.body('day', '上映日が未選択です')
+        express_validator_1.body('day', '開催日が未選択です')
             .notEmpty(),
         express_validator_1.body('doorTime', '開場時刻が未選択です')
             .notEmpty(),
@@ -824,7 +824,7 @@ function updateValidation() {
             .notEmpty(),
         express_validator_1.body('endTime', '終了時刻が未選択です')
             .notEmpty(),
-        express_validator_1.body('screen', 'スクリーンが未選択です')
+        express_validator_1.body('screen', 'ルームが未選択です')
             .notEmpty(),
         express_validator_1.body('ticketTypeGroup', '券種グループが未選択です')
             .notEmpty(),

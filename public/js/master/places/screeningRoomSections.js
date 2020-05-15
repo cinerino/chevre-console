@@ -29,7 +29,7 @@ $(function () {
     var screenBranchCodeSelection = $('#screenBranchCode');
     screenBranchCodeSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'スクリーン選択',
+        placeholder: 'ルーム選択',
         allowClear: true,
         ajax: {
             url: '/places/screeningRoom/search',
@@ -112,7 +112,7 @@ $(function () {
             return data.id === id
         });
         if (seat === undefined) {
-            alert('スクリーンセクション' + id + 'が見つかりません');
+            alert('ルームセクション' + id + 'が見つかりません');
 
             return;
         }

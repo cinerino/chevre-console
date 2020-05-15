@@ -68,7 +68,7 @@ $(function () {
         showAdditionalProperty(branchCode);
     });
 
-    // スクリーン情報
+    // ルーム情報
     $(document).on('click', '.showContainsPlace', function (event) {
         var id = $(this).attr('data-id');
         console.log('showing containsPlace...id:', id);
@@ -84,7 +84,7 @@ $(function () {
             return data.branchCode === branchCode
         });
         if (screeningRoom === undefined) {
-            alert('スクリーン' + branchCode + 'が見つかりません');
+            alert('ルーム' + branchCode + 'が見つかりません');
 
             return;
         }

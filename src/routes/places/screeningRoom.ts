@@ -1,5 +1,5 @@
 /**
- * スクリーンルーター
+ * ルームルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
