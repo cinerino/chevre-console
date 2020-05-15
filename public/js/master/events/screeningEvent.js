@@ -11,7 +11,7 @@ var SEARCH_URL = '/events/screeningEvent/search';
 $(function () {
     ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
-    //上映日
+    // 開催日
     $('.search form input[name=date], #newModal input[name="screeningDateStart"], #newModal input[name="screeningDateThrough"]')
         .val(moment().tz('Asia/Tokyo').format('YYYY/MM/DD'));
 
@@ -45,7 +45,7 @@ $(function () {
     //スケジューラー初期化
     scheduler = createScheduler();
 
-    // スクリーン選択肢初期化
+    // ルーム選択肢初期化
     getScreens($('.search select[name="theater"]').val(), 'none');
 
     searchSchedule();
@@ -67,7 +67,7 @@ $(function () {
     // 絶対・相対切り替え
     $(document).on('change', 'input[name=onlineDisplayType], input[name=saleStartDateType]', changeInputType)
 
-    // 劇場検索条件変更イベント
+    // 施設検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
         getScreens(theater, 'none');
@@ -122,12 +122,12 @@ $(function () {
     $(document).on('click', 'a.importFromCOA', function (event) {
         var theater = $('.search select[name=theater]').val();
         if (!theater) {
-            alert('劇場を選択してください');
+            alert('施設を選択してください');
 
             return;
         }
 
-        var message = '劇場:' + theater + 'のCOAイベントをインポートしようとしています。'
+        var message = '施設:' + theater + 'のCOAイベントをインポートしようとしています。'
             + '\nよろしいですか？';
 
         if (window.confirm(message)) {
@@ -264,12 +264,12 @@ function getEventSeries(theater) {
             screeningEventSeriesSelect.html(options);
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert('劇場上映作品を検索できませんでした');
+        alert('施設作品を検索できませんでした');
     });
 }
 
 /**
- * スクリーン取得
+ * ルーム取得
  * @function getScreens
  * @param {theater}
  * @param {addModal}
@@ -289,7 +289,7 @@ function getScreens(theaterId, modal = 'none') {
     }
     function resetScreenList() {
         var o = $('<option></option>');
-        o.html('劇場を選択してください');
+        o.html('施設を選択してください');
         o.val('');
         selectScreen.html(o);
     }
@@ -322,7 +322,7 @@ function getScreens(theaterId, modal = 'none') {
             resetScreenList();
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert('スクリーンを検索できませんでした');
+        alert('ルームを検索できませんでした');
     });
 }
 
@@ -344,36 +344,93 @@ function getWeekDayData() {
 function getTableData() {
     var tempData = [];
     var timeTableData = $('#newModal .timeTable[data-dirty="true"]');
+    var repeatableTimeTable = $('#newModal .repeatableTimeTable');
 
-    timeTableData.each(function (_, row) {
-        const mvtkExcludeFlg = $(row).find('input[name="mvtkExcludeFlg"]:checked').val() === undefined ? 0 : 1;
-        var o = {
-            doorTime: $(row).find('input[name="doorTime"]').val(),
-            startTime: $(row).find('input[name="startTime"]').val(),
-            endTime: $(row).find('input[name="endTime"]').val(),
-            endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
-            ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
-            mvtkExcludeFlg: mvtkExcludeFlg
-        };
+    const staicTimeTablePanel = $('.staicTimeTablePanel').hasClass('active');
+    const repeatableTimeTablePanel = $('.repeatableTimeTablePanel').hasClass('active');
 
-        var isValidRow = true;
+    if (staicTimeTablePanel) {
+        timeTableData.each(function (_, row) {
+            const mvtkExcludeFlg = $(row).find('input[name="mvtkExcludeFlg"]:checked').val() === undefined ? 0 : 1;
+            var o = {
+                doorTime: $(row).find('input[name="doorTime"]').val(),
+                startTime: $(row).find('input[name="startTime"]').val(),
+                endTime: $(row).find('input[name="endTime"]').val(),
+                endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
+                ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
+                mvtkExcludeFlg: mvtkExcludeFlg
+            };
 
-        // 入力していない情報があればNG
-        if (
-            typeof o.doorTime !== 'string' || o.doorTime.length === 0 ||
-            typeof o.startTime !== 'string' || o.startTime.length === 0 ||
-            typeof o.endTime !== 'string' || o.endTime.length === 0 ||
-            typeof o.endDayRelative !== 'number' || String(o.endDayRelative).length === 0 ||
-            typeof o.ticketTypeGroup !== 'string' || o.ticketTypeGroup.length === 0
-        ) {
-            isValidRow = false;
-        }
+            var isValidRow = true;
 
-        if (isValidRow) {
-            console.log('adding timeTable...', o);
-            tempData.push(o);
-        }
-    });
+            // 入力していない情報があればNG
+            if (
+                typeof o.doorTime !== 'string' || o.doorTime.length === 0 ||
+                typeof o.startTime !== 'string' || o.startTime.length === 0 ||
+                typeof o.endTime !== 'string' || o.endTime.length === 0 ||
+                typeof o.endDayRelative !== 'number' || String(o.endDayRelative).length === 0 ||
+                typeof o.ticketTypeGroup !== 'string' || o.ticketTypeGroup.length === 0
+            ) {
+                isValidRow = false;
+            }
+
+            if (isValidRow) {
+                console.log('adding timeTable...', o);
+                tempData.push(o);
+            }
+        });
+    }
+
+    if (repeatableTimeTablePanel) {
+        repeatableTimeTable.each(function (_, row) {
+            var repeatEveryMinutes = $(row).find('input[name="repeatEveryMinutes"]').val();
+            var repeatFrom = $(row).find('input[name="repeatFrom"]').val();
+            var repeatThrough = $(row).find('input[name="repeatThrough"]').val();
+            var ticketTypeGroup = $(row).find('select[name="ticketTypeGroup"]').val();
+
+            var isValidRow = true;
+
+            // 入力していない情報があればNG
+            if (
+                typeof repeatEveryMinutes !== 'string' || repeatEveryMinutes.length === 0 ||
+                typeof repeatFrom !== 'string' || repeatFrom.length === 0 ||
+                typeof repeatThrough !== 'string' || repeatThrough.length === 0 ||
+                typeof ticketTypeGroup !== 'string' || ticketTypeGroup.length === 0
+            ) {
+                isValidRow = false;
+            }
+
+            // var o = {
+            //     doorTime: $(row).find('input[name="doorTime"]').val(),
+            //     startTime: $(row).find('input[name="startTime"]').val(),
+            //     endTime: $(row).find('input[name="endTime"]').val(),
+            //     endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
+            //     ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
+            //     mvtkExcludeFlg: mvtkExcludeFlg
+            // };
+
+            if (isValidRow) {
+                var endDate = moment('2020-05-16T' + repeatFrom + ':00+09:00');
+                var startThrough = moment('2020-05-16T' + repeatThrough + ':00+09:00');
+                while (endDate <= startThrough) {
+                    endDate.add(Number(repeatEveryMinutes), 'minutes');
+
+                    tempData.push({
+                        doorTime: moment(endDate).add(-Number(repeatEveryMinutes), 'minutes').tz('Asia/Tokyo').format('HH:mm'),
+                        startTime: moment(endDate).add(-Number(repeatEveryMinutes), 'minutes').tz('Asia/Tokyo').format('HH:mm'),
+                        endTime: moment(endDate).tz('Asia/Tokyo').format('HH:mm'),
+                        endDayRelative: 0,
+                        ticketTypeGroup: ticketTypeGroup,
+                        mvtkExcludeFlg: 0
+                    });
+
+
+                }
+                // console.log('adding timeTable...', o);
+                // tempData.push(o);
+            }
+        });
+    }
 
     // タイムテーブルなしはNG
     if (tempData.length === 0) {
@@ -384,7 +441,7 @@ function getTableData() {
         };
     }
 
-    if (tempData.length !== timeTableData.length) {
+    if (staicTimeTablePanel && tempData.length !== timeTableData.length) {
         alert('情報が足りないタイムテーブルがあります。スケジュール登録モーダルを一度閉じてください。');
 
         return {
@@ -829,9 +886,9 @@ function add() {
     modal.find('select[name=theater]').val('');
     modal.find('input[name=weekDay]').prop('checked', true);
     modal.find('select[name=screeningEventSeriesId]')
-        .html('<option selected disabled>劇場を選択してください</option>');
+        .html('<option selected disabled>施設を選択してください</option>');
     modal.find('select[name=screen]')
-        .html('<option selected disabled>劇場を選択してください</option>');
+        .html('<option selected disabled>施設を選択してください</option>');
 
     modal.find('input[name=maximumAttendeeCapacity]').val('');
     modal.find('input[name=doorTime]').val('');
@@ -919,7 +976,7 @@ function createScheduler() {
                 console.log('this.searchCondition:', this.searchCondition);
                 if (this.searchCondition.theater === ''
                     || this.searchCondition.date === '') {
-                    alert('劇場、上映日を選択してください');
+                    alert('施設、開催日を選択してください');
                     return;
                 }
                 var _this = this;
@@ -989,7 +1046,7 @@ function createScheduler() {
                                         || moment(p.endDate).tz('Asia/Tokyo').format('YYYYMMDD') === expectedDate;
                                     var isLocationMatched = p.location.branchCode === s.branchCode;
 
-                                    // 同一スクリーンかつ同一日時に上映しているか
+                                    // 同一ルームかつ同一日時に上映しているか
                                     return isLocationMatched && isDateMatched;
                                 })
                             };
