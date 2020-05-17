@@ -789,7 +789,7 @@ function createMultipleEventFromBody(req, user) {
  */
 function addValidation() {
     return [
-        express_validator_1.body('screeningEventId', '施設作品が未選択です')
+        express_validator_1.body('screeningEventId', '施設コンテンツが未選択です')
             .notEmpty(),
         express_validator_1.body('startDate', '開催日が未選択です')
             .notEmpty(),

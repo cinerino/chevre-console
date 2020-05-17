@@ -222,7 +222,7 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
         const validatorResult = express_validator_1.validationResult(req);
         errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
+            // コンテンツDB登録
             try {
                 priceSpecification = Object.assign(Object.assign({}, createMovieFromBody(req, false)), { id: priceSpecification.id });
                 yield priceSpecificationService.update(priceSpecification);
