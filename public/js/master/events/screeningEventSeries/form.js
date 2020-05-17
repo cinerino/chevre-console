@@ -3,7 +3,7 @@ $(function () {
     var movieOptions = [];
     var selectedMovie;
 
-    // デフォルト選択済作品
+    // デフォルト選択済コンテンツ
     var movieJson = $('textarea[name="movie"]').val();
     if (typeof movieJson === 'string') {
         selectedMovie = JSON.parse(movieJson);
@@ -12,19 +12,19 @@ $(function () {
 
     $('.btn-ok').on('click', function () {
         if (selectedMovie === undefined) {
-            alert('作品を選択してください');
+            alert('コンテンツを選択してください');
 
             return;
         }
 
-        // 作品の興行終了予定日と上映終了日を比較
+        // コンテンツの興行終了予定日と上映終了日を比較
         // var movieAvailabilityEnds = $('#workPerformed\\[identifier\\] option:selected').attr('data-availabilityEnds');
         var movieAvailabilityEnds = selectedMovie.offers.availabilityEnds;
         var endDateValue = $('#endDate').val();
         if (movieAvailabilityEnds !== '' && endDate !== '') {
             var endDate = moment(`${endDateValue}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day').toDate();
             if (endDate > moment(movieAvailabilityEnds).toDate()) {
-                alert('終了日は作品の興行終了予定日以前としてください');
+                alert('終了日はコンテンツの興行終了予定日以前としてください');
 
                 return false;
             }
@@ -115,7 +115,7 @@ $(function () {
         }
     });
 
-    // 作品選択イベント
+    // コンテンツ選択イベント
     movieSelection.on('select2:select', function (e) {
         onMovieChanged(e.params.data.id);
     });
@@ -124,7 +124,7 @@ $(function () {
     });
 
     /**
-     * 作品変更時
+     * コンテンツ変更時
      */
     function onMovieChanged(identifier) {
         // var identifier = $(this).val();
@@ -137,7 +137,7 @@ $(function () {
             });
             console.log('movie selected', selectedMovie);
 
-            // 作品情報を自動補完
+            // コンテンツ情報を自動補完
             // var movieName = $('#workPerformed\\[identifier\\] option:selected').attr('data-name');
             // var movieHeadline = $('#workPerformed\\[identifier\\] option:selected').attr('data-headline');
             var movieName = selectedMovie.name;

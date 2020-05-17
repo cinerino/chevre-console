@@ -550,7 +550,7 @@ function createEventFromBody(
     }
 
     if (typeof movie.duration !== 'string') {
-        throw new Error('作品の上映時間が未登録です');
+        throw new Error('コンテンツの上映時間が未登録です');
     }
 
     let description: chevre.factory.multilingualString | undefined;

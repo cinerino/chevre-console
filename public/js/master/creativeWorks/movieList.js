@@ -83,7 +83,7 @@ $(function () {
             return data.identifier === identifier
         });
         if (movie === undefined) {
-            alert('作品' + identifier + 'が見つかりません');
+            alert('コンテンツ' + identifier + 'が見つかりません');
 
             return;
         }

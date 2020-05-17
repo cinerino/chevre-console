@@ -157,7 +157,7 @@ categoryCodesRouter.all<ParamsDictionary>(
             const validatorResult = validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
+                // コンテンツDB登録
                 try {
                     categoryCode = { ...createMovieFromBody(req), ...{ id: (<any>categoryCode).id } };
                     await categoryCodeService.update(categoryCode);

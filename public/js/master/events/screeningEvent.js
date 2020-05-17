@@ -170,7 +170,7 @@ $(function () {
     var movieSelection = $('#superEvent\\[workPerformed\\]\\[identifier\\]');
     movieSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '作品選択',
+        placeholder: 'コンテンツ選択',
         allowClear: true,
         ajax: {
             url: '/creativeWorks/movie/getlist',
@@ -264,7 +264,7 @@ function getEventSeries(theater) {
             screeningEventSeriesSelect.html(options);
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert('施設作品を検索できませんでした');
+        alert('施設コンテンツを検索できませんでした');
     });
 }
 

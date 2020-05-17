@@ -968,7 +968,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
  */
 function addValidation() {
     return [
-        body('screeningEventId', '施設作品が未選択です')
+        body('screeningEventId', '施設コンテンツが未選択です')
             .notEmpty(),
         body('startDate', '開催日が未選択です')
             .notEmpty(),

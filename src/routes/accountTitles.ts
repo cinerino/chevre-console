@@ -193,7 +193,7 @@ accountTitlesRouter.all<ParamsDictionary>(
             errors = validatorResult.mapped();
             console.error('errors', errors);
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
+                // コンテンツDB登録
                 try {
                     accountTitle = await createFromBody(req);
                     debug('saving account title...', accountTitle);

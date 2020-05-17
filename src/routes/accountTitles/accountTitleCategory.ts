@@ -128,7 +128,7 @@ accountTitleCategoryRouter.all<ParamsDictionary>(
                 const validatorResult = validationResult(req);
                 errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
-                    // 作品DB登録
+                    // コンテンツDB登録
                     try {
                         accountTitleCategory = createFromBody(req, false);
                         debug('saving account title...', accountTitleCategory);

@@ -397,7 +397,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 }
 
 /**
- * 作品マスタ新規登録画面検証
+ * コンテンツバリデーション
  */
 function validate() {
     return [

@@ -31,7 +31,7 @@ $(function () {
     var movieSelection = $('#workPerformed\\[identifier\\]');
     movieSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '作品選択',
+        placeholder: 'コンテンツ選択',
         allowClear: true,
         ajax: {
             url: '/creativeWorks/movie/getlist',

@@ -270,7 +270,7 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             const validatorResult = validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
+                // コンテンツDB登録
                 try {
                     priceSpecification = { ...createMovieFromBody(req, false), id: priceSpecification.id };
                     await priceSpecificationService.update(priceSpecification);
