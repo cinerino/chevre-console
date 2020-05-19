@@ -122,7 +122,7 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         const validatorResult = express_validator_1.validationResult(req);
         errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
+            // コンテンツDB登録
             try {
                 categoryCode = Object.assign(Object.assign({}, createMovieFromBody(req)), { id: categoryCode.id });
                 yield categoryCodeService.update(categoryCode);

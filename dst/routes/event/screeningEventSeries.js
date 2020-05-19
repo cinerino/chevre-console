@@ -456,7 +456,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         dubLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
     if (typeof movie.duration !== 'string') {
-        throw new Error('作品の上映時間が未登録です');
+        throw new Error('コンテンツの上映時間が未登録です');
     }
     let description;
     if (typeof req.body.description === 'string' && req.body.description.length > 0) {

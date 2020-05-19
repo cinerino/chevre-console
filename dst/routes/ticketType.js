@@ -118,11 +118,9 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
     });
     const accountTitles = yield searchAllAccountTitles(req);
-    const searchAddOnsResult = yield productService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        typeOf: { $eq: productType_1.ProductType.Product }
-    });
+    const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
+        limit: 100
+    }));
     const searchApplicationsResult = yield iamService.searchMembers({
         member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
     });
@@ -263,11 +261,9 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
         });
-        const searchAddOnsResult = yield productService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: productType_1.ProductType.Product }
-        });
+        const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
+            limit: 100
+        }));
         const accountTitles = yield searchAllAccountTitles(req);
         const searchApplicationsResult = yield iamService.searchMembers({
             member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
@@ -402,7 +398,7 @@ function createFromBody(req, isNew) {
                     id: addOnItemOfferedId
                 });
                 if (addOn.hasOfferCatalog === undefined) {
-                    throw new Error(`アドオン '${addOn.name.ja}' にはオファーカタログが登録されていません`);
+                    throw new Error(`アドオン '${addOn.identifier}' にはカタログが登録されていません`);
                 }
                 availableAddOn.push({
                     project: addOn.project,

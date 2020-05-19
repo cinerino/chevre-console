@@ -414,6 +414,7 @@ function createFromBody(req) {
             };
         }
         return {
+            typeOf: 'OfferCatalog',
             project: { typeOf: req.project.typeOf, id: req.project.id },
             id: req.body.id,
             identifier: req.body.identifier,

@@ -162,7 +162,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(vo
         errors = validatorResult.mapped();
         console.error('errors', errors);
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
+            // コンテンツDB登録
             try {
                 accountTitle = yield createFromBody(req);
                 debug('saving account title...', accountTitle);

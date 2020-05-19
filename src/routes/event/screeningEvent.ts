@@ -610,8 +610,8 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
 
     const offers: chevre.factory.event.screeningEvent.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        id: catalog.id,
-        name: catalog.name,
+        // id: catalog.id,
+        // name: catalog.name,
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
         availabilityEnds: salesEndDate,
@@ -896,8 +896,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     };
                 const offers: chevre.factory.event.screeningEvent.IOffer = {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    id: ticketTypeGroup.id,
-                    name: ticketTypeGroup.name,
+                    // id: ticketTypeGroup.id,
+                    // name: ticketTypeGroup.name,
                     typeOf: chevre.factory.offerType.Offer,
                     priceCurrency: chevre.factory.priceCurrency.JPY,
                     availabilityEnds: salesEndDate,
@@ -915,12 +915,10 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,
                     acceptedPaymentMethod: acceptedPaymentMethod,
-                    ...{
-                        seller: {
-                            typeOf: seller.typeOf,
-                            id: seller.id,
-                            name: seller.name
-                        }
+                    seller: {
+                        typeOf: seller.typeOf,
+                        id: seller.id,
+                        name: seller.name
                     }
                 };
 

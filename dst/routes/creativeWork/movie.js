@@ -307,7 +307,7 @@ function createFromBody(req, isNew) {
     });
 }
 /**
- * 作品マスタ新規登録画面検証
+ * コンテンツバリデーション
  */
 function validate() {
     return [

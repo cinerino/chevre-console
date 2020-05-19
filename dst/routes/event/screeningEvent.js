@@ -527,7 +527,10 @@ function createEventFromBody(req) {
                     typeOf: 'Ticket'
                 }
             };
-        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: catalog.id, name: catalog.name, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
+        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
+            // id: catalog.id,
+            // name: catalog.name,
+            typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
                 typeOf: 'QuantitativeValue',
                 unitCode: chevre.factory.unitCode.C62,
                 maxValue: Number(req.body.maxSeatNumber),
@@ -753,21 +756,33 @@ function createMultipleEventFromBody(req, user) {
                             typeOf: 'Ticket'
                         }
                     };
-                    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: ticketTypeGroup.id, name: ticketTypeGroup.name, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
+                    const offers = {
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
+                        // id: ticketTypeGroup.id,
+                        // name: ticketTypeGroup.name,
+                        typeOf: chevre.factory.offerType.Offer,
+                        priceCurrency: chevre.factory.priceCurrency.JPY,
+                        availabilityEnds: salesEndDate,
+                        availabilityStarts: onlineDisplayStartDate,
+                        eligibleQuantity: {
                             typeOf: 'QuantitativeValue',
                             unitCode: chevre.factory.unitCode.C62,
                             maxValue: Number(req.body.maxSeatNumber),
                             value: 1
-                        }, itemOffered: {
+                        },
+                        itemOffered: {
                             serviceType: serviceType,
                             serviceOutput: serviceOutput
-                        }, validFrom: salesStartDate, validThrough: salesEndDate, acceptedPaymentMethod: acceptedPaymentMethod }, {
+                        },
+                        validFrom: salesStartDate,
+                        validThrough: salesEndDate,
+                        acceptedPaymentMethod: acceptedPaymentMethod,
                         seller: {
                             typeOf: seller.typeOf,
                             id: seller.id,
                             name: seller.name
                         }
-                    });
+                    };
                     attributes.push(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEvent, doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), startDate: eventStartDate, endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), workPerformed: screeningEventSeries.workPerformed, location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined
@@ -789,7 +804,7 @@ function createMultipleEventFromBody(req, user) {
  */
 function addValidation() {
     return [
-        express_validator_1.body('screeningEventId', '施設作品が未選択です')
+        express_validator_1.body('screeningEventId', '施設コンテンツが未選択です')
             .notEmpty(),
         express_validator_1.body('startDate', '開催日が未選択です')
             .notEmpty(),

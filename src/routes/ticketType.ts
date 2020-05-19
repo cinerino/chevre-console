@@ -139,9 +139,11 @@ ticketTypeMasterRouter.all<any>(
         const accountTitles = await searchAllAccountTitles(req);
 
         const searchAddOnsResult = await productService.search({
-            limit: 100,
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: ProductType.Product }
+            typeOf: { $eq: ProductType.Product },
+            ...{
+                limit: 100
+            }
         });
 
         const searchApplicationsResult = await iamService.searchMembers({
@@ -319,9 +321,11 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
             });
 
             const searchAddOnsResult = await productService.search({
-                limit: 100,
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: ProductType.Product }
+                typeOf: { $eq: ProductType.Product },
+                ...{
+                    limit: 100
+                }
             });
 
             const accountTitles = await searchAllAccountTitles(req);
@@ -471,7 +475,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 id: addOnItemOfferedId
             });
             if (addOn.hasOfferCatalog === undefined) {
-                throw new Error(`アドオン '${addOn.name.ja}' にはオファーカタログが登録されていません`);
+                throw new Error(`アドオン '${addOn.identifier}' にはカタログが登録されていません`);
             }
 
             availableAddOn.push({
