@@ -1191,13 +1191,19 @@ function createScheduler() {
                     .append($('<dt>').addClass('col-md-3').append('キャパシティ'))
                     .append($('<dd>').addClass('col-md-9').append(remainingAttendeeCapacity + ' / ' + maximumAttendeeCapacity))
                     .append($('<dt>').addClass('col-md-3').append('販売者'))
-                    .append($('<dd>').addClass('col-md-9').append(seller.id + ' ' + seller.name.ja))
-                    .append($('<dt>').addClass('col-md-3').append('カタログ'))
-                    .append($('<dd>').addClass('col-md-9').append($('<a>').attr({
+                    .append($('<dd>').addClass('col-md-9').append(seller.id + ' ' + seller.name.ja));
+
+                details.append($('<dt>').addClass('col-md-3').append('カタログ'));
+                if (performance.hasOfferCatalog !== undefined) {
+                    details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
                         target: '_blank',
                         'href': '/offerCatalogs/' + performance.hasOfferCatalog.id + '/update'
-                    }).text(performance.hasOfferCatalog.id)))
-                    .append($('<dt>').addClass('col-md-3').append('座席'))
+                    }).text(performance.hasOfferCatalog.id)));
+                } else {
+                    details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));
+                }
+
+                details.append($('<dt>').addClass('col-md-3').append('座席'))
                     .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
                     .append($('<dt>').addClass('col-md-3').append('公開期間'))
                     .append($('<dd>').addClass('col-md-9').append(
@@ -1275,7 +1281,10 @@ function createScheduler() {
                 modal.find('input[name=startTime]').val(startTime);
                 modal.find('input[name=endTime]').val(endTime);
                 modal.find('input[name=endDay]').datepicker('update', endDay);
-                modal.find('select[name=ticketTypeGroup]').val(performance.hasOfferCatalog.id);
+
+                if (performance.hasOfferCatalog !== undefined) {
+                    modal.find('select[name=ticketTypeGroup]').val(performance.hasOfferCatalog.id);
+                }
 
                 var seller = performance.offers.seller;
                 if (seller !== undefined && seller !== null) {
