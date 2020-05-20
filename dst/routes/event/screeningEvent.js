@@ -319,6 +319,34 @@ screeningEventRouter.put('/:eventId/cancel', (req, res) => __awaiter(void 0, voi
         });
     }
 }));
+screeningEventRouter.post('/:eventId/aggregateReservation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const taskService = new chevre.service.Task({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const taskAttributes = {
+            project: { typeOf: req.project.typeOf, id: req.project.id },
+            name: chevre.factory.taskName.AggregateScreeningEvent,
+            status: chevre.factory.taskStatus.Ready,
+            runsAt: new Date(),
+            remainingNumberOfTries: 1,
+            numberOfTried: 0,
+            executionResults: [],
+            data: {
+                typeOf: chevre.factory.eventType.ScreeningEvent,
+                id: req.params.eventId
+            }
+        };
+        const task = yield taskService.create(taskAttributes);
+        res.status(http_status_1.CREATED)
+            .json(task);
+    }
+    catch (err) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json(err);
+    }
+}));
 screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,

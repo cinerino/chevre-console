@@ -224,10 +224,6 @@ $(function () {
             }
         }
     });
-
-    $('[data-toggle="tooltip"]').tooltip({
-        html: true
-    });
 });
 
 /**
@@ -1153,6 +1149,12 @@ function createScheduler() {
                         window.open(url, '_blank');
                     });
 
+                modal.find('a.aggregateReservation')
+                    .off('click')
+                    .on('click', function () {
+                        _this.aggregateReservation(performance);
+                    });
+
                 var seller = {};
                 if (performance.offers.seller !== undefined) {
                     seller = performance.offers.seller;
@@ -1193,11 +1195,11 @@ function createScheduler() {
                     .append($('<dt>').addClass('col-md-3').append('カタログ'))
                     .append($('<dd>').addClass('col-md-9').append($('<a>').attr({
                         target: '_blank',
-                        'href': '/offerCatalogs/' + performance.offers.id + '/update'
-                    }).text(performance.offers.name.ja)))
+                        'href': '/offerCatalogs/' + performance.hasOfferCatalog.id + '/update'
+                    }).text(performance.hasOfferCatalog.id)))
                     .append($('<dt>').addClass('col-md-3').append('座席'))
                     .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
-                    .append($('<dt>').addClass('col-md-3').append('表示期間'))
+                    .append($('<dt>').addClass('col-md-3').append('公開期間'))
                     .append($('<dd>').addClass('col-md-9').append(
                         moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
                         + ' - '
@@ -1219,6 +1221,7 @@ function createScheduler() {
 
                 modal.modal();
             },
+
             /**
              * パフォーマンス編集
              */
@@ -1272,7 +1275,7 @@ function createScheduler() {
                 modal.find('input[name=startTime]').val(startTime);
                 modal.find('input[name=endTime]').val(endTime);
                 modal.find('input[name=endDay]').datepicker('update', endDay);
-                modal.find('select[name=ticketTypeGroup]').val(performance.offers.id);
+                modal.find('select[name=ticketTypeGroup]').val(performance.hasOfferCatalog.id);
 
                 var seller = performance.offers.seller;
                 if (seller !== undefined && seller !== null) {
@@ -1328,6 +1331,21 @@ function createScheduler() {
                 });
 
                 modal.modal();
+            },
+
+            aggregateReservation: function (event) {
+                console.log('aggregating...', event.id);
+
+                $.ajax({
+                    dataType: 'json',
+                    url: '/events/screeningEvent/' + event.id + '/aggregateReservation',
+                    type: 'POST',
+                }).done(function (data) {
+                    alert('集計を開始しました');
+                }).fail(function (jqxhr, textStatus, error) {
+                    console.error(jqxhr, textStatus, error);
+                    alert('集計を開始できませんでした');
+                });
             }
         }
     });
@@ -1409,7 +1427,7 @@ function showOffers(event, offers) {
     }
 
     var availability = $('<dl>').addClass('row')
-        .append($('<dt>').addClass('col-md-3').append('表示期間'))
+        .append($('<dt>').addClass('col-md-3').append('公開期間'))
         .append($('<dd>').addClass('col-md-9').append(
             moment(event.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
             + ' - '

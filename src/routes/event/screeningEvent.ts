@@ -368,6 +368,38 @@ screeningEventRouter.put(
     }
 );
 
+screeningEventRouter.post(
+    '/:eventId/aggregateReservation',
+    async (req, res) => {
+        try {
+            const taskService = new chevre.service.Task({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const taskAttributes: chevre.factory.task.aggregateScreeningEvent.IAttributes = {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
+                name: chevre.factory.taskName.AggregateScreeningEvent,
+                status: chevre.factory.taskStatus.Ready,
+                runsAt: new Date(),
+                remainingNumberOfTries: 1,
+                numberOfTried: 0,
+                executionResults: [],
+                data: {
+                    typeOf: chevre.factory.eventType.ScreeningEvent,
+                    id: req.params.eventId
+                }
+            };
+            const task = await taskService.create(taskAttributes);
+
+            res.status(CREATED)
+                .json(task);
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json(err);
+        }
+    }
+);
+
 screeningEventRouter.get(
     '/:id/offers',
     async (req, res) => {
