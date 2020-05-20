@@ -28,7 +28,7 @@
                                     <input class="form-control" disabled type="text">
                                     <!-- <select class="form-control" name="screen"></select> -->
                                 </div>
-                                <div class="form-group bmd-form-group col-md-4">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label class="bmd-label-static" for="maximumAttendeeCapacity">キャパシティ
                                         <a href="#" data-toggle="tooltip"
                                             title="<p class=&quot;text-left mb-0&quot;>最大収容人数を設定します。<br>座席有の場合、デフォルトでルーム座席数に従い、それより大きい値設定は無視されます。</p>"
@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-4 day">
+                                <div class="form-group bmd-form-group col-md-2 day">
                                     <label class="bmd-label-static" for="">開始日</label>
                                     <input class="form-control" disabled type="text">
                                 </div>
@@ -60,12 +60,8 @@
                                         name: 'startTime'
                                     }) %>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-4">
-                                </div>
-                            </div>
 
-                            <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-4 day">
+                                <div class="form-group bmd-form-group col-md-2 day">
                                     <label class="bmd-label-static" for="endDay">終了日</label>
                                     <input class="form-control datepicker" name="endDay" placeholder="YYYY/MM/DD"
                                         maxlength=10>
@@ -76,7 +72,19 @@
                                         name: 'endTime'
                                     }) %>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-2">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="ticketTypeGroup">カタログ</label>
+                                    <select class="form-control" name="ticketTypeGroup">
+                                        <option value="">選択してください</option>
+                                        <% for (ticketType of ticketGroups) { %>
+                                        <option value="<%= ticketType.id %>">
+                                            <%= ticketType.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
                                 </div>
                             </div>
 
@@ -89,17 +97,7 @@
                                         <% } %>
                                     </select>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static" for="ticketTypeGroup">カタログ</label>
-                                    <select class="form-control" name="ticketTypeGroup">
-                                        <option value="">選択してください</option>
-                                        <% for (ticketType of ticketGroups) { %>
-                                        <option value="<%= ticketType.id %>">
-                                            <%= ticketType.name.ja %>
-                                        </option>
-                                        <% } %>
-                                    </select>
-                                </div>
+
                                 <div class="form-group bmd-form-group col-md-2">
                                     <label class="bmd-label-static" for="maxSeatNumber">上限枚数</label>
                                     <input class="form-control" type="number" name="maxSeatNumber" maxlength=10>

@@ -1189,9 +1189,7 @@ function createScheduler() {
                     .append($('<dt>').addClass('col-md-3').append('場所'))
                     .append($('<dd>').addClass('col-md-9').append(performance.superEvent.location.name.ja + ' ' + performance.location.name.ja))
                     .append($('<dt>').addClass('col-md-3').append('キャパシティ'))
-                    .append($('<dd>').addClass('col-md-9').append(remainingAttendeeCapacity + ' / ' + maximumAttendeeCapacity))
-                    .append($('<dt>').addClass('col-md-3').append('販売者'))
-                    .append($('<dd>').addClass('col-md-9').append(seller.id + ' ' + seller.name.ja));
+                    .append($('<dd>').addClass('col-md-9').append(remainingAttendeeCapacity + ' / ' + maximumAttendeeCapacity));
 
                 details.append($('<dt>').addClass('col-md-3').append('カタログ'));
                 if (performance.hasOfferCatalog !== undefined) {
@@ -1203,7 +1201,9 @@ function createScheduler() {
                     details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));
                 }
 
-                details.append($('<dt>').addClass('col-md-3').append('座席'))
+                details.append($('<dt>').addClass('col-md-3').append('販売者'))
+                    .append($('<dd>').addClass('col-md-9').append(seller.id))
+                    .append($('<dt>').addClass('col-md-3').append('座席'))
                     .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
                     .append($('<dt>').addClass('col-md-3').append('公開期間'))
                     .append($('<dd>').addClass('col-md-9').append(
@@ -1239,8 +1239,8 @@ function createScheduler() {
                 var day = moment(performance.startDate).tz('Asia/Tokyo').format('YYYYMMDD');
 
                 var modal = $('#editModal');
-                modal.find('.day span').text(moment(day).format('YYYY年MM月DD日(ddd)'));
-                modal.find('.day input').val(moment(day).format('YYYY年MM月DD日(ddd)'));
+                modal.find('.day span').text(moment(day).format('YYYY/MM/DD'));
+                modal.find('.day input').val(moment(day).format('YYYY/MM/DD'));
 
                 // チェックstartTime削除ボタン表示
                 if (moment(day).isSameOrAfter(moment().tz('Asia/Tokyo'), 'day')) {
@@ -1428,11 +1428,7 @@ function showOffers(event, offers) {
     if (event.offers.seller !== undefined && event.offers.seller !== null) {
         seller = $('<dl>').addClass('row')
             .append($('<dt>').addClass('col-md-3').append('販売者'))
-            .append($('<dd>').addClass('col-md-9').append(
-                event.offers.seller.id
-                + ' '
-                + event.offers.seller.name.ja
-            ));
+            .append($('<dd>').addClass('col-md-9').append(event.offers.seller.id));
     }
 
     var availability = $('<dl>').addClass('row')
