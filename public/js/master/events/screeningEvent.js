@@ -935,10 +935,11 @@ function createScheduler() {
              * 座席指定判定
              */
             isReservedSeatsAvailable: function (performance) {
-                return !(performance.offers
+                return performance.offers !== undefined
+                    && performance.offers.itemOffered !== undefined
                     && performance.offers.itemOffered.serviceOutput !== undefined
                     && performance.offers.itemOffered.serviceOutput.reservedTicket !== undefined
-                    && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat === undefined);
+                    && performance.offers.itemOffered.serviceOutput.reservedTicket.ticketedSeat !== undefined;
             },
             /**
              * ムビチケ対応判定
@@ -1265,7 +1266,11 @@ function createScheduler() {
                 modal.find('input[name=mvtkExcludeFlg]').prop('checked', this.isSupportMovieTicket(performance));
                 modal.find('input[name=reservedSeatsAvailableDisabled]').prop('checked', this.isReservedSeatsAvailable(performance));
                 modal.find('input[name=reservedSeatsAvailable]').val((this.isReservedSeatsAvailable(performance)) ? '1' : '0');
-                modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
+
+                if (performance.offers !== undefined && performance.offers.eligibleQuantity !== undefined) {
+                    modal.find('input[name=maxSeatNumber]').val((performance.offers !== undefined) ? performance.offers.eligibleQuantity.maxValue : '');
+                }
+
                 modal.find('input[name=maximumAttendeeCapacity]').val(performance.location.maximumAttendeeCapacity);
                 modal.find('.film span').text(performance.name.ja);
                 modal.find('.film input').val(performance.name.ja);
