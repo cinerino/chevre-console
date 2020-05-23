@@ -16,7 +16,6 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const moment = require("moment");
 const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
@@ -206,15 +205,12 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
                 limit: 1,
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 project: { ids: [req.project.id] },
-                offers: {
-                    ids: [req.params.id]
-                },
-                sort: { endDate: chevre.factory.sortType.Descending }
+                hasOfferCatalog: { id: { $eq: req.params.id } },
+                sort: { endDate: chevre.factory.sortType.Descending },
+                endFrom: new Date()
             });
             if (searchEventsResult.data.length > 0) {
-                if (moment(searchEventsResult.data[0].endDate) >= moment()) {
-                    throw new Error('終了していないスケジュールが存在します');
-                }
+                throw new Error('終了していないスケジュールが存在します');
             }
         }
         yield offerCatalogService.deleteById({ id: req.params.id });

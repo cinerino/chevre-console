@@ -7,7 +7,6 @@ import { Request, Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
-import * as moment from 'moment';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -249,15 +248,12 @@ offerCatalogsRouter.delete(
                     limit: 1,
                     typeOf: chevre.factory.eventType.ScreeningEvent,
                     project: { ids: [req.project.id] },
-                    offers: {
-                        ids: [req.params.id]
-                    },
-                    sort: { endDate: chevre.factory.sortType.Descending }
+                    hasOfferCatalog: { id: { $eq: req.params.id } },
+                    sort: { endDate: chevre.factory.sortType.Descending },
+                    endFrom: new Date()
                 });
                 if (searchEventsResult.data.length > 0) {
-                    if (moment(searchEventsResult.data[0].endDate) >= moment()) {
-                        throw new Error('終了していないスケジュールが存在します');
-                    }
+                    throw new Error('終了していないスケジュールが存在します');
                 }
             }
 
