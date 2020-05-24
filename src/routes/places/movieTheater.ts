@@ -231,8 +231,9 @@ movieTheaterRouter.all<ParamsDictionary>(
             additionalProperty: [],
             // tslint:disable-next-line:no-null-keyword
             offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
+            // containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
             // tslint:disable-next-line:no-null-keyword
-            containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
+            containsPlaceStr: JSON.stringify([], null, '\t'),
             ...movieTheater,
             ...req.body
         };
