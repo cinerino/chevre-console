@@ -13,12 +13,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 施設ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerino = require("@cinerino/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
-const debug = createDebug('chevre-backend:router');
+const debug = createDebug('chevre-console:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const movieTheaterRouter = express_1.Router();
 movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -32,7 +33,7 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             try {
                 debug(req.body);
                 req.body.id = '';
-                let movieTheater = createMovieTheaterFromBody(req);
+                let movieTheater = yield createMovieTheaterFromBody(req);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -63,10 +64,17 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             return {};
         }));
     }
+    const sellerService = new cinerino.service.Seller({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const searchSellersResult = yield sellerService.search({});
     res.render('places/movieTheater/new', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        sellers: searchSellersResult.data
     });
 }));
 movieTheaterRouter.get('', (_, res) => {
@@ -80,6 +88,12 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = yield sellerService.search({});
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield placeService.searchMovieTheaters({
@@ -95,7 +109,8 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
                 // tslint:disable-next-line:no-magic-numbers
                 ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                 : undefined;
-            return Object.assign(Object.assign({}, movieTheater), { posCount: (Array.isArray(movieTheater.hasPOS)) ? movieTheater.hasPOS.length : 0, availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
+            const seller = searchSellersResult.data.find((s) => { var _a; return s.id === ((_a = movieTheater.parentOrganization) === null || _a === void 0 ? void 0 : _a.id); });
+            return Object.assign(Object.assign({}, movieTheater), { parentOrganizationName: seller === null || seller === void 0 ? void 0 : seller.name.ja, posCount: (Array.isArray(movieTheater.hasPOS)) ? movieTheater.hasPOS.length : 0, availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
                     // tslint:disable-next-line:no-magic-numbers
@@ -155,7 +170,7 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = req.params.id;
-                movieTheater = createMovieTheaterFromBody(req);
+                movieTheater = (yield createMovieTheaterFromBody(req));
                 debug('saving an movie theater...', movieTheater);
                 yield placeService.updateMovieTheater(movieTheater);
                 req.flash('message', '更新しました');
@@ -178,10 +193,17 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
             return {};
         }));
     }
+    const sellerService = new cinerino.service.Seller({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const searchSellersResult = yield sellerService.search({});
     res.render('places/movieTheater/update', {
         message: message,
         errors: errors,
-        forms: forms
+        forms: forms,
+        sellers: searchSellersResult.data
     });
 }));
 movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -229,17 +251,30 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
     }
 }));
 function createMovieTheaterFromBody(req) {
-    // tslint:disable-next-line:no-unnecessary-local-variable
-    const movieTheater = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, offers: JSON.parse(req.body.offersStr), containsPlace: JSON.parse(req.body.containsPlaceStr), telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
-            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
-                .map((p) => {
-                return {
-                    name: String(p.name),
-                    value: String(p.value)
-                };
-            })
-            : undefined }, (typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined);
-    return movieTheater;
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const seller = yield sellerService.findById({ id: parentOrganizationId });
+        const parentOrganization = { project: seller.project, typeOf: seller.typeOf, id: seller.id };
+        // tslint:disable-next-line:no-unnecessary-local-variable
+        const movieTheater = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, 
+            // containsPlace: JSON.parse(req.body.containsPlaceStr),
+            telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined }, (typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined);
+        return movieTheater;
+    });
 }
 function validate() {
     return [
@@ -255,7 +290,10 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        express_validator_1.body('parentOrganization.id')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '親組織'))
     ];
 }
 exports.default = movieTheaterRouter;

@@ -2,6 +2,7 @@
  * 施設ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
@@ -11,7 +12,7 @@ import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
-const debug = createDebug('chevre-backend:router');
+const debug = createDebug('chevre-console:router');
 
 const NUM_ADDITIONAL_PROPERTY = 5;
 
@@ -31,7 +32,7 @@ movieTheaterRouter.all<any>(
                 try {
                     debug(req.body);
                     req.body.id = '';
-                    let movieTheater = createMovieTheaterFromBody(req);
+                    let movieTheater = await createMovieTheaterFromBody(req);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -48,7 +49,7 @@ movieTheaterRouter.all<any>(
 
                     debug('existingMovieTheater:', existingMovieTheater);
 
-                    movieTheater = await placeService.createMovieTheater(movieTheater);
+                    movieTheater = await placeService.createMovieTheater(<any>movieTheater);
                     req.flash('message', '登録しました');
                     res.redirect(`/places/movieTheater/${movieTheater.id}/update`);
 
@@ -71,10 +72,18 @@ movieTheaterRouter.all<any>(
             }));
         }
 
+        const sellerService = new cinerino.service.Seller({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = await sellerService.search({});
+
         res.render('places/movieTheater/new', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            sellers: searchSellersResult.data
         });
     }
 );
@@ -97,6 +106,13 @@ movieTheaterRouter.get(
                 auth: req.user.authClient
             });
 
+            const sellerService = new cinerino.service.Seller({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const searchSellersResult = await sellerService.search({});
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await placeService.searchMovieTheaters({
@@ -115,8 +131,11 @@ movieTheaterRouter.get(
                         ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                         : undefined;
 
+                const seller = searchSellersResult.data.find((s) => s.id === movieTheater.parentOrganization?.id);
+
                 return {
                     ...movieTheater,
+                    parentOrganizationName: seller?.name.ja,
                     posCount: (Array.isArray((<any>movieTheater).hasPOS)) ? (<any>movieTheater).hasPOS.length : 0,
                     availabilityStartsGraceTimeInDays:
                         (movieTheater.offers !== undefined
@@ -194,7 +213,7 @@ movieTheaterRouter.all<ParamsDictionary>(
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = req.params.id;
-                    movieTheater = createMovieTheaterFromBody(req);
+                    movieTheater = <any>await createMovieTheaterFromBody(req);
                     debug('saving an movie theater...', movieTheater);
                     await placeService.updateMovieTheater(movieTheater);
 
@@ -224,10 +243,18 @@ movieTheaterRouter.all<ParamsDictionary>(
             }));
         }
 
+        const sellerService = new cinerino.service.Seller({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = await sellerService.search({});
+
         res.render('places/movieTheater/update', {
             message: message,
             errors: errors,
-            forms: forms
+            forms: forms,
+            sellers: searchSellersResult.data
         });
     }
 );
@@ -290,9 +317,20 @@ movieTheaterRouter.get(
     }
 );
 
-function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieTheater.IPlace {
+async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
+    const parentOrganizationId = req.body.parentOrganization?.id;
+
+    const sellerService = new cinerino.service.Seller({
+        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const seller = await sellerService.findById({ id: parentOrganizationId });
+
+    const parentOrganization = { project: seller.project, typeOf: seller.typeOf, id: seller.id };
+
     // tslint:disable-next-line:no-unnecessary-local-variable
-    const movieTheater: chevre.factory.place.movieTheater.IPlace = {
+    const movieTheater: chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         id: req.body.id,
         typeOf: chevre.factory.placeType.MovieTheater,
@@ -300,7 +338,8 @@ function createMovieTheaterFromBody(req: Request): chevre.factory.place.movieThe
         name: req.body.name,
         kanaName: req.body.kanaName,
         offers: JSON.parse(req.body.offersStr),
-        containsPlace: JSON.parse(req.body.containsPlaceStr),
+        parentOrganization: parentOrganization,
+        // containsPlace: JSON.parse(req.body.containsPlaceStr),
         telephone: req.body.telephone,
         screenCount: 0,
         additionalProperty: (Array.isArray(req.body.additionalProperty))
@@ -333,7 +372,11 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+
+        body('parentOrganization.id')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '親組織'))
     ];
 }
 
