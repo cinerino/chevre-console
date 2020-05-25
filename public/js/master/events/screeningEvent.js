@@ -85,11 +85,11 @@ $(function () {
 
     $(document).on('change', '#newModal select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
-        var theaterName = $(this).find('option:selected').attr('data-name');
+        var sellerId = $(this).find('option:selected').attr('data-seller');
 
-        // 販売者に同名称の選択肢があれば自動選択
+        // 販売者に劇場親組織の選択肢があれば自動選択
         $('#newModal select[name=seller] option').each(function () {
-            if ($(this).text() === theaterName) {
+            if ($(this).val() === sellerId) {
                 $(this).prop('selected', true);
             }
         });
@@ -1295,17 +1295,15 @@ function createScheduler() {
                 if (seller !== undefined && seller !== null) {
                     modal.find('select[name=seller]').val(seller.id);
                 } else {
-                    var theaterName = performance.superEvent.location.name.ja;
+                    // var theaterName = performance.superEvent.location.name.ja;
 
-                    // 販売者に同名称の選択肢があれば自動選択
-                    modal.find('select[name=seller] option').each(function () {
-                        if ($(this).text() === theaterName) {
-                            console.log('matched!');
-                            $(this).prop('selected', true);
-                        }
-                    });
-
-                    // modal.find('select[name=seller]').prop('selectedIndex', 0);
+                    // // 販売者に同名称の選択肢があれば自動選択
+                    // modal.find('select[name=seller] option').each(function () {
+                    //     if ($(this).text() === theaterName) {
+                    //         console.log('matched!');
+                    //         $(this).prop('selected', true);
+                    //     }
+                    // });
                 }
 
                 // 販売開始日時
