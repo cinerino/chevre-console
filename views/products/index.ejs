@@ -55,6 +55,7 @@ PR-00
                                     <th>ID</th>
                                     <th>名称</th>
                                     <th>カタログ</th>
+                                    <th>ServiceOutput</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -71,6 +72,11 @@ PR-00
                                     <td name="hasOfferCatalog.id">
                                         $hasOfferCatalog.id$
                                     </td>
+                                    <td name="id">
+                                        <a href="javascript:void(0)" class="showServiceOutput" data-id="$id$">
+                                            表示
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -86,6 +92,20 @@ PR-00
                         </div>
                         <div id="pager" class="div_pager_parent float-right"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-product" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
                 </div>
             </div>
         </div>

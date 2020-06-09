@@ -25,6 +25,11 @@ $(function () {
         search(1);
     });
 
+    $(document).on('click', '.showServiceOutput', function (event) {
+        var id = $(this).attr('data-id');
+        showServiceOutput(id);
+    });
+
     $('.btn-ok').click();
 
     function search(pageNumber) {
@@ -59,3 +64,30 @@ $(function () {
         });
     }
 });
+
+function showServiceOutput(id) {
+    var product = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (product === undefined) {
+        alert('プロダクト' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-product');
+    var div = $('<div>')
+
+    div.append($('<textarea>')
+        .val(JSON.stringify(product.serviceOutput, null, '\t'))
+        .addClass('form-control')
+        .attr({
+            rows: '25',
+            disabled: ''
+        })
+    );
+
+    modal.find('.modal-title').text('ServiceOutput');
+    modal.find('.modal-body').html(div);
+    modal.modal();
+}

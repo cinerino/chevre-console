@@ -191,11 +191,20 @@ function createFromBody(req, isNew) {
             id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
-    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, 
+    let serviceOutput;
+    if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
+        try {
+            serviceOutput = JSON.parse(req.body.serviceOutputStr);
+        }
+        catch (error) {
+            throw new Error(`invalid serviceOutput ${error.message}`);
+        }
+    }
+    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, 
         // identifier: body.identifier,
-        name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
+        name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
-            $unset: Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined)
+            $unset: Object.assign(Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }
         : undefined);
 }

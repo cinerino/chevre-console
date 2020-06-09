@@ -221,13 +221,22 @@ productsRouter.get(
     }
 );
 
-function createFromBody(req: Request, isNew: boolean): any {
+function createFromBody(req: Request, isNew: boolean): chevre.factory.service.IService {
     let hasOfferCatalog: any;
     if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
         hasOfferCatalog = {
             typeOf: 'OfferCatalog',
             id: req.body.hasOfferCatalog?.id
         };
+    }
+
+    let serviceOutput: chevre.factory.service.IServiceOutput | chevre.factory.service.IServiceOutput | undefined;
+    if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
+        try {
+            serviceOutput = JSON.parse(req.body.serviceOutputStr);
+        } catch (error) {
+            throw new Error(`invalid serviceOutput ${error.message}`);
+        }
     }
 
     return {
@@ -237,10 +246,12 @@ function createFromBody(req: Request, isNew: boolean): any {
         // identifier: body.identifier,
         name: req.body.name,
         ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
+        ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
-                    ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined
+                    ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined,
+                    ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined
                 }
             }
             : undefined
