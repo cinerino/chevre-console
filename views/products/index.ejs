@@ -16,7 +16,7 @@ PR-00
     <div class="card-body search searchProducts">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/products/new">
+            <a class="btn btn-primary" href="/products/new?typeOf=<%= req.query.typeOf %>">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -28,16 +28,23 @@ PR-00
                         <form method="post">
                             <%- include('../common/master/_hidden') %>
 
-                            <div class="form-group bmd-form-group">
-                                <label for="name[$regex]" class="bmd-label-static">
-                                    名称
-                                </label>
-                                <input class="form-control" name="name[$regex]" id="name[$regex]" placeholder=""
-                                    maxlength=64 value="">
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="typeOf[$eq]" class="bmd-label-static">
+                                        アイテム
+                                    </label>
+                                    <select class="form-control" name="typeOf[$eq]">
+                                        <% productTypes.forEach((productType) => { %>
+                                        <option value="<%= productType.codeValue %>"><%= productType.name %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+
                             </div>
                         </form>
                     </div>
                 </div>
+
                 <div id="list" style="display:none;" class="row">
                     <div class="col-sm-12 table-responsive">
                         <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"

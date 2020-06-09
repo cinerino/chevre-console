@@ -10,20 +10,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * プロダクトルーター
+ * アドオンルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const _ = require("underscore");
-const Message = require("../message");
-const productType_1 = require("../factory/productType");
-const addOn_1 = require("./products/addOn");
+const Message = require("../../message");
+const productType_1 = require("../../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
-const productsRouter = express_1.Router();
-productsRouter.use('/addOn', addOn_1.default);
-productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const addOnRouter = express_1.Router();
+addOnRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
@@ -73,16 +71,12 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
         message: message,
         errors: errors,
         forms: forms,
-        offerCatalogs: searchOfferCatalogsResult.data,
-        productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
-            ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes
+        offerCatalogs: searchOfferCatalogsResult.data
     });
 }));
-productsRouter.get('/search', 
+addOnRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -95,7 +89,7 @@ productsRouter.get('/search',
             page: page,
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: (_a = req.query.typeOf) === null || _a === void 0 ? void 0 : _a.$eq }
+            typeOf: { $eq: productType_1.ProductType.Product }
         };
         const { data } = yield productService.search(searchConditions);
         res.json({
@@ -118,7 +112,7 @@ productsRouter.get('/search',
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-productsRouter.all('/:id', ...validate(), 
+addOnRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -160,26 +154,22 @@ productsRouter.all('/:id', ...validate(),
         const searchOfferCatalogsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: product.typeOf } }
+            itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
         });
         res.render('products/update', {
             message: message,
             errors: errors,
             forms: forms,
-            offerCatalogs: searchOfferCatalogsResult.data,
-            productTypes: productType_1.productTypes.filter((p) => p.codeValue === product.typeOf)
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
     catch (err) {
         next(err);
     }
 }));
-productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+addOnRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('products/index', {
-        message: '',
-        productTypes: (typeof req.query.typeOf === 'string')
-            ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes
+        message: ''
     });
 }));
 function createFromBody(req, isNew) {
@@ -191,7 +181,7 @@ function createFromBody(req, isNew) {
             id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
         };
     }
-    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, 
+    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: productType_1.ProductType.Product, id: req.params.id, 
         // identifier: body.identifier,
         name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (!isNew)
         ? {
@@ -201,9 +191,17 @@ function createFromBody(req, isNew) {
 }
 function validate() {
     return [
-        express_validator_1.body('typeOf')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトタイプ')),
+        // colName = '区分分類';
+        // req.checkBody('inCodeSet.identifier').notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+        // colName = '区分コード';
+        // req.checkBody('codeValue')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        //     .isAlphanumeric()
+        //     .len({ max: 20 })
+        //     // tslint:disable-next-line:no-magic-numbers
+        //     .withMessage(Message.Common.getMaxLength(colName, 20));
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
@@ -211,4 +209,4 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('名称', 30))
     ];
 }
-exports.default = productsRouter;
+exports.default = addOnRouter;

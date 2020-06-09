@@ -1,5 +1,6 @@
 export enum ProductType {
     EventService = 'EventService',
+    MoneyTransfer = 'MoneyTransfer',
     MembershipService = 'MembershipService',
     PaymentCard = 'PaymentCard',
     Product = 'Product'
@@ -16,6 +17,7 @@ const types: IProductType[] = [
 
 if (process.env.USE_OFFER_ADD_ON === '1') {
     types.push(
+        { codeValue: ProductType.MoneyTransfer, name: '入金サービス' },
         { codeValue: ProductType.MembershipService, name: '会員サービス' },
         { codeValue: ProductType.PaymentCard, name: '決済カード' },
         { codeValue: ProductType.Product, name: 'アドオン' }

@@ -1,5 +1,5 @@
 /**
- * プロダクトルーター
+ * アドオンルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
@@ -9,19 +9,15 @@ import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
-import * as Message from '../message';
+import * as Message from '../../message';
 
-import { ProductType, productTypes } from '../factory/productType';
-
-import addOnRouter from './products/addOn';
+import { ProductType } from '../../factory/productType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-const productsRouter = Router();
+const addOnRouter = Router();
 
-productsRouter.use('/addOn', addOnRouter);
-
-productsRouter.all<any>(
+addOnRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -89,15 +85,12 @@ productsRouter.all<any>(
             message: message,
             errors: errors,
             forms: forms,
-            offerCatalogs: searchOfferCatalogsResult.data,
-            productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
-                ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes
+            offerCatalogs: searchOfferCatalogsResult.data
         });
     }
 );
 
-productsRouter.get(
+addOnRouter.get(
     '/search',
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
@@ -114,7 +107,7 @@ productsRouter.get(
                 page: page,
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: req.query.typeOf?.$eq }
+                typeOf: { $eq: ProductType.Product }
             };
             const { data } = await productService.search(searchConditions);
 
@@ -141,7 +134,7 @@ productsRouter.get(
 );
 
 // tslint:disable-next-line:use-default-type-parameter
-productsRouter.all<ParamsDictionary>(
+addOnRouter.all<ParamsDictionary>(
     '/:id',
     ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
@@ -193,15 +186,14 @@ productsRouter.all<ParamsDictionary>(
             const searchOfferCatalogsResult = await offerCatalogService.search({
                 limit: 100,
                 project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: product.typeOf } }
+                itemOffered: { typeOf: { $eq: ProductType.Product } }
             });
 
             res.render('products/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                offerCatalogs: searchOfferCatalogsResult.data,
-                productTypes: productTypes.filter((p) => p.codeValue === product.typeOf)
+                offerCatalogs: searchOfferCatalogsResult.data
             });
         } catch (err) {
             next(err);
@@ -209,14 +201,11 @@ productsRouter.all<ParamsDictionary>(
     }
 );
 
-productsRouter.get(
+addOnRouter.get(
     '',
-    async (req, res) => {
+    async (__, res) => {
         res.render('products/index', {
-            message: '',
-            productTypes: (typeof req.query.typeOf === 'string')
-                ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes
+            message: ''
         });
     }
 );
@@ -232,7 +221,7 @@ function createFromBody(req: Request, isNew: boolean): any {
 
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: req.body.typeOf,
+        typeOf: ProductType.Product,
         id: req.params.id,
         // identifier: body.identifier,
         name: req.body.name,
@@ -249,9 +238,18 @@ function createFromBody(req: Request, isNew: boolean): any {
 
 function validate() {
     return [
-        body('typeOf')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトタイプ')),
+        // colName = '区分分類';
+        // req.checkBody('inCodeSet.identifier').notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName));
+
+        // colName = '区分コード';
+        // req.checkBody('codeValue')
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', colName))
+        //     .isAlphanumeric()
+        //     .len({ max: 20 })
+        //     // tslint:disable-next-line:no-magic-numbers
+        //     .withMessage(Message.Common.getMaxLength(colName, 20));
 
         body('name.ja')
             .notEmpty()
@@ -261,4 +259,4 @@ function validate() {
     ];
 }
 
-export default productsRouter;
+export default addOnRouter;
