@@ -16,10 +16,26 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const projectsRouter = express_1.Router();
+/**
+ * プロジェクト初期化
+ */
 // tslint:disable-next-line:use-default-type-parameter
-projectsRouter.get('/settings', 
-// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.get('/initialize', (__, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // プロジェクト作成
+        // const projectService = new chevre.service.Project({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        // const project = await projectService.create({ id: req.project.id });
+        res.redirect('/home');
+    }
+    catch (err) {
+        next(err);
+    }
+}));
+// tslint:disable-next-line:use-default-type-parameter
+projectsRouter.get('/settings', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const message = '';
         const errors = {};

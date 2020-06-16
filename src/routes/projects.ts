@@ -10,10 +10,32 @@ import * as _ from 'underscore';
 
 const projectsRouter = Router();
 
+/**
+ * プロジェクト初期化
+ */
+// tslint:disable-next-line:use-default-type-parameter
+projectsRouter.get<ParamsDictionary>(
+    '/initialize',
+    async (__, res, next) => {
+        try {
+            // プロジェクト作成
+            // const projectService = new chevre.service.Project({
+            //     endpoint: <string>process.env.API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+
+            // const project = await projectService.create({ id: req.project.id });
+
+            res.redirect('/home');
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get<ParamsDictionary>(
     '/settings',
-    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
             const message = '';

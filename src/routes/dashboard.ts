@@ -1,8 +1,10 @@
 /**
  * ダッシュボードルーター
  */
+import * as chevre from '@chevre/api-nodejs-client';
 import * as cinerinoapi from '@cinerino/api-nodejs-client';
 import { Router } from 'express';
+import { NOT_FOUND } from 'http-status';
 
 const dashboardRouter = Router();
 
@@ -69,25 +71,46 @@ dashboardRouter.get(
  */
 dashboardRouter.get(
     '/dashboard/projects/:id/select',
-    async (req, res) => {
-        const projectId = req.params.id;
-        (<any>req.session).projectId = projectId;
+    async (req, res, next) => {
+        try {
+            const projectId = req.params.id;
+            (<any>req.session).projectId = projectId;
 
-        // サブスクリプション決定
-        const projectService = new cinerinoapi.service.Project({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: projectId });
-        (<any>req.session).project = project;
+            // サブスクリプション決定
+            const projectService = new cinerinoapi.service.Project({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const project = await projectService.findById({ id: projectId });
+            (<any>req.session).project = project;
 
-        let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
-        if (subscriptionIdentifier === undefined) {
-            subscriptionIdentifier = 'Free';
+            let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
+            if (subscriptionIdentifier === undefined) {
+                subscriptionIdentifier = 'Free';
+            }
+            (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
+
+            try {
+                const chevreProjectService = new chevre.service.Project({
+                    endpoint: <string>process.env.API_ENDPOINT,
+                    auth: req.user.authClient
+                });
+                await chevreProjectService.findById({ id: 'project.id' });
+            } catch (error) {
+                // プロジェクト未作成であれば初期化プロセスへ
+                if (error.code === NOT_FOUND) {
+                    res.redirect('/projects/initialize');
+
+                    return;
+                }
+
+                throw error;
+            }
+
+            res.redirect('/home');
+        } catch (error) {
+            next(error);
         }
-        (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
-
-        res.redirect('/home');
     }
 );
 
