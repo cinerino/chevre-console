@@ -28,7 +28,6 @@ import priceSpecificationsRouter from './priceSpecifications';
 import productsRouter from './products';
 import projectsRouter from './projects';
 import reservationsRouter from './reservations';
-import servicesRouter from './services';
 import ticketTypeMasterRouter from './ticketType';
 import transactionsRouter from './transactions';
 
@@ -74,7 +73,6 @@ router.use('/priceSpecifications', priceSpecificationsRouter);
 router.use('/products', productsRouter);
 router.use('/projects', projectsRouter);
 router.use('/reservations', reservationsRouter);
-router.use('/services', servicesRouter);
 router.use('/ticketTypes', ticketTypeMasterRouter);
 router.use('/transactions', transactionsRouter);
 
