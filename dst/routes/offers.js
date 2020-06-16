@@ -513,11 +513,26 @@ function createFromBody(req, isNew) {
                 itemOffered = {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: itemOfferedTypeOf,
-                    serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
+                    serviceOutput: {
+                        project: { typeOf: req.project.typeOf, id: req.project.id },
+                        typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
+                    }
                 };
                 break;
             default:
                 throw new Error(`${(_e = req.body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
+        }
+        let pointAward;
+        if (typeof req.body.pointAwardStr === 'string' && req.body.pointAwardStr.length > 0) {
+            try {
+                pointAward = JSON.parse(req.body.pointAwardStr);
+            }
+            catch (error) {
+                throw new Error(`invalid pointAward ${error.message}`);
+            }
+        }
+        if (pointAward !== undefined) {
+            itemOffered.pointAward = pointAward;
         }
         return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,

@@ -581,7 +581,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         eligibleTransactionVolume: eligibleTransactionVolume
     };
 
-    let itemOffered;
+    let itemOffered: chevre.factory.service.IService;
     const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
         case ProductType.Product:
@@ -595,12 +595,27 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             itemOffered = {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: itemOfferedTypeOf,
-                serviceOutput: { typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership }
+                serviceOutput: {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
+                }
             };
             break;
 
         default:
             throw new Error(`${req.body.itemOffered?.typeOf} not implemented`);
+    }
+
+    let pointAward: any;
+    if (typeof req.body.pointAwardStr === 'string' && req.body.pointAwardStr.length > 0) {
+        try {
+            pointAward = JSON.parse(req.body.pointAwardStr);
+        } catch (error) {
+            throw new Error(`invalid pointAward ${error.message}`);
+        }
+    }
+    if (pointAward !== undefined) {
+        itemOffered.pointAward = pointAward;
     }
 
     return {
