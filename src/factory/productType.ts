@@ -12,13 +12,13 @@ export interface IProductType {
 }
 
 const types: IProductType[] = [
-    { codeValue: ProductType.EventService, name: 'イベント' }
+    { codeValue: ProductType.EventService, name: '予約サービス' }
 ];
 
 if (process.env.USE_OFFER_ADD_ON === '1') {
     types.push(
         { codeValue: ProductType.MoneyTransfer, name: '入金サービス' },
-        { codeValue: ProductType.MembershipService, name: '会員サービス' },
+        { codeValue: ProductType.MembershipService, name: 'メンバーシップ' },
         { codeValue: ProductType.PaymentCard, name: '決済カード' },
         { codeValue: ProductType.Product, name: 'アドオン' }
     );

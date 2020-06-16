@@ -1,5 +1,5 @@
 /**
- * 会員サービス管理ルーター
+ * メンバーシップルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
