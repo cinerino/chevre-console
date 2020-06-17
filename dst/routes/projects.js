@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロジェクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerinoapi = require("@cinerino/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const projectsRouter = express_1.Router();
@@ -20,14 +21,24 @@ const projectsRouter = express_1.Router();
  * プロジェクト初期化
  */
 // tslint:disable-next-line:use-default-type-parameter
-projectsRouter.get('/initialize', (__, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // プロジェクト作成
-        // const projectService = new chevre.service.Project({
-        //     endpoint: <string>process.env.API_ENDPOINT,
-        //     auth: req.user.authClient
-        // });
-        // const project = await projectService.create({ id: req.project.id });
+        const projectService = new cinerinoapi.service.Project({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = yield projectService.findById({ id: req.project.id });
+        const chevreProjectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        yield chevreProjectService.create({
+            typeOf: 'Project',
+            id: project.id,
+            logo: project.logo,
+            name: project.name
+        });
         res.redirect('/home');
     }
     catch (err) {

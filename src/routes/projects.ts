@@ -2,6 +2,7 @@
  * プロジェクトルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerinoapi from '@cinerino/api-nodejs-client';
 import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -16,15 +17,26 @@ const projectsRouter = Router();
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get<ParamsDictionary>(
     '/initialize',
-    async (__, res, next) => {
+    async (req, res, next) => {
         try {
             // プロジェクト作成
-            // const projectService = new chevre.service.Project({
-            //     endpoint: <string>process.env.API_ENDPOINT,
-            //     auth: req.user.authClient
-            // });
+            const projectService = new cinerinoapi.service.Project({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const project = await projectService.findById({ id: req.project.id });
 
-            // const project = await projectService.create({ id: req.project.id });
+            const chevreProjectService = new chevre.service.Project({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            await chevreProjectService.create({
+                typeOf: 'Project',
+                id: project.id,
+                logo: project.logo,
+                name: project.name
+            });
 
             res.redirect('/home');
         } catch (err) {

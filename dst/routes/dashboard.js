@@ -79,7 +79,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            yield chevreProjectService.findById({ id: 'project.id' });
+            yield chevreProjectService.findById({ id: project.id });
         }
         catch (error) {
             // プロジェクト未作成であれば初期化プロセスへ

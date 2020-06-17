@@ -95,7 +95,7 @@ dashboardRouter.get(
                     endpoint: <string>process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
-                await chevreProjectService.findById({ id: 'project.id' });
+                await chevreProjectService.findById({ id: project.id });
             } catch (error) {
                 // プロジェクト未作成であれば初期化プロセスへ
                 if (error.code === NOT_FOUND) {
