@@ -503,6 +503,7 @@ function createFromBody(req, isNew) {
         let itemOffered;
         const itemOfferedTypeOf = (_d = req.body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
         switch (itemOfferedTypeOf) {
+            case productType_1.ProductType.Account:
             case productType_1.ProductType.Product:
                 itemOffered = {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
