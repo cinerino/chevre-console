@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.reservationStatusTypes = void 0;
 const chevre = require("@chevre/api-nodejs-client");
 const types = [
     { codeValue: chevre.factory.reservationStatusType.ReservationCancelled, name: 'キャンセル済' },

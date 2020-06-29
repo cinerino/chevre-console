@@ -53,6 +53,11 @@ offersRouter.all<any>(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const iamService = new cinerino.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
 
         if (req.method === 'POST') {
             // 検証
@@ -119,13 +124,28 @@ offersRouter.all<any>(
             project: { ids: [req.project.id] }
         });
 
+        const searchApplicationsResult = await iamService.searchMembers({
+            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        });
+
         res.render('offers/add', {
             message: message,
             errors: errors,
             forms: forms,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
-            productTypes: productTypes
+            productTypes: productTypes,
+            applications: searchApplicationsResult.data.map((d) => d.member)
+                .sort((a, b) => {
+                    if (String(a.name) < String(b.name)) {
+                        return -1;
+                    }
+                    if (String(a.name) > String(b.name)) {
+                        return 1;
+                    }
+
+                    return 0;
+                })
         });
     }
 );
@@ -160,6 +180,11 @@ offersRouter.all<ParamsDictionary>(
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
+        });
+        const iamService = new cinerino.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {
@@ -209,13 +234,28 @@ offersRouter.all<ParamsDictionary>(
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
             });
 
+            const searchApplicationsResult = await iamService.searchMembers({
+                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            });
+
             res.render('offers/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
                 ticketTypeCategories: searchOfferCategoryTypesResult.data,
                 accountTitles: searchAccountTitlesResult.data,
-                productTypes: productTypes
+                productTypes: productTypes,
+                applications: searchApplicationsResult.data.map((d) => d.member)
+                    .sort((a, b) => {
+                        if (String(a.name) < String(b.name)) {
+                            return -1;
+                        }
+                        if (String(a.name) > String(b.name)) {
+                            return 1;
+                        }
+
+                        return 0;
+                    })
             });
         } catch (error) {
             next(error);
@@ -619,6 +659,19 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         itemOffered.pointAward = pointAward;
     }
 
+    // 利用可能なアプリケーション設定
+    const availableAtOrFrom: { id: string }[] = [];
+    const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+    if (Array.isArray(availableAtOrFromParams)) {
+        availableAtOrFromParams.forEach((applicationId) => {
+            if (typeof applicationId === 'string' && applicationId.length > 0) {
+                availableAtOrFrom.push({ id: applicationId });
+            }
+        });
+    } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+        availableAtOrFrom.push({ id: availableAtOrFromParams });
+    }
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
@@ -633,6 +686,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         description: req.body.description,
         alternateName: { ja: <string>req.body.alternateName.ja, en: '' },
         availability: availability,
+        availableAtOrFrom: availableAtOrFrom,
         itemOffered: itemOffered,
         // eligibleCustomerType: eligibleCustomerType,
         priceSpecification: priceSpec,

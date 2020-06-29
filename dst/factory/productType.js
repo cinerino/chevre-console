@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.productTypes = exports.ProductType = void 0;
 var ProductType;
 (function (ProductType) {
     ProductType["Account"] = "Account";

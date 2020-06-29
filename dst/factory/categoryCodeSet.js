@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.categoryCodeSets = void 0;
 const chevre = require("@chevre/api-nodejs-client");
 const sets = [
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '口座区分' },

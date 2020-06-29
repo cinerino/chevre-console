@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.itemAvailabilities = void 0;
 const chevre = require("@chevre/api-nodejs-client");
 const availabilities = [
     { codeValue: chevre.factory.itemAvailability.InStock, name: '在庫あり' },

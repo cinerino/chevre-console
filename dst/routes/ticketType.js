@@ -412,44 +412,9 @@ function createFromBody(req, isNew) {
                 });
             }
         }
-        let availability = chevre.factory.itemAvailability.OutOfStock;
-        // if (req.body.isBoxTicket === '1' && req.body.isOnlineTicket === '1') {
-        //     availability = chevre.factory.itemAvailability.InStock;
-        // } else if (req.body.isBoxTicket === '1') {
-        //     availability = chevre.factory.itemAvailability.InStoreOnly;
-        // } else if (req.body.isOnlineTicket === '1') {
-        //     availability = chevre.factory.itemAvailability.OnlineOnly;
-        // }
-        availability = chevre.factory.itemAvailability.InStock;
+        const availability = chevre.factory.itemAvailability.InStock;
         // 利用可能なアプリケーション設定
         const availableAtOrFrom = [];
-        // const searchSellersResult = await sellerService.search({});
-        // const seller = searchSellersResult.data
-        //     .filter((s) => Array.isArray(s.areaServed) && s.areaServed.length > 0)[0];
-        // const areaServed = seller.areaServed;
-        // if (Array.isArray(areaServed)) {
-        //     switch (availability) {
-        //         case chevre.factory.itemAvailability.InStock:
-        //             availableAtOrFrom.push(...areaServed.map((a) => {
-        //                 return { id: <string>a.id };
-        //             }));
-        //             break;
-        //         case chevre.factory.itemAvailability.InStoreOnly:
-        //             availableAtOrFrom.push(...areaServed.filter((a) => a.typeOf === cinerino.factory.placeType.Store)
-        //                 .map((a) => {
-        //                     return { id: <string>a.id };
-        //                 }));
-        //             break;
-        //         case chevre.factory.itemAvailability.OnlineOnly:
-        //             availableAtOrFrom.push(...areaServed.filter((a) => a.typeOf === cinerino.factory.placeType.Online)
-        //                 .map((a) => {
-        //                     return { id: <string>a.id };
-        //                 }));
-        //             break;
-        //         default:
-        //     }
-        // }
-        // いったん保留
         const availableAtOrFromParams = (_c = req.body.availableAtOrFrom) === null || _c === void 0 ? void 0 : _c.id;
         if (Array.isArray(availableAtOrFromParams)) {
             availableAtOrFromParams.forEach((applicationId) => {

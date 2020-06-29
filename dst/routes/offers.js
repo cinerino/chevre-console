@@ -52,6 +52,11 @@ offersRouter.all('/add', ...validate(),
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const iamService = new cinerino.service.IAM({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
     if (req.method === 'POST') {
         // 検証
         const validatorResult = express_validator_1.validationResult(req);
@@ -101,13 +106,26 @@ offersRouter.all('/add', ...validate(),
     const searchAccountTitlesResult = yield accountTitleService.search({
         project: { ids: [req.project.id] }
     });
+    const searchApplicationsResult = yield iamService.searchMembers({
+        member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+    });
     res.render('offers/add', {
         message: message,
         errors: errors,
         forms: forms,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
-        productTypes: productType_1.productTypes
+        productTypes: productType_1.productTypes,
+        applications: searchApplicationsResult.data.map((d) => d.member)
+            .sort((a, b) => {
+            if (String(a.name) < String(b.name)) {
+                return -1;
+            }
+            if (String(a.name) > String(b.name)) {
+                return 1;
+            }
+            return 0;
+        })
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
@@ -136,6 +154,11 @@ offersRouter.all('/:id/update', ...validate(),
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
+    });
+    const iamService = new cinerino.service.IAM({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let offer = yield offerService.findById({ id: req.params.id });
@@ -174,13 +197,26 @@ offersRouter.all('/:id/update', ...validate(),
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
+        const searchApplicationsResult = yield iamService.searchMembers({
+            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        });
         res.render('offers/update', {
             message: message,
             errors: errors,
             forms: forms,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
-            productTypes: productType_1.productTypes
+            productTypes: productType_1.productTypes,
+            applications: searchApplicationsResult.data.map((d) => d.member)
+                .sort((a, b) => {
+                if (String(a.name) < String(b.name)) {
+                    return -1;
+                }
+                if (String(a.name) > String(b.name)) {
+                    return 1;
+                }
+                return 0;
+            })
         });
     }
     catch (error) {
@@ -390,7 +426,7 @@ offersRouter.get('/getlist',
 }));
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -535,7 +571,20 @@ function createFromBody(req, isNew) {
         if (pointAward !== undefined) {
             itemOffered.pointAward = pointAward;
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, itemOffered: itemOffered, 
+        // 利用可能なアプリケーション設定
+        const availableAtOrFrom = [];
+        const availableAtOrFromParams = (_f = req.body.availableAtOrFrom) === null || _f === void 0 ? void 0 : _f.id;
+        if (Array.isArray(availableAtOrFromParams)) {
+            availableAtOrFromParams.forEach((applicationId) => {
+                if (typeof applicationId === 'string' && applicationId.length > 0) {
+                    availableAtOrFrom.push({ id: applicationId });
+                }
+            });
+        }
+        else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+            availableAtOrFrom.push({ id: availableAtOrFromParams });
+        }
+        return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, availableAtOrFrom: availableAtOrFrom, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: priceSpec, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
