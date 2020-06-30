@@ -28,7 +28,7 @@
                 <input type="hidden" name="id" value="<%= forms.id %>">
 
                 <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-3">
+                    <div class="form-group bmd-form-group col-md-2">
                         <label for="typeOf" class="bmd-label-static">
                             プロダクトタイプ<span class="text-danger">＊</span>
                         </label>
@@ -44,6 +44,32 @@
                         <% if (errors && errors['typeOf']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['typeOf'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label for="productID" class="bmd-label-static">
+                            プロダクトID<span class="text-danger">＊</span>
+                        </label>
+
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="productID" id="productID" placeholder=""
+                            maxlength=30 value="<%= forms.productID %>">
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <% } else { %>
+                        <input type="text" class="form-control" name="productID" id="productID" placeholder=""
+                            maxlength=30 value="<%= forms.productID %>">
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <!-- <input type="text" disabled class="form-control" placeholder="" maxlength=30
+                            value="<%= forms.productID %>">
+                        <input type="hidden" class="form-control" name="productID" id="productID"
+                            value="<%= forms.productID %>"> -->
+                        <% } %>
+
+                        <% if (errors && errors['productID']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['productID'].msg %>
                         </span>
                         <% } %>
                     </div>

@@ -221,7 +221,7 @@ productsRouter.get(
     }
 );
 
-function createFromBody(req: Request, isNew: boolean): chevre.factory.service.IService {
+function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IProduct {
     let hasOfferCatalog: any;
     if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
         hasOfferCatalog = {
@@ -230,7 +230,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.IS
         };
     }
 
-    let serviceOutput: chevre.factory.service.IServiceOutput | chevre.factory.service.IServiceOutput | undefined;
+    let serviceOutput: chevre.factory.product.IServiceOutput | chevre.factory.product.IServiceOutput | undefined;
     if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
         try {
             serviceOutput = JSON.parse(req.body.serviceOutputStr);
@@ -243,7 +243,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.IS
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: req.body.typeOf,
         id: req.params.id,
-        // identifier: body.identifier,
+        productID: req.body.productID,
         name: req.body.name,
         ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
@@ -264,9 +264,20 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトタイプ')),
 
+        body('productID')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトID'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('プロダクトID', 30)),
+
         body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30))
     ];

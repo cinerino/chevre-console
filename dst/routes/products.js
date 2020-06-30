@@ -200,9 +200,7 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
     }
-    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, 
-        // identifier: body.identifier,
-        name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }
@@ -213,9 +211,19 @@ function validate() {
         express_validator_1.body('typeOf')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトタイプ')),
+        express_validator_1.body('productID')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'プロダクトID'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('プロダクトID', 30)),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30))
     ];
