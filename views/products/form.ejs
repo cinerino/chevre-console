@@ -126,6 +126,23 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            Offers
+                        </label>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#editOffersJson" role="button"
+                            aria-expanded="false" aria-controls="editOffersJson">
+                            編集する
+                        </a>
+
+                        <div class="collapse" id="editOffersJson">
+                            <textarea class="form-control" name="offersStr"
+                                rows=20><%= JSON.stringify(forms.offers, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

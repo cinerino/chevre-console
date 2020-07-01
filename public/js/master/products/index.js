@@ -25,6 +25,11 @@ $(function () {
         search(1);
     });
 
+    $(document).on('click', '.showOffers', function (event) {
+        var id = $(this).attr('data-id');
+        showOffers(id);
+    });
+
     $(document).on('click', '.showServiceOutput', function (event) {
         var id = $(this).attr('data-id');
         showServiceOutput(id);
@@ -64,6 +69,33 @@ $(function () {
         });
     }
 });
+
+function showOffers(id) {
+    var product = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (product === undefined) {
+        alert('プロダクト' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-product');
+    var div = $('<div>')
+
+    div.append($('<textarea>')
+        .val(JSON.stringify(product.offers, null, '\t'))
+        .addClass('form-control')
+        .attr({
+            rows: '25',
+            disabled: ''
+        })
+    );
+
+    modal.find('.modal-title').text('Offers');
+    modal.find('.modal-body').html(div);
+    modal.modal();
+}
 
 function showServiceOutput(id) {
     var product = $.CommonMasterList.getDatas().find(function (data) {

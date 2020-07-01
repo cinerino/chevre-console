@@ -200,9 +200,21 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
     }
-    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    let offers;
+    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
+        try {
+            offers = JSON.parse(req.body.offersStr);
+            if (!Array.isArray(offers)) {
+                throw Error('offers must be an array');
+            }
+        }
+        catch (error) {
+            throw new Error(`invalid offers ${error.message}`);
+        }
+    }
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (offers !== undefined) ? { offers } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
-            $unset: Object.assign(Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
+            $unset: Object.assign(Object.assign(Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined), (offers === undefined) ? { offers: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }
         : undefined);
 }

@@ -55,6 +55,7 @@ PR-00
                                     <th>プロダクトID</th>
                                     <th>名称</th>
                                     <th>カタログ</th>
+                                    <th>Offers</th>
                                     <th>ServiceOutput</th>
                                 </tr>
                             </thead>
@@ -72,7 +73,12 @@ PR-00
                                     <td name="hasOfferCatalog.id">
                                         $hasOfferCatalog.id$
                                     </td>
-                                    <td name="id">
+                                    <td name="id__offers">
+                                        <a href="javascript:void(0)" class="showOffers" data-id="$id$">
+                                            表示
+                                        </a>
+                                    </td>
+                                    <td name="id__serviceOutput">
                                         <a href="javascript:void(0)" class="showServiceOutput" data-id="$id$">
                                             表示
                                         </a>

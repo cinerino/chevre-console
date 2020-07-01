@@ -239,6 +239,18 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
         }
     }
 
+    let offers: chevre.factory.offer.IOffer[] | undefined;
+    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
+        try {
+            offers = JSON.parse(req.body.offersStr);
+            if (!Array.isArray(offers)) {
+                throw Error('offers must be an array');
+            }
+        } catch (error) {
+            throw new Error(`invalid offers ${error.message}`);
+        }
+    }
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: req.body.typeOf,
@@ -246,11 +258,13 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
         productID: req.body.productID,
         name: req.body.name,
         ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
+        ...(offers !== undefined) ? { offers } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
                     ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined,
+                    ...(offers === undefined) ? { offers: 1 } : undefined,
                     ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined
                 }
             }
