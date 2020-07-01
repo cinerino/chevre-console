@@ -135,7 +135,9 @@ movieTheaterRouter.get(
 
                 return {
                     ...movieTheater,
-                    parentOrganizationName: seller?.name.ja,
+                    parentOrganizationName: (typeof seller?.name === 'string')
+                        ? seller?.name
+                        : String(seller?.name?.ja),
                     posCount: (Array.isArray((<any>movieTheater).hasPOS)) ? (<any>movieTheater).hasPOS.length : 0,
                     availabilityStartsGraceTimeInDays:
                         (movieTheater.offers !== undefined
@@ -328,7 +330,11 @@ async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.
     });
     const seller = await sellerService.findById({ id: parentOrganizationId });
 
-    const parentOrganization = { project: seller.project, typeOf: seller.typeOf, id: seller.id };
+    const parentOrganization: chevre.factory.place.movieTheater.IParentOrganization = {
+        project: { typeOf: seller.project.typeOf, id: seller.project.id },
+        typeOf: seller.typeOf,
+        id: seller.id
+    };
 
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom = {

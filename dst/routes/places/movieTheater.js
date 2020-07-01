@@ -103,6 +103,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             name: req.query.name
         });
         const results = data.map((movieTheater) => {
+            var _a;
             const availabilityEndsGraceTimeInMinutes = (movieTheater.offers !== undefined
                 && movieTheater.offers.availabilityEndsGraceTime !== undefined
                 && movieTheater.offers.availabilityEndsGraceTime.value !== undefined)
@@ -110,7 +111,8 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
                 ? Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60)
                 : undefined;
             const seller = searchSellersResult.data.find((s) => { var _a; return s.id === ((_a = movieTheater.parentOrganization) === null || _a === void 0 ? void 0 : _a.id); });
-            return Object.assign(Object.assign({}, movieTheater), { parentOrganizationName: seller === null || seller === void 0 ? void 0 : seller.name.ja, posCount: (Array.isArray(movieTheater.hasPOS)) ? movieTheater.hasPOS.length : 0, availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
+            return Object.assign(Object.assign({}, movieTheater), { parentOrganizationName: (typeof (seller === null || seller === void 0 ? void 0 : seller.name) === 'string')
+                    ? seller === null || seller === void 0 ? void 0 : seller.name : String((_a = seller === null || seller === void 0 ? void 0 : seller.name) === null || _a === void 0 ? void 0 : _a.ja), posCount: (Array.isArray(movieTheater.hasPOS)) ? movieTheater.hasPOS.length : 0, availabilityStartsGraceTimeInDays: (movieTheater.offers !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime !== undefined
                     && movieTheater.offers.availabilityStartsGraceTime.value !== undefined)
                     // tslint:disable-next-line:no-magic-numbers
@@ -261,7 +263,11 @@ function createMovieTheaterFromBody(req) {
             project: { id: req.project.id }
         });
         const seller = yield sellerService.findById({ id: parentOrganizationId });
-        const parentOrganization = { project: seller.project, typeOf: seller.typeOf, id: seller.id };
+        const parentOrganization = {
+            project: { typeOf: seller.project.typeOf, id: seller.project.id },
+            typeOf: seller.typeOf,
+            id: seller.id
+        };
         // tslint:disable-next-line:no-unnecessary-local-variable
         const movieTheater = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, 
             // containsPlace: JSON.parse(req.body.containsPlaceStr),
