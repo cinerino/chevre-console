@@ -13,9 +13,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロダクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
+const cinerino = require("@cinerino/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
+const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
@@ -82,12 +84,22 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
 productsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const offersValidFromLte = (typeof ((_b = (_a = req.query.offers) === null || _a === void 0 ? void 0 : _a.$elemMatch) === null || _b === void 0 ? void 0 : _b.validThrough) === 'string'
+            && req.query.offers.$elemMatch.validThrough.length > 0)
+            ? moment(`${req.query.offers.$elemMatch.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate()
+            : undefined;
+        const offersValidThroughGte = (typeof ((_d = (_c = req.query.offers) === null || _c === void 0 ? void 0 : _c.$elemMatch) === null || _d === void 0 ? void 0 : _d.validFrom) === 'string'
+            && req.query.offers.$elemMatch.validFrom.length > 0)
+            ? moment(`${req.query.offers.$elemMatch.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate()
+            : undefined;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const searchConditions = {
@@ -95,7 +107,23 @@ productsRouter.get('/search',
             page: page,
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: (_a = req.query.typeOf) === null || _a === void 0 ? void 0 : _a.$eq }
+            typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq },
+            offers: {
+                $elemMatch: {
+                    validFrom: {
+                        $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
+                    },
+                    validThrough: {
+                        $gte: (offersValidThroughGte instanceof Date) ? offersValidThroughGte : undefined
+                    },
+                    'seller.id': {
+                        $in: (typeof ((_h = (_g = (_f = req.query.offers) === null || _f === void 0 ? void 0 : _f.$elemMatch) === null || _g === void 0 ? void 0 : _g.seller) === null || _h === void 0 ? void 0 : _h.id) === 'string'
+                            && req.query.offers.$elemMatch.seller.id.length > 0)
+                            ? [req.query.offers.$elemMatch.seller.id]
+                            : undefined
+                    }
+                }
+            }
         };
         const { data } = yield productService.search(searchConditions);
         res.json({
@@ -175,11 +203,18 @@ productsRouter.all('/:id', ...validate(),
     }
 }));
 productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const sellerService = new cinerino.service.Seller({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const searchSellersResult = yield sellerService.search({});
     res.render('products/index', {
         message: '',
         productTypes: (typeof req.query.typeOf === 'string')
             ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes
+            : productType_1.productTypes,
+        sellers: searchSellersResult.data
     });
 }));
 function createFromBody(req, isNew) {

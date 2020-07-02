@@ -2,11 +2,13 @@
  * プロダクトルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/api-nodejs-client';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
+import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -107,14 +109,41 @@ productsRouter.get(
                 auth: req.user.authClient
             });
 
+            const offersValidFromLte = (typeof req.query.offers?.$elemMatch?.validThrough === 'string'
+                && req.query.offers.$elemMatch.validThrough.length > 0)
+                ? moment(`${req.query.offers.$elemMatch.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate()
+                : undefined;
+            const offersValidThroughGte = (typeof req.query.offers?.$elemMatch?.validFrom === 'string'
+                && req.query.offers.$elemMatch.validFrom.length > 0)
+                ? moment(`${req.query.offers.$elemMatch.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                    .toDate()
+                : undefined;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
-            const searchConditions = {
+            const searchConditions: chevre.factory.product.ISearchConditions = {
                 limit: limit,
                 page: page,
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: req.query.typeOf?.$eq }
+                typeOf: { $eq: req.query.typeOf?.$eq },
+                offers: {
+                    $elemMatch: {
+                        validFrom: {
+                            $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
+                        },
+                        validThrough: {
+                            $gte: (offersValidThroughGte instanceof Date) ? offersValidThroughGte : undefined
+                        },
+                        'seller.id': {
+                            $in: (typeof req.query.offers?.$elemMatch?.seller?.id === 'string'
+                                && req.query.offers.$elemMatch.seller.id.length > 0)
+                                ? [req.query.offers.$elemMatch.seller.id]
+                                : undefined
+                        }
+                    }
+                }
             };
             const { data } = await productService.search(searchConditions);
 
@@ -212,11 +241,19 @@ productsRouter.all<ParamsDictionary>(
 productsRouter.get(
     '',
     async (req, res) => {
+        const sellerService = new cinerino.service.Seller({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = await sellerService.search({});
+
         res.render('products/index', {
             message: '',
             productTypes: (typeof req.query.typeOf === 'string')
                 ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes
+                : productTypes,
+            sellers: searchSellersResult.data
         });
     }
 );

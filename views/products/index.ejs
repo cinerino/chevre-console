@@ -40,6 +40,40 @@ PR-00
                                     </select>
                                 </div>
 
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="offers[$elemMatch][seller][id]" class="bmd-label-static">
+                                        販売者
+                                    </label>
+                                    <select class="form-control" name="offers[$elemMatch][seller][id]">
+                                        <option value="">選択してください</option>
+                                        <% for (const seller of sellers) { %>
+                                        <option value="<%= seller.id %>">
+                                            <%= seller.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label for="offers[$elemMatch][validFrom]" class="bmd-label-static">
+                                        販売期間
+                                    </label>
+
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="offers[$elemMatch][validFrom]" id="offers[$elemMatch][validFrom]"
+                                            value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">から</span>
+                                        </div>
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="offers[$elemMatch][validThrough]"
+                                            id="offers[$elemMatch][validThrough]" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">まで</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
