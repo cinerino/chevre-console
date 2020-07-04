@@ -87,6 +87,13 @@ productsRouter.all<any>(
             itemOffered: { typeOf: { $eq: ProductType.Product } }
         });
 
+        const sellerService = new cinerino.service.Seller({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = await sellerService.search({});
+
         res.render('products/new', {
             message: message,
             errors: errors,
@@ -94,7 +101,8 @@ productsRouter.all<any>(
             offerCatalogs: searchOfferCatalogsResult.data,
             productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
                 ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes
+                : productTypes,
+            sellers: searchSellersResult.data
         });
     }
 );
@@ -216,7 +224,21 @@ productsRouter.all<ParamsDictionary>(
             }
 
             const forms = {
-                ...product
+                ...product,
+                offersValidFrom: (Array.isArray(product.offers) && product.offers.length > 0 && product.offers[0].validFrom !== undefined)
+                    ? moment(product.offers[0].validFrom)
+                        // .add(-1, 'day')
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD')
+                    : '',
+                offersValidThrough: (Array.isArray(product.offers)
+                    && product.offers.length > 0
+                    && product.offers[0].validThrough !== undefined)
+                    ? moment(product.offers[0].validThrough)
+                        .add(-1, 'day')
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD')
+                    : ''
             };
 
             const searchOfferCatalogsResult = await offerCatalogService.search({
@@ -225,12 +247,20 @@ productsRouter.all<ParamsDictionary>(
                 itemOffered: { typeOf: { $eq: product.typeOf } }
             });
 
+            const sellerService = new cinerino.service.Seller({
+                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const searchSellersResult = await sellerService.search({});
+
             res.render('products/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
                 offerCatalogs: searchOfferCatalogsResult.data,
-                productTypes: productTypes.filter((p) => p.codeValue === product.typeOf)
+                productTypes: productTypes.filter((p) => p.codeValue === product.typeOf),
+                sellers: searchSellersResult.data
             });
         } catch (err) {
             next(err);
@@ -258,6 +288,7 @@ productsRouter.get(
     }
 );
 
+// tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IProduct {
     let hasOfferCatalog: any;
     if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
@@ -277,15 +308,48 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
     }
 
     let offers: chevre.factory.offer.IOffer[] | undefined;
-    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
-        try {
-            offers = JSON.parse(req.body.offersStr);
-            if (!Array.isArray(offers)) {
-                throw Error('offers must be an array');
-            }
-        } catch (error) {
-            throw new Error(`invalid offers ${error.message}`);
+    let sellerIds: string[] | string | undefined = req.body.offers?.seller?.id;
+    if (typeof sellerIds === 'string' && sellerIds.length > 0) {
+        sellerIds = [sellerIds];
+    }
+
+    if (Array.isArray(sellerIds)) {
+        if (typeof req.body.offersValidFrom === 'string'
+            && req.body.offersValidFrom.length > 0
+            && typeof req.body.offersValidThrough === 'string'
+            && req.body.offersValidThrough.length > 0) {
+            const validFrom = moment(`${req.body.offersValidFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate();
+            const validThrough = moment(`${req.body.offersValidThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .add(1, 'day')
+                .toDate();
+
+            offers = sellerIds.map((sellerId) => {
+                return {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    typeOf: chevre.factory.offerType.Offer,
+                    priceCurrency: chevre.factory.priceCurrency.JPY,
+                    availabilityEnds: validThrough,
+                    availabilityStarts: validFrom,
+                    validFrom: validFrom,
+                    validThrough: validThrough,
+                    seller: {
+                        id: sellerId
+                    }
+                };
+            });
         }
+    }
+
+    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
+        // try {
+        //     offers = JSON.parse(req.body.offersStr);
+        //     if (!Array.isArray(offers)) {
+        //         throw Error('offers must be an array');
+        //     }
+        // } catch (error) {
+        //     throw new Error(`invalid offers ${error.message}`);
+        // }
     }
 
     return {

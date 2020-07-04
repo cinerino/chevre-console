@@ -71,6 +71,12 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
         project: { id: { $eq: req.project.id } },
         itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
     });
+    const sellerService = new cinerino.service.Seller({
+        endpoint: process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const searchSellersResult = yield sellerService.search({});
     res.render('products/new', {
         message: message,
         errors: errors,
@@ -78,7 +84,8 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
         offerCatalogs: searchOfferCatalogsResult.data,
         productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
             ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes
+            : productType_1.productTypes,
+        sellers: searchSellersResult.data
     });
 }));
 productsRouter.get('/search', 
@@ -184,18 +191,37 @@ productsRouter.all('/:id', ...validate(),
                 .end();
             return;
         }
-        const forms = Object.assign({}, product);
+        const forms = Object.assign(Object.assign({}, product), { offersValidFrom: (Array.isArray(product.offers) && product.offers.length > 0 && product.offers[0].validFrom !== undefined)
+                ? moment(product.offers[0].validFrom)
+                    // .add(-1, 'day')
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '', offersValidThrough: (Array.isArray(product.offers)
+                && product.offers.length > 0
+                && product.offers[0].validThrough !== undefined)
+                ? moment(product.offers[0].validThrough)
+                    .add(-1, 'day')
+                    .tz('Asia/Tokyo')
+                    .format('YYYY/MM/DD')
+                : '' });
         const searchOfferCatalogsResult = yield offerCatalogService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: product.typeOf } }
         });
+        const sellerService = new cinerino.service.Seller({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = yield sellerService.search({});
         res.render('products/update', {
             message: message,
             errors: errors,
             forms: forms,
             offerCatalogs: searchOfferCatalogsResult.data,
-            productTypes: productType_1.productTypes.filter((p) => p.codeValue === product.typeOf)
+            productTypes: productType_1.productTypes.filter((p) => p.codeValue === product.typeOf),
+            sellers: searchSellersResult.data
         });
     }
     catch (err) {
@@ -217,8 +243,9 @@ productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function*
         sellers: searchSellersResult.data
     });
 }));
+// tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     let hasOfferCatalog;
     if (typeof ((_a = req.body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = req.body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
         hasOfferCatalog = {
@@ -236,16 +263,45 @@ function createFromBody(req, isNew) {
         }
     }
     let offers;
+    let sellerIds = (_e = (_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.seller) === null || _e === void 0 ? void 0 : _e.id;
+    if (typeof sellerIds === 'string' && sellerIds.length > 0) {
+        sellerIds = [sellerIds];
+    }
+    if (Array.isArray(sellerIds)) {
+        if (typeof req.body.offersValidFrom === 'string'
+            && req.body.offersValidFrom.length > 0
+            && typeof req.body.offersValidThrough === 'string'
+            && req.body.offersValidThrough.length > 0) {
+            const validFrom = moment(`${req.body.offersValidFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .toDate();
+            const validThrough = moment(`${req.body.offersValidThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                .add(1, 'day')
+                .toDate();
+            offers = sellerIds.map((sellerId) => {
+                return {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    typeOf: chevre.factory.offerType.Offer,
+                    priceCurrency: chevre.factory.priceCurrency.JPY,
+                    availabilityEnds: validThrough,
+                    availabilityStarts: validFrom,
+                    validFrom: validFrom,
+                    validThrough: validThrough,
+                    seller: {
+                        id: sellerId
+                    }
+                };
+            });
+        }
+    }
     if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
-        try {
-            offers = JSON.parse(req.body.offersStr);
-            if (!Array.isArray(offers)) {
-                throw Error('offers must be an array');
-            }
-        }
-        catch (error) {
-            throw new Error(`invalid offers ${error.message}`);
-        }
+        // try {
+        //     offers = JSON.parse(req.body.offersStr);
+        //     if (!Array.isArray(offers)) {
+        //         throw Error('offers must be an array');
+        //     }
+        // } catch (error) {
+        //     throw new Error(`invalid offers ${error.message}`);
+        // }
     }
     return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (offers !== undefined) ? { offers } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
