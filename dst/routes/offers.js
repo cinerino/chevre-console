@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/api-nodejs-client");
+const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");

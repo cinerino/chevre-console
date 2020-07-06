@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 予約ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/api-nodejs-client");
+const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");

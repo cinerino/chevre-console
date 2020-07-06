@@ -2,7 +2,7 @@
  * ダッシュボードルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/api-nodejs-client';
+import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
 import { NOT_FOUND } from 'http-status';
 

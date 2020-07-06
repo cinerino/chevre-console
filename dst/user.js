@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiEndpoint = void 0;
 const chevreapi = require("@chevre/api-nodejs-client");
-// import * as cinerinoapi from '@cinerino/api-nodejs-client';
+// import * as cinerinoapi from '@cinerino/sdk';
 const createDebug = require("debug");
 const debug = createDebug('chevre-backend:user');
 /**

@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロジェクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerinoapi = require("@cinerino/api-nodejs-client");
+const cinerinoapi = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const projectsRouter = express_1.Router();

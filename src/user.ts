@@ -1,5 +1,5 @@
 import * as chevreapi from '@chevre/api-nodejs-client';
-// import * as cinerinoapi from '@cinerino/api-nodejs-client';
+// import * as cinerinoapi from '@cinerino/sdk';
 import * as createDebug from 'debug';
 
 const debug = createDebug('chevre-backend:user');

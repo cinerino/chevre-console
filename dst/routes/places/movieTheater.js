@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 施設ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/api-nodejs-client");
+const cinerino = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
