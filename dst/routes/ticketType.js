@@ -579,19 +579,15 @@ function createFromBody(req, isNew) {
         }
         return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
-            priceSpecification: {
-                project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
-                name: req.body.name,
-                price: Number(req.body.price) * referenceQuantityValue,
-                priceCurrency: chevre.factory.priceCurrency.JPY,
-                valueAddedTaxIncluded: true,
-                eligibleQuantity: eligibleQuantity,
-                eligibleTransactionVolume: eligibleTransactionVolume,
-                referenceQuantity: referenceQuantity,
-                appliesToMovieTicketType: appliesToMovieTicketType,
-                accounting: accounting
-            }, addOn: availableAddOn, additionalProperty: (Array.isArray(req.body.additionalProperty))
+            priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
+                ? {
+                    appliesToMovieTicketType: appliesToMovieTicketType,
+                    appliesToMovieTicket: {
+                        typeOf: chevre.factory.paymentMethodType.MovieTicket,
+                        serviceType: appliesToMovieTicketType
+                    }
+                }
+                : undefined), addOn: availableAddOn, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

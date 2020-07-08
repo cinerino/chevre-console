@@ -702,8 +702,16 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             eligibleQuantity: eligibleQuantity,
             eligibleTransactionVolume: eligibleTransactionVolume,
             referenceQuantity: referenceQuantity,
-            appliesToMovieTicketType: appliesToMovieTicketType,
-            accounting: accounting
+            accounting: accounting,
+            ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
+                ? {
+                    appliesToMovieTicketType: appliesToMovieTicketType,
+                    appliesToMovieTicket: {
+                        typeOf: chevre.factory.paymentMethodType.MovieTicket,
+                        serviceType: appliesToMovieTicketType
+                    }
+                }
+                : undefined
         },
         addOn: availableAddOn,
         additionalProperty: (Array.isArray(req.body.additionalProperty))

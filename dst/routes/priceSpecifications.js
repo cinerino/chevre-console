@@ -97,9 +97,7 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
                     undefined;
                 const categoryCodeSet = categoryCodeSet_1.categoryCodeSets.find((c) => { var _a; return c.identifier === ((_a = appliesToCategoryCode === null || appliesToCategoryCode === void 0 ? void 0 : appliesToCategoryCode.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier); });
                 const priceSpecificationType = priceSpecificationType_1.priceSpecificationTypes.find((p) => p.codeValue === d.typeOf);
-                return Object.assign(Object.assign({}, d), { priceSpecificationTypeName: priceSpecificationType === null || priceSpecificationType === void 0 ? void 0 : priceSpecificationType.name, appliesToCategoryCodeSetName: categoryCodeSet === null || categoryCodeSet === void 0 ? void 0 : categoryCodeSet.name, appliesToCategoryCode: appliesToCategoryCode, appliesToMovieTicket: {
-                        name: ''
-                    } });
+                return Object.assign(Object.assign({}, d), { priceSpecificationTypeName: priceSpecificationType === null || priceSpecificationType === void 0 ? void 0 : priceSpecificationType.name, appliesToCategoryCodeSetName: categoryCodeSet === null || categoryCodeSet === void 0 ? void 0 : categoryCodeSet.name, appliesToCategoryCode: appliesToCategoryCode });
             })
         });
     }
@@ -289,7 +287,13 @@ function createMovieFromBody(req, isNew) {
         : undefined), (typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
         ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
         : undefined), (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
-        ? { appliesToMovieTicketType: req.body.appliesToMovieTicketType }
+        ? {
+            appliesToMovieTicketType: appliesToMovieTicketType,
+            appliesToMovieTicket: {
+                typeOf: chevre.factory.paymentMethodType.MovieTicket,
+                serviceType: appliesToMovieTicketType
+            }
+        }
         : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign(Object.assign({}, (appliesToCategoryCode === undefined)
@@ -297,7 +301,7 @@ function createMovieFromBody(req, isNew) {
                 : undefined), (appliesToVideoFormat === undefined)
                 ? { appliesToVideoFormat: 1 }
                 : undefined), (appliesToMovieTicketType === undefined)
-                ? { appliesToMovieTicketType: 1 }
+                ? { appliesToMovieTicketType: 1, appliesToMovieTicket: 1 }
                 : undefined)
         } : undefined);
 }

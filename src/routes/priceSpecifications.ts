@@ -115,10 +115,7 @@ priceSpecificationsRouter.get(
                         ...d,
                         priceSpecificationTypeName: priceSpecificationType?.name,
                         appliesToCategoryCodeSetName: categoryCodeSet?.name,
-                        appliesToCategoryCode: appliesToCategoryCode,
-                        appliesToMovieTicket: {
-                            name: ''
-                        }
+                        appliesToCategoryCode: appliesToCategoryCode
                     };
                 })
             });
@@ -358,7 +355,13 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
             ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
             : undefined,
         ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
-            ? { appliesToMovieTicketType: req.body.appliesToMovieTicketType }
+            ? {
+                appliesToMovieTicketType: appliesToMovieTicketType,
+                appliesToMovieTicket: {
+                    typeOf: chevre.factory.paymentMethodType.MovieTicket,
+                    serviceType: appliesToMovieTicketType
+                }
+            }
             : undefined,
         ...(!isNew)
             ? {
@@ -370,7 +373,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
                         ? { appliesToVideoFormat: 1 }
                         : undefined,
                     ...(appliesToMovieTicketType === undefined)
-                        ? { appliesToMovieTicketType: 1 }
+                        ? { appliesToMovieTicketType: 1, appliesToMovieTicket: 1 }
                         : undefined
                 }
             } : undefined
