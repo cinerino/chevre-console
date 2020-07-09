@@ -554,8 +554,9 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             : undefined;
 
     const appliesToMovieTicketType =
-        (typeof req.body.appliesToMovieTicketType === 'string' && (<string>req.body.appliesToMovieTicketType).length > 0)
-            ? <string>req.body.appliesToMovieTicketType
+        (typeof req.body.priceSpecification?.appliesToMovieTicket?.serviceType === 'string'
+            && (<string>req.body.priceSpecification.appliesToMovieTicket.serviceType).length > 0)
+            ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
             : undefined;
 
     // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
@@ -705,7 +706,6 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             accounting: accounting,
             ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
                 ? {
-                    appliesToMovieTicketType: appliesToMovieTicketType,
                     appliesToMovieTicket: {
                         typeOf: chevre.factory.paymentMethodType.MovieTicket,
                         serviceType: appliesToMovieTicketType

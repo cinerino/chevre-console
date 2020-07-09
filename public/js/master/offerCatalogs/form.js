@@ -171,11 +171,9 @@ function onPriceChanged() {
 
 function offer2list(offer) {
     var appliesToMovieTicketType = '';
-    // 互換性維持対応
-    if (typeof offer.priceSpecification.appliesToMovieTicketType === 'string') {
-        appliesToMovieTicketType = offer.priceSpecification.appliesToMovieTicketType;
-    }
-    if (offer.priceSpecification.appliesToMovieTicket !== undefined && typeof offer.priceSpecification.appliesToMovieTicket.serviceType === 'string') {
+    if (offer.priceSpecification.appliesToMovieTicket !== undefined
+        && offer.priceSpecification.appliesToMovieTicket !== null
+        && typeof offer.priceSpecification.appliesToMovieTicket.serviceType === 'string') {
         appliesToMovieTicketType = offer.priceSpecification.appliesToMovieTicket.serviceType;
     }
 

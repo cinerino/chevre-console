@@ -102,7 +102,6 @@ priceSpecificationsRouter.get(
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((d) => {
-                    // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
                     const appliesToCategoryCode = (Array.isArray((<any>d).appliesToCategoryCode))
                         ? (<any>d).appliesToCategoryCode[0] :
                         undefined;
@@ -317,14 +316,13 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
                     ? JSON.parse(req.body.appliesToCategoryCode)
                     : undefined;
             appliesToVideoFormat = undefined;
-            appliesToMovieTicketType = undefined;
 
             break;
 
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
             appliesToCategoryCode = undefined;
             appliesToVideoFormat = req.body.appliesToVideoFormat;
-            appliesToMovieTicketType = req.body.appliesToMovieTicketType;
+            appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
 
             break;
 
@@ -356,7 +354,6 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
             : undefined,
         ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
             ? {
-                appliesToMovieTicketType: appliesToMovieTicketType,
                 appliesToMovieTicket: {
                     typeOf: chevre.factory.paymentMethodType.MovieTicket,
                     serviceType: appliesToMovieTicketType
@@ -404,7 +401,7 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
 
-        body('appliesToMovieTicketType')
+        body('appliesToMovieTicket.serviceType')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用ムビチケ券種区分')),

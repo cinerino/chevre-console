@@ -226,16 +226,19 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="appliesToMovieTicketType" class="bmd-label-static">
+                        <label for="priceSpecification[appliesToMovieTicket][serviceType]" class="bmd-label-static">
                             適用ムビチケ券種区分
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="appliesToMovieTicketType">
+                            <select class="form-control" name="priceSpecification[appliesToMovieTicket][serviceType]">
                                 <option value="" selected>なし</option>
                                 <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                                <option value="<%= movieTicketType.codeValue %>"
-                                    <% if (movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicketType) { %>
-                                    selected<% } %>>
+                                <%
+                                var selected = forms.priceSpecification !== undefined
+                                    && forms.priceSpecification.appliesToMovieTicket !== undefined
+                                    && movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicket.serviceType;
+                                %>
+                                <option value="<%= movieTicketType.codeValue %>" <% if (selected) { %> selected<% } %>>
                                     <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
                                 </option>
                                 <% }) %>
@@ -245,9 +248,9 @@
                             </div>
                         </div>
 
-                        <% if (errors && errors.appliesToMovieTicketType) { %>
+                        <% if (errors && errors['appliesToMovieTicket.serviceType']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors.appliesToMovieTicketType.msg %>
+                            <%- errors['appliesToMovieTicket.serviceType'].msg %>
                         </span>
                         <% } %>
                     </div>

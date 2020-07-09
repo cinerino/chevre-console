@@ -359,7 +359,7 @@ function searchAllAccountTitles(req) {
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -468,8 +468,9 @@ function createFromBody(req, isNew) {
                 valueAddedTaxIncluded: true
             }
             : undefined;
-        const appliesToMovieTicketType = (typeof req.body.appliesToMovieTicketType === 'string' && req.body.appliesToMovieTicketType.length > 0)
-            ? req.body.appliesToMovieTicketType
+        const appliesToMovieTicketType = (typeof ((_e = (_d = req.body.priceSpecification) === null || _d === void 0 ? void 0 : _d.appliesToMovieTicket) === null || _e === void 0 ? void 0 : _e.serviceType) === 'string'
+            && req.body.priceSpecification.appliesToMovieTicket.serviceType.length > 0)
+            ? req.body.priceSpecification.appliesToMovieTicket.serviceType
             : undefined;
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
@@ -581,7 +582,6 @@ function createFromBody(req, isNew) {
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
                 ? {
-                    appliesToMovieTicketType: appliesToMovieTicketType,
                     appliesToMovieTicket: {
                         typeOf: chevre.factory.paymentMethodType.MovieTicket,
                         serviceType: appliesToMovieTicketType

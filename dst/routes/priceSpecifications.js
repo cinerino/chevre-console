@@ -91,7 +91,6 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
-                // const mvtkType = mvtk.util.constants.TICKET_TYPE.find((t) => t.code === (<any>d).appliesToMovieTicketType);
                 const appliesToCategoryCode = (Array.isArray(d.appliesToCategoryCode))
                     ? d.appliesToCategoryCode[0] :
                     undefined;
@@ -253,6 +252,7 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
     });
 }));
 function createMovieFromBody(req, isNew) {
+    var _a;
     let appliesToCategoryCode;
     let appliesToVideoFormat;
     let appliesToMovieTicketType;
@@ -263,12 +263,11 @@ function createMovieFromBody(req, isNew) {
                     ? JSON.parse(req.body.appliesToCategoryCode)
                     : undefined;
             appliesToVideoFormat = undefined;
-            appliesToMovieTicketType = undefined;
             break;
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
             appliesToCategoryCode = undefined;
             appliesToVideoFormat = req.body.appliesToVideoFormat;
-            appliesToMovieTicketType = req.body.appliesToMovieTicketType;
+            appliesToMovieTicketType = (_a = req.body.appliesToMovieTicket) === null || _a === void 0 ? void 0 : _a.serviceType;
             break;
         default:
     }
@@ -288,7 +287,6 @@ function createMovieFromBody(req, isNew) {
         ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
         : undefined), (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
         ? {
-            appliesToMovieTicketType: appliesToMovieTicketType,
             appliesToMovieTicket: {
                 typeOf: chevre.factory.paymentMethodType.MovieTicket,
                 serviceType: appliesToMovieTicketType
@@ -325,7 +323,7 @@ function validate() {
             .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
-        express_validator_1.body('appliesToMovieTicketType')
+        express_validator_1.body('appliesToMovieTicket.serviceType')
             .if((_, { req }) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用ムビチケ券種区分')),

@@ -128,23 +128,23 @@
                 <div class="form-row">
                     <div
                         class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                        <label for="appliesToMovieTicketType" class="bmd-label-static">
+                        <label for="appliesToMovieTicket[serviceType]" class="bmd-label-static">
                             適用ムビチケ券種区分
                         </label>
 
-                        <select class="form-control" name="appliesToMovieTicketType">
+                        <select class="form-control" name="appliesToMovieTicket[serviceType]">
                             <option value="" selected>選択してください</option>
                             <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
                             <option value="<%= movieTicketType.codeValue %>"
-                                <% if (movieTicketType.codeValue === forms.appliesToMovieTicketType) { %>
+                                <% if (forms.appliesToMovieTicket !== undefined && movieTicketType.codeValue === forms.appliesToMovieTicket.serviceType) { %>
                                 selected<% } %>>
                                 <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
                             </option>
                             <% }) %>
                         </select>
-                        <% if (errors && errors['appliesToMovieTicketType']) { %>
+                        <% if (errors && errors['appliesToMovieTicket.serviceType']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['appliesToMovieTicketType'].msg %>
+                            <%- errors['appliesToMovieTicket.serviceType'].msg %>
                         </span>
                         <% } %>
                     </div>
