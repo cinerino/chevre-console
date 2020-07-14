@@ -1,0 +1,87 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post">
+                    <% /* 共通Hiddenコントロール */ %>
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="name" class="bmd-label-static">
+                                名称
+                            </label>
+                            <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>Tel</th>
+                            <th>URL</th>
+                            <th>対応決済方法</th>
+                            <th>Location</th>
+                            <th>オファー</th>
+                            <th>返品ポリシー</th>
+                            <th>追加特性</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr id="templateRow" _id="$id$">
+                            <td name="id__id">
+                                <a target="_blank" href="#"">
+                                    $id$
+                                    <i class=" material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                </a>
+                            </td>
+                            <td name="name.ja">$name.ja$</td>
+                            <td name="telephone">$telephone$</td>
+                            <td name="url">$url$</td>
+                            <td name="id__paymentAcceptedCount">
+                                <a href="javascript:void(0)" class="showPaymentAccepted" data-id="$id$">
+                                    $paymentAcceptedCount$
+                                </a></td>
+                            <td name="id__location">
+                                <a href="javascript:void(0)" class="showLocation" data-id="$id$">
+                                    表示
+                                </a></td>
+                            <td name="id__offers">
+                                <a href="javascript:void(0)" class="showOffers" data-id="$id$">
+                                    表示
+                                </a></td>
+                            <td name="id__hasMerchantReturnPolicyCount">
+                                <a href="javascript:void(0)" class="showHasMerchantReturnPolicy" data-id="$id$">
+                                    $hasMerchantReturnPolicyCount$
+                                </a></td>
+                            <td name="id__additionalProperty">
+                                <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

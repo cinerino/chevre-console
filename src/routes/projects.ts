@@ -32,7 +32,7 @@ projectsRouter.get<ParamsDictionary>(
             });
 
             await chevreProjectService.create({
-                typeOf: 'Project',
+                typeOf: chevre.factory.organizationType.Project,
                 id: project.id,
                 logo: project.logo,
                 name: project.name

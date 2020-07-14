@@ -34,7 +34,7 @@ projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, 
             auth: req.user.authClient
         });
         yield chevreProjectService.create({
-            typeOf: 'Project',
+            typeOf: chevre.factory.organizationType.Project,
             id: project.id,
             logo: project.logo,
             name: project.name
