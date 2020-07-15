@@ -2,7 +2,6 @@
  * 施設ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
@@ -72,12 +71,11 @@ movieTheaterRouter.all<any>(
             }));
         }
 
-        const sellerService = new cinerino.service.Seller({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = await sellerService.search({});
+        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('places/movieTheater/new', {
             message: message,
@@ -106,12 +104,11 @@ movieTheaterRouter.get(
                 auth: req.user.authClient
             });
 
-            const sellerService = new cinerino.service.Seller({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient,
-                project: { id: req.project.id }
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
             });
-            const searchSellersResult = await sellerService.search({});
+            const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
@@ -246,12 +243,11 @@ movieTheaterRouter.all<ParamsDictionary>(
             }));
         }
 
-        const sellerService = new cinerino.service.Seller({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = await sellerService.search({});
+        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('places/movieTheater/update', {
             message: message,
@@ -323,10 +319,9 @@ movieTheaterRouter.get(
 async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
     const parentOrganizationId = req.body.parentOrganization?.id;
 
-    const sellerService = new cinerino.service.Seller({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
     const seller = await sellerService.findById({ id: parentOrganizationId });
 

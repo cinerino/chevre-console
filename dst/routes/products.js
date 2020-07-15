@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロダクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -71,12 +70,11 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
         project: { id: { $eq: req.project.id } },
         itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
     });
-    const sellerService = new cinerino.service.Seller({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
-    const searchSellersResult = yield sellerService.search({});
+    const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('products/new', {
         message: message,
         errors: errors,
@@ -209,12 +207,11 @@ productsRouter.all('/:id', ...validate(),
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: product.typeOf } }
         });
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = yield sellerService.search({});
+        const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('products/update', {
             message: message,
             errors: errors,
@@ -229,12 +226,11 @@ productsRouter.all('/:id', ...validate(),
     }
 }));
 productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sellerService = new cinerino.service.Seller({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
-    const searchSellersResult = yield sellerService.search({});
+    const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('products/index', {
         message: '',
         productTypes: (typeof req.query.typeOf === 'string')

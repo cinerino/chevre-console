@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 施設ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -64,12 +63,11 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             return {};
         }));
     }
-    const sellerService = new cinerino.service.Seller({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
-    const searchSellersResult = yield sellerService.search({});
+    const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('places/movieTheater/new', {
         message: message,
         errors: errors,
@@ -88,12 +86,11 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = yield sellerService.search({});
+        const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield placeService.searchMovieTheaters({
@@ -196,12 +193,11 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
             return {};
         }));
     }
-    const sellerService = new cinerino.service.Seller({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
-    const searchSellersResult = yield sellerService.search({});
+    const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('places/movieTheater/update', {
         message: message,
         errors: errors,
@@ -257,10 +253,9 @@ function createMovieTheaterFromBody(req) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
         const seller = yield sellerService.findById({ id: parentOrganizationId });
         const parentOrganization = {

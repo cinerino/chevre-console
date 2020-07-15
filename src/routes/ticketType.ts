@@ -438,11 +438,6 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    // const sellerService = new cinerino.service.Seller({
-    //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-    //     auth: req.user.authClient,
-    //     project: { id: req.project.id }
-    // });
 
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,

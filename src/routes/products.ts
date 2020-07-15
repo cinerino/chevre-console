@@ -2,7 +2,6 @@
  * プロダクトルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -87,12 +86,11 @@ productsRouter.all<any>(
             itemOffered: { typeOf: { $eq: ProductType.Product } }
         });
 
-        const sellerService = new cinerino.service.Seller({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = await sellerService.search({});
+        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('products/new', {
             message: message,
@@ -247,12 +245,11 @@ productsRouter.all<ParamsDictionary>(
                 itemOffered: { typeOf: { $eq: product.typeOf } }
             });
 
-            const sellerService = new cinerino.service.Seller({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient,
-                project: { id: req.project.id }
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
             });
-            const searchSellersResult = await sellerService.search({});
+            const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
             res.render('products/update', {
                 message: message,
@@ -271,12 +268,11 @@ productsRouter.all<ParamsDictionary>(
 productsRouter.get(
     '',
     async (req, res) => {
-        const sellerService = new cinerino.service.Seller({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
-        const searchSellersResult = await sellerService.search({});
+        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('products/index', {
             message: '',

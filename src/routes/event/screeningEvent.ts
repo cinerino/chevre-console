@@ -2,7 +2,6 @@
  * 上映イベント管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
@@ -44,10 +43,9 @@ screeningEventRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const sellerService = new cinerino.service.Seller({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient,
-                project: { id: req.project.id }
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
             });
 
             const searchMovieTheatersResult = await placeService.searchMovieTheaters({
@@ -62,7 +60,7 @@ screeningEventRouter.get(
                 itemOffered: { typeOf: { $eq: ProductType.EventService } }
             });
 
-            const searchSellersResult = await sellerService.search({});
+            const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
@@ -531,10 +529,9 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const sellerService = new cinerino.service.Seller({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
 
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
@@ -753,10 +750,9 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         endpoint: <string>process.env.API_ENDPOINT,
         auth: user.authClient
     });
-    const sellerService = new cinerino.service.Seller({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
+    const sellerService = new chevre.service.Seller({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
 
     const screeningEventSeries = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({

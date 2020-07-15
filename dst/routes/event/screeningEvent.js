@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 上映イベント管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -45,10 +44,9 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
@@ -60,7 +58,7 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
         });
-        const searchSellersResult = yield sellerService.search({});
+        const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('events/screeningEvent/index', {
             movieTheaters: searchMovieTheatersResult.data,
             moment: moment,
@@ -456,10 +454,9 @@ function createEventFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
@@ -631,10 +628,9 @@ function createMultipleEventFromBody(req, user) {
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient
         });
-        const sellerService = new cinerino.service.Seller({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
         });
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
