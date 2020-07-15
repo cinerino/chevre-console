@@ -237,7 +237,7 @@ $(function () {
         var div = $('<div>')
 
         div.append($('<textarea>')
-            .val(JSON.stringify(seller.offers, null, '\t'))
+            .val(JSON.stringify(seller.makesOffer, null, '\t'))
             .addClass('form-control')
             .attr({
                 rows: '25',
