@@ -22,6 +22,7 @@ const projectsRouter = express_1.Router();
  */
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         // プロジェクト作成
         const projectService = new cinerinoapi.service.Project({
@@ -37,7 +38,7 @@ projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, 
             typeOf: chevre.factory.organizationType.Project,
             id: project.id,
             logo: project.logo,
-            name: project.name
+            name: (typeof project.name === 'string') ? project.name : (_a = project.name) === null || _a === void 0 ? void 0 : _a.ja
         });
         res.redirect('/home');
     }

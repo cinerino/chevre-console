@@ -35,7 +35,7 @@ projectsRouter.get<ParamsDictionary>(
                 typeOf: chevre.factory.organizationType.Project,
                 id: project.id,
                 logo: project.logo,
-                name: project.name
+                name: (typeof project.name === 'string') ? project.name : project.name?.ja
             });
 
             res.redirect('/home');

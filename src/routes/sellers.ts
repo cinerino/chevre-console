@@ -22,7 +22,6 @@ const sellersRouter = Router();
 sellersRouter.all<any>(
     '/add',
     ...validate(),
-    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -80,7 +79,6 @@ sellersRouter.all<any>(
 sellersRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
-    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         let message = '';
         let errors: any = {};
@@ -103,7 +101,7 @@ sellersRouter.all<ParamsDictionary>(
                     try {
                         req.body.id = req.params.id;
                         seller = await createFromBody(req, false);
-                        await sellerService.update({ id: seller.id, attributes: seller });
+                        await sellerService.update({ id: String(seller.id), attributes: seller });
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
 
@@ -158,7 +156,6 @@ sellersRouter.get(
 
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
-            // const identifierRegex = req.query.identifier;
 
             const searchConditions: chevre.factory.seller.ISearchConditions = {
                 limit: limit,
@@ -167,7 +164,7 @@ sellersRouter.get(
                 name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             };
 
-            let data: chevre.factory.seller.IOrganization<chevre.factory.seller.IAttributes<any>>[];
+            let data: chevre.factory.seller.ISeller[];
             const searchResult = await sellerService.search(searchConditions);
             data = searchResult.data;
 
@@ -199,10 +196,10 @@ sellersRouter.get(
     }
 );
 
-// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity
 async function createFromBody(
     req: Request, isNew: boolean
-): Promise<chevre.factory.seller.IOrganization<chevre.factory.seller.IAttributes<chevre.factory.organizationType>>> {
+): Promise<chevre.factory.seller.ISeller> {
     let nameFromJson: any = {};
     if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
         try {

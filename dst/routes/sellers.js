@@ -22,9 +22,7 @@ const NAME_MAX_LENGTH_CODE = 30;
 // 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const sellersRouter = express_1.Router();
-sellersRouter.all('/add', ...validate(), 
-// tslint:disable-next-line:max-func-body-length
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const sellerService = new chevre.service.Seller({
@@ -66,9 +64,7 @@ sellersRouter.all('/add', ...validate(),
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
-sellersRouter.all('/:id/update', ...validate(), 
-// tslint:disable-next-line:max-func-body-length
-(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const sellerService = new chevre.service.Seller({
@@ -86,7 +82,7 @@ sellersRouter.all('/:id/update', ...validate(),
                 try {
                     req.body.id = req.params.id;
                     seller = yield createFromBody(req, false);
-                    yield sellerService.update({ id: seller.id, attributes: seller });
+                    yield sellerService.update({ id: String(seller.id), attributes: seller });
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
@@ -128,7 +124,6 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        // const identifierRegex = req.query.identifier;
         const searchConditions = {
             limit: limit,
             page: page,
@@ -161,7 +156,7 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
     }
 }));
-// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         let nameFromJson = {};
