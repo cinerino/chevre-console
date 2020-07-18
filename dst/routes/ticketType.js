@@ -580,7 +580,9 @@ function createFromBody(req, isNew) {
                     appliesToMovieTicket: {
                         typeOf: chevre.factory.paymentMethodType.MovieTicket,
                         serviceType: appliesToMovieTicketType
-                    }
+                    },
+                    // 互換性維持対応
+                    appliesToMovieTicketType: appliesToMovieTicketType
                 }
                 : undefined), addOn: availableAddOn, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
