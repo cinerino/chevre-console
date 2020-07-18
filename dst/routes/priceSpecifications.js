@@ -290,7 +290,9 @@ function createMovieFromBody(req, isNew) {
             appliesToMovieTicket: {
                 typeOf: chevre.factory.paymentMethodType.MovieTicket,
                 serviceType: appliesToMovieTicketType
-            }
+            },
+            // 互換性維持対応
+            appliesToMovieTicketType: appliesToMovieTicketType
         }
         : undefined), (!isNew)
         ? {
@@ -298,7 +300,7 @@ function createMovieFromBody(req, isNew) {
                 ? { appliesToCategoryCode: 1 }
                 : undefined), (appliesToVideoFormat === undefined)
                 ? { appliesToVideoFormat: 1 }
-                : undefined), (appliesToMovieTicketType === undefined)
+                : undefined), (typeof appliesToMovieTicketType !== 'string' || appliesToMovieTicketType.length === 0)
                 ? { appliesToMovieTicketType: 1, appliesToMovieTicket: 1 }
                 : undefined)
         } : undefined);
