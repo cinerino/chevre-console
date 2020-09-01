@@ -8,6 +8,7 @@ const express = require("express");
 const subscriptions = require('../../subscriptions.json');
 const authentication_1 = require("../middlewares/authentication");
 const accountTitles_1 = require("./accountTitles");
+const actions_1 = require("./actions");
 const applications_1 = require("./applications");
 const auth_1 = require("./auth");
 const categoryCode_1 = require("./categoryCode");
@@ -51,6 +52,7 @@ router.use((req, res, next) => {
 });
 router.use('/home', home_1.default);
 router.use('/accountTitles', accountTitles_1.default);
+router.use('/actions', actions_1.default);
 router.use('/applications', applications_1.default);
 router.use('/categoryCodes', categoryCode_1.default);
 router.use('/creativeWorks/movie', movie_1.default);

@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - サブスクリプション設定を追加
 - 予約取引追加
 - 決済カードサービスを追加
+- アクション検索を追加
 
 ### Changed
 

@@ -1,0 +1,136 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOf[$eq]" class="bmd-label-static">
+                                タイプ
+                            </label>
+                            <select class="form-control" name="typeOf[$eq]">
+                                <option value="">タイプ選択</option>
+                                <% Object.keys(ActionType).forEach(function(key) { %>
+                                <option value="<%= ActionType[key] %>">
+                                    <%= ActionType[key] %>
+                                </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                        <div class="form-row">
+                            <!-- <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[id]" class="bmd-label-static">
+                                    イベントID
+                                </label>
+                                <input type="text" class="form-control" name="reservationFor[id]"
+                                    id="reservationFor[id]" placeholder="イベントID" />
+                            </div> -->
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>Type</th>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Agent</th>
+                            <th>Recipient</th>
+                            <th>Object</th>
+                            <th>Purpose</th>
+                            <th>Instrument</th>
+                            <th>Result </th>
+                            <th>Error</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="typeOf">
+                                $typeOf$
+                            </td>
+                            <td name="id">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="id" data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                            <td class="actionStatus" name="actionStatus">
+                                $actionStatus$
+                            </td>
+                            <td name="startDate|date:YY-MM-DD HH:mm">
+                                $startDate$
+                            </td>
+                            <td name="endDate|date:YY-MM-DD HH:mm">
+                                $endDate$
+                            </td>
+                            <td name="id__agent__agent.typeOf">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="agent"
+                                    data-id="$id$">
+                                    $agent.typeOf$
+                                </a>
+                            </td>
+                            <td name="id__recipient__recipient.typeOf">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="recipient"
+                                    data-id="$id$">
+                                    $recipient.typeOf$
+                                </a>
+                            </td>
+                            <td name="id__object__objectType">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="object"
+                                    data-id="$id$">
+                                    $objectType$
+                                </a>
+                            </td>
+                            <td name="id__purpose">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="purpose"
+                                    data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                            <td name="id__instrument">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="instrument"
+                                    data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                            <td name="id__result">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="result"
+                                    data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                            <td name="id__error">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="error"
+                                    data-id="$id$">
+                                    表示
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

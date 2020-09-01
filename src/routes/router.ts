@@ -10,6 +10,7 @@ const subscriptions: ISubscription[] = require('../../subscriptions.json');
 import authentication from '../middlewares/authentication';
 
 import accountTitlesRouter from './accountTitles';
+import actionsRouter from './actions';
 import applicationsRouter from './applications';
 import authRouter from './auth';
 import categoryCodesRouter from './categoryCode';
@@ -59,6 +60,7 @@ router.use((req, res, next) => {
 
 router.use('/home', homeRouter);
 router.use('/accountTitles', accountTitlesRouter);
+router.use('/actions', actionsRouter);
 router.use('/applications', applicationsRouter);
 router.use('/categoryCodes', categoryCodesRouter);
 router.use('/creativeWorks/movie', movieRouter);
