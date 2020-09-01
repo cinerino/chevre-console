@@ -218,7 +218,7 @@ async function createFromBody(
         }
     }
 
-    let paymentAccepted: chevre.factory.seller.IPaymentAccepted<any>[] | undefined;
+    let paymentAccepted: chevre.factory.seller.IPaymentAccepted[] | undefined;
     if (typeof req.body.paymentAcceptedStr === 'string' && req.body.paymentAcceptedStr.length > 0) {
         try {
             paymentAccepted = JSON.parse(req.body.paymentAcceptedStr);
