@@ -19,6 +19,14 @@
                                 <% }) %>
                             </select>
                         </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="object[paymentMethod][paymentMethodId][$eq]" class="bmd-label-static">
+                                決済ID
+                            </label>
+                            <input class="form-control" placeholder="決済ID"
+                                name="object[paymentMethod][paymentMethodId][$eq]"
+                                id="object[paymentMethod][paymentMethodId][$eq]" />
+                        </div>
                     </div>
 
                     <div class="advanced collapse">
@@ -92,28 +100,28 @@
                                     $objectType$
                                 </a>
                             </td>
-                            <td name="id__purpose">
+                            <td name="id__purpose__purposeType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="purpose"
                                     data-id="$id$">
-                                    表示
+                                    $purposeType$
                                 </a>
                             </td>
-                            <td name="id__instrument">
+                            <td name="id__instrument__instrumentType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="instrument"
                                     data-id="$id$">
-                                    表示
+                                    $instrumentType$
                                 </a>
                             </td>
-                            <td name="id__result">
+                            <td name="id__result__resultType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="result"
                                     data-id="$id$">
-                                    表示
+                                    $resultType$
                                 </a>
                             </td>
-                            <td name="id__error">
+                            <td name="id__error__errorType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="error"
                                     data-id="$id$">
-                                    表示
+                                    $errorType$
                                 </a>
                             </td>
                         </tr>

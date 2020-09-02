@@ -13,38 +13,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * アクションルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
-// import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
-// import * as moment from 'moment';
 const actionsRouter = express_1.Router();
 actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('actions/index', {
         message: '',
         ActionType: chevre.factory.actionType
-        // reservationStatusType: chevre.factory.reservationStatusType,
-        // reservationStatusTypes: reservationStatusTypes,
-        // ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        // movieTheaters: searchMovieTheatersResult.data
     });
 }));
-actionsRouter.get('/search', 
-// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const paymentMethodIdEq = (_c = (_b = (_a = req.query.object) === null || _a === void 0 ? void 0 : _a.paymentMethod) === null || _b === void 0 ? void 0 : _b.paymentMethodId) === null || _c === void 0 ? void 0 : _c.$eq;
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
             project: { id: { $eq: req.project.id } },
             typeOf: {
-                $eq: (typeof ((_a = req.query.typeOf) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
+                $eq: (typeof ((_d = req.query.typeOf) === null || _d === void 0 ? void 0 : _d.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
                     ? req.query.typeOf.$eq
                     : undefined
+            },
+            object: {
+                paymentMethod: {
+                    paymentMethodId: {
+                        $eq: (typeof paymentMethodIdEq === 'string' && paymentMethodIdEq.length > 0)
+                            ? paymentMethodIdEq
+                            : undefined
+                    }
+                }
             }
         };
         const { data } = yield actionService.search(searchConditions);
@@ -56,14 +57,19 @@ actionsRouter.get('/search',
             results: data.map((a) => {
                 var _a;
                 const objectType = (Array.isArray(a.object)) ? (_a = a.object[0]) === null || _a === void 0 ? void 0 : _a.typeOf : a.object.typeOf;
-                return Object.assign(Object.assign({}, a), { objectType
-                    // application: application,
-                    // reservationStatusTypeName: reservationStatusType?.name,
-                    // checkedInText: (t.checkedIn === true) ? 'done' : undefined,
-                    // attendedText: (t.attended === true) ? 'done' : undefined,
-                    // unitPriceSpec: unitPriceSpec,
-                    // ticketedSeat: ticketedSeatStr
-                 });
+                const resultType = (a.result !== undefined && a.result !== null) ? '表示' : '';
+                const errorType = (a.error !== undefined && a.error !== null) ? '表示' : '';
+                const purposeType = (a.purpose !== undefined && a.purpose !== null)
+                    ? String(a.purpose.typeOf)
+                    : '';
+                const instrumentType = (a.instrument !== undefined && a.instrument !== null)
+                    ? String(a.instrument.typeOf)
+                    : '';
+                return Object.assign(Object.assign({}, a), { objectType,
+                    resultType,
+                    errorType,
+                    purposeType,
+                    instrumentType });
             })
         });
     }

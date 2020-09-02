@@ -36,16 +36,6 @@ $(function () {
 
         showAttribute(id, $(this).attr('data-attribute'));
     });
-
-    // キャンセルボタンイベント
-    $(document).on('click', '.btn-cancel', function () {
-        cancelReservations();
-    });
-
-    // 更新ボタンイベント
-    $(document).on('click', '#modal-edit .btn-update', function () {
-        update();
-    });
 });
 
 function showAttribute(id, attribute) {
@@ -76,9 +66,8 @@ function showAttribute(id, attribute) {
 }
 
 function initializeView() {
-    $('.btn-cancel').addClass('disabled');
-
-    $('input[name="selectedReservations"]:checked').prop('checked', false);
+    // $('.btn-cancel').addClass('disabled');
+    // $('input[name="selectedReservations"]:checked').prop('checked', false);
 }
 
 /**

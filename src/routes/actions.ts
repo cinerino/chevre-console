@@ -2,10 +2,7 @@
  * アクションルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-// import * as cinerino from '@cinerino/sdk';
 import { Router } from 'express';
-// import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
-// import * as moment from 'moment';
 
 const actionsRouter = Router();
 
@@ -15,23 +12,20 @@ actionsRouter.get(
         res.render('actions/index', {
             message: '',
             ActionType: chevre.factory.actionType
-            // reservationStatusType: chevre.factory.reservationStatusType,
-            // reservationStatusTypes: reservationStatusTypes,
-            // ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            // movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
 
 actionsRouter.get(
     '/search',
-    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
         try {
             const actionService = new chevre.service.Action({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
+
+            const paymentMethodIdEq = req.query.object?.paymentMethod?.paymentMethodId?.$eq;
 
             const searchConditions: chevre.factory.action.ISearchConditions = {
                 limit: req.query.limit,
@@ -41,6 +35,15 @@ actionsRouter.get(
                     $eq: (typeof req.query.typeOf?.$eq === 'string' && req.query.typeOf.$eq.length > 0)
                         ? req.query.typeOf.$eq
                         : undefined
+                },
+                object: {
+                    paymentMethod: {
+                        paymentMethodId: {
+                            $eq: (typeof paymentMethodIdEq === 'string' && paymentMethodIdEq.length > 0)
+                                ? paymentMethodIdEq
+                                : undefined
+                        }
+                    }
                 }
             };
             const { data } = await actionService.search(searchConditions);
@@ -53,16 +56,22 @@ actionsRouter.get(
                 results: data.map((a) => {
 
                     const objectType = (Array.isArray(a.object)) ? a.object[0]?.typeOf : a.object.typeOf;
+                    const resultType = (a.result !== undefined && a.result !== null) ? '表示' : '';
+                    const errorType = (a.error !== undefined && a.error !== null) ? '表示' : '';
+                    const purposeType = (a.purpose !== undefined && a.purpose !== null)
+                        ? String(a.purpose.typeOf)
+                        : '';
+                    const instrumentType = (a.instrument !== undefined && a.instrument !== null)
+                        ? String(a.instrument.typeOf)
+                        : '';
 
                     return {
                         ...a,
-                        objectType
-                        // application: application,
-                        // reservationStatusTypeName: reservationStatusType?.name,
-                        // checkedInText: (t.checkedIn === true) ? 'done' : undefined,
-                        // attendedText: (t.attended === true) ? 'done' : undefined,
-                        // unitPriceSpec: unitPriceSpec,
-                        // ticketedSeat: ticketedSeatStr
+                        objectType,
+                        resultType,
+                        errorType,
+                        purposeType,
+                        instrumentType
                     };
                 })
             });
