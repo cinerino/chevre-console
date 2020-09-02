@@ -121,7 +121,6 @@
             </div>
         </li>
 
-        <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
         <% if (req.subscription.settings.useProducts) { %>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#services">
@@ -132,16 +131,17 @@
             </a>
             <div class="collapse" id="services">
                 <ul class="nav">
+                    <% if (process.env.USE_OFFER_ADD_ON === '1') { %>
                     <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
                         <a class="nav-link" href="/products?typeOf=Product">
                             <span class="sidebar-mini"><i class="material-icons">local_drink</i></span>
                             <span class="sidebar-normal">アドオン</span>
                         </a>
                     </li>
+                    <% } %>
                 </ul>
             </div>
         </li>
-        <% } %>
         <% } %>
 
         <%
