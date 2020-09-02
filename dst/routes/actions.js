@@ -22,27 +22,39 @@ actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
     });
 }));
 actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const paymentMethodIdEq = (_c = (_b = (_a = req.query.object) === null || _a === void 0 ? void 0 : _a.paymentMethod) === null || _b === void 0 ? void 0 : _b.paymentMethodId) === null || _c === void 0 ? void 0 : _c.$eq;
+        const paymentMethodAccountIdEq = (_c = (_b = (_a = req.query.object) === null || _a === void 0 ? void 0 : _a.paymentMethod) === null || _b === void 0 ? void 0 : _b.accountId) === null || _c === void 0 ? void 0 : _c.$eq;
+        const paymentMethodIdEq = (_f = (_e = (_d = req.query.object) === null || _d === void 0 ? void 0 : _d.paymentMethod) === null || _e === void 0 ? void 0 : _e.paymentMethodId) === null || _f === void 0 ? void 0 : _f.$eq;
+        const paymentMethodTypeEq = (_j = (_h = (_g = req.query.object) === null || _g === void 0 ? void 0 : _g.paymentMethod) === null || _h === void 0 ? void 0 : _h.typeOf) === null || _j === void 0 ? void 0 : _j.$eq;
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
             project: { id: { $eq: req.project.id } },
             typeOf: {
-                $eq: (typeof ((_d = req.query.typeOf) === null || _d === void 0 ? void 0 : _d.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
+                $eq: (typeof ((_k = req.query.typeOf) === null || _k === void 0 ? void 0 : _k.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
                     ? req.query.typeOf.$eq
                     : undefined
             },
             object: {
                 paymentMethod: {
+                    accountId: {
+                        $eq: (typeof paymentMethodAccountIdEq === 'string' && paymentMethodAccountIdEq.length > 0)
+                            ? paymentMethodAccountIdEq
+                            : undefined
+                    },
                     paymentMethodId: {
                         $eq: (typeof paymentMethodIdEq === 'string' && paymentMethodIdEq.length > 0)
                             ? paymentMethodIdEq
+                            : undefined
+                    },
+                    typeOf: {
+                        $eq: (typeof paymentMethodTypeEq === 'string' && paymentMethodTypeEq.length > 0)
+                            ? paymentMethodTypeEq
                             : undefined
                     }
                 }

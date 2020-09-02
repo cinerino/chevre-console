@@ -25,7 +25,9 @@ actionsRouter.get(
                 auth: req.user.authClient
             });
 
+            const paymentMethodAccountIdEq = req.query.object?.paymentMethod?.accountId?.$eq;
             const paymentMethodIdEq = req.query.object?.paymentMethod?.paymentMethodId?.$eq;
+            const paymentMethodTypeEq = req.query.object?.paymentMethod?.typeOf?.$eq;
 
             const searchConditions: chevre.factory.action.ISearchConditions = {
                 limit: req.query.limit,
@@ -38,9 +40,19 @@ actionsRouter.get(
                 },
                 object: {
                     paymentMethod: {
+                        accountId: {
+                            $eq: (typeof paymentMethodAccountIdEq === 'string' && paymentMethodAccountIdEq.length > 0)
+                                ? paymentMethodAccountIdEq
+                                : undefined
+                        },
                         paymentMethodId: {
                             $eq: (typeof paymentMethodIdEq === 'string' && paymentMethodIdEq.length > 0)
                                 ? paymentMethodIdEq
+                                : undefined
+                        },
+                        typeOf: {
+                            $eq: (typeof paymentMethodTypeEq === 'string' && paymentMethodTypeEq.length > 0)
+                                ? paymentMethodTypeEq
                                 : undefined
                         }
                     }
