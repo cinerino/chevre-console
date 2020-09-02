@@ -9,7 +9,7 @@ const sets: ICategoryCodeSet[] = [
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '口座区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType, name: 'レイティング区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType, name: '配給区分' },
-    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType, name: 'ムビチケ券種区分' },
+    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType, name: '決済カード(ムビチケ券種)区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType, name: 'オファーカテゴリー区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType, name: '座席区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType, name: 'サービス区分' },

@@ -43,7 +43,7 @@ priceSpecificationsRouter.get(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
-        // ムビチケ券種区分検索
+        // 決済カード(ムビチケ券種)区分検索
         const searchMovieTicketTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -162,7 +162,7 @@ priceSpecificationsRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
-        // ムビチケ券種区分検索
+        // 決済カード(ムビチケ券種)区分検索
         const searchMovieTicketTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -246,7 +246,7 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
-        // ムビチケ券種区分検索
+        // 決済カード(ムビチケ券種)区分検索
         const searchMovieTicketTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -406,7 +406,7 @@ function validate() {
         body('appliesToMovieTicket.serviceType')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '適用ムビチケ券種区分')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード(ムビチケ券種)区分')),
 
         body('appliesToVideoFormat')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)

@@ -18,12 +18,12 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
-                    高度な設定
+                    追加特性
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
-                    追加特性
+                    高度な設定
                 </a>
             </li>
         </ul>
@@ -147,6 +147,12 @@
             </div>
 
             <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
+            </div>
+
+            <div class="tab-pane" id="link3">
 
                 <div class="form-group bmd-form-group">
                     <label for="containsPlaceStr" class="bmd-label-static">
@@ -185,11 +191,6 @@
                     <div class="json-editor" id="offersStr"></div>
                 </div>
 
-            </div>
-            <div class="tab-pane" id="link3">
-                <%- include('../../common/part/_additionalProperty', {
-                    additionalProperty: forms.additionalProperty
-                }) %>
             </div>
         </div>
 

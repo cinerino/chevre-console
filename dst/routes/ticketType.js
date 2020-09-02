@@ -99,7 +99,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
-    // ムビチケ券種区分検索
+    // 決済カード(ムビチケ券種)区分検索
     const searchMovieTicketTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -243,7 +243,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
-        // ムビチケ券種区分検索
+        // 決済カード(ムビチケ券種)区分検索
         const searchMovieTicketTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },

@@ -16,11 +16,9 @@ const types: IProductType[] = [
     { codeValue: ProductType.EventService, name: '予約サービス' }
 ];
 
-if (process.env.USE_OFFER_ADD_ON === '1') {
-    types.push(
-        { codeValue: ProductType.Product, name: 'アドオン' }
-    );
-}
+types.push(
+    { codeValue: ProductType.Product, name: 'アドオン' }
+);
 
 const AVAILABLE_PRODUCT_TYPES = (typeof process.env.AVAILABLE_PRODUCT_TYPES === 'string')
     ? process.env.AVAILABLE_PRODUCT_TYPES.split(',')
