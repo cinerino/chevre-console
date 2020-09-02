@@ -335,6 +335,7 @@
                         <% } %>
                     </div>
 
+                    <% if (accountTypes.length > 0) { %>
                     <div class="form-group bmd-form-group col-md-3">
                         <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
                             適用口座
@@ -344,10 +345,10 @@
                                 <option value="" selected>指定しない</option>
                                 <% Object.values(accountTypes).forEach((accountType) => { %>
                                 <%
-                                const selected = Array.isArray(forms.eligibleMonetaryAmount)
-                                    && forms.eligibleMonetaryAmount.length > 0
-                                    && accountType.codeValue === forms.eligibleMonetaryAmount[0].currency;
-                                %>
+                                    const selected = Array.isArray(forms.eligibleMonetaryAmount)
+                                        && forms.eligibleMonetaryAmount.length > 0
+                                        && accountType.codeValue === forms.eligibleMonetaryAmount[0].currency;
+                                    %>
                                 <option value="<%= accountType.codeValue %>" <% if (selected) { %> selected<% } %>>
                                     <%= accountType.codeValue %> <%= accountType.name.ja %>
                                 </option>
@@ -372,6 +373,7 @@
                         </span>
                         <% } %>
                     </div>
+                    <% } %>
 
                     <div class="form-group bmd-form-group col-md-3">
                         <label for="eligibleSeatingType[][id]" class="bmd-label-static">
