@@ -355,8 +355,12 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
         ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
             ? {
                 appliesToMovieTicket: {
-                    typeOf: chevre.factory.paymentMethodType.MovieTicket,
-                    serviceType: appliesToMovieTicketType
+                    typeOf: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
+                    serviceType: appliesToMovieTicketType,
+                    serviceOutput: {
+                        // とりあえず決済方法は固定でムビチケ
+                        typeOf: chevre.factory.paymentMethodType.MovieTicket
+                    }
                 },
                 // 互換性維持対応
                 appliesToMovieTicketType: appliesToMovieTicketType

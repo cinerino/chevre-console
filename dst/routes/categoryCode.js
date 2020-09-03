@@ -145,16 +145,13 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     });
 }));
 function createMovieFromBody(req) {
-    return {
-        project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: 'CategoryCode',
-        codeValue: req.body.codeValue,
-        inCodeSet: {
+    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'CategoryCode', codeValue: req.body.codeValue, inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: req.body.inCodeSet.identifier
-        },
-        name: { ja: req.body.name.ja }
-    };
+        }, name: { ja: req.body.name.ja } }, (req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+        // とりあえず決済方法は固定でムビチケ
+        ? { paymentMethod: { typeOf: chevre.factory.paymentMethodType.MovieTicket } }
+        : undefined);
 }
 function validate() {
     return [

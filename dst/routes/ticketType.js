@@ -578,8 +578,12 @@ function createFromBody(req, isNew) {
             priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
                 ? {
                     appliesToMovieTicket: {
-                        typeOf: chevre.factory.paymentMethodType.MovieTicket,
-                        serviceType: appliesToMovieTicketType
+                        typeOf: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
+                        serviceType: appliesToMovieTicketType,
+                        serviceOutput: {
+                            // とりあえず決済方法は固定でムビチケ
+                            typeOf: chevre.factory.paymentMethodType.MovieTicket
+                        }
                     },
                     // 互換性維持対応
                     appliesToMovieTicketType: appliesToMovieTicketType

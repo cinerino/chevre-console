@@ -195,7 +195,11 @@ function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategor
             typeOf: 'CategoryCodeSet',
             identifier: req.body.inCodeSet.identifier
         },
-        name: <any>{ ja: req.body.name.ja }
+        name: <any>{ ja: req.body.name.ja },
+        ...(req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+            // とりあえず決済方法は固定でムビチケ
+            ? { paymentMethod: { typeOf: chevre.factory.paymentMethodType.MovieTicket } }
+            : undefined
     };
 }
 
