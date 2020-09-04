@@ -187,6 +187,8 @@ categoryCodesRouter.all<ParamsDictionary>(
 );
 
 function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategoryCode {
+    const paymentMethodType = req.body.paymentMethod?.typeOf;
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'CategoryCode',
@@ -197,8 +199,14 @@ function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategor
         },
         name: <any>{ ja: req.body.name.ja },
         ...(req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
-            // とりあえず決済方法は固定でムビチケ
-            ? { paymentMethod: { typeOf: chevre.factory.paymentMethodType.MovieTicket } }
+            ? {
+                paymentMethod: {
+                    typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
+                        ? paymentMethodType
+                        // デフォルトはとりあえず固定でムビチケ
+                        : chevre.factory.paymentMethodType.MovieTicket
+                }
+            }
             : undefined
     };
 }

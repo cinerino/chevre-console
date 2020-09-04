@@ -74,10 +74,27 @@
                         <% } %>
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane" id="link2">
-            </div>
-        </div>
 
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="paymentMethod[typeOf]" class="bmd-label-static">
+                            決済方法<span class="text-danger">(決済カード区分で必須)</span>
+                        </label>
+                        <select class="form-control" name="paymentMethod[typeOf]">
+                            <option value="MovieTicket" <% if (forms.paymentMethod !== undefined
+                            && forms.paymentMethod.typeOf === 'MovieTicket') { %> selected<% } %>>ムビチケ
+                            </option>
+                        </select>
+                        <% if (errors && errors['paymentMethod.typeOf']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['paymentMethod.typeOf'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="tab-pane" id="link2">
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
