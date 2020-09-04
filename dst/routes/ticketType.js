@@ -359,7 +359,7 @@ function searchAllAccountTitles(req) {
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -467,6 +467,7 @@ function createFromBody(req, isNew) {
             && req.body.priceSpecification.appliesToMovieTicket.serviceType.length > 0)
             ? req.body.priceSpecification.appliesToMovieTicket.serviceType
             : undefined;
+        const appliesToMovieTicketServiceOutputType = (_h = (_g = (_f = req.body.priceSpecification) === null || _f === void 0 ? void 0 : _f.appliesToMovieTicket) === null || _g === void 0 ? void 0 : _g.serviceOutput) === null || _h === void 0 ? void 0 : _h.typeOf;
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
         //     : undefined;
@@ -582,7 +583,10 @@ function createFromBody(req, isNew) {
                         serviceType: appliesToMovieTicketType,
                         serviceOutput: {
                             // とりあえず決済方法は固定でムビチケ
-                            typeOf: chevre.factory.paymentMethodType.MovieTicket
+                            typeOf: (typeof appliesToMovieTicketServiceOutputType === 'string'
+                                && appliesToMovieTicketServiceOutputType.length > 0)
+                                ? appliesToMovieTicketServiceOutputType
+                                : chevre.factory.paymentMethodType.MovieTicket
                         }
                     },
                     // 互換性維持対応

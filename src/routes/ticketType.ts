@@ -554,6 +554,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
             : undefined;
 
+    const appliesToMovieTicketServiceOutputType = req.body.priceSpecification?.appliesToMovieTicket?.serviceOutput?.typeOf;
+
     // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
     //     ? [body.eligibleCustomerType]
     //     : undefined;
@@ -706,7 +708,10 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                         serviceType: appliesToMovieTicketType,
                         serviceOutput: {
                             // とりあえず決済方法は固定でムビチケ
-                            typeOf: chevre.factory.paymentMethodType.MovieTicket
+                            typeOf: (typeof appliesToMovieTicketServiceOutputType === 'string'
+                                && appliesToMovieTicketServiceOutputType.length > 0)
+                                ? appliesToMovieTicketServiceOutputType
+                                : chevre.factory.paymentMethodType.MovieTicket
                         }
                     },
                     // 互換性維持対応
