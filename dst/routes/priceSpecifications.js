@@ -252,10 +252,11 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
     });
 }));
 function createMovieFromBody(req, isNew) {
-    var _a;
+    var _a, _b, _c;
     let appliesToCategoryCode;
     let appliesToVideoFormat;
     let appliesToMovieTicketType;
+    let appliesToMovieTicketServiceOutputTypeOf;
     switch (req.body.typeOf) {
         case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
             appliesToCategoryCode =
@@ -268,6 +269,7 @@ function createMovieFromBody(req, isNew) {
             appliesToCategoryCode = undefined;
             appliesToVideoFormat = req.body.appliesToVideoFormat;
             appliesToMovieTicketType = (_a = req.body.appliesToMovieTicket) === null || _a === void 0 ? void 0 : _a.serviceType;
+            appliesToMovieTicketServiceOutputTypeOf = (_c = (_b = req.body.appliesToMovieTicket) === null || _b === void 0 ? void 0 : _b.serviceOutput) === null || _c === void 0 ? void 0 : _c.typeOf;
             break;
         default:
     }
@@ -292,7 +294,7 @@ function createMovieFromBody(req, isNew) {
                 serviceType: appliesToMovieTicketType,
                 serviceOutput: {
                     // とりあえず決済方法は固定でムビチケ
-                    typeOf: chevre.factory.paymentMethodType.MovieTicket
+                    typeOf: appliesToMovieTicketServiceOutputTypeOf
                 }
             },
             // 互換性維持対応

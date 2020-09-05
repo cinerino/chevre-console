@@ -308,6 +308,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
     let appliesToCategoryCode: chevre.factory.categoryCode.ICategoryCode | undefined;
     let appliesToVideoFormat: string | undefined;
     let appliesToMovieTicketType: string | undefined;
+    let appliesToMovieTicketServiceOutputTypeOf: string | undefined;
 
     switch (req.body.typeOf) {
         case chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification:
@@ -323,6 +324,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
             appliesToCategoryCode = undefined;
             appliesToVideoFormat = req.body.appliesToVideoFormat;
             appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
+            appliesToMovieTicketServiceOutputTypeOf = req.body.appliesToMovieTicket?.serviceOutput?.typeOf;
 
             break;
 
@@ -359,7 +361,7 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
                     serviceType: appliesToMovieTicketType,
                     serviceOutput: {
                         // とりあえず決済方法は固定でムビチケ
-                        typeOf: chevre.factory.paymentMethodType.MovieTicket
+                        typeOf: appliesToMovieTicketServiceOutputTypeOf
                     }
                 },
                 // 互換性維持対応
