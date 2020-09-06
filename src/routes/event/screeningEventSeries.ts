@@ -517,7 +517,12 @@ function createEventFromBody(
     }) : [];
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
+    const unacceptedPaymentMethod: string[] = [];
+
     // ムビチケ除外の場合は対応決済方法を追加
+    if (req.body.mvtkFlg !== '1') {
+        unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
+    }
     Object.keys(chevre.factory.paymentMethodType)
         .forEach((key) => {
             if (acceptedPaymentMethod === undefined) {
@@ -536,7 +541,8 @@ function createEventFromBody(
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        acceptedPaymentMethod: acceptedPaymentMethod
+        unacceptedPaymentMethod: unacceptedPaymentMethod,
+        ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined
     };
 
     let subtitleLanguage: chevre.factory.language.ILanguage | undefined;

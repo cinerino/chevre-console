@@ -606,8 +606,12 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             .toDate();
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
+    const unacceptedPaymentMethod: string[] = [];
+
     // ムビチケ除外の場合は対応決済方法を追加
     if (req.body.mvtkExcludeFlg === '1') {
+        unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
+
         Object.keys(chevre.factory.paymentMethodType)
             .forEach((key) => {
                 if (acceptedPaymentMethod === undefined) {
@@ -655,9 +659,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             serviceType: serviceType,
             serviceOutput: serviceOutput
         },
+        unacceptedPaymentMethod: unacceptedPaymentMethod,
         validFrom: salesStartDate,
         validThrough: salesEndDate,
-        acceptedPaymentMethod: acceptedPaymentMethod,
+        ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
         ...{
             seller: {
                 typeOf: seller.typeOf,
@@ -878,8 +883,12 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         .toDate();
 
                 let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
+                const unacceptedPaymentMethod: string[] = [];
+
                 // ムビチケ除外の場合は対応決済方法を追加
                 if (mvtkExcludeFlgs[i] === '1') {
+                    unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
+
                     Object.keys(chevre.factory.paymentMethodType)
                         .forEach((key) => {
                             if (acceptedPaymentMethod === undefined) {
@@ -940,14 +949,15 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         serviceType: serviceType,
                         serviceOutput: serviceOutput
                     },
+                    unacceptedPaymentMethod: unacceptedPaymentMethod,
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,
-                    acceptedPaymentMethod: acceptedPaymentMethod,
                     seller: {
                         typeOf: seller.typeOf,
                         id: seller.id,
                         name: seller.name
-                    }
+                    },
+                    ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined
                 };
 
                 attributes.push({
