@@ -269,8 +269,9 @@ screeningEventSeriesRouter.get(
             });
             const results = data.map((event) => {
                 let mvtkFlg = 1;
-                if (event.offers !== undefined && Array.isArray(event.offers.acceptedPaymentMethod)
-                    && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+                const unacceptedPaymentMethod = event.offers?.unacceptedPaymentMethod;
+                if (Array.isArray(unacceptedPaymentMethod)
+                    && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
                     mvtkFlg = 0;
                 }
 
@@ -418,9 +419,9 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
         }
 
         let mvtkFlg = 1;
-        if (event.offers !== undefined
-            && Array.isArray(event.offers.acceptedPaymentMethod)
-            && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+        const unacceptedPaymentMethod = event.offers?.unacceptedPaymentMethod;
+        if (Array.isArray(unacceptedPaymentMethod)
+            && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
             mvtkFlg = 0;
         }
 

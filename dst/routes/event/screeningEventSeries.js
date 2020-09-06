@@ -237,9 +237,11 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
             }
         });
         const results = data.map((event) => {
+            var _a;
             let mvtkFlg = 1;
-            if (event.offers !== undefined && Array.isArray(event.offers.acceptedPaymentMethod)
-                && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+            const unacceptedPaymentMethod = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.unacceptedPaymentMethod;
+            if (Array.isArray(unacceptedPaymentMethod)
+                && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
                 mvtkFlg = 0;
             }
             let translationType = '';
@@ -281,6 +283,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
 screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -361,9 +364,9 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         }
     }
     let mvtkFlg = 1;
-    if (event.offers !== undefined
-        && Array.isArray(event.offers.acceptedPaymentMethod)
-        && event.offers.acceptedPaymentMethod.indexOf(chevre.factory.paymentMethodType.MovieTicket) < 0) {
+    const unacceptedPaymentMethod = (_d = event.offers) === null || _d === void 0 ? void 0 : _d.unacceptedPaymentMethod;
+    if (Array.isArray(unacceptedPaymentMethod)
+        && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
         mvtkFlg = 0;
     }
     let translationType = '';

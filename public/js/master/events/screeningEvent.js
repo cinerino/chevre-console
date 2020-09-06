@@ -945,9 +945,12 @@ function createScheduler() {
              * ムビチケ対応判定
              */
             isSupportMovieTicket: function (performance) {
-                return (performance.offers !== undefined
-                    && Array.isArray(performance.offers.acceptedPaymentMethod)
-                    && performance.offers.acceptedPaymentMethod.indexOf('MovieTicket') < 0);
+                // unacceptedPaymentMethodにMovieTicketは含まれていればムビチケ利用不可
+                var unaccepted = performance.offers !== undefined
+                    && Array.isArray(performance.offers.unacceptedPaymentMethod)
+                    && performance.offers.unacceptedPaymentMethod.indexOf('MovieTicket') >= 0;
+
+                return unaccepted;
             },
             /**
              * 追加特性取得performance.superEvent.additionalProperty
