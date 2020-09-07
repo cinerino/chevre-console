@@ -517,35 +517,39 @@ function createEventFromBody(
         return { typeOf: f, name: f };
     }) : [];
 
-    let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
-    let unacceptedPaymentMethod: string[] | undefined;
+    // let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
+    let unacceptedPaymentMethod: string[] | undefined = req.body.unacceptedPaymentMethod;
 
     // ムビチケ除外の場合は対応決済方法を追加
-    if (req.body.mvtkFlg !== '1') {
-        if (!Array.isArray(unacceptedPaymentMethod)) {
-            unacceptedPaymentMethod = [];
-        }
-        unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
+    if (typeof unacceptedPaymentMethod === 'string') {
+        unacceptedPaymentMethod = [unacceptedPaymentMethod];
     }
-    Object.keys(chevre.factory.paymentMethodType)
-        .forEach((key) => {
-            if (acceptedPaymentMethod === undefined) {
-                acceptedPaymentMethod = [];
-            }
+    // if (req.body.mvtkFlg !== '1') {
+    //     if (!Array.isArray(unacceptedPaymentMethod)) {
+    //         unacceptedPaymentMethod = [];
+    //     }
+    //     unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
+    // }
 
-            const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
-            if (req.body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
-                return;
-            }
+    // Object.keys(chevre.factory.paymentMethodType)
+    //     .forEach((key) => {
+    //         if (acceptedPaymentMethod === undefined) {
+    //             acceptedPaymentMethod = [];
+    //         }
 
-            acceptedPaymentMethod.push(paymentMethodType);
-        });
+    //         const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
+    //         if (req.body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
+    //             return;
+    //         }
+
+    //         acceptedPaymentMethod.push(paymentMethodType);
+    //     });
 
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
+        // ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
         ...(Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined
     };
 

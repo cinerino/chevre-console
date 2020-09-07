@@ -240,14 +240,27 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
-                        <label for="mvtkFlg" class="bmd-label-static">
-                            決済方法
+                        <label for="unacceptedPaymentMethod" class="bmd-label-static">
+                            利用不可決済方法
+                            <a href="javascript:void(0);" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>決済方法を利用不可に設定すると、その決済方法に適用されるオファーが利用できなくなります。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
                         </label>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox"
-                                    <% if (String(forms.mvtkFlg) === '1') { %> checked="checked" <% } %> value="1"
-                                    name="mvtkFlg">ムビチケ利用可
+                                <%
+                                let unaccepted = forms.offers !== undefined
+                                    && forms.offers !== null
+                                    && Array.isArray(forms.offers.unacceptedPaymentMethod)
+                                    && forms.offers.unacceptedPaymentMethod.indexOf('MovieTicket') >= 0;
+                                %>
+                                <input class="form-check-input" type="checkbox" <% if (unaccepted) { %>
+                                    checked="checked" <% } %> value="MovieTicket"
+                                    name="unacceptedPaymentMethod">ムビチケ決済を許可しない
                                 <span class="form-check-sign">
                                     <span class="check"></span>
                                 </span>
@@ -255,6 +268,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="tab-pane" id="link2">
                 <%- include('../../common/part/_additionalProperty', {
