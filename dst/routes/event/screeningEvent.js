@@ -523,9 +523,12 @@ function createEventFromBody(req) {
             : moment(`${String(req.body.onlineDisplayStartDate)}T${String(req.body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                 .toDate();
         let acceptedPaymentMethod;
-        const unacceptedPaymentMethod = [];
+        let unacceptedPaymentMethod;
         // ムビチケ除外の場合は対応決済方法を追加
         if (req.body.mvtkExcludeFlg === '1') {
+            if (!Array.isArray(unacceptedPaymentMethod)) {
+                unacceptedPaymentMethod = [];
+            }
             unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
             Object.keys(chevre.factory.paymentMethodType)
                 .forEach((key) => {
@@ -554,7 +557,7 @@ function createEventFromBody(req) {
                     typeOf: 'Ticket'
                 }
             };
-        const offers = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
+        const offers = Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
             // id: catalog.id,
             // name: catalog.name,
             typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
@@ -565,7 +568,7 @@ function createEventFromBody(req) {
             }, itemOffered: {
                 serviceType: serviceType,
                 serviceOutput: serviceOutput
-            }, unacceptedPaymentMethod: unacceptedPaymentMethod, validFrom: salesStartDate, validThrough: salesEndDate }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), {
+            }, validFrom: salesStartDate, validThrough: salesEndDate }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined), {
             seller: {
                 typeOf: seller.typeOf,
                 id: seller.id,
@@ -741,9 +744,12 @@ function createMultipleEventFromBody(req, user) {
                         : moment(`${String(req.body.onlineDisplayStartDate)}T${String(req.body.onlineDisplayStartTime)}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                     let acceptedPaymentMethod;
-                    const unacceptedPaymentMethod = [];
+                    let unacceptedPaymentMethod;
                     // ムビチケ除外の場合は対応決済方法を追加
                     if (mvtkExcludeFlgs[i] === '1') {
+                        if (!Array.isArray(unacceptedPaymentMethod)) {
+                            unacceptedPaymentMethod = [];
+                        }
                         unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
                         Object.keys(chevre.factory.paymentMethodType)
                             .forEach((key) => {
@@ -784,7 +790,7 @@ function createMultipleEventFromBody(req, user) {
                             typeOf: 'Ticket'
                         }
                     };
-                    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
+                    const offers = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
                         // id: ticketTypeGroup.id,
                         // name: ticketTypeGroup.name,
                         typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
@@ -795,11 +801,11 @@ function createMultipleEventFromBody(req, user) {
                         }, itemOffered: {
                             serviceType: serviceType,
                             serviceOutput: serviceOutput
-                        }, unacceptedPaymentMethod: unacceptedPaymentMethod, validFrom: salesStartDate, validThrough: salesEndDate, seller: {
+                        }, validFrom: salesStartDate, validThrough: salesEndDate, seller: {
                             typeOf: seller.typeOf,
                             id: seller.id,
                             name: seller.name
-                        } }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined);
+                        } }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined);
                     attributes.push(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEvent, doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), startDate: eventStartDate, endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), workPerformed: screeningEventSeries.workPerformed, location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined

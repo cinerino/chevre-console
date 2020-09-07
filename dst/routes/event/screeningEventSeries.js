@@ -432,9 +432,12 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         return { typeOf: f, name: f };
     }) : [];
     let acceptedPaymentMethod;
-    const unacceptedPaymentMethod = [];
+    let unacceptedPaymentMethod;
     // ムビチケ除外の場合は対応決済方法を追加
     if (req.body.mvtkFlg !== '1') {
+        if (!Array.isArray(unacceptedPaymentMethod)) {
+            unacceptedPaymentMethod = [];
+        }
         unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
     }
     Object.keys(chevre.factory.paymentMethodType)
@@ -448,7 +451,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
         }
         acceptedPaymentMethod.push(paymentMethodType);
     });
-    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, unacceptedPaymentMethod: unacceptedPaymentMethod }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined);
+    const offers = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined);
     let subtitleLanguage;
     if (req.body.translationType === '0') {
         subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };

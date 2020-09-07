@@ -606,10 +606,13 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             .toDate();
 
     let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
-    const unacceptedPaymentMethod: string[] = [];
+    let unacceptedPaymentMethod: string[] | undefined;
 
     // ムビチケ除外の場合は対応決済方法を追加
     if (req.body.mvtkExcludeFlg === '1') {
+        if (!Array.isArray(unacceptedPaymentMethod)) {
+            unacceptedPaymentMethod = [];
+        }
         unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
 
         Object.keys(chevre.factory.paymentMethodType)
@@ -659,10 +662,10 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             serviceType: serviceType,
             serviceOutput: serviceOutput
         },
-        unacceptedPaymentMethod: unacceptedPaymentMethod,
         validFrom: salesStartDate,
         validThrough: salesEndDate,
         ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
+        ...(Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined,
         ...{
             seller: {
                 typeOf: seller.typeOf,
@@ -883,10 +886,13 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         .toDate();
 
                 let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
-                const unacceptedPaymentMethod: string[] = [];
+                let unacceptedPaymentMethod: string[] | undefined;
 
                 // ムビチケ除外の場合は対応決済方法を追加
                 if (mvtkExcludeFlgs[i] === '1') {
+                    if (!Array.isArray(unacceptedPaymentMethod)) {
+                        unacceptedPaymentMethod = [];
+                    }
                     unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
 
                     Object.keys(chevre.factory.paymentMethodType)
@@ -949,7 +955,6 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         serviceType: serviceType,
                         serviceOutput: serviceOutput
                     },
-                    unacceptedPaymentMethod: unacceptedPaymentMethod,
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,
                     seller: {
@@ -957,7 +962,8 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         id: seller.id,
                         name: seller.name
                     },
-                    ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined
+                    ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
+                    ...(Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined
                 };
 
                 attributes.push({
