@@ -396,7 +396,6 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
                     typeOf: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
                     serviceType: appliesToMovieTicketType,
                     serviceOutput: {
-                        // とりあえず決済方法は固定でムビチケ
                         typeOf: appliesToMovieTicketServiceOutputTypeOf
                     }
                 },

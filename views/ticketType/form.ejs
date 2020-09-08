@@ -306,34 +306,29 @@
             <div class="tab-pane" id="link2">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="priceSpecification[appliesToMovieTicket][serviceType]" class="bmd-label-static">
+                        <label for="priceSpecification[appliesToMovieTicket][id]" class="bmd-label-static">
                             適用決済カード(ムビチケ券種)区分
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="priceSpecification[appliesToMovieTicket][serviceType]">
+                            <select class="form-control" name="priceSpecification[appliesToMovieTicket][id]">
                                 <option value="" selected>なし</option>
                                 <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
                                 <%
                                 var selected = forms.priceSpecification !== undefined
                                     && forms.priceSpecification.appliesToMovieTicket !== undefined
-                                    && movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicket.serviceType;
+                                    && (forms.priceSpecification.appliesToMovieTicket.id === movieTicketType.id
+                                        || (movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicket.serviceType
+                                            && movieTicketType.paymentMethod.typeOf === forms.priceSpecification.appliesToMovieTicket.serviceOutput.typeOf)
+                                        );
                                 %>
-                                <option value="<%= movieTicketType.codeValue %>" <% if (selected) { %> selected<% } %>>
-                                    <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                                <option value="<%= movieTicketType.id %>" <% if (selected) { %> selected<% } %>>
+                                    <%= movieTicketType.paymentMethod.typeOf %> <%= movieTicketType.codeValue %>
+                                    <%= movieTicketType.name.ja %>
                                 </option>
                                 <% }) %>
                             </select>
                             <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">区分の</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <select class="form-control"
-                                name="priceSpecification[appliesToMovieTicket][serviceOutput][typeOf]">
-                                <option value="MovieTicket">ムビチケ</option>
-                            </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
+                                <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
 

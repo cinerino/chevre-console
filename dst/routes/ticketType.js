@@ -359,7 +359,7 @@ function searchAllAccountTitles(req) {
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -463,11 +463,29 @@ function createFromBody(req, isNew) {
                 valueAddedTaxIncluded: true
             }
             : undefined;
-        const appliesToMovieTicketType = (typeof ((_e = (_d = req.body.priceSpecification) === null || _d === void 0 ? void 0 : _d.appliesToMovieTicket) === null || _e === void 0 ? void 0 : _e.serviceType) === 'string'
-            && req.body.priceSpecification.appliesToMovieTicket.serviceType.length > 0)
-            ? req.body.priceSpecification.appliesToMovieTicket.serviceType
-            : undefined;
-        const appliesToMovieTicketServiceOutputType = (_h = (_g = (_f = req.body.priceSpecification) === null || _f === void 0 ? void 0 : _f.appliesToMovieTicket) === null || _g === void 0 ? void 0 : _g.serviceOutput) === null || _h === void 0 ? void 0 : _h.typeOf;
+        let appliesToMovieTicketType;
+        let appliesToMovieTicketServiceOutputType;
+        // appliesToMovieTicketType =
+        //     (typeof req.body.priceSpecification?.appliesToMovieTicket?.serviceType === 'string'
+        //         && (<string>req.body.priceSpecification.appliesToMovieTicket.serviceType).length > 0)
+        //         ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
+        //         : undefined;
+        // appliesToMovieTicketServiceOutputType = req.body.priceSpecification?.appliesToMovieTicket?.serviceOutput?.typeOf;
+        if (typeof ((_e = (_d = req.body.priceSpecification) === null || _d === void 0 ? void 0 : _d.appliesToMovieTicket) === null || _e === void 0 ? void 0 : _e.id) === 'string'
+            && req.body.priceSpecification.appliesToMovieTicket.id.length > 0) {
+            const searchMovieTicketTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                id: { $eq: req.body.priceSpecification.appliesToMovieTicket.id },
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+            });
+            const movieTicketType = searchMovieTicketTypesResult.data.shift();
+            if (movieTicketType === undefined) {
+                throw new Error('適用決済カード区分が見つかりません');
+            }
+            appliesToMovieTicketType = movieTicketType.codeValue;
+            appliesToMovieTicketServiceOutputType = (_f = movieTicketType.paymentMethod) === null || _f === void 0 ? void 0 : _f.typeOf;
+        }
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
         //     : undefined;

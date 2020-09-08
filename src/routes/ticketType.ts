@@ -548,13 +548,31 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             }
             : undefined;
 
-    const appliesToMovieTicketType =
-        (typeof req.body.priceSpecification?.appliesToMovieTicket?.serviceType === 'string'
-            && (<string>req.body.priceSpecification.appliesToMovieTicket.serviceType).length > 0)
-            ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
-            : undefined;
+    let appliesToMovieTicketType: string | undefined;
+    let appliesToMovieTicketServiceOutputType: string | undefined;
+    // appliesToMovieTicketType =
+    //     (typeof req.body.priceSpecification?.appliesToMovieTicket?.serviceType === 'string'
+    //         && (<string>req.body.priceSpecification.appliesToMovieTicket.serviceType).length > 0)
+    //         ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
+    //         : undefined;
+    // appliesToMovieTicketServiceOutputType = req.body.priceSpecification?.appliesToMovieTicket?.serviceOutput?.typeOf;
 
-    const appliesToMovieTicketServiceOutputType = req.body.priceSpecification?.appliesToMovieTicket?.serviceOutput?.typeOf;
+    if (typeof req.body.priceSpecification?.appliesToMovieTicket?.id === 'string'
+        && (<string>req.body.priceSpecification.appliesToMovieTicket.id).length > 0) {
+        const searchMovieTicketTypesResult = await categoryCodeService.search({
+            limit: 1,
+            id: { $eq: req.body.priceSpecification.appliesToMovieTicket.id },
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+        });
+        const movieTicketType = searchMovieTicketTypesResult.data.shift();
+        if (movieTicketType === undefined) {
+            throw new Error('適用決済カード区分が見つかりません');
+        }
+
+        appliesToMovieTicketType = movieTicketType.codeValue;
+        appliesToMovieTicketServiceOutputType = movieTicketType.paymentMethod?.typeOf;
+    }
 
     // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
     //     ? [body.eligibleCustomerType]
