@@ -169,13 +169,19 @@ priceSpecificationsRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
 
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
+
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    let priceSpecification = createMovieFromBody(req, true);
+                    let priceSpecification = await createMovieFromBody(req, true);
                     const priceSpecificationService = new chevre.service.PriceSpecification({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -207,7 +213,8 @@ priceSpecificationsRouter.all<any>(
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );
@@ -261,6 +268,12 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             id: req.params.id
         });
 
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
+
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -268,7 +281,7 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             if (validatorResult.isEmpty()) {
                 // コンテンツDB登録
                 try {
-                    priceSpecification = { ...createMovieFromBody(req, false), id: priceSpecification.id };
+                    priceSpecification = { ...await createMovieFromBody(req, false), id: priceSpecification.id };
                     await priceSpecificationService.update(priceSpecification);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -299,12 +312,14 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             videoFormatTypes: searchVideoFormatTypesResult.data,
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );
 
-function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.priceSpecification.IPriceSpecification<any> {
+// tslint:disable-next-line:max-func-body-length
+async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre.factory.priceSpecification.IPriceSpecification<any>> {
     let appliesToCategoryCode: chevre.factory.categoryCode.ICategoryCode | undefined;
     let appliesToVideoFormat: string | undefined;
     let appliesToMovieTicketType: string | undefined;
@@ -321,10 +336,31 @@ function createMovieFromBody(req: Request, isNew: boolean): chevre.factory.price
             break;
 
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
+            // req.body.appliesToMovieTicket?.id
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const searchMovieTicketTypesResult = await categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                id: { $eq: req.body.appliesToMovieTicket?.id },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+            });
+            const movieTicketTypeCharge = searchMovieTicketTypesResult.data.shift();
+            if (movieTicketTypeCharge === undefined) {
+                throw new Error('適用決済カード区分が見つかりません');
+            }
+            appliesToMovieTicketType = movieTicketTypeCharge.codeValue;
+            appliesToMovieTicketServiceOutputTypeOf = movieTicketTypeCharge.paymentMethod?.typeOf;
+
+            // req.body.appliesToMovieTicket?.serviceTypeがコードの場合
+            // appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
+            // appliesToMovieTicketServiceOutputTypeOf = req.body.appliesToMovieTicket?.serviceOutput?.typeOf;
+
             appliesToCategoryCode = undefined;
             appliesToVideoFormat = req.body.appliesToVideoFormat;
-            appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
-            appliesToMovieTicketServiceOutputTypeOf = req.body.appliesToMovieTicket?.serviceOutput?.typeOf;
 
             break;
 
@@ -409,7 +445,7 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
 
-        body('appliesToMovieTicket.serviceType')
+        body('appliesToMovieTicket.id')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード(ムビチケ券種)区分')),
@@ -417,7 +453,7 @@ function validate() {
         body('appliesToVideoFormat')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'ムビチケ適用上映方式区分'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済カード(ムビチケ)適用上映方式区分'))
     ];
 
 }

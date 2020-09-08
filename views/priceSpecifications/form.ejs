@@ -128,35 +128,33 @@
                 <div class="form-row">
                     <div
                         class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                        <label for="appliesToMovieTicket[serviceType]" class="bmd-label-static">
+                        <label for="appliesToMovieTicket[id]" class="bmd-label-static">
                             適用決済カード(ムビチケ券種)区分
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="appliesToMovieTicket[serviceType]">
+                            <select class="form-control" name="appliesToMovieTicket[id]">
                                 <option value="" selected>選択してください</option>
                                 <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                                <option value="<%= movieTicketType.codeValue %>"
-                                    <% if (forms.appliesToMovieTicket !== undefined && movieTicketType.codeValue === forms.appliesToMovieTicket.serviceType) { %>
-                                    selected<% } %>>
-                                    <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                                <%
+                                const selected = forms.appliesToMovieTicket !== undefined 
+                                    && (forms.appliesToMovieTicket.id === movieTicketType.id
+                                    || (forms.appliesToMovieTicket.serviceType === movieTicketType.codeValue
+                                    && forms.appliesToMovieTicket.serviceOutput.typeOf === movieTicketType.paymentMethod.typeOf));
+                                %>
+                                <option value="<%= movieTicketType.id %>" <% if (selected) { %> selected<% } %>>
+                                    <%= movieTicketType.paymentMethod.typeOf %> <%= movieTicketType.codeValue %>
+                                    <%= movieTicketType.name.ja %>
                                 </option>
                                 <% }) %>
                             </select>
                             <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">区分の</span>
+                                <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
-                        <div class="input-group">
-                            <select class="form-control" name="appliesToMovieTicket[serviceOutput][typeOf]">
-                                <option value="MovieTicket"
-                                    <% if (forms.appliesToMovieTicket !== undefined && 'MovieTicket' === forms.appliesToMovieTicket.serviceOutput.typeOf) { %>
-                                    selected<% } %>>ムビチケ</option>
-                            </select>
-                        </div>
 
-                        <% if (errors && errors['appliesToMovieTicket.serviceType']) { %>
+                        <% if (errors && errors['appliesToMovieTicket.id']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['appliesToMovieTicket.serviceType'].msg %>
+                            <%- errors['appliesToMovieTicket.id'].msg %>
                         </span>
                         <% } %>
                     </div>
@@ -164,7 +162,7 @@
                     <div
                         class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
                         <label for="appliesToVideoFormat" class="bmd-label-static">
-                            ムビチケ適用上映方式
+                            決済カード(ムビチケ)適用上映方式
                         </label>
                         <select class="form-control" name="appliesToVideoFormat">
                             <option value="" selected>選択してください</option>

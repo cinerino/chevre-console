@@ -80,7 +80,8 @@ PS-02
                                         <option value="">選択してください</option>
                                         <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
                                         <option value="<%= movieTicketType.codeValue %>">
-                                            <%= movieTicketType.codeValue %> <%= movieTicketType.name.ja %>
+                                            <%= movieTicketType.paymentMethod.typeOf %> <%= movieTicketType.codeValue %>
+                                            <%= movieTicketType.name.ja %>
                                         </option>
                                         <% }) %>
                                     </select>
@@ -101,7 +102,7 @@ PS-02
                                     <th>名称</th>
                                     <th>適用区分</th>
                                     <th>適用決済カード(ムビチケ券種)区分</th>
-                                    <th>ムビチケ適用上映方式</th>
+                                    <th>決済カード(ムビチケ)適用上映方式</th>
                                     <th>金額</th>
                                 </tr>
                             </thead>
