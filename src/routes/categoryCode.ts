@@ -5,7 +5,7 @@ import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body, validationResult } from 'express-validator';
+import { body, Meta, validationResult } from 'express-validator';
 
 import * as Message from '../message';
 
@@ -90,6 +90,12 @@ categoryCodesRouter.all<any>(
             auth: req.user.authClient
         });
 
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
+
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -131,7 +137,8 @@ categoryCodesRouter.all<any>(
             errors: errors,
             forms: forms,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            categoryCodeSets: categoryCodeSets
+            categoryCodeSets: categoryCodeSets,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );
@@ -151,6 +158,12 @@ categoryCodesRouter.all<ParamsDictionary>(
         let categoryCode = await categoryCodeService.findById({
             id: req.params.id
         });
+
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
 
         if (req.method === 'POST') {
             // バリデーション
@@ -181,7 +194,8 @@ categoryCodesRouter.all<ParamsDictionary>(
             errors: errors,
             forms: forms,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            categoryCodeSets: categoryCodeSets
+            categoryCodeSets: categoryCodeSets,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );
@@ -230,7 +244,14 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+
+        body('paymentMethod.typeOf')
+            .if((_: any, { req }: Meta) => {
+                return req.body.inCodeSet?.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+            })
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))
     ];
 }
 

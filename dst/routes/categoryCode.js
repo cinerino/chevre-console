@@ -64,12 +64,18 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
     }
 }));
 categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const projectService = new chevre.service.Project({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -103,11 +109,13 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         errors: errors,
         forms: forms,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-        categoryCodeSets: categoryCodeSet_1.categoryCodeSets
+        categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
+        paymentServices: (_a = project.settings) === null || _a === void 0 ? void 0 : _a.paymentServices
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
 categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -117,6 +125,11 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     let categoryCode = yield categoryCodeService.findById({
         id: req.params.id
     });
+    const projectService = new chevre.service.Project({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -141,7 +154,8 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         errors: errors,
         forms: forms,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-        categoryCodeSets: categoryCodeSet_1.categoryCodeSets
+        categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
+        paymentServices: (_b = project.settings) === null || _b === void 0 ? void 0 : _b.paymentServices
     });
 }));
 function createMovieFromBody(req) {
@@ -178,7 +192,14 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('paymentMethod.typeOf')
+            .if((_, { req }) => {
+            var _a;
+            return ((_a = req.body.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+        })
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))
     ];
 }
 exports.default = categoryCodesRouter;
