@@ -239,6 +239,13 @@
                 </div>
 
                 <div class="form-row">
+                    <%
+                    let movieTicketPaymentServices = [];
+                    if (Array.isArray(paymentServices)) {
+                        movieTicketPaymentServices = paymentServices.filter((s) => s.typeOf === 'MovieTicket');
+                    }
+                    %>
+                    <% if (movieTicketPaymentServices.length > 0) { %>
                     <div class="form-group bmd-form-group col-md-12">
                         <label for="unacceptedPaymentMethod" class="bmd-label-static">
                             利用不可決済方法
@@ -250,23 +257,27 @@
                                 </span>
                             </a>
                         </label>
+
+                        <% movieTicketPaymentServices.forEach((s) => { %>
                         <div class="form-check form-check-inline">
                             <label class="form-check-label">
                                 <%
                                 let unaccepted = forms.offers !== undefined
                                     && forms.offers !== null
                                     && Array.isArray(forms.offers.unacceptedPaymentMethod)
-                                    && forms.offers.unacceptedPaymentMethod.indexOf('MovieTicket') >= 0;
+                                    && forms.offers.unacceptedPaymentMethod.indexOf(s.serviceOutput.typeOf) >= 0;
                                 %>
                                 <input class="form-check-input" type="checkbox" <% if (unaccepted) { %>
-                                    checked="checked" <% } %> value="MovieTicket"
-                                    name="unacceptedPaymentMethod">ムビチケ決済を許可しない
+                                    checked="checked" <% } %> value="<%= s.serviceOutput.typeOf %>"
+                                    name="unacceptedPaymentMethod"><%= s.name.ja %>決済を許可しない
                                 <span class="form-check-sign">
                                     <span class="check"></span>
                                 </span>
                             </label>
                         </div>
+                        <% })%>
                     </div>
+                    <% } %>
                 </div>
 
             </div>

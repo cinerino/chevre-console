@@ -31,6 +31,7 @@ const screeningEventSeriesRouter = Router();
 screeningEventSeriesRouter.all<any>(
     '/add',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -65,6 +66,12 @@ screeningEventSeriesRouter.all<any>(
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
         });
+
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
 
         let message = '';
         let errors: any = {};
@@ -127,7 +134,8 @@ screeningEventSeriesRouter.all<any>(
             movie: undefined,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            contentRatingTypes: searchContentRatingTypesResult.data
+            contentRatingTypes: searchContentRatingTypesResult.data,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );
@@ -382,6 +390,12 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
         }
 
+        const projectService = new chevre.service.Project({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const project = await projectService.findById({ id: req.project.id });
+
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -474,7 +488,8 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             movie: movie,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            contentRatingTypes: searchContentRatingTypesResult.data
+            contentRatingTypes: searchContentRatingTypesResult.data,
+            paymentServices: project.settings?.paymentServices
         });
     }
 );

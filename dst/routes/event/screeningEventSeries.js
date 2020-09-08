@@ -30,7 +30,10 @@ const NAME_MAX_LENGTH_CODE = 64;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 // import * as Message from '../../message';
 const screeningEventSeriesRouter = express_1.Router();
-screeningEventSeriesRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventSeriesRouter.all('/add', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -61,6 +64,11 @@ screeningEventSeriesRouter.all('/add', ...validate(), (req, res) => __awaiter(vo
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
     });
+    const projectService = new chevre.service.Project({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const project = yield projectService.findById({ id: req.project.id });
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -114,7 +122,8 @@ screeningEventSeriesRouter.all('/add', ...validate(), (req, res) => __awaiter(vo
         movie: undefined,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
-        contentRatingTypes: searchContentRatingTypesResult.data
+        contentRatingTypes: searchContentRatingTypesResult.data,
+        paymentServices: (_a = project.settings) === null || _a === void 0 ? void 0 : _a.paymentServices
     });
 }));
 screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -130,7 +139,7 @@ screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
     });
 }));
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _b, _c, _d;
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -150,8 +159,8 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
                 branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
             },
             workPerformed: {
-                identifiers: (typeof ((_a = req.query.workPerformed) === null || _a === void 0 ? void 0 : _a.identifier) === 'string' && ((_b = req.query.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier.length) > 0)
-                    ? [(_c = req.query.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier]
+                identifiers: (typeof ((_b = req.query.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier) === 'string' && ((_c = req.query.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier.length) > 0)
+                    ? [(_d = req.query.workPerformed) === null || _d === void 0 ? void 0 : _d.identifier]
                     : undefined
             }
         });
@@ -283,7 +292,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
 screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d;
+    var _e, _f;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -328,6 +337,11 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
     if (movie === undefined) {
         throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
     }
+    const projectService = new chevre.service.Project({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -364,7 +378,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         }
     }
     let mvtkFlg = 1;
-    const unacceptedPaymentMethod = (_d = event.offers) === null || _d === void 0 ? void 0 : _d.unacceptedPaymentMethod;
+    const unacceptedPaymentMethod = (_e = event.offers) === null || _e === void 0 ? void 0 : _e.unacceptedPaymentMethod;
     if (Array.isArray(unacceptedPaymentMethod)
         && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
         mvtkFlg = 0;
@@ -402,7 +416,8 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         movie: movie,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
-        contentRatingTypes: searchContentRatingTypesResult.data
+        contentRatingTypes: searchContentRatingTypesResult.data,
+        paymentServices: (_f = project.settings) === null || _f === void 0 ? void 0 : _f.paymentServices
     });
 }));
 screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
