@@ -1,30 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productTypes = exports.ProductType = void 0;
-var ProductType;
-(function (ProductType) {
-    ProductType["Account"] = "Account";
-    ProductType["EventService"] = "EventService";
-    ProductType["MembershipService"] = "MembershipService";
-    ProductType["PaymentCard"] = "PaymentCard";
-    // PointCard = 'PointCard',
-    ProductType["Product"] = "Product";
-})(ProductType = exports.ProductType || (exports.ProductType = {}));
+const chevre = require("@chevre/api-nodejs-client");
+exports.ProductType = chevre.factory.product.ProductType;
 const types = [
-    { codeValue: ProductType.EventService, name: '予約サービス' }
+    { codeValue: exports.ProductType.EventService, name: '予約サービス' },
+    { codeValue: exports.ProductType.Product, name: 'アドオン' }
 ];
-types.push({ codeValue: ProductType.Product, name: 'アドオン' });
 const AVAILABLE_PRODUCT_TYPES = (typeof process.env.AVAILABLE_PRODUCT_TYPES === 'string')
     ? process.env.AVAILABLE_PRODUCT_TYPES.split(',')
     : [];
-if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.MembershipService)) {
-    types.push({ codeValue: ProductType.MembershipService, name: 'メンバーシップ' });
+if (AVAILABLE_PRODUCT_TYPES.includes(exports.ProductType.MembershipService)) {
+    types.push({ codeValue: exports.ProductType.MembershipService, name: 'メンバーシップ' });
 }
-if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.Account)) {
-    types.push({ codeValue: ProductType.Account, name: '口座' });
+if (AVAILABLE_PRODUCT_TYPES.includes(exports.ProductType.Account)) {
+    types.push({ codeValue: exports.ProductType.Account, name: '口座' });
 }
-if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.PaymentCard)) {
-    types.push({ codeValue: ProductType.PaymentCard, name: 'ペイメントカード' }
+if (AVAILABLE_PRODUCT_TYPES.includes(exports.ProductType.PaymentCard)) {
+    types.push({ codeValue: exports.ProductType.PaymentCard, name: 'ペイメントカード' }
     // { codeValue: ProductType.PointCard, name: 'ポイントカード' }
     );
 }

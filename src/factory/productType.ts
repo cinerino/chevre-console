@@ -1,11 +1,6 @@
-export enum ProductType {
-    Account = 'Account',
-    EventService = 'EventService',
-    MembershipService = 'MembershipService',
-    PaymentCard = 'PaymentCard',
-    // PointCard = 'PointCard',
-    Product = 'Product'
-}
+import * as chevre from '@chevre/api-nodejs-client';
+
+export import ProductType = chevre.factory.product.ProductType;
 
 export interface IProductType {
     codeValue: string;
@@ -13,12 +8,9 @@ export interface IProductType {
 }
 
 const types: IProductType[] = [
-    { codeValue: ProductType.EventService, name: '予約サービス' }
-];
-
-types.push(
+    { codeValue: ProductType.EventService, name: '予約サービス' },
     { codeValue: ProductType.Product, name: 'アドオン' }
-);
+];
 
 const AVAILABLE_PRODUCT_TYPES = (typeof process.env.AVAILABLE_PRODUCT_TYPES === 'string')
     ? process.env.AVAILABLE_PRODUCT_TYPES.split(',')
