@@ -20,6 +20,10 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
+const ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH = (process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH !== undefined)
+    ? Number(process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH)
+    // tslint:disable-next-line:no-magic-numbers
+    : 256;
 const NUM_ADDITIONAL_PROPERTY = 5;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
@@ -177,6 +181,7 @@ movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, vo
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
         errors = validatorResult.mapped();
+        console.error(errors);
         if (validatorResult.isEmpty()) {
             // 作品DB登録
             try {
@@ -326,7 +331,16 @@ function validate() {
             .isNumeric()
             .isLength({ max: NAME_MAX_LENGTH_NAME_MINUTES }),
         express_validator_1.body('headline', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('additionalProperty.*.name')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH }),
+        express_validator_1.body('additionalProperty.*.value')
+            .if((value) => String(value).length > 0)
+            .isString()
+            .isLength({ max: ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH })
         // colName = '公開日';
         // body('datePublished')
         //     .notEmpty()
