@@ -62,10 +62,9 @@ $(function () {
 
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
-        var branchCode = $(this).attr('data-branchCode');
-        console.log('showing additionalProperty...branchCode:', branchCode);
+        var id = $(this).attr('data-id');
 
-        showAdditionalProperty(branchCode);
+        showAdditionalProperty(id);
     });
 
     // ルーム情報
@@ -76,20 +75,27 @@ $(function () {
         showContainsPlace(id);
     });
 
+    // ルーム情報
+    $(document).on('click', '.showHasPOS', function (event) {
+        var id = $(this).attr('data-id');
+
+        showHasPOS(id);
+    });
+
     /**
      * 追加特性を見る
      */
-    function showAdditionalProperty(branchCode) {
+    function showAdditionalProperty(id) {
         var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
-            return data.branchCode === branchCode
+            return data.id === id
         });
         if (movieTheater === undefined) {
-            alert('施設' + branchCode + 'が見つかりません');
+            alert('施設' + id + 'が見つかりません');
 
             return;
         }
 
-        var modal = $('#modal-additionalProperty');
+        var modal = $('#modal-place');
         var div = $('<div>')
 
         if (Array.isArray(movieTheater.additionalProperty)) {
@@ -187,5 +193,32 @@ $(function () {
         }).always(function (data) {
             $('#loadingModal').modal('hide');
         });
+    }
+
+    function showHasPOS(id) {
+        var movieTheater = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (movieTheater === undefined) {
+            alert('施設' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-place');
+        var div = $('<div>')
+
+        div.append($('<textarea>')
+            .val(JSON.stringify(movieTheater.hasPOS, null, '\t'))
+            .addClass('form-control')
+            .attr({
+                rows: '25',
+                disabled: ''
+            })
+        );
+
+        modal.find('.modal-title').text('POS');
+        modal.find('.modal-body').html(div);
+        modal.modal();
     }
 });

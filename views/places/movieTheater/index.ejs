@@ -81,11 +81,14 @@ MT-01
                                             <span>表示</span>
                                         </a>
                                     </td>
-                                    <td name="posCount">$posCount$</td>
+                                    <td name="id__posCount">
+                                        <a href="javascript:void(0)" class="showHasPOS" data-id="$id$">
+                                            <span>$posCount$</span>
+                                        </a>
+                                    </td>
                                     <td name="parentOrganizationName"">$parentOrganizationName$</td>
-                                    <td name=" branchCode" class="">
-                                        <a href="javascript:void(0)" class="showAdditionalProperty"
-                                            data-branchCode="$branchCode$">
+                                    <td name="id__additionalProperty" class="">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                             <span>表示</span>
                                         </a>
                                     </td>
@@ -109,7 +112,7 @@ MT-01
         </div>
     </div>
 
-    <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+    <div class="modal fade" id="modal-place" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
