@@ -647,6 +647,8 @@ function validate() {
             .isNumeric()
             .isLength({ max: CHAGE_MAX_LENGTH })
             .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください')
     ];
 }
 exports.default = offersRouter;
