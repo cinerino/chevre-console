@@ -436,8 +436,9 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '金額'))
             .isInt()
-            // tslint:disable-next-line:no-magic-numbers
-            .withMessage(() => '数値を入力してください'),
+            .withMessage(() => '数値を入力してください')
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
 
         body('appliesToCategoryCode')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.CategoryCodeChargeSpecification)

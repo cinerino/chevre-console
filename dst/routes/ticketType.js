@@ -689,28 +689,38 @@ function validateFormAdd() {
         // 購入席単位追加
         express_validator_1.body('seatReservationUnit', Message.Common.required.replace('$fieldName$', '購入席単位追加'))
             .notEmpty(),
-        express_validator_1.body('price', Message.Common.required.replace('$fieldName$', '発生金額'))
-            .notEmpty(),
-        express_validator_1.body('price', Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+        express_validator_1.body('price')
+            .notEmpty()
+            .withMessage(() => Message.Common.required.replace('$fieldName$', '発生金額'))
             .isNumeric()
-            .isLength({ max: CHAGE_MAX_LENGTH }),
-        express_validator_1.body('accountsReceivable', Message.Common.required.replace('$fieldName$', '売上金額'))
-            .notEmpty(),
-        express_validator_1.body('accountsReceivable', Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(() => Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
+        express_validator_1.body('accountsReceivable')
+            .notEmpty()
+            .withMessage(() => Message.Common.required.replace('$fieldName$', '売上金額'))
             .isNumeric()
-            .isLength({ max: CHAGE_MAX_LENGTH }),
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(() => Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
         express_validator_1.body('eligibleMonetaryAmount.*.value')
             .optional()
             .if((value) => typeof value === 'string' && value.length > 0)
             .isNumeric()
             .withMessage('数値を入力してください')
-            .isLength({ max: 10 }),
+            .isLength({ max: 10 })
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
         express_validator_1.body('eligibleSubReservation.*.amountOfThisGood')
             .optional()
             .if((value) => typeof value === 'string' && value.length > 0)
             .isNumeric()
             .withMessage('数値を入力してください')
             .isLength({ max: 10 })
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください')
     ];
 }
 exports.default = ticketTypeMasterRouter;
