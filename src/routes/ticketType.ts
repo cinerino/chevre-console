@@ -147,7 +147,7 @@ ticketTypeMasterRouter.all<any>(
         });
 
         const searchApplicationsResult = await iamService.searchMembers({
-            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
 
         res.render('ticketType/add', {
@@ -331,7 +331,7 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
             const accountTitles = await searchAllAccountTitles(req);
 
             const searchApplicationsResult = await iamService.searchMembers({
-                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
             });
 
             res.render('ticketType/update', {

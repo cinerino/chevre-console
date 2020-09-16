@@ -125,7 +125,7 @@ offersRouter.all<any>(
         });
 
         const searchApplicationsResult = await iamService.searchMembers({
-            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
 
         res.render('offers/add', {
@@ -235,7 +235,7 @@ offersRouter.all<ParamsDictionary>(
             });
 
             const searchApplicationsResult = await iamService.searchMembers({
-                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
             });
 
             res.render('offers/update', {
@@ -320,7 +320,7 @@ offersRouter.get(
             if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
                 const searchApplicationsResult = await iamService.searchMembers({
                     member: {
-                        typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication },
+                        typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication },
                         id: { $in: offer.availableAtOrFrom.map((a: any) => a.id) }
                     }
                 });

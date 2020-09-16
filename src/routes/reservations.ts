@@ -64,7 +64,7 @@ reservationsRouter.get(
             });
 
             const searchApplicationsResult = await iamService.searchMembers({
-                member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+                member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
             });
             const applications = searchApplicationsResult.data.map((d) => d.member);
 

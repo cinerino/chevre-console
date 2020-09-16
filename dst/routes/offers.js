@@ -107,7 +107,7 @@ offersRouter.all('/add', ...validate(),
         project: { ids: [req.project.id] }
     });
     const searchApplicationsResult = yield iamService.searchMembers({
-        member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
     });
     res.render('offers/add', {
         message: message,
@@ -198,7 +198,7 @@ offersRouter.all('/:id/update', ...validate(),
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
         const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
         res.render('offers/update', {
             message: message,
@@ -272,7 +272,7 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
         if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
             const searchApplicationsResult = yield iamService.searchMembers({
                 member: {
-                    typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication },
+                    typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication },
                     id: { $in: offer.availableAtOrFrom.map((a) => a.id) }
                 }
             });

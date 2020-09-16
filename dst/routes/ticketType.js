@@ -122,7 +122,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         limit: 100
     }));
     const searchApplicationsResult = yield iamService.searchMembers({
-        member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
     });
     res.render('ticketType/add', {
         message: message,
@@ -266,7 +266,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         }));
         const accountTitles = yield searchAllAccountTitles(req);
         const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
         res.render('ticketType/update', {
             message: message,

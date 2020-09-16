@@ -24,7 +24,7 @@ applicationsRouter.get(
             const searchConditions: any = {
                 limit: limit,
                 member: {
-                    typeOf: { $eq: cinerino.factory.creativeWorkType.WebApplication },
+                    typeOf: { $eq: cinerino.factory.chevre.creativeWorkType.WebApplication },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
                 }
             };
