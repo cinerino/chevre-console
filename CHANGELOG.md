@@ -8,19 +8,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- カテゴリーコード管理を追加
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.0.0 - 2020-09-16
+
+### Added
+
+- 区分管理を追加
 - プロダクト管理を追加
-- アドオン管理を追加
 - 券種の高度な名称編集を追加
 - スクリーン管理を追加
 - 座席管理を追加
-- 会員プログラム管理を追加
 - オファー管理を追加
 - オファーカタログ管理を追加
 - イベント固有のキャパシティ設定による在庫管理を実装
 - サブスクリプション設定を追加
 - 予約取引追加
-- 決済カードサービスを追加
 - アクション検索を追加
 
 ### Changed
@@ -40,11 +51,3 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 券種検索条件をオファー検索条件に統合
 - 劇場上映作品の上映方式を非必須に変更
 - イベントオファーの販売者を選択できるように調整
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
