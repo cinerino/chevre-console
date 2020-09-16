@@ -1,0 +1,15 @@
+<%- contentFor('title') %>
+コンテンツ登録
+<%- contentFor('displayId') %>
+Aa-9
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/master/creativeWorks/movieForm.js"></script>
+
+<%- contentFor('body') %>
+<form method="post">
+    <%- include('../../common/messages') %>
+
+    <%- include('form', { forms: forms, isNew: true }) %>
+</form>

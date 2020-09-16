@@ -1,0 +1,77 @@
+<%- contentFor('title') %>
+予約取引内容確認
+<%- contentFor('displayId') %>
+RT-00
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+
+<%- contentFor('body') %>
+
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">
+            下記内容で予約取引を実行しようとしています...
+        </h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <dl class="row">
+            <% const firstReservation = transaction.object.acceptedOffer[0].itemOffered.serviceOutput; %>
+            <dt class="col-md-2">取引番号</dt>
+            <dd class="col-md-10"><%= transaction.transactionNumber %></dd>
+            <dt class="col-md-2">イベント名称</dt>
+            <dd class="col-md-10"><%= event.name.ja %></dd>
+            <dt class="col-md-2">期間</dt>
+            <dd class="col-md-10">
+                <%= moment(event.startDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
+                -
+                <%= moment(event.endDate).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm') %>
+            </dd>
+            <dt class="col-md-2">施設</dt>
+            <dd class="col-md-10"><%= event.superEvent.location.name.ja%></dd>
+            <dt class="col-md-2">ルーム</dt>
+            <dd class="col-md-10"><%= event.location.name.ja %></dd>
+            <dt class="col-md-2">セクション</dt>
+            <dd class="col-md-10">
+                <% if (firstReservation.reservedTicket.ticketedSeat !== undefined) { %>
+                <%= firstReservation.reservedTicket.ticketedSeat.seatSection %>
+                <% } %>
+            </dd>
+            <dt class="col-md-2">座席</dt>
+            <dd class="col-md-10">
+                <%= transaction.object.acceptedOffer.length %> 席
+                <br>
+                <%=
+                transaction.object.acceptedOffer.filter((o) => o.itemOffered.serviceOutput.reservedTicket.ticketedSeat !== undefined)
+                    .map((o) => o.itemOffered.serviceOutput.reservedTicket.ticketedSeat.seatNumber)
+                    .join(' ');
+                %>
+            </dd>
+            <dt class="col-md-2">追加テキスト</dt>
+            <dd class="col-md-10"><%= firstReservation.additionalTicketText %></dd>
+        </dl>
+    </div>
+    <!-- /.card-body -->
+
+    <!-- form start -->
+    <div class="card-footer">
+        <form role="form" method="post" action="/transactions/reserve/<%= transaction.transactionNumber %>/cancel">
+            <button type="submit" class="btn btn-default">中止</button>
+        </form>
+
+        <form role="form" method="post">
+            <button type="submit" class="btn btn-primary">取引確定</button>
+    </div>
+</div>
+<!-- /.card -->
+
+<!-- general form elements -->
+<div class="card card-primary">
+    <!-- <div class="card-header">
+        <h3 class="card-title">Quick Example</h3>
+    </div> -->
+    <!-- /.card-header -->
+
+</div>
+<!-- /.card -->

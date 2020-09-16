@@ -1,0 +1,26 @@
+<footer class="footer">
+    <div class="container-fluid">
+        <nav class="float-left">
+            <ul>
+                <!-- <li>
+                    <a href="#">
+                        About Us
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        Licenses
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+        <div class="copyright float-right">
+            &copy;
+            <script>
+                document.write(new Date().getFullYear())
+            </script>, made by
+            <a href="https://motionpicture.jp" target="_blank">Motion Picture</a>. <b>Version</b> <%= version %>
+            <b>Project</b> <%= req.project.id %>[<%= req.subscription.identifier %>]
+        </div>
+    </div>
+</footer>

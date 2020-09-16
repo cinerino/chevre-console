@@ -1,0 +1,66 @@
+<%- contentFor('title') %>
+予約管理
+<%- contentFor('displayId') %>
+Aa-11
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/reservations/index.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="#">
+                <i class="material-icons">refresh</i> 更新</a>
+            <a class="btn btn-primary btn-link" data-toggle="collapse" href=".advanced" role="button"
+                aria-expanded="false">
+                <i class="material-icons">filter_list</i> 高度な検索</a>
+            <a class="btn btn-primary btn-cancel disabled" href="#">
+                <i class="material-icons">cancel</i> キャンセル</a>
+        </div>
+
+        <%- include('./_dataTables', {  }) %>
+    </div>
+
+    <%- include('show') %>
+
+    <div class="modal fade" id="modal-reservation" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-edit" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-primary btn-update" href="#">
+                        <i class="material-icons">save</i> 保存</a>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../common/master/_loading') %>

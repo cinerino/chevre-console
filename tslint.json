@@ -11,15 +11,29 @@
         "arrow-return-shorthand": [
             true
         ],
+        "await-promise": [
+            true,
+            "Bluebird"
+        ],
+        "curly": true,
         "export-name": false,
         "import-name": false,
         "interface-over-type-literal": true,
         "linebreak-style": [
-            "LF",
-            true
+            true,
+            "LF"
         ],
+        "newline-per-chained-call": true,
         "no-any": false,
         "no-backbone-get-set-outside-model": false,
+        "no-console": [
+            true,
+            "debug",
+            "info",
+            "log",
+            "trace",
+            "warn"
+        ],
         "no-default-export": false,
         "no-internal-module": true,
         "no-magic-numbers": true,

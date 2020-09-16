@@ -1,0 +1,50 @@
+// * {
+//     box-sizing: border-box;
+// }
+
+.scheduler {
+    margin: 0 auto;
+    overflow: auto;
+    width: 100%;
+    overflow-x: auto;
+    background-color: #FFF;
+    table {
+        min-width: 100%;
+    }
+    .table-header {
+        overflow-y: scroll;
+        width: max-content;
+        min-width: 100%;
+    }
+    .scrollable-body {
+        margin-top: -2px;
+        height: 480px;
+        overflow: auto;
+        width: max-content;
+        min-width: 100%;
+    }
+    
+    .screen {
+        position: relative;
+    }
+
+    .performance {
+        position: absolute;
+        &:hover {
+            z-index: 10;
+        }
+    }
+}
+
+.performance-edit-modal {
+    td {
+        padding: 10px;
+    }
+    .screening-time {
+        margin-bottom: 0;
+        select {
+            display: inline-block;
+            width: auto;
+        }
+    }
+}

@@ -1,0 +1,15 @@
+<%- contentFor('title') %>
+科目分類編集
+<%- contentFor('displayId') %>
+AT-08
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/master/accountTitles/accountTitleCategory/form.js"></script>
+
+<%- contentFor('body') %>
+<form method="post">
+    <%- include('../../common/messages') %>
+
+    <%- include('form', { forms: forms, isNew: false }) %>
+</form>

@@ -1,0 +1,177 @@
+<%- contentFor('title') %>
+施設コンテンツ検索
+<%- contentFor('displayId') %>
+Aa-3
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/events/screeningEventSeries/index.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/events/screeningEventSeries/add">
+                <i class="material-icons">add</i> 登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i> 更新</a>
+        </div>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../../common/master/_hidden') %>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="locationBranchCode" class="bmd-label-static">
+                                        施設
+                                    </label>
+                                    <select class="form-control" name="locationBranchCode">
+                                        <option value="">選択してください</option>
+                                        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
+                                        <% for (const movieTheater of movieTheaters) { %>
+                                        <option value="<%= movieTheater.branchCode %>">
+                                            <%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                        <% } else { %>
+                                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
+                                        <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                        <% } %>
+                                    </select>
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="movieIdentifier" class="bmd-label-static">
+                                        コンテンツ
+                                    </label>
+                                    <select class="form-control" name="workPerformed[identifier]"
+                                        id="workPerformed[identifier]" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input class="form-control" name="name" id="name" placeholder="" maxlength=64
+                                        value="">
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containsEnded" class="bmd-label-static">
+                                    </label>
+                                    <div class="form-check">
+                                        <label class="form-check-label" for="containsEnded">
+                                            <input class="form-check-input" type="checkbox" name="containsEnded"
+                                                value="1" id="containsEnded">
+                                            終了コンテンツを含む
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>施設</th>
+                                    <th>コンテンツ</th>
+                                    <th class="text-left">名称</th>
+                                    <th>開始</th>
+                                    <th>終了</th>
+                                    <th>上映方式</th>
+                                    <th>追加特性</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow" eventId="$id$">
+                                    <td name="id__id">
+                                        <a target="_blank" href="/events/screeningEventSeries/$id$/update">
+                                            $id$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td name="location.id__location.name.ja|slice">
+                                        <a target="_blank"
+                                            href="/places/movieTheater/$location.id$/update">$location.name.ja$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
+                                    </td>
+                                    <td name="workPerformed.id__workPerformed.identifier__workPerformed.name|slice">
+                                        <a target="_blank"
+                                            href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
+                                    </td>
+                                    <td name="name.ja|slice">
+                                        $name.ja$
+                                    </td>
+                                    <td name="startDate|date:YYYY-MM-DD HH:mm:ss">$startDate$</td>
+                                    <td name="endDate|date:YYYY-MM-DD HH:mm:ss">$endDate$</td>
+                                    <td name="videoFormat.0.typeOf__videoFormat.1.typeOf__videoFormat.2.typeOf">
+                                        $videoFormat.0.typeOf$ $videoFormat.1.typeOf$ $videoFormat.2.typeOf$
+                                    </td>
+                                    <td name="id__additionalProperty">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
+                                    <td name="id">
+                                        <a target="_blank" href="/events/screeningEventSeries/$id$/update">
+                                            <i class="material-icons" style="font-size: 1.2em;">edit</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../common/master/_loading') %>

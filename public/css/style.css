@@ -1,85 +1,242 @@
-.mb-x-small {
-  margin-bottom: 5px; }
+.datepicker.dropdown-menu {
+  opacity: 1;
+  transform: scale(1); }
 
-.mb-small {
-  margin-bottom: 10px; }
+.datepicker-days th,
+.datepicker-days td {
+  padding: 0.5rem; }
 
-.mb-middle {
-  margin-bottom: 20px; }
+.datepicker-days td.active {
+  background-image: none !important;
+  background-color: #007bff !important; }
 
-.mb-large {
-  margin-bottom: 40px; }
+.datepicker-days th.dow:first-child,
+.datepicker-days td:first-child {
+  color: #f00; }
 
-.mb-x-large {
-  margin-bottom: 60px; }
+.datepicker-days th.dow:last-child,
+.datepicker-days td:last-child {
+  color: #00f; }
 
-.side-navi .active a {
-  pointer-events: none; }
+.bootstrap-datetimepicker-widget table td.active,
+.bootstrap-datetimepicker-widget table td.active:hover {
+  background-color: #337ab7;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); }
 
-header .logo {
-  padding: 10px;
-  width: 60px; }
+.bootstrap-datetimepicker-widget table td span.active,
+.bootstrap-datetimepicker-widget table td i.active {
+  background-color: #337ab7;
+  color: #fff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25); }
 
-header .title {
-  font-size: 30px;
-  margin: 0;
-  display: inline-block;
-  vertical-align: middle; }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px; }
+  @media (max-width: 767.98px) {
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px; } }
+
+::-webkit-scrollbar-track {
+  background-color: rgba(85, 59, 59, 0.1); }
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5); }
+
+html, body {
+  height: 100%; }
+
+body {
+  text-size-adjust: 100%;
+  background-attachment: fixed; }
+
+.pointer {
+  cursor: pointer; }
+
+.nowrap {
+  white-space: nowrap; }
+
+.overflow-hidden {
+  overflow: hidden; }
+
+.text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis; }
+
+.text-x-small {
+  font-size: 10px; }
+
+.text-small {
+  font-size: 0.8rem; }
+
+.text-large {
+  font-size: 1.4rem; }
+
+.text-x-large {
+  font-size: 2rem; }
+
+.text-xx-large {
+  font-size: 2.5rem; }
+
+.bg-transparent {
+  background-color: transparent !important; }
+
+.bg-white {
+  background-color: #FFF !important; }
+
+.text-white {
+  color: #FFF !important; }
+
+.border-white {
+  border-color: #FFF !important; }
+
+.bg-black {
+  background-color: #000 !important; }
+
+.text-black {
+  color: #000 !important; }
+
+.border-black {
+  border-color: #000 !important; }
+
+.bg-dark-gray {
+  background-color: #666 !important; }
+
+.text-dark-gray {
+  color: #666 !important; }
+
+.border-dark-gray {
+  border-color: #666 !important; }
+
+.bg-gray {
+  background-color: #AAA !important; }
+
+.text-gray {
+  color: #AAA !important; }
+
+.border-gray {
+  border-color: #AAA !important; }
+
+.bg-light-gray {
+  background-color: #EEE !important; }
+
+.text-light-gray {
+  color: #EEE !important; }
+
+.border-light-gray {
+  border-color: #EEE !important; }
+
+.scroll-horizontal .table {
+  min-width: 736px; }
+
+.modal {
+  overflow-y: auto !important; }
+
+#loadingModal .modal-content {
+  box-shadow: none; }
+
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 90px;
+  height: 90px;
+  overflow: hidden; }
+
+.loader {
+  margin: 60px auto;
+  position: relative;
+  text-indent: -9999em;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-left-color: #FFF;
+  transform: translateZ(0);
+  animation: load8 1.1s infinite linear; }
+
+.process {
+  opacity: 1;
+  z-index: 2000; }
+  .process .text {
+    margin-top: 120px; }
+
+@keyframes fadein {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
+@keyframes loading {
+  30% {
+    transform: scaleY(2); } }
+
+@keyframes load8 {
+  0% {
+    transform: rotate(0deg); }
+  100% {
+    transform: rotate(360deg); } }
+
+.json-editor h3, .json-editor th {
+  color: #000; }
+
+.json-editor .card {
+  overflow: auto; }
+
+.json-editor .row > .col-md-2 {
+  flex: 0 0 100%;
+  max-width: 100%; }
+  .json-editor .row > .col-md-2 ul {
+    display: flex;
+    flex-direction: row !important; }
+
+.json-editor .row > .col-md-10 {
+  flex: 0 0 100%;
+  max-width: 100%; }
 
 .table thead tr th {
-  vertical-align: middle; }
+  font-size: inherit; }
 
-.table tbody tr td {
-  vertical-align: middle; }
+.table tbody tr td, .table tbody tr th, .table tfoot tr td, .table tfoot tr th, .table thead tr td, .table thead tr th {
+  padding: 6px 4px; }
 
-.login .container {
-  padding: 20px; }
+.card {
+  margin-top: 0; }
 
-.login .center-block {
-  max-width: 400px; }
+.input-group-text {
+  font-size: inherit; }
 
-* {
-  box-sizing: border-box; }
+.bmd-form-group .form-control, .bmd-form-group input::placeholder {
+  font-size: inherit; }
+
+.select2 {
+  margin-top: .4375rem; }
+
+.nav-pills.nav-pills-dark .nav-item .nav-link.active, .nav-pills.nav-pills-dark .nav-item .nav-link.active:focus, .nav-pills.nav-pills-dark .nav-item .nav-link.active:hover {
+  background-color: #999; }
 
 .scheduler {
   margin: 0 auto;
   overflow: auto;
   width: 100%;
-  height: 500px; }
+  overflow-x: auto;
+  background-color: #FFF; }
   .scheduler table {
-    min-width: 100%;
-    border-collapse: collapse;
-    border: 2px solid #ccc; }
-  .scheduler td {
-    border-right: 1px solid #ccc;
-    border-left: 1px solid #ccc; }
-  .scheduler .header {
-    text-align: center;
-    font-size: 12px;
-    border-bottom: 1px solid #ccc; }
-  .scheduler .times {
-    width: auto; }
-    .scheduler .times .time {
-      font-size: 12px;
-      padding: 0 10px; }
+    min-width: 100%; }
+  .scheduler .table-header {
+    overflow-y: scroll;
+    width: max-content;
+    min-width: 100%; }
+  .scheduler .scrollable-body {
+    margin-top: -2px;
+    height: 480px;
+    overflow: auto;
+    width: max-content;
+    min-width: 100%; }
   .scheduler .screen {
     position: relative; }
   .scheduler .performance {
-    position: absolute;
-    padding: 0px 2px; }
-    .scheduler .performance .inner {
-      cursor: pointer;
-      border-radius: 3px;
-      padding: 5px;
-      border: 1px solid #a7dbff;
-      background-color: #d5eeff;
-      height: 100%;
-      word-wrap: break-word;
-      font-size: 11px;
-      overflow: hidden; }
-      .scheduler .performance .inner:hover {
-        transition: all 0.2s;
-        background-color: #a7dbff; }
+    position: absolute; }
+    .scheduler .performance:hover {
+      z-index: 10; }
 
 .performance-edit-modal td {
   padding: 10px; }

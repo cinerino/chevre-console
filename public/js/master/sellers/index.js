@@ -1,0 +1,279 @@
+$(function () {
+    var ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
+
+    // datepickerセット
+    $('.datepicker').datepicker({
+        language: 'ja'
+    })
+
+    //Enter押下で検索
+    $('form').on('keydown', function () {
+        if (window.event.keyCode == 13) $('.btn-ok').click();
+    });
+
+    // 共通一覧表示初期セット・ページャセット
+    $.CommonMasterList.init('#templateRow', '#searchedCount');
+    $.CommonMasterList.pager('#pager', ITEMS_ON_PAGE, function (pageNumber) {
+        search(pageNumber);
+    });
+
+    // 検索ボタンイベント
+    var conditions = {};
+    $(document).on('click', '.btn-ok', function () {
+        // 検索条件取得
+        conditions = $.fn.getDataFromForm('form');
+        // 検索API呼び出し
+        search(1);
+    });
+
+    $('.btn-ok').click();
+
+    //--------------------------------
+    // 検索API呼び出し
+    //--------------------------------
+    function search(pageNumber) {
+        conditions['page'] = pageNumber;
+        var url = '/sellers/getlist';
+        // alert(JSON.stringify(conditions));
+        $.ajax({
+            dataType: 'json',
+            url: url,
+            cache: false,
+            type: 'GET',
+            data: conditions,
+            beforeSend: function () {
+                $('#loadingModal').modal({ backdrop: 'static' });
+            }
+        }).done(function (data) {
+            if (data.success) {
+                var dataCount = (data.count) ? (data.count) : 0;
+                // 一覧表示
+                if ($.CommonMasterList.bind(data.results, dataCount, pageNumber)) {
+                    $('#list').show();
+                } else {
+                    $('#list').hide();
+                }
+            }
+        }).fail(function (jqxhr, textStatus, error) {
+            alert("fail");
+        }).always(function (data) {
+            $('#loadingModal').modal('hide');
+        });
+    }
+
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var id = $(this).attr('data-id');
+
+        showAdditionalProperty(id);
+    });
+
+    $(document).on('click', '.showPaymentAccepted', function (event) {
+        var id = $(this).attr('data-id');
+
+        showPaymentAccepted(id);
+    });
+
+    $(document).on('click', '.showLocation', function (event) {
+        var id = $(this).attr('data-id');
+
+        showLocation(id);
+    });
+
+    $(document).on('click', '.showOffers', function (event) {
+        var id = $(this).attr('data-id');
+
+        showOffers(id);
+    });
+
+    $(document).on('click', '.showHasMerchantReturnPolicy', function (event) {
+        var id = $(this).attr('data-id');
+
+        showHasMerchantReturnPolicy(id);
+    });
+
+    $('#application').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: 'アプリ選択',
+        allowClear: true,
+        ajax: {
+            url: '/applications/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (application) {
+                        return {
+                            id: application.id,
+                            text: application.name
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    /**
+     * 追加特性を見る
+     */
+    function showAdditionalProperty(id) {
+        var offer = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (offer === undefined) {
+            alert('オファー' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-seller');
+        var div = $('<div>')
+
+        if (Array.isArray(offer.additionalProperty)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('Name'),
+                    $('<th>').text('Value')
+                ])
+            ]);
+            tbody.append(offer.additionalProperty.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.name),
+                    $('<td>').text(property.value)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
+        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+
+    function showPaymentAccepted(id) {
+        var seller = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (seller === undefined) {
+            alert('販売者' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-seller');
+        var div = $('<div>')
+
+        div.append($('<textarea>')
+            .val(JSON.stringify(seller.paymentAccepted, null, '\t'))
+            .addClass('form-control')
+            .attr({
+                rows: '25',
+                disabled: ''
+            })
+        );
+
+        modal.find('.modal-title').text('対応決済方法');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+
+    function showLocation(id) {
+        var seller = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (seller === undefined) {
+            alert('販売者' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-seller');
+        var div = $('<div>')
+
+        div.append($('<textarea>')
+            .val(JSON.stringify(seller.location, null, '\t'))
+            .addClass('form-control')
+            .attr({
+                rows: '25',
+                disabled: ''
+            })
+        );
+
+        modal.find('.modal-title').text('Location');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+
+    function showOffers(id) {
+        var seller = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (seller === undefined) {
+            alert('販売者' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-seller');
+        var div = $('<div>')
+
+        div.append($('<textarea>')
+            .val(JSON.stringify(seller.makesOffer, null, '\t'))
+            .addClass('form-control')
+            .attr({
+                rows: '25',
+                disabled: ''
+            })
+        );
+
+        modal.find('.modal-title').text('オファー');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+
+    function showHasMerchantReturnPolicy(id) {
+        var seller = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (seller === undefined) {
+            alert('販売者' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-seller');
+        var div = $('<div>')
+
+        div.append($('<textarea>')
+            .val(JSON.stringify(seller.hasMerchantReturnPolicy, null, '\t'))
+            .addClass('form-control')
+            .attr({
+                rows: '25',
+                disabled: ''
+            })
+        );
+
+        modal.find('.modal-title').text('返品ポリシー');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+});

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja" class="" style="font-size:14px;">
+<%- include('./head') %>
+
+<body>
+    <div class="wrapper ">
+        <div class="sidebar" data-color="purple" data-background-color="black">
+            <!--
+              Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+      
+              Tip 2: you can also add an image using data-image tag
+          -->
+            <div class="logo">
+                <a href="/" class="simple-text logo-normal">
+                    CHEVRE Console
+                </a>
+            </div>
+
+            <%- include('./side') %>
+        </div>
+        <div class="main-panel">
+            <%- include('./navbar') %>
+
+            <div class="content">
+                <div class="container-fluid">
+                    <%- body %>
+                </div>
+            </div>
+
+            <%- include('./footer') %>
+        </div>
+    </div>
+    <script>
+        $(function () {
+            var disp_id = "#<%= displayId %>";
+            $(disp_id).html($(disp_id).text());
+        });
+    </script>
+</body>
+
+</html>

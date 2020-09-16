@@ -1,0 +1,57 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="codeValue" class="bmd-label-static">
+                            コード<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=30
+                            value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
+                        <span class="bmd-help">半角30文字以内でご入力ください</span>
+                        <% if (errors && errors['codeValue']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['codeValue'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="name" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="name" id="name" placeholder="" maxlength=64
+                            value="<%= forms.name %>">
+                        <span class="bmd-help">64文字以内でご入力ください</span>
+                        <% if (errors && errors['name']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

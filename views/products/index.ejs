@@ -1,0 +1,155 @@
+<%- contentFor('title') %>
+プロダクト検索
+<%- contentFor('displayId') %>
+PR-00
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/products/index.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="card">
+    <div class="card-body search searchProducts">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/products/new?typeOf=<%= req.query.typeOf %>">
+                <i class="material-icons">add</i> 登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i> 更新</a>
+        </div>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../common/master/_hidden') %>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="typeOf[$eq]" class="bmd-label-static">
+                                        タイプ
+                                    </label>
+                                    <select class="form-control" name="typeOf[$eq]">
+                                        <% productTypes.forEach((productType) => { %>
+                                        <option value="<%= productType.codeValue %>"><%= productType.name %></option>
+                                        <% }) %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="offers[$elemMatch][seller][id]" class="bmd-label-static">
+                                        販売者
+                                    </label>
+                                    <select class="form-control" name="offers[$elemMatch][seller][id]">
+                                        <option value="">選択してください</option>
+                                        <% for (const seller of sellers) { %>
+                                        <option value="<%= seller.id %>">
+                                            <%= seller.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-3">
+                                    <label for="offers[$elemMatch][validFrom]" class="bmd-label-static">
+                                        販売期間
+                                    </label>
+
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="offers[$elemMatch][validFrom]" id="offers[$elemMatch][validFrom]"
+                                            value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">から</span>
+                                        </div>
+                                        <input class="form-control datepicker" placeholder="" maxlength=10
+                                            name="offers[$elemMatch][validThrough]"
+                                            id="offers[$elemMatch][validThrough]" value="" />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">まで</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>プロダクトID</th>
+                                    <th>名称</th>
+                                    <th>カタログ</th>
+                                    <th>Offers</th>
+                                    <th>ServiceOutput</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow">
+                                    <td name="id__productID">
+                                        <a target="_blank" href="/products/$id$">
+                                            $productID$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td name="name.ja">
+                                        $name.ja$
+                                    </td>
+                                    <td name="hasOfferCatalog.id">
+                                        $hasOfferCatalog.id$
+                                    </td>
+                                    <td name="id__offers">
+                                        <a href="javascript:void(0)" class="showOffers" data-id="$id$">
+                                            表示
+                                        </a>
+                                    </td>
+                                    <td name="id__serviceOutput">
+                                        <a href="javascript:void(0)" class="showServiceOutput" data-id="$id$">
+                                            表示
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-product" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../common/master/_loading') %>

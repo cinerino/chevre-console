@@ -1,0 +1,216 @@
+<div class="sidebar-wrapper">
+    <ul class="nav">
+        <li class="nav-item <%= (displayId === 'HO-01') ? 'active': ''; %>">
+            <a class="nav-link" href="/home">
+                <i class="material-icons">home</i>
+                <p>Home</p>
+            </a>
+        </li>
+
+        <%
+        let placesShow = false;
+        if (displayId.slice(0, 3) === 'MT-' || displayId.slice(0, 3) === 'SR-' || displayId.slice(0, 3) === 'ST-' || displayId.slice(0, 4) === 'SRS-') {
+            placesShow = true;
+        }
+        %>
+        <li class="nav-item<% if (placesShow) { %> active<% } %>">
+            <a class="nav-link" data-toggle="collapse" href="#places">
+                <i class="material-icons">place</i>
+                <p> 施設
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse<% if (placesShow) { %> show<% } %>" id="places">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'MT-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/movieTheater">
+                            <span class="sidebar-mini"><i class="material-icons">business</i></span>
+                            <span class="sidebar-normal">施設(劇場)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'SR-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/screeningRoom">
+                            <span class="sidebar-mini"><i class="material-icons">theaters</i></span>
+                            <span class="sidebar-normal">ルーム(スクリーン)</span>
+                        </a>
+                    </li>
+
+                    <% if (req.subscription.settings.useSeats) { %>
+                    <li class="nav-item <%= (displayId === 'SRS-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/screeningRoomSection">
+                            <span class="sidebar-mini"><i class="material-icons">view_compact</i></span>
+                            <span class="sidebar-normal">セクション</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'ST-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/places/seat">
+                            <span class="sidebar-mini"><i class="material-icons">event_seat</i></span>
+                            <span class="sidebar-normal">座席</span>
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item <%= (displayId === 'Aa-10') ? 'active': ''; %>">
+            <a class="nav-link" href="/creativeWorks/movie">
+                <i class="material-icons">movie</i>
+                <p>コンテンツ(作品)</p>
+            </a>
+        </li>
+
+        <%
+        let eventsShow = false;
+        if (displayId === 'Aa-3' || displayId === 'Aa-4') {
+            eventsShow = true;
+        }
+        %>
+        <li class="nav-item<% if (eventsShow) { %> active<% } %>">
+            <a class="nav-link" data-toggle="collapse" href="#events">
+                <i class="material-icons">event</i>
+                <p> イベント
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse<% if (eventsShow) { %> show<% } %>" id="events">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'Aa-3') ? 'active': ''; %>">
+                        <a class="nav-link" href="/events/screeningEventSeries">
+                            <span class="sidebar-mini"><i class="icon far fa-calendar"></i></span>
+                            <span class="sidebar-normal">施設コンテンツ</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'Aa-4') ? 'active': ''; %>">
+                        <a class="nav-link" href="/events/screeningEvent">
+                            <span class="sidebar-mini"><i class="icon far fa-calendar-alt"></i></span>
+                            <span class="sidebar-normal">スケジュール</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        <%
+        let offersShow = false;
+        if (displayId.slice(0, 3) === 'OC-' || displayId.slice(0, 3) === 'OF-') {
+            offersShow = true;
+        }
+        %>
+        <li class="nav-item<% if (offersShow) { %> active<% } %>">
+            <a class="nav-link" data-toggle="collapse" href="#offers">
+                <i class="material-icons">local_offer</i>
+                <p> オファー
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse<% if (offersShow) { %> show<% } %>" id="offers">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'OF-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/offers">
+                            <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
+                            <span class="sidebar-normal">単価オファー(券種)</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/offerCatalogs">
+                            <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
+                            <span class="sidebar-normal">カタログ(券種グループ)</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        <% if (req.subscription.settings.useProducts) { %>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#services">
+                <i class="material-icons">payment</i>
+                <p> プロダクト
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse" id="services">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
+                        <a class="nav-link" href="/products?typeOf=Product">
+                            <span class="sidebar-mini"><i class="icon fas fa-glasses"></i></span>
+                            <span class="sidebar-normal">アドオン</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <% } %>
+
+        <% if (req.subscription.settings.usePriceSpecifications) { %>
+        <li class="nav-item <%= (displayId === 'PS-02') ? 'active': ''; %>">
+            <a class="nav-link" href="/priceSpecifications">
+                <i class="material-icons">attach_money</i>
+                <p>価格仕様<span class="badge badge-secondary ml-2">Preview</span></p>
+            </a>
+        </li>
+        <% } %>
+
+        <%
+        let offersCategoryCodes = false;
+        if (displayId.slice(0, 3) === 'CC-') {
+            offersCategoryCodes = true;
+        }
+        %>
+        <% if (req.subscription.settings.useCategoryCodes) { %>
+        <li class="nav-item <%= (offersCategoryCodes) ? 'active': ''; %>">
+            <a class="nav-link" href="/categoryCodes">
+                <i class="material-icons">category</i>
+                <p>区分</b>
+                </p>
+            </a>
+        </li>
+        <% } %>
+
+        <%
+        let offersAccountTitles = false;
+        if (displayId.slice(0, 3) === 'AT-') {
+            offersAccountTitles = true;
+        }
+        %>
+        <% if (req.subscription.settings.useAccountTitles) { %>
+        <li class="nav-item <% if (offersAccountTitles) { %>active<% } %>">
+            <a class="nav-link" data-toggle="collapse" href="#accountTitles">
+                <i class="material-icons">account_balance</i>
+                <p>勘定科目
+                    <b class="caret"></b>
+                </p>
+            </a>
+            <div class="collapse <% if (offersAccountTitles) { %>show<% } %>" id="accountTitles">
+                <ul class="nav">
+                    <li class="nav-item <%= (displayId === 'AT-07') ? 'active': ''; %>">
+                        <a class="nav-link" href="/accountTitles/accountTitleCategory">
+                            <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
+                            <span class="sidebar-normal">科目分類</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'AT-04') ? 'active': ''; %>">
+                        <a class="nav-link" href="/accountTitles/accountTitleSet">
+                            <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
+                            <span class="sidebar-normal">科目</span>
+                        </a>
+                    </li>
+                    <li class="nav-item <%= (displayId === 'AT-01') ? 'active': ''; %>">
+                        <a class="nav-link" href="/accountTitles">
+                            <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
+                            <span class="sidebar-normal">細目</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <% } %>
+
+        <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
+            <a class="nav-link" href="/reservations">
+                <i class="material-icons">event_seat</i>
+                <p>予約</p>
+            </a>
+        </li>
+    </ul>
+</div>

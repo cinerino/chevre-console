@@ -1,0 +1,150 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)" data-id="<%= req.params.id %>">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                            施設
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control"
+                            name="containedInPlace[containedInPlace][containedInPlace][branchCode]">
+                            <option value="">選択してください</option>
+                            <% for (const movieTheater of movieTheaters) { %>
+                            <option value="<%= movieTheater.branchCode %>">
+                                <%= movieTheater.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <% } else { %>
+                        <select class="form-control" disabled>
+                            <% for (const movieTheater of movieTheaters) { %>
+                            <option value="<%= movieTheater.branchCode %>"
+                                <% if (movieTheater.branchCode === forms.containedInPlace.containedInPlace.containedInPlace.branchCode) { %>
+                                selected<% } %>>
+                                <%= movieTheater.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <input type="hidden" name="containedInPlace[containedInPlace][containedInPlace][branchCode]"
+                            value="<%= forms.containedInPlace.containedInPlace.containedInPlace.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors['containedInPlace.containedInPlace.containedInPlace.branchCode']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['containedInPlace.containedInPlace.containedInPlace.branchCode'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                            ルーム
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control" name="containedInPlace[containedInPlace][branchCode]"
+                            id="screenBranchCode" style="width: 100%;">
+                        </select>
+                        <% } else { %>
+                        <input readonly class="form-control" type="text"
+                            name="containedInPlace[containedInPlace][branchCode]"
+                            value="<%= forms.containedInPlace.containedInPlace.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors['containedInPlace.containedInPlace.branchCode']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['containedInPlace.containedInPlace.branchCode'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                            セクション
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control" name="containedInPlace[branchCode]"
+                            id="screeningRoomSectionBranchCode" style="width: 100%;">
+                        </select>
+                        <% } else { %>
+                        <input readonly class="form-control" type="text" name="containedInPlace[branchCode]"
+                            value="<%= forms.containedInPlace.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors['containedInPlace.branchCode']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['containedInPlace.branchCode'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label class="bmd-label-static">
+                            枝番号
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                            maxlength=64 value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <% if (errors && errors.branchCode) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.branchCode.msg %>
+                        </span>
+                        <% } %>
+                        <% } else { %>
+                        <input disabled type="text" class="form-control" value="<%= forms.branchCode %>">
+                        <input type="hidden" name="branchCode" value="<%= forms.branchCode %>">
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label for="seatingType" class="bmd-label-static">
+                            座席区分
+                        </label>
+                        <select class="form-control" name="seatingType">
+                            <option value="">---</option>
+                            <% for (const seatingType of seatingTypes) { %>
+                            <% const selected = Array.isArray(forms.seatingType) && forms.seatingType.includes(seatingType.codeValue) %>
+                            <option value="<%= seatingType.codeValue %>" <% if (selected) { %> selected<% } %>>
+                                <%= seatingType.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

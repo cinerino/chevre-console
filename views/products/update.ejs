@@ -1,0 +1,15 @@
+<%- contentFor('title') %>
+プロダクト編集
+<%- contentFor('displayId') %>
+PR-01
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/master/products/form.js"></script>
+
+<%- contentFor('body') %>
+<form method="post">
+    <%- include('../common/messages') %>
+
+    <%- include('form', { forms: forms, isNew: false }) %>
+</form>

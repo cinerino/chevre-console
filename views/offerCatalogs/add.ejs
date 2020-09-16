@@ -1,0 +1,16 @@
+<%- contentFor('title') %>
+オファーカタログ作成
+<%- contentFor('displayId') %>
+OC-00
+<%- contentFor('styles') %>
+<link rel="stylesheet" href="/css/ticketTypeGroupAddEdit.css">
+<%- contentFor('scripts') %>
+<script src="/js/jquery-ui.js"></script>
+<script src="/js/master/offerCatalogs/form.js"></script>
+
+<%- contentFor('body') %>
+<form method="post" id="ticketTypeGroupsForm">
+    <%- include('../common/messages') %>
+
+    <%- include('form', { forms: forms, isNew: true }) %>
+</form>

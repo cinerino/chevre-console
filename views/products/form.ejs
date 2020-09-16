@@ -1,0 +1,199 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
+                    高度な設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <input type="hidden" name="id" value="<%= forms.id %>">
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label for="typeOf" class="bmd-label-static">
+                            プロダクトタイプ<span class="text-danger">＊</span>
+                        </label>
+
+                        <select class="form-control" name="typeOf">
+                            <% productTypes.forEach((productType) => { %>
+                            <option value="<%= productType.codeValue %>"
+                                <% if (forms.typeOf === productType.codeValue) { %> selected<% } %>>
+                                <%= productType.name %></option>
+                            <% }) %>
+                        </select>
+
+                        <% if (errors && errors['typeOf']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['typeOf'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label for="productID" class="bmd-label-static">
+                            プロダクトID<span class="text-danger">＊</span>
+                        </label>
+
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="productID" id="productID" placeholder=""
+                            maxlength=30 value="<%= forms.productID %>">
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <% } else { %>
+                        <input type="text" class="form-control" name="productID" id="productID" placeholder=""
+                            maxlength=30 value="<%= forms.productID %>">
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <!-- <input type="text" disabled class="form-control" placeholder="" maxlength=30
+                            value="<%= forms.productID %>">
+                        <input type="hidden" class="form-control" name="productID" id="productID"
+                            value="<%= forms.productID %>"> -->
+                        <% } %>
+
+                        <% if (errors && errors['productID']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['productID'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[ja]" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
+                            maxlength=30
+                            value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+                        <span class="bmd-help">30文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.ja'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="hasOfferCatalog[id]" class="bmd-label-static">
+                            オファーカタログ
+                        </label>
+                        <select class="form-control" name="hasOfferCatalog[id]">
+                            <option value="">選択してください</option>
+                            <% for (const offerCatalog of offerCatalogs) { %>
+                            <option value="<%= offerCatalog.id %>"
+                                <% if (forms.hasOfferCatalog !== undefined && forms.hasOfferCatalog.id === offerCatalog.id) { %>
+                                selected<% } %>>
+                                <%= offerCatalog.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+            </div>
+
+            <div class="tab-pane" id="link4">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="offers[seller][id]" class="bmd-label-static">
+                            販売者
+                        </label>
+
+                        <% sellers.forEach((seller) => { %>
+                        <%
+                        let checked = false;
+                        if (Array.isArray(forms.offers)
+                            && forms.offers.some(
+                                (o) => o.seller && o.seller.id === seller.id
+                            )
+                        ) {
+                            checked = true;
+                        }
+                        %>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                                    <% } %> value="<%= seller.id %>" name="offers[seller][id]"><%= seller.name.ja %>
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label class="bmd-label-static" for="offersValidFrom">
+                            販売期間(from)
+                        </label>
+                        <input class="form-control datepicker" name="offersValidFrom" id="offersValidFrom"
+                            value="<%= forms.offersValidFrom %>">
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-2">
+                        <label class="bmd-label-static" for="offersValidThrough">
+                            販売期間(through)
+                        </label>
+                        <input class="form-control datepicker" name="offersValidThrough" id="offersValidThrough"
+                            value="<%= forms.offersValidThrough %>">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            Offers
+                        </label>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#editOffersJson" role="button"
+                            aria-expanded="false" aria-controls="editOffersJson">
+                            編集する
+                        </a>
+
+                        <div class="collapse" id="editOffersJson">
+                            <textarea class="form-control" name="offersStr"
+                                rows=20><%= JSON.stringify(forms.offers, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            Service Output
+                        </label>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#editServiceOutputJson" role="button"
+                            aria-expanded="false" aria-controls="editServiceOutputJson">
+                            編集する
+                        </a>
+
+                        <div class="collapse" id="editServiceOutputJson">
+                            <textarea class="form-control" name="serviceOutputStr"
+                                rows=20><%= JSON.stringify(forms.serviceOutput, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

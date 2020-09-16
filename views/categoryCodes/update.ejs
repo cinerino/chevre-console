@@ -1,0 +1,15 @@
+<%- contentFor('title') %>
+各種区分編集
+<%- contentFor('displayId') %>
+CC-02
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/master/categoryCodes/form.js"></script>
+
+<%- contentFor('body') %>
+<form method="post">
+    <%- include('../common/messages') %>
+
+    <%- include('form', { forms: forms, isNew: false }) %>
+</form>

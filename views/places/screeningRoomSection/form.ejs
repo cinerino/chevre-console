@@ -1,0 +1,178 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)" data-id="<%= req.params.id %>">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                    高度な設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[containedInPlace][branchCode]" class="bmd-label-static">
+                            施設
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control" name="containedInPlace[containedInPlace][branchCode]">
+                            <option value="">選択してください</option>
+                            <% for (const movieTheater of movieTheaters) { %>
+                            <option value="<%= movieTheater.branchCode %>">
+                                <%= movieTheater.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <% } else { %>
+                        <select class="form-control" disabled>
+                            <% for (const movieTheater of movieTheaters) { %>
+                            <option value="<%= movieTheater.branchCode %>"
+                                <% if (movieTheater.branchCode === forms.containedInPlace.containedInPlace.branchCode) { %>
+                                selected<% } %>>
+                                <%= movieTheater.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <input type="hidden" name="containedInPlace[containedInPlace][branchCode]"
+                            value="<%= forms.containedInPlace.containedInPlace.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors['containedInPlace.containedInPlace.branchCode']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['containedInPlace.containedInPlace.branchCode'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                            ルーム
+                        </label>
+                        <% if (isNew) { %>
+                        <select class="form-control" name="containedInPlace[branchCode]" id="screenBranchCode"
+                            style="width: 100%;">
+                        </select>
+                        <% } else { %>
+                        <input disabled class="form-control" type="text"
+                            value="<%= forms.containedInPlace.branchCode %> <%= forms.containedInPlace.name.ja %>">
+                        <input type="hidden" name="containedInPlace[branchCode]"
+                            value="<%= forms.containedInPlace.branchCode %>">
+                        <% } %>
+                        <% if (errors && errors['containedInPlace.branchCode']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['containedInPlace.branchCode'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label class="bmd-label-static">
+                            枝番号
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                            maxlength=20 value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                        <% if (errors && errors.branchCode) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.branchCode.msg %>
+                        </span>
+                        <% } %>
+                        <% } else { %>
+                        <input disabled type="text" class="form-control" value="<%= forms.branchCode %>">
+                        <input type="hidden" name="branchCode" value="<%= forms.branchCode %>">
+                        <% } %>
+
+                    </div>
+
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="name[ja]" class="bmd-label-static">
+                        名称<span class="text-danger">＊</span>
+                    </label>
+                    <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
+                        value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
+                    <span class="bmd-help">64文字以内でご入力ください</span>
+                    <% if (errors && errors['name.ja']) { %>
+                    <span class="bmd-help text-danger d-block">
+                        <%- errors['name.ja'].msg %>
+                    </span>
+                    <% } %>
+                </div>
+
+                <div class="form-group">
+                    <label for="name[en]" class="bmd-label-static">
+                        名称(English)
+                    </label>
+                    <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
+                        value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.en : '' %>">
+                    <span class="bmd-help">64文字以内でご入力ください</span>
+                    <% if (errors && errors['name.en']) { %>
+                    <span class="bmd-help text-danger d-block">
+                        <%- errors['name.en'].msg %>
+                    </span>
+                    <% } %>
+                </div>
+
+            </div>
+            <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
+            </div>
+            <div class="tab-pane" id="link3">
+                <% if (!isNew) { %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            座席CSV
+                            <a href="#" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>CSVで座席を登録します。セクションの座席リストが全て上書きされます。また、不適切なCSVフォーマット、不適切な座席コード、存在しない座席区分は無視されます。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
+                        </label>
+                        <a class="pt-1" data-toggle="collapse" href="#containsPlaceCsv" role="button"
+                            aria-expanded="false" aria-controls="editNameJson">
+                            編集する
+                        </a>
+                        <a class="ml-1" target="_blank" href="/csv/sampleSeats.csv">
+                            サンプルCSV
+                        </a>
+
+                        <div class="collapse" id="containsPlaceCsv">
+                            <textarea class="form-control" name="containsPlace" rows=10
+                                placeholder="branchCode,seatingType&#13;&#10;A-0,Premium&#13;&#10;A-1&#13;&#10;A-2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

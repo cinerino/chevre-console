@@ -1,0 +1,269 @@
+<%- contentFor('title') %>
+Project Home
+<%- contentFor('displayId') %>
+HO-01
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/home.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-product">
+                <!-- <div class="card-header card-header-primary">
+                    <h4 class="card-title">本日のイベント</h4>
+                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
+                </div> -->
+                <div class="card-body ">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">business</i>
+                        <span class="pl-1">プロジェクト</span></h4>
+                    </h4>
+                    <dl>
+                        <dt>プロジェクト ID</dt>
+                        <dd><%= req.project.id %></dd>
+                    </dl>
+
+                </div>
+            </div>
+            <div class="card card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">storage</i>
+                        <span class="pl-1">Database Used Space</span></h4>
+                    </h4>
+                    <p class="card-category mb-0"><span class="usedSpace"></span>
+                        <small>GB</small>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons">storage</i> <span class="dbText"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card eventsWithAggregation card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">event</i>
+                        <span class="pl-1">本日のイベント</span></h4>
+                    <p class="card-category"><span class="eventsCount"></span>件のイベントが開催中あるいは開催予定です</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="text-primary">
+                                <th>開始日時</th>
+                                <th>名称</th>
+                                <th class="w-25">場所</th>
+                                <th>予約</th>
+                                <th>発券</th>
+                                <th>入場</th>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/events/screeningEvent" class="btn btn-sm btn-outline-primary">もっと見る</a>
+                </div>
+            </div>
+            <div class="card card-product">
+                <!-- <div class="card-header card-header-tabs card-header-primary">
+                    <div class="nav-tabs-navigation">
+                        <div class="nav-tabs-wrapper">
+                            <ul class="nav nav-tabs" data-tabs="tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#latestReservations" data-toggle="tab">
+                                        <i class="material-icons">event_seat</i> 直近の予約
+                                        <div class="ripple-container"></div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div> -->
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">event_seat</i>
+                        <span class="pl-1">直近の予約</span></h4>
+                    </h4>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="latestReservations">
+                            <table class="table table-sm table-hover">
+                                <thead class="text-primary">
+                                    <th class="w-25">予約番号</th>
+                                    <th>日時</th>
+                                    <th>イベント</th>
+                                    <!-- <th>ステータス</th> -->
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="/reservations" class="btn btn-sm btn-outline-primary">もっと見る</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">http</i>
+                        <span class="pl-1">API Health</span></h4>
+                    </h4>
+                    <p class="card-category mb-0">
+                        <span class="health"></span>
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        v<span class="version"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-product errorReporting">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">report</i>
+                        <span class="pl-1">Error Reporting</span></h4>
+                    </h4>
+                    <p class="card-category"></p>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">payment</i>
+                        <span class="pl-1">集計</span></h4>
+                    </h4>
+                    <dl class="row mb-0">
+                        <dt class="col-md-4">予約</dt>
+                        <dd class="col-md-8 text-right"><span class="reservationCount"></span></dd>
+                        <dt class="col-md-4">発券</dt>
+                        <dd class="col-md-8 text-right"><span class="checkInCount"></span></dd>
+                        <dt class="col-md-4">入場</dt>
+                        <dd class="col-md-8 text-right"><span class="attendeeCount"></span></dd>
+                        <dt class="col-md-4">イベント期間</dt>
+                        <dd class="col-md-8 text-right"><span class="reservationFor"></span></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <!-- <div class="card card-stats">
+                <div class="card-header card-header-success card-header-icon">
+                    <div class="card-icon">
+                        <i class="material-icons">event_seat</i>
+                    </div>
+                    <p class="card-category">本日の予約</p>
+                    <h3 class="card-title"><span class="reservationCount"></span></h3>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons">search</i> <a target="_blank" href="/reservations">すべて見る</a>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <!-- <div class="card card-stats">
+                <div class="card-header card-header-info card-header-icon">
+                    <div class="card-icon">
+                        <i class="fa fa-tasks"></i>
+                    </div>
+                    <p class="card-category">Queues</p>
+                    <h3 class="card-title"><span class="queueCount"></span></h3>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <!--
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card card-chart">
+                <div class="card-header card-header-success">
+                    <div class="ct-chart" id="dailySalesChart"></div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Daily Sales</h4>
+                    <p class="card-category">
+                        <span class="text-success"><i class="fa fa-long-arrow-up"></i> 55% </span> increase in today
+                        sales.</p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons">access_time</i> updated 4 minutes ago
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-chart">
+                <div class="card-header card-header-warning">
+                    <div class="ct-chart" id="websiteViewsChart"></div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Email Subscriptions</h4>
+                    <p class="card-category">Last Campaign Performance</p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons">access_time</i> campaign sent 2 days ago
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-chart">
+                <div class="card-header card-header-danger">
+                    <div class="ct-chart" id="completedTasksChart"></div>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">Completed Tasks</h4>
+                    <p class="card-category">Last Campaign Performance</p>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <i class="material-icons">access_time</i> campaign sent 2 days ago
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <div class="row">
+        <div class="col-md-4">
+        </div>
+
+        <div class="col-md-4">
+        </div>
+    </div>
+</div>
+
+<%- include('./common/master/_loading') %>

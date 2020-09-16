@@ -1,0 +1,163 @@
+<%- contentFor('title') %>
+座席検索
+<%- contentFor('displayId') %>
+ST-01
+<%- contentFor('styles') %>
+<link href="/css/simplePagination.css" rel="stylesheet">
+<%- contentFor('scripts') %>
+<script src="/js/jquery.simplePagination.js"></script>
+<script src="/js/master/commonMaster.js"></script>
+<script src="/js/master/commonMasterList.js"></script>
+<script src="/js/master/places/seats.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary" href="/places/seat/new">
+                <i class="material-icons">add</i> 登録</a>
+            <a class="btn btn-primary search btn-ok" href="#">
+                <i class="material-icons">refresh</i> 更新</a>
+        </div>
+        <div class="material-datatables">
+            <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <form method="post">
+                            <%- include('../../common/master/_hidden') %>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]"
+                                        class="bmd-label-static">
+                                        施設
+                                    </label>
+                                    <select class="form-control"
+                                        name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]">
+                                        <option value="">選択してください</option>
+                                        <% for (const movieTheater of movieTheaters) { %>
+                                        <option value="<%= movieTheater.branchCode %>">
+                                            <%= movieTheater.name.ja %>
+                                        </option>
+                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containedInPlace[containedInPlace][branchCode][$eq]"
+                                        class="bmd-label-static">
+                                        ルーム
+                                    </label>
+                                    <select class="form-control"
+                                        name="containedInPlace[containedInPlace][branchCode][$eq]" id="screenBranchCode"
+                                        style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="containedInPlace[branchCode][$eq]" class="bmd-label-static">
+                                        セクション
+                                    </label>
+                                    <select class="form-control" name="containedInPlace[branchCode][$eq]"
+                                        id="screeningRoomSectionBranchCode" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="branchCode[$eq]" class="bmd-label-static">
+                                        コード
+                                    </label>
+                                    <input class="form-control" name="branchCode[$eq]">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="list" style="display:none;" class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline"
+                            cellspacing="0" width="100%" style="width: 100%;" role="grid"
+                            aria-describedby="datatables_info">
+                            <thead class="text-primary">
+                                <tr>
+                                    <th>コード</th>
+                                    <th>施設</th>
+                                    <th>ルーム</th>
+                                    <th>セクション</th>
+                                    <th>座席区分</th>
+                                    <th>追加特性</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="templateRow" identifier="">
+                                    <td
+                                        name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
+                                        <a target="_blank"
+                                            href="/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
+                                            $branchCode$
+                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td
+                                        name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja|slice">
+                                        <span
+                                            class="font-italic text-muted">$containedInPlace.containedInPlace.containedInPlace.branchCode$</span>
+                                        $containedInPlace.containedInPlace.containedInPlace.name.ja$
+                                    </td>
+                                    <td
+                                        name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja|slice">
+                                        <span
+                                            class="font-italic text-muted">$containedInPlace.containedInPlace.branchCode$</span>
+                                        $containedInPlace.containedInPlace.name.ja$
+                                    </td>
+                                    <td name="containedInPlace.branchCode__containedInPlace.name.ja|slice">
+                                        <span class="font-italic text-muted">$containedInPlace.branchCode$</span>
+                                        $containedInPlace.name.ja$
+                                    </td>
+                                    <td name="seatingTypeStr">
+                                        $seatingTypeStr$<br>
+                                    </td>
+                                    <td name="id" class="">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-5">
+                        <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-7">
+                        <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                        </div>
+                        <div id="pager" class="div_pager_parent float-right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-additionalProperty" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../../common/master/_loading') %>

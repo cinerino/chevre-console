@@ -1,0 +1,199 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                    高度な設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="branchCode" class="bmd-label-static">
+                            枝番号<span class="text-danger">＊</span>
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                            maxlength="20" value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                        <% } else { %>
+                        <input readonly type="text" class="form-control" name="branchCode" id="branchCode"
+                            placeholder="" maxlength="20" value="<%= forms.branchCode %>">
+                        <input type="hidden" name="id" value="<%= forms.id %>">
+                        <% } %>
+                        <% if (errors && errors.branchCode) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.branchCode.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="containedInPlace[branchCode]" class="bmd-label-static">
+                            親組織<span class="text-danger">＊</span>
+                        </label>
+                        <select class="form-control" name="parentOrganization[id]">
+                            <option value="">選択してください</option>
+                            <% for (const seller of sellers) { %>
+                            <option value="<%= seller.id %>"
+                                <% if (forms.parentOrganization !== undefined && seller.id === forms.parentOrganization.id) { %>
+                                selected<% } %>>
+                                <%= seller.name.ja %>
+                            </option>
+                            <% } %>
+                        </select>
+                        <% if (errors && errors['parentOrganization.id']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['parentOrganization.id'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[ja]" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength="64"
+                            value="<%= forms.name.ja %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.ja'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[en]" class="bmd-label-static">
+                            英語名称
+                        </label>
+                        <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength="64"
+                            value="<%= forms.name.en %>">
+                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.en']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.en'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="kanaName" class="bmd-label-static">
+                            カナ名称
+                        </label>
+                        <input class="form-control" name="kanaName" id="kanaName" placeholder="" maxlength="64"
+                            value="<%= forms.kanaName %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors.kanaName) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.kanaName.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="telephone" class="bmd-label-static">
+                            電話番号
+                        </label>
+                        <input type="tel" class="form-control" name="telephone" id="telephone" placeholder=""
+                            maxlength=64 value="<%= forms.telephone %>">
+                        <% if (errors && errors.telephone) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.telephone.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="url" class="bmd-label-static">
+                            URL
+                        </label>
+                        <input type="tel" class="form-control" name="url" id="url" placeholder="" maxlength=256
+                            value="<%= forms.url %>">
+                        <% if (errors && errors.url) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.url.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
+            </div>
+
+            <div class="tab-pane" id="link3">
+
+                <div class="form-group bmd-form-group">
+                    <label for="containsPlaceStr" class="bmd-label-static">
+                        ルーム
+                    </label>
+                    <textarea class="d-none" name="containsPlaceStr">
+                    <%-(!isNew) ? forms.containsPlaceStr : JSON.stringify([]) %>
+                    </textarea>
+                    <div class="json-editor" id="containsPlaceStr"></div>
+                </div>
+
+                <div class="form-group bmd-form-group">
+                    <label for="offersStr" class="bmd-label-static">
+                        オファー
+                    </label>
+                    <textarea class="d-none" name="offersStr">
+                    <%-(!isNew) ? forms.offersStr : JSON.stringify({
+                        "typeOf": "Offer",
+                        "eligibleQuantity": {
+                        "typeOf": "QuantitativeValue",
+                        "maxValue": 6,
+                        "unitCode": "C62"
+                        },
+                        "availabilityStartsGraceTime": {
+                        "typeOf": "QuantitativeValue",
+                        "value": -2,
+                        "unitCode": "DAY"
+                        },
+                        "availabilityEndsGraceTime": {
+                        "typeOf": "QuantitativeValue",
+                        "value": 1200,
+                        "unitCode": "SEC"
+                        }
+                    }) %>
+                    </textarea>
+                    <div class="json-editor" id="offersStr"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

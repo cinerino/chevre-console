@@ -1,0 +1,34 @@
+<div class="card">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary aggregate" href="javascript:void(0)">
+                <i class="material-icons">save</i> 集計</a>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <input type="hidden" name="id" value="<%= forms.id %>">
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <textarea disabled class="form-control"
+                            rows=40><%= JSON.stringify(forms, null, '\t')%></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="link2">
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

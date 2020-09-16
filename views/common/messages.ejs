@@ -1,0 +1,31 @@
+<% if (messages.message) { %>
+<script>
+    $.notify({
+        // options
+        message: '<%= messages.message %>'
+    }, {
+        // settings
+        type: 'success',
+        placement: {
+            from: 'top',
+            align: 'right'
+        }
+    });
+</script>
+<% } %>
+
+<% if (message !== '') { %>
+<script>
+    $.notify({
+        // options
+        message: '<%= String(message).replace("\n", " ") %>'
+    }, {
+        // settings
+        type: 'danger',
+        placement: {
+            from: 'top',
+            align: 'right'
+        },
+    });
+</script>
+<% } %>
