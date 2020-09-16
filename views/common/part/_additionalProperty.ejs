@@ -3,7 +3,7 @@
     <div class="form-group bmd-form-group col-6">
         <label class="bmd-label-floating">name</label>
         <input class="form-control" name="additionalProperty[<%= key %>][name]"
-            id="additionalProperty[<%= key %>][name]" maxlength=64 value="<%= additionalProperty[key].name %>">
+            id="additionalProperty[<%= key %>][name]" maxlength=128 value="<%= additionalProperty[key].name %>">
         <% if (errors && errors[`additionalProperty[${key}].name`]) { %>
         <span class="bmd-help text-danger d-block">
             <%- errors[`additionalProperty[${key}].name`].msg %>
@@ -13,7 +13,7 @@
     <div class="form-group bmd-form-group col-6">
         <label class="bmd-label-floating">value</label>
         <input class="form-control" name="additionalProperty[<%= key %>][value]"
-            id="additionalProperty[<%= key %>][value]" maxlength=64 value="<%= additionalProperty[key].value %>">
+            id="additionalProperty[<%= key %>][value]" maxlength=128 value="<%= additionalProperty[key].value %>">
         <% if (errors && errors[`additionalProperty[${key}].value`]) { %>
         <span class="bmd-help text-danger d-block">
             <%- errors[`additionalProperty[${key}].value`].msg %>
