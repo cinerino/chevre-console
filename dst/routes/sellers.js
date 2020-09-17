@@ -15,14 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../message");
 const NUM_ADDITIONAL_PROPERTY = 10;
-// コード 半角64
-const NAME_MAX_LENGTH_CODE = 30;
 // 名称・日本語 全角64
-const NAME_MAX_LENGTH_NAME_JA = 64;
+const NAME_MAX_LENGTH_NAME = 64;
 const sellersRouter = express_1.Router();
-sellersRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const sellerService = new chevre.service.Seller({
@@ -56,12 +55,27 @@ sellersRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0,
             return {};
         }));
     }
-    res.render('sellers/add', {
+    res.render('sellers/new', {
         message: message,
         errors: errors,
         forms: forms,
         OrganizationType: chevre.factory.organizationType
     });
+}));
+sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        yield sellerService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
 }));
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -88,7 +102,6 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
                     return;
                 }
                 catch (error) {
-                    console.error(error);
                     message = error.message;
                 }
             }
@@ -195,7 +208,8 @@ function createFromBody(req, isNew) {
                 throw new Error(`オファーの型が不適切です ${error.message}`);
             }
         }
-        let parentOrganization;
+        // 親組織のデフォルトはCinerinoプロジェクトの親組織
+        let parentOrganization = req.project.parentOrganization;
         if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
             try {
                 parentOrganization = JSON.parse(req.body.parentOrganizationStr);
@@ -232,11 +246,14 @@ function validate() {
         //     .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
         //     .matches(/^[0-9a-zA-Z\-_]+$/)
         //     .withMessage(() => '英数字で入力してください'),
-        express_validator_1.body('name.ja')
+        express_validator_1.body('typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),
+        express_validator_1.body(['name.ja', 'name.en'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
-            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME))
     ];
 }
 exports.default = sellersRouter;

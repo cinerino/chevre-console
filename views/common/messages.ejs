@@ -18,7 +18,7 @@
 <script>
     $.notify({
         // options
-        message: '<%= String(message).replace("\n", " ") %>'
+        message: '<%= String(message).replace(/\n/g, " ") %>'
     }, {
         // settings
         type: 'danger',
