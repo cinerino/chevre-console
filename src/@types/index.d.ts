@@ -2,7 +2,7 @@
  * middlewares/authenticationにて、expressのrequestオブジェクトにAPIユーザー情報を追加している。
  * ユーザーの型をここで定義しています。
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import * as cinerino from '@cinerino/sdk';
 // import * as express from 'express';
 import { ISubscription } from '../factory/subscription';
 
@@ -12,7 +12,7 @@ declare global {
         // tslint:disable-next-line:interface-name
         export interface Request {
             user: User;
-            project: chevre.factory.project.IProject;
+            project: cinerino.factory.project.IProject;
             subscription?: ISubscription;
         }
     }

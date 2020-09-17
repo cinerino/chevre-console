@@ -6,21 +6,20 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-// コード 半角64
-const NAME_MAX_LENGTH_CODE = 30;
 // 名称・日本語 全角64
-const NAME_MAX_LENGTH_NAME_JA = 64;
+const NAME_MAX_LENGTH_NAME = 64;
 
 const sellersRouter = Router();
 
 sellersRouter.all<any>(
-    '/add',
+    '/new',
     ...validate(),
     async (req, res) => {
         let message = '';
@@ -66,12 +65,32 @@ sellersRouter.all<any>(
             }));
         }
 
-        res.render('sellers/add', {
+        res.render('sellers/new', {
             message: message,
             errors: errors,
             forms: forms,
             OrganizationType: chevre.factory.organizationType
         });
+    }
+);
+
+sellersRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            await sellerService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
     }
 );
 
@@ -107,7 +126,6 @@ sellersRouter.all<ParamsDictionary>(
 
                         return;
                     } catch (error) {
-                        console.error(error);
                         message = error.message;
                     }
                 }
@@ -236,7 +254,8 @@ async function createFromBody(
         }
     }
 
-    let parentOrganization: chevre.factory.seller.IParentOrganization | undefined;
+    // 親組織のデフォルトはCinerinoプロジェクトの親組織
+    let parentOrganization: chevre.factory.seller.IParentOrganization | undefined = req.project.parentOrganization;
     if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
         try {
             parentOrganization = JSON.parse(req.body.parentOrganizationStr);
@@ -303,11 +322,15 @@ function validate() {
         //     .matches(/^[0-9a-zA-Z\-_]+$/)
         //     .withMessage(() => '英数字で入力してください'),
 
-        body('name.ja')
+        body('typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),
+
+        body(['name.ja', 'name.en'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
-            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: NAME_MAX_LENGTH_NAME })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME))
     ];
 }
 

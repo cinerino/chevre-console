@@ -4,6 +4,10 @@
             <!--        Here you can write extra buttons/actions for the toolbar              -->
             <a class="btn btn-primary btn-ok" href="javascript:void(0)">
                 <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
         </div>
 
         <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
@@ -26,10 +30,15 @@
 
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
+                <% if (isNew) { %>
+                <% } else { %>
+                <input type="hidden" name="id" value="<%= forms.id %>">
+                <% } %>
+
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
                         <label for="identifier" class="bmd-label-static">
-                            コード<span class="text-danger">＊</span>
+                            コード
                         </label>
                         <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
                             maxlength=30 value="<%= forms.identifier %>">
@@ -149,7 +158,7 @@
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
                         <label for="" class="bmd-label-static">
-                            parentOrganization
+                            親組織
                         </label>
                         <a class="d-block pt-1" data-toggle="collapse" href="#editParentOrganizationJson" role="button"
                             aria-expanded="false" aria-controls="editParentOrganizationJson">
@@ -160,6 +169,12 @@
                             <textarea class="form-control" name="parentOrganizationStr"
                                 rows=20><%= JSON.stringify(forms.parentOrganization, null, '\t') %></textarea>
                         </div>
+
+                        <% if (errors && errors['parentOrganizationStr']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['parentOrganizationStr'].msg %>
+                        </span>
+                        <% } %>
                     </div>
                 </div>
 
