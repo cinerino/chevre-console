@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 販売者削除を実装
-
 ### Changed
 
 ### Deprecated
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.1.0 - 2020-09-17
+
+### Added
+
+- 販売者削除を実装
 
 ## v2.0.0 - 2020-09-16
 
