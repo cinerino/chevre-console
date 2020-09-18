@@ -80,12 +80,6 @@ $(function () {
         showLocation(id);
     });
 
-    $(document).on('click', '.showOffers', function (event) {
-        var id = $(this).attr('data-id');
-
-        showOffers(id);
-    });
-
     $(document).on('click', '.showHasMerchantReturnPolicy', function (event) {
         var id = $(this).attr('data-id');
 
@@ -219,33 +213,6 @@ $(function () {
         );
 
         modal.find('.modal-title').text('Location');
-        modal.find('.modal-body').html(div);
-        modal.modal();
-    }
-
-    function showOffers(id) {
-        var seller = $.CommonMasterList.getDatas().find(function (data) {
-            return data.id === id
-        });
-        if (seller === undefined) {
-            alert('販売者' + id + 'が見つかりません');
-
-            return;
-        }
-
-        var modal = $('#modal-seller');
-        var div = $('<div>')
-
-        div.append($('<textarea>')
-            .val(JSON.stringify(seller.makesOffer, null, '\t'))
-            .addClass('form-control')
-            .attr({
-                rows: '25',
-                disabled: ''
-            })
-        );
-
-        modal.find('.modal-title').text('オファー');
         modal.find('.modal-body').html(div);
         modal.modal();
     }

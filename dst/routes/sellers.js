@@ -199,15 +199,6 @@ function createFromBody(req, isNew) {
                 throw new Error(`対応決済方法の型が不適切です ${error.message}`);
             }
         }
-        let makesOffer;
-        if (typeof req.body.makesOfferStr === 'string' && req.body.makesOfferStr.length > 0) {
-            try {
-                makesOffer = JSON.parse(req.body.makesOfferStr);
-            }
-            catch (error) {
-                throw new Error(`オファーの型が不適切です ${error.message}`);
-            }
-        }
         // 親組織のデフォルトはCinerinoプロジェクトの親組織
         let parentOrganization = req.project.parentOrganization;
         if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
@@ -221,7 +212,7 @@ function createFromBody(req, isNew) {
         const identifier = req.body.identifier;
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -231,9 +222,9 @@ function createFromBody(req, isNew) {
                 })
                 : undefined, areaServed: [] }, {
             hasPOS: []
-        }), (typeof identifier === 'string' && identifier.length > 0) ? { identifier } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (makesOffer !== undefined) ? { makesOffer } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (parentOrganization !== undefined) ? { parentOrganization } : undefined), (!isNew)
+        }), (typeof identifier === 'string' && identifier.length > 0) ? { identifier } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (parentOrganization !== undefined) ? { parentOrganization } : undefined), (!isNew)
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof identifier !== 'string' || identifier.length === 0) ? { identifier: 1 } : undefined), (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (makesOffer === undefined) ? { makesOffer: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined), (parentOrganization === undefined) ? { parentOrganization: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof identifier !== 'string' || identifier.length === 0) ? { identifier: 1 } : undefined), (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined), (parentOrganization === undefined) ? { parentOrganization: 1 } : undefined)
             }
             : undefined);
     });
