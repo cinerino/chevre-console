@@ -28,9 +28,8 @@
                             <th>Tel</th>
                             <th>URL</th>
                             <th>対応決済方法</th>
-                            <th>Location</th>
-                            <th>オファー</th>
                             <th>返品ポリシー</th>
+                            <th>Location</th>
                             <th>追加特性</th>
                         </tr>
                     </thead>
@@ -45,23 +44,26 @@
                             </td>
                             <td name="name.ja">$name.ja$</td>
                             <td name="telephone">$telephone$</td>
-                            <td name="url">$url$</td>
+                            <td name="url__url|slice">
+                                <a target="_blank" href="$url$">
+                                    $url$
+                                    <i class=" material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                </a></td>
                             <td name="id__paymentAcceptedCount">
                                 <a href="javascript:void(0)" class="showPaymentAccepted" data-id="$id$">
                                     $paymentAcceptedCount$
-                                </a></td>
-                            <td name="id__location">
-                                <a href="javascript:void(0)" class="showLocation" data-id="$id$">
-                                    表示
-                                </a></td>
-                            <td name="id__offers">
-                                <a href="javascript:void(0)" class="showOffers" data-id="$id$">
-                                    表示
-                                </a></td>
+                                </a>
+                            </td>
                             <td name="id__hasMerchantReturnPolicyCount">
                                 <a href="javascript:void(0)" class="showHasMerchantReturnPolicy" data-id="$id$">
                                     $hasMerchantReturnPolicyCount$
-                                </a></td>
+                                </a>
+                            </td>
+                            <td name="id__location.typeOf">
+                                <a href="javascript:void(0)" class="showLocation" data-id="$id$">
+                                    $location.typeOf$
+                                </a>
+                            </td>
                             <td name="id__additionalProperty">
                                 <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                     表示

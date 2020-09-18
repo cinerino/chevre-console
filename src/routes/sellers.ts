@@ -245,15 +245,6 @@ async function createFromBody(
         }
     }
 
-    let makesOffer: chevre.factory.seller.IMakesOffer[] | undefined;
-    if (typeof req.body.makesOfferStr === 'string' && req.body.makesOfferStr.length > 0) {
-        try {
-            makesOffer = JSON.parse(req.body.makesOfferStr);
-        } catch (error) {
-            throw new Error(`オファーの型が不適切です ${error.message}`);
-        }
-    }
-
     // 親組織のデフォルトはCinerinoプロジェクトの親組織
     let parentOrganization: chevre.factory.seller.IParentOrganization | undefined = req.project.parentOrganization;
     if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
@@ -294,7 +285,6 @@ async function createFromBody(
         ...(typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined,
         ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
         ...(hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined,
-        ...(makesOffer !== undefined) ? { makesOffer } : undefined,
         ...(paymentAccepted !== undefined) ? { paymentAccepted } : undefined,
         ...(parentOrganization !== undefined) ? { parentOrganization } : undefined,
         ...(!isNew)
@@ -304,7 +294,6 @@ async function createFromBody(
                     ...(typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined,
                     ...(typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined,
                     ...(hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined,
-                    ...(makesOffer === undefined) ? { makesOffer: 1 } : undefined,
                     ...(paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined,
                     ...(parentOrganization === undefined) ? { parentOrganization: 1 } : undefined
                 }
