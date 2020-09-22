@@ -151,21 +151,14 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const result = yield eventService.search({
-            typeOf: chevre.factory.eventType.ScreeningEvent,
-            limit: 10,
-            page: 1,
-            eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
-            sort: { startDate: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
-            inSessionFrom: moment()
+        const result = yield eventService.search(Object.assign({ typeOf: chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], sort: { startDate: chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, inSessionFrom: moment()
                 .add()
-                .toDate(),
-            inSessionThrough: moment()
+                .toDate(), inSessionThrough: moment()
                 .tz('Asia/Tokyo')
                 .endOf('day')
-                .toDate()
-        });
+                .toDate() }, {
+            countDocuments: '1'
+        }));
         res.json(result);
     }
     catch (error) {

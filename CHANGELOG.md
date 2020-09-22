@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- イベント検索時にtotalCountが必要な場合、明示的にcountDocuments: '1'を指定するように調整
+
 ### Deprecated
 
 ### Removed

@@ -505,8 +505,12 @@ screeningEventSeriesRouter.get(
             const searchScreeningEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
                 ...req.query,
                 typeOf: chevre.factory.eventType.ScreeningEvent,
-                superEvent: { ids: [req.params.eventId] }
+                superEvent: { ids: [req.params.eventId] },
+                ...{
+                    countDocuments: '1'
+                }
             });
+
             res.json(searchScreeningEventsResult);
         } catch (error) {
             res.status(INTERNAL_SERVER_ERROR)
