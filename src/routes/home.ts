@@ -188,7 +188,10 @@ homeRouter.get(
                 inSessionThrough: moment()
                     .tz('Asia/Tokyo')
                     .endOf('day')
-                    .toDate()
+                    .toDate(),
+                ...{
+                    countDocuments: '1'
+                }
             });
 
             res.json(result);

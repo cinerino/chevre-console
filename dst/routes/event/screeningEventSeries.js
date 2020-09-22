@@ -426,7 +426,9 @@ screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awai
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchScreeningEventsResult = yield eventService.search(Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, superEvent: { ids: [req.params.eventId] } }));
+        const searchScreeningEventsResult = yield eventService.search(Object.assign(Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, superEvent: { ids: [req.params.eventId] } }), {
+            countDocuments: '1'
+        }));
         res.json(searchScreeningEventsResult);
     }
     catch (error) {

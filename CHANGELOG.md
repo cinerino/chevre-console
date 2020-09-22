@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.2.1 - 2020-09-22
+
+### Changed
+
+- イベント検索時にtotalCountが必要な場合、明示的にcountDocuments: '1'を指定するように調整
+
 ## v2.2.0 - 2020-09-18
 
 ### Changed
