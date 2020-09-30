@@ -61,12 +61,6 @@ screeningEventSeriesRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
 
-        const searchContentRatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-        });
-
         const projectService = new chevre.service.Project({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -92,7 +86,6 @@ screeningEventSeriesRouter.all<any>(
                     }
 
                     const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
-                    req.body.contentRating = movie.contentRating;
                     const attributes = createEventFromBody(req, movie, movieTheater, true);
                     debug('saving an event...', attributes);
                     const events = await eventService.create(attributes);
@@ -134,7 +127,6 @@ screeningEventSeriesRouter.all<any>(
             movie: undefined,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            contentRatingTypes: searchContentRatingTypesResult.data,
             paymentServices: project.settings?.paymentServices
         });
     }
@@ -299,7 +291,6 @@ screeningEventSeriesRouter.get(
                     kanaName: event.kanaName,
                     duration: moment.duration(event.duration)
                         .humanize(),
-                    contentRating: event.workPerformed.contentRating,
                     translationType: translationType,
                     videoFormat: event.videoFormat,
                     mvtkFlg: mvtkFlg
@@ -368,12 +359,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
 
-        const searchContentRatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-        });
-
         let message = '';
         let errors: any = {};
         const eventId = req.params.eventId;
@@ -413,7 +398,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                     }
 
                     const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
-                    req.body.contentRating = movie.contentRating;
                     const attributes = createEventFromBody(req, movie, movieTheater, false);
                     debug('saving an event...', attributes);
                     await eventService.update({
@@ -488,7 +472,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             movie: movie,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            contentRatingTypes: searchContentRatingTypesResult.data,
             paymentServices: project.settings?.paymentServices
         });
     }
