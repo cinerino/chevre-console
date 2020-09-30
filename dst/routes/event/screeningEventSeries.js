@@ -59,11 +59,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
     });
-    const searchContentRatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-    });
     const projectService = new chevre.service.Project({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -87,7 +82,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
                     throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                 }
                 const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
-                req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater, true);
                 debug('saving an event...', attributes);
                 const events = yield eventService.create(attributes);
@@ -122,7 +116,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         movie: undefined,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
-        contentRatingTypes: searchContentRatingTypesResult.data,
         paymentServices: (_a = project.settings) === null || _a === void 0 ? void 0 : _a.paymentServices
     });
 }));
@@ -261,7 +254,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
                 translationType = '吹替';
             }
             return Object.assign(Object.assign({}, event), { id: event.id, filmNameJa: event.name.ja, filmNameEn: event.name.en, kanaName: event.kanaName, duration: moment.duration(event.duration)
-                    .humanize(), contentRating: event.workPerformed.contentRating, translationType: translationType, videoFormat: event.videoFormat, mvtkFlg: mvtkFlg });
+                    .humanize(), translationType: translationType, videoFormat: event.videoFormat, mvtkFlg: mvtkFlg });
         });
         // results.sort((event1, event2) => {
         //     if (event1.filmNameJa > event2.filmNameJa) {
@@ -318,11 +311,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
     });
-    const searchContentRatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-    });
     let message = '';
     let errors = {};
     const eventId = req.params.eventId;
@@ -358,7 +346,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                     throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                 }
                 const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
-                req.body.contentRating = movie.contentRating;
                 const attributes = createEventFromBody(req, movie, movieTheater, false);
                 debug('saving an event...', attributes);
                 yield eventService.update({
@@ -416,7 +403,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         movie: movie,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
-        contentRatingTypes: searchContentRatingTypesResult.data,
         paymentServices: (_f = project.settings) === null || _f === void 0 ? void 0 : _f.paymentServices
     });
 }));
