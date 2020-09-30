@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 施設コンテンツ編集からレイティング項目を削除
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.2.2 - 2020-09-30
+
+### Changed
+
+- 施設コンテンツ編集からレイティング項目を削除
 
 ## v2.2.1 - 2020-09-22
 
