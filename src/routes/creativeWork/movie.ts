@@ -14,6 +14,8 @@ import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:routes');
 
+const THUMBNAIL_URL_MAX_LENGTH = 256;
+
 const ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH = (process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH !== undefined)
     ? Number(process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH)
     // tslint:disable-next-line:no-magic-numbers
@@ -180,9 +182,12 @@ movieRouter.get(
                         (category) => category.codeValue === (<any>d).distributor?.codeValue
                     );
 
+                    const thumbnailUrl: string = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
+
                     return {
                         ...d,
-                        ...(distributorType !== undefined) ? { distributorName: (<any>distributorType.name).ja } : undefined
+                        ...(distributorType !== undefined) ? { distributorName: (<any>distributorType.name).ja } : undefined,
+                        thumbnailUrl
                     };
                 })
             });
@@ -358,6 +363,9 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         };
     }
 
+    const thumbnailUrl: string | undefined =
+        (typeof req.body.thumbnailUrl === 'string' && req.body.thumbnailUrl.length > 0) ? req.body.thumbnailUrl : undefined;
+
     const movie: chevre.factory.creativeWork.movie.ICreativeWork = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.creativeWorkType.Movie,
@@ -379,6 +387,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         ...(headline !== undefined) ? { headline } : undefined,
         ...(datePublished !== undefined) ? { datePublished } : undefined,
         ...(distributor !== undefined) ? { distributor } : undefined,
+        ...(typeof thumbnailUrl === 'string') ? { thumbnailUrl } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
@@ -386,7 +395,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     ...(duration === undefined) ? { duration: 1 } : undefined,
                     ...(headline === undefined) ? { headline: 1 } : undefined,
                     ...(datePublished === undefined) ? { datePublished: 1 } : undefined,
-                    ...(distributor === undefined) ? { distributor: 1 } : undefined
+                    ...(distributor === undefined) ? { distributor: 1 } : undefined,
+                    ...(typeof thumbnailUrl !== 'string') ? { thumbnailUrl: 1 } : undefined
                 }
             }
             : undefined
@@ -426,6 +436,13 @@ function validate() {
 
         body('headline', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+
+        body('thumbnailUrl')
+            .optional()
+            .isURL()
+            .withMessage('URLを入力してください')
+            .isLength({ max: THUMBNAIL_URL_MAX_LENGTH })
+            .withMessage(Message.Common.getMaxLength('サムネイルURL', THUMBNAIL_URL_MAX_LENGTH)),
 
         body('additionalProperty.*.name')
             .optional()

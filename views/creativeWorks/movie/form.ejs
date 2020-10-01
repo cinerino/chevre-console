@@ -164,6 +164,21 @@
                         <% } %>
                     </div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label class="bmd-label-static" for="thumbnailUrl">
+                            サムネイルURL
+                        </label>
+                        <input class="form-control" name="thumbnailUrl" id="thumbnailUrl" maxlength=256
+                            value="<%= forms.thumbnailUrl %>">
+                        <% if (errors && errors.thumbnailUrl) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.thumbnailUrl.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="link2">
                 <%- include('../../common/part/_additionalProperty', {
