@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 作品にサムネイルURLを追加
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.3.0 - 2020-10-01
+
+### Changed
+
+- 作品にサムネイルURLを追加
 
 ## v2.2.2 - 2020-09-30
 
