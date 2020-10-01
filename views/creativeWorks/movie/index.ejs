@@ -88,6 +88,7 @@ Aa-10
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
+                                    <th></th>
                                     <th>コード</th>
                                     <th>名称</th>
                                     <th>サブタイトル</th>
@@ -102,6 +103,14 @@ Aa-10
                             </thead>
                             <tbody>
                                 <tr id="templateRow" identifier="$identifier$">
+                                    <td name="id__thumbnailUrl__thumbnailUrl">
+                                        <div
+                                            style="max-width: 32px; max-height: 32px; border-radius: 50%; overflow: hidden;">
+                                            <a target="_blank" href="$thumbnailUrl$">
+                                                <img src="$thumbnailUrl$" alt="" style="width: 100%; height: auto;">
+                                            </a>
+                                        </div>
+                                    </td>
                                     <td name="id__identifier">
                                         <a target="_blank" href="/creativeWorks/movie/$id$/update">
                                             $identifier$

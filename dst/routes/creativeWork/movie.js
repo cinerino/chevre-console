@@ -20,6 +20,7 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
+const THUMBNAIL_URL_MAX_LENGTH = 256;
 const ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH = (process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH !== undefined)
     ? Number(process.env.ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH)
     // tslint:disable-next-line:no-magic-numbers
@@ -149,7 +150,8 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
                 const distributorType = distributorTypes.find((category) => { var _a; return category.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
-                return Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined);
+                const thumbnailUrl = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
+                return Object.assign(Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined), { thumbnailUrl });
             })
         });
     }
@@ -289,7 +291,8 @@ function createFromBody(req, isNew) {
                 distributorType: distributorType.codeValue
             });
         }
-        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const thumbnailUrl = (typeof req.body.thumbnailUrl === 'string' && req.body.thumbnailUrl.length > 0) ? req.body.thumbnailUrl : undefined;
+        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -297,9 +300,9 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (distributor !== undefined) ? { distributor } : undefined), (!isNew)
+                : undefined }, (contentRating !== undefined) ? { contentRating } : undefined), (duration !== undefined) ? { duration } : undefined), (headline !== undefined) ? { headline } : undefined), (datePublished !== undefined) ? { datePublished } : undefined), (distributor !== undefined) ? { distributor } : undefined), (typeof thumbnailUrl === 'string') ? { thumbnailUrl } : undefined), (!isNew)
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined), (distributor === undefined) ? { distributor: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (contentRating === undefined) ? { contentRating: 1 } : undefined), (duration === undefined) ? { duration: 1 } : undefined), (headline === undefined) ? { headline: 1 } : undefined), (datePublished === undefined) ? { datePublished: 1 } : undefined), (distributor === undefined) ? { distributor: 1 } : undefined), (typeof thumbnailUrl !== 'string') ? { thumbnailUrl: 1 } : undefined)
             }
             : undefined);
         if (movie.offers !== undefined
@@ -332,6 +335,12 @@ function validate() {
             .isLength({ max: NAME_MAX_LENGTH_NAME_MINUTES }),
         express_validator_1.body('headline', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        express_validator_1.body('thumbnailUrl')
+            .optional()
+            .isURL()
+            .withMessage('URLを入力してください')
+            .isLength({ max: THUMBNAIL_URL_MAX_LENGTH })
+            .withMessage(Message.Common.getMaxLength('サムネイルURL', THUMBNAIL_URL_MAX_LENGTH)),
         express_validator_1.body('additionalProperty.*.name')
             .optional()
             .if((value) => String(value).length > 0)
