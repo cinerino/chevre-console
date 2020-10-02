@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 作品バリデーション調整
+
 ### Deprecated
 
 ### Removed
