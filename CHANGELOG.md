@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.3.1 - 2020-10-02
+
+### Changed
+
+- 施設コンテンツ編集のエラーハンドリング調整
+
 ## v2.3.0 - 2020-10-01
 
 ### Changed

@@ -1,5 +1,5 @@
 /**
- * 上映イベントシリーズマスタ管理ルーター
+ * 施設コンテンツ管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
@@ -17,14 +17,10 @@ const debug = createDebug('chevre-backend:routes');
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-// 1ページに表示するデータ数
-// const DEFAULT_LINES: number = 10;
 // 作品コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
 // 作品名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
-
-// import * as Message from '../../message';
 
 const screeningEventSeriesRouter = Router();
 
@@ -78,11 +74,11 @@ screeningEventSeriesRouter.all<any>(
                 try {
                     const searchMovieResult = await creativeWorkService.searchMovies({
                         project: { ids: [req.project.id] },
-                        identifier: { $eq: req.body.workPerformed.identifier }
+                        identifier: { $eq: req.body.workPerformed?.identifier }
                     });
                     const movie = searchMovieResult.data.shift();
                     if (movie === undefined) {
-                        throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+                        throw new Error(`Movie ${req.body.workPerformed?.identifier} Not Found`);
                     }
 
                     const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
@@ -297,17 +293,6 @@ screeningEventSeriesRouter.get(
                 };
             });
 
-            // results.sort((event1, event2) => {
-            //     if (event1.filmNameJa > event2.filmNameJa) {
-            //         return 1;
-            //     }
-            //     if (event1.filmNameJa < event2.filmNameJa) {
-            //         return -1;
-            //     }
-
-            //     return 0;
-            // });
-
             res.json({
                 success: true,
                 count: (data.length === Number(limit))
@@ -330,150 +315,153 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
     '/:eventId/update',
     ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-    async (req, res) => {
-        const creativeWorkService = new chevre.service.CreativeWork({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const eventService = new chevre.service.Event({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+    async (req, res, next) => {
+        try {
+            const creativeWorkService = new chevre.service.CreativeWork({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const eventService = new chevre.service.Event({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
 
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
+            const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+                project: { ids: [req.project.id] }
+            });
 
-        // 上映方式タイプ検索
-        const searchVideoFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-        });
+            // 上映方式タイプ検索
+            const searchVideoFormatTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+            });
 
-        let message = '';
-        let errors: any = {};
-        const eventId = req.params.eventId;
-        const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
-            id: eventId
-        });
+            let message = '';
+            let errors: any = {};
+            const eventId = req.params.eventId;
+            const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({
+                id: eventId
+            });
 
-        let searchMovieResult = await creativeWorkService.searchMovies({
-            project: { ids: [req.project.id] },
-            identifier: { $eq: event.workPerformed.identifier }
-        });
-        let movie = searchMovieResult.data.shift();
-        if (movie === undefined) {
-            throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
-        }
-
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
-
-        if (req.method === 'POST') {
-            // バリデーション
-            const validatorResult = validationResult(req);
-            errors = validatorResult.mapped();
-            if (validatorResult.isEmpty()) {
-                // 作品DB登録
-                try {
-                    searchMovieResult = await creativeWorkService.searchMovies({
-                        project: { ids: [req.project.id] },
-                        identifier: { $eq: req.body.workPerformed.identifier }
-                    });
-                    movie = searchMovieResult.data.shift();
-                    if (movie === undefined) {
-                        throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
-                    }
-
-                    const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
-                    const attributes = createEventFromBody(req, movie, movieTheater, false);
-                    debug('saving an event...', attributes);
-                    await eventService.update({
-                        id: eventId,
-                        attributes: attributes
-                    });
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
-
-                    return;
-                } catch (error) {
-                    message = error.message;
-                }
-            } else {
-                message = '入力に誤りがあります';
+            let searchMovieResult = await creativeWorkService.searchMovies({
+                project: { ids: [req.project.id] },
+                identifier: { $eq: event.workPerformed.identifier }
+            });
+            let movie = searchMovieResult.data.shift();
+            if (movie === undefined) {
+                throw new Error(`Movie ${event.workPerformed.identifier} Not Found`);
             }
-        }
 
-        let mvtkFlg = 1;
-        const unacceptedPaymentMethod = event.offers?.unacceptedPaymentMethod;
-        if (Array.isArray(unacceptedPaymentMethod)
-            && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
-            mvtkFlg = 0;
-        }
+            const projectService = new chevre.service.Project({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const project = await projectService.findById({ id: req.project.id });
 
-        let translationType = '';
-        if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
-            translationType = '0';
-        }
-        if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
-            translationType = '1';
-        }
+            if (req.method === 'POST') {
+                // バリデーション
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
+                if (validatorResult.isEmpty()) {
+                    // 作品DB登録
+                    try {
+                        searchMovieResult = await creativeWorkService.searchMovies({
+                            project: { ids: [req.project.id] },
+                            identifier: { $eq: req.body.workPerformed.identifier }
+                        });
+                        movie = searchMovieResult.data.shift();
+                        if (movie === undefined) {
+                            throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
+                        }
 
-        const forms = {
-            additionalProperty: [],
-            headline: {},
-            ...event,
-            ...req.body,
-            nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
-            nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
-            duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
-                .asMinutes() : req.body.duration,
-            locationId: event.location.id,
-            translationType: translationType,
-            videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
-            startDate: (_.isEmpty(req.body.startDate)) ?
-                (event.startDate !== null) ? moment(event.startDate)
-                    .tz('Asia/Tokyo')
-                    .format('YYYY/MM/DD') : '' :
-                req.body.startDate,
-            endDate: (_.isEmpty(req.body.endDate)) ?
-                (event.endDate !== null) ? moment(event.endDate)
-                    .tz('Asia/Tokyo')
-                    .add(-1, 'day')
-                    .format('YYYY/MM/DD') : '' :
-                req.body.endDate,
-            mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg
-        };
-        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-            // tslint:disable-next-line:prefer-array-literal
-            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-                return {};
-            }));
-        }
+                        const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
+                        const attributes = createEventFromBody(req, movie, movieTheater, false);
+                        debug('saving an event...', attributes);
+                        await eventService.update({
+                            id: eventId,
+                            attributes: attributes
+                        });
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
 
-        // 作品マスタ画面遷移
-        debug('errors:', errors);
-        res.render('events/screeningEventSeries/edit', {
-            message: message,
-            errors: errors,
-            forms: forms,
-            movie: movie,
-            movieTheaters: searchMovieTheatersResult.data,
-            videoFormatTypes: searchVideoFormatTypesResult.data,
-            paymentServices: project.settings?.paymentServices
-        });
+                        return;
+                    } catch (error) {
+                        message = error.message;
+                    }
+                } else {
+                    message = '入力に誤りがあります';
+                }
+            }
+
+            let mvtkFlg = 1;
+            const unacceptedPaymentMethod = event.offers?.unacceptedPaymentMethod;
+            if (Array.isArray(unacceptedPaymentMethod)
+                && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
+                mvtkFlg = 0;
+            }
+
+            let translationType = '';
+            if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
+                translationType = '0';
+            }
+            if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
+                translationType = '1';
+            }
+
+            const forms = {
+                additionalProperty: [],
+                headline: {},
+                ...event,
+                ...req.body,
+                nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
+                nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
+                duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
+                    .asMinutes() : req.body.duration,
+                locationId: event.location.id,
+                translationType: translationType,
+                videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
+                startDate: (_.isEmpty(req.body.startDate)) ?
+                    (event.startDate !== null) ? moment(event.startDate)
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD') : '' :
+                    req.body.startDate,
+                endDate: (_.isEmpty(req.body.endDate)) ?
+                    (event.endDate !== null) ? moment(event.endDate)
+                        .tz('Asia/Tokyo')
+                        .add(-1, 'day')
+                        .format('YYYY/MM/DD') : '' :
+                    req.body.endDate,
+                mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg
+            };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            // 作品マスタ画面遷移
+            res.render('events/screeningEventSeries/edit', {
+                message: message,
+                errors: errors,
+                forms: forms,
+                movie: movie,
+                movieTheaters: searchMovieTheatersResult.data,
+                videoFormatTypes: searchVideoFormatTypesResult.data,
+                paymentServices: project.settings?.paymentServices
+            });
+        } catch (error) {
+            next(error);
+        }
     }
 );
 
@@ -519,39 +507,15 @@ function createEventFromBody(
         return { typeOf: f, name: f };
     }) : [];
 
-    // let acceptedPaymentMethod: chevre.factory.paymentMethodType[] | undefined;
     let unacceptedPaymentMethod: string[] | undefined = req.body.unacceptedPaymentMethod;
-
-    // ムビチケ除外の場合は対応決済方法を追加
     if (typeof unacceptedPaymentMethod === 'string') {
         unacceptedPaymentMethod = [unacceptedPaymentMethod];
     }
-    // if (req.body.mvtkFlg !== '1') {
-    //     if (!Array.isArray(unacceptedPaymentMethod)) {
-    //         unacceptedPaymentMethod = [];
-    //     }
-    //     unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
-    // }
-
-    // Object.keys(chevre.factory.paymentMethodType)
-    //     .forEach((key) => {
-    //         if (acceptedPaymentMethod === undefined) {
-    //             acceptedPaymentMethod = [];
-    //         }
-
-    //         const paymentMethodType = (<any>chevre.factory.paymentMethodType)[key];
-    //         if (req.body.mvtkFlg !== '1' && paymentMethodType === chevre.factory.paymentMethodType.MovieTicket) {
-    //             return;
-    //         }
-
-    //         acceptedPaymentMethod.push(paymentMethodType);
-    //     });
 
     const offers: chevre.factory.event.screeningEventSeries.IOffer = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
         priceCurrency: chevre.factory.priceCurrency.JPY,
-        // ...(Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined,
         ...(Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined
     };
 
