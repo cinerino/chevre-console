@@ -439,6 +439,7 @@ function validate() {
 
         body('thumbnailUrl')
             .optional()
+            .if((value: any) => typeof value === 'string' && value.length > 0)
             .isURL()
             .withMessage('URLを入力してください')
             .isLength({ max: THUMBNAIL_URL_MAX_LENGTH })

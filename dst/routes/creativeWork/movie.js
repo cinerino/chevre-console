@@ -337,6 +337,7 @@ function validate() {
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
         express_validator_1.body('thumbnailUrl')
             .optional()
+            .if((value) => typeof value === 'string' && value.length > 0)
             .isURL()
             .withMessage('URLを入力してください')
             .isLength({ max: THUMBNAIL_URL_MAX_LENGTH })
