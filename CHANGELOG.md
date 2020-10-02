@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 施設コンテンツ編集のエラーハンドリング調整
+
 ### Deprecated
 
 ### Removed
