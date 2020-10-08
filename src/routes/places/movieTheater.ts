@@ -31,7 +31,7 @@ movieTheaterRouter.all<any>(
                 try {
                     debug(req.body);
                     req.body.id = '';
-                    let movieTheater = await createMovieTheaterFromBody(req);
+                    let movieTheater = await createMovieTheaterFromBody(req, true);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
                         auth: req.user.authClient
@@ -212,7 +212,7 @@ movieTheaterRouter.all<ParamsDictionary>(
             if (validatorResult.isEmpty()) {
                 try {
                     req.body.id = req.params.id;
-                    movieTheater = <any>await createMovieTheaterFromBody(req);
+                    movieTheater = <any>await createMovieTheaterFromBody(req, false);
                     debug('saving an movie theater...', movieTheater);
                     await placeService.updateMovieTheater(movieTheater);
 
@@ -230,9 +230,6 @@ movieTheaterRouter.all<ParamsDictionary>(
             additionalProperty: [],
             // tslint:disable-next-line:no-null-keyword
             offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
-            // containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
-            // tslint:disable-next-line:no-null-keyword
-            containsPlaceStr: JSON.stringify([], null, '\t'),
             ...movieTheater,
             ...req.body
         };
@@ -316,7 +313,9 @@ movieTheaterRouter.get(
     }
 );
 
-async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
+async function createMovieTheaterFromBody(
+    req: Request, isNew: boolean
+): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
     const parentOrganizationId = req.body.parentOrganization?.id;
 
     const sellerService = new chevre.service.Seller({
@@ -331,6 +330,16 @@ async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.
         id: seller.id
     };
 
+    let hasPOS: chevre.factory.place.movieTheater.IPOS[] = [];
+    if (typeof req.body.hasPOSStr === 'string' && req.body.hasPOSStr.length > 0) {
+        hasPOS = JSON.parse(req.body.hasPOSStr);
+    }
+    if (!Array.isArray(hasPOS)) {
+        throw new Error('hasPOSはArrayを入力してください');
+    }
+
+    const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
+
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -339,9 +348,9 @@ async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.
         branchCode: req.body.branchCode,
         name: req.body.name,
         kanaName: req.body.kanaName,
+        hasPOS: hasPOS,
         offers: JSON.parse(req.body.offersStr),
         parentOrganization: parentOrganization,
-        // containsPlace: JSON.parse(req.body.containsPlaceStr),
         telephone: req.body.telephone,
         screenCount: 0,
         additionalProperty: (Array.isArray(req.body.additionalProperty))
@@ -353,7 +362,14 @@ async function createMovieTheaterFromBody(req: Request): Promise<chevre.factory.
                     };
                 })
             : undefined,
-        ...(typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined
+        ...(typeof url === 'string') ? { url: url } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(url === undefined) ? { url: 1 } : undefined
+                }
+            }
+            : undefined
     };
 
     return movieTheater;

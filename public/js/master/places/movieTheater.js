@@ -19,7 +19,6 @@ $(function () {
     JSONEditor.defaults.options.iconlib = 'materialicons';
 
     // JSONエディタをいったん無効化
-    // initScreen();
     // initOffer();
 
     // 削除ボタン
@@ -50,80 +49,6 @@ function remove() {
             .always(function () {
             });
     }
-}
-
-/**
- * ルームエディタ初期化
- */
-function initScreen() {
-    var schema = {
-        type: 'array',
-        uniqueItems: true,
-        format: 'tabs',
-        items: {
-            type: 'object',
-            title: 'screen',
-            properties: {
-                branchCode: { type: 'string' },
-                name: {
-                    type: 'object',
-                    format: "grid",
-                    properties: {
-                        ja: { type: 'string' },
-                        en: { type: 'string' }
-                    }
-                },
-                typeOf: { type: 'string', default: 'ScreeningRoom' },
-                containsPlace: {
-                    type: 'array',
-                    title: 'containsPlace',
-                    uniqueItems: true,
-                    items: {
-                        type: 'object',
-                        properties: {
-                            branchCode: { type: 'string' },
-                            name: {
-                                type: 'object',
-                                format: "grid",
-                                properties: {
-                                    ja: { type: 'string' },
-                                    en: { type: 'string' }
-                                }
-                            },
-                            typeOf: { type: 'string', default: 'ScreeningRoomSection' },
-                            containsPlace: {
-                                type: 'array',
-                                format: 'table',
-                                uniqueItems: true,
-                                format: 'tabs',
-                                items: {
-                                    title: '',
-                                    type: 'object',
-                                    format: "grid",
-                                    properties: {
-                                        branchCode: { type: 'string' },
-                                        typeOf: { type: 'string', default: 'Seat' }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    };
-    var options = {
-        disable_array_reorder: true,
-        schema: schema
-    };
-    var editor = new JSONEditor(document.getElementById('containsPlaceStr'), options);
-    var value = $('textarea[name=containsPlaceStr]').val();
-    editor.setValue(JSON.parse(value));
-    editor.off('change');
-    editor.on('change', function () {
-        var value = editor.getValue();
-        $('textarea[name=containsPlaceStr]').val(JSON.stringify(value));
-    });
 }
 
 /**

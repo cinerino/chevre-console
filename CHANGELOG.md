@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.4.0 - 2020-10-08
+
+### Changed
+
+- 施設編集の高度な設定を調整
+
 ## v2.3.2 - 2020-10-02
 
 ### Changed

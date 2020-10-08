@@ -153,44 +153,61 @@
             </div>
 
             <div class="tab-pane" id="link3">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="offersStr" class="bmd-label-static">
+                            offers
+                        </label>
+                        <%
+                        const offersStr = (!isNew) 
+                            ? forms.offersStr
+                            : JSON.stringify({
+                                "typeOf": "Offer",
+                                "eligibleQuantity": {
+                                "typeOf": "QuantitativeValue",
+                                "maxValue": 6,
+                                "unitCode": "C62"
+                                },
+                                "availabilityStartsGraceTime": {
+                                "typeOf": "QuantitativeValue",
+                                "value": -2,
+                                "unitCode": "DAY"
+                                },
+                                "availabilityEndsGraceTime": {
+                                "typeOf": "QuantitativeValue",
+                                "value": 1200,
+                                "unitCode": "SEC"
+                                }
+                            }, null, '\t');
+                        %>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#editOffersJson" role="button"
+                            aria-expanded="false" aria-controls="editOffersJson">
+                            編集する
+                        </a>
 
-                <div class="form-group bmd-form-group">
-                    <label for="containsPlaceStr" class="bmd-label-static">
-                        ルーム
-                    </label>
-                    <textarea class="d-none" name="containsPlaceStr">
-                    <%-(!isNew) ? forms.containsPlaceStr : JSON.stringify([]) %>
-                    </textarea>
-                    <div class="json-editor" id="containsPlaceStr"></div>
+                        <div class="collapse" id="editOffersJson">
+                            <textarea class="form-control" name="offersStr" rows=20><%= offersStr %></textarea>
+                        </div>
+
+                    </div>
                 </div>
 
-                <div class="form-group bmd-form-group">
-                    <label for="offersStr" class="bmd-label-static">
-                        オファー
-                    </label>
-                    <textarea class="d-none" name="offersStr">
-                    <%-(!isNew) ? forms.offersStr : JSON.stringify({
-                        "typeOf": "Offer",
-                        "eligibleQuantity": {
-                        "typeOf": "QuantitativeValue",
-                        "maxValue": 6,
-                        "unitCode": "C62"
-                        },
-                        "availabilityStartsGraceTime": {
-                        "typeOf": "QuantitativeValue",
-                        "value": -2,
-                        "unitCode": "DAY"
-                        },
-                        "availabilityEndsGraceTime": {
-                        "typeOf": "QuantitativeValue",
-                        "value": 1200,
-                        "unitCode": "SEC"
-                        }
-                    }) %>
-                    </textarea>
-                    <div class="json-editor" id="offersStr"></div>
-                </div>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            hasPOS
+                        </label>
+                        <a class="d-block pt-1" data-toggle="collapse" href="#editHasPOSJson" role="button"
+                            aria-expanded="false" aria-controls="editHasPOSJson">
+                            編集する
+                        </a>
 
+                        <div class="collapse" id="editHasPOSJson">
+                            <textarea class="form-control" name="hasPOSStr"
+                                rows=20><%= JSON.stringify(forms.hasPOS, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
