@@ -32,7 +32,7 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             try {
                 debug(req.body);
                 req.body.id = '';
-                let movieTheater = yield createMovieTheaterFromBody(req);
+                let movieTheater = yield createMovieTheaterFromBody(req, true);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient
@@ -169,7 +169,7 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
         if (validatorResult.isEmpty()) {
             try {
                 req.body.id = req.params.id;
-                movieTheater = (yield createMovieTheaterFromBody(req));
+                movieTheater = (yield createMovieTheaterFromBody(req, false));
                 debug('saving an movie theater...', movieTheater);
                 yield placeService.updateMovieTheater(movieTheater);
                 req.flash('message', '更新しました');
@@ -183,10 +183,7 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
     }
     const forms = Object.assign(Object.assign({ additionalProperty: [], 
         // tslint:disable-next-line:no-null-keyword
-        offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}', 
-        // containsPlaceStr: JSON.stringify(movieTheater.containsPlace, null, '\t'),
-        // tslint:disable-next-line:no-null-keyword
-        containsPlaceStr: JSON.stringify([], null, '\t') }, movieTheater), req.body);
+        offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}' }, movieTheater), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -249,7 +246,7 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
         });
     }
 }));
-function createMovieTheaterFromBody(req) {
+function createMovieTheaterFromBody(req, isNew) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
@@ -263,10 +260,16 @@ function createMovieTheaterFromBody(req) {
             typeOf: seller.typeOf,
             id: seller.id
         };
+        let hasPOS = [];
+        if (typeof req.body.hasPOSStr === 'string' && req.body.hasPOSStr.length > 0) {
+            hasPOS = JSON.parse(req.body.hasPOSStr);
+        }
+        if (!Array.isArray(hasPOS)) {
+            throw new Error('hasPOSはArrayを入力してください');
+        }
+        const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, 
-            // containsPlace: JSON.parse(req.body.containsPlaceStr),
-            telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -274,7 +277,11 @@ function createMovieTheaterFromBody(req) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, (typeof req.body.url === 'string' && req.body.url.length > 0) ? { url: req.body.url } : undefined);
+                : undefined }, (typeof url === 'string') ? { url: url } : undefined), (!isNew)
+            ? {
+                $unset: Object.assign({}, (url === undefined) ? { url: 1 } : undefined)
+            }
+            : undefined);
         return movieTheater;
     });
 }

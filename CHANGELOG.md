@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 施設編集の高度な設定を調整
+
 ### Deprecated
 
 ### Removed
