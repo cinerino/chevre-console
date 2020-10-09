@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 施設検索条件拡張
-- update @cinerino/sdk
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.4.2 - 2020-10-09
+
+### Changed
+
+- 施設検索条件拡張
+- update @cinerino/sdk
 
 ## v2.4.1 - 2020-10-09
 
