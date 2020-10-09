@@ -14,8 +14,6 @@
 | Name                          | Required | Value            | Purpose                |
 | ----------------------------- | -------- | ---------------- | ---------------------- |
 | `DEBUG`                       | false    | chevre-backend:* | Debug                  |
-| `NODE_ENV`                    | true     |                  | Environment name       |
-| `MONGOLAB_URI`                | true     |                  | MongoDB Connection URI |
 | `REDIS_PORT`                  | true     |                  | Redis Cache Connection |
 | `REDIS_HOST`                  | true     |                  | Redis Cache Connection |
 | `REDIS_KEY`                   | true     |                  | Redis Cache Connection |
@@ -25,7 +23,7 @@
 | `API_CLIENT_ID`               | true     |                  |                        |
 | `API_CLIENT_SECRET`           | true     |                  |                        |
 | `API_CODE_VERIFIER`           | true     |                  |                        |
-| `PROJECT_ID`                  | true     |                  | Project ID             |
+| `PROJECT_ID`                  | false    |                  | Project ID             |
 | `USE_COA`                     | false    | 1 or 0           | COA usage flag         |
 
 ## License

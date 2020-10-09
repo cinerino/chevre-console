@@ -81,7 +81,7 @@ movieTheaterRouter.get('', (_, res) => {
     });
 });
 movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -92,10 +92,23 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             auth: req.user.authClient
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
-        const parentOrganizationIdEq = (_a = req.query.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
+        const branchCodeRegex = (_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex;
+        const nameRegex = req.query.name;
+        const parentOrganizationIdEq = (_b = req.query.parentOrganization) === null || _b === void 0 ? void 0 : _b.id;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield placeService.searchMovieTheaters(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, name: req.query.name }, {
+        const { data } = yield placeService.searchMovieTheaters({
+            limit: limit,
+            page: page,
+            project: { ids: [req.project.id] },
+            branchCode: {
+                $regex: (typeof branchCodeRegex === 'string' && branchCodeRegex.length > 0)
+                    ? branchCodeRegex
+                    : undefined
+            },
+            name: (typeof nameRegex === 'string' && nameRegex.length > 0)
+                ? nameRegex
+                : undefined,
             parentOrganization: {
                 id: {
                     $eq: (typeof parentOrganizationIdEq === 'string' && parentOrganizationIdEq.length > 0)
@@ -103,7 +116,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
                         : undefined
                 }
             }
-        }));
+        });
         const results = data.map((movieTheater) => {
             var _a;
             const availabilityEndsGraceTimeInMinutes = (movieTheater.offers !== undefined

@@ -110,6 +110,8 @@ movieTheaterRouter.get(
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
+            const branchCodeRegex = req.query.branchCode?.$regex;
+            const nameRegex = req.query.name;
             const parentOrganizationIdEq = req.query.parentOrganization?.id;
 
             const limit = Number(req.query.limit);
@@ -118,14 +120,19 @@ movieTheaterRouter.get(
                 limit: limit,
                 page: page,
                 project: { ids: [req.project.id] },
-                name: req.query.name,
-                ...{
-                    parentOrganization: {
-                        id: {
-                            $eq: (typeof parentOrganizationIdEq === 'string' && parentOrganizationIdEq.length > 0)
-                                ? parentOrganizationIdEq
-                                : undefined
-                        }
+                branchCode: {
+                    $regex: (typeof branchCodeRegex === 'string' && branchCodeRegex.length > 0)
+                        ? branchCodeRegex
+                        : undefined
+                },
+                name: (typeof nameRegex === 'string' && nameRegex.length > 0)
+                    ? nameRegex
+                    : undefined,
+                parentOrganization: {
+                    id: {
+                        $eq: (typeof parentOrganizationIdEq === 'string' && parentOrganizationIdEq.length > 0)
+                            ? parentOrganizationIdEq
+                            : undefined
                     }
                 }
             });
