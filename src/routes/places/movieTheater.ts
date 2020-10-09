@@ -110,13 +110,24 @@ movieTheaterRouter.get(
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
+            const parentOrganizationIdEq = req.query.parentOrganization?.id;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await placeService.searchMovieTheaters({
                 limit: limit,
                 page: page,
                 project: { ids: [req.project.id] },
-                name: req.query.name
+                name: req.query.name,
+                ...{
+                    parentOrganization: {
+                        id: {
+                            $eq: (typeof parentOrganizationIdEq === 'string' && parentOrganizationIdEq.length > 0)
+                                ? parentOrganizationIdEq
+                                : undefined
+                        }
+                    }
+                }
             });
 
             const results = data.map((movieTheater) => {
