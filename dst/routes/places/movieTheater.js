@@ -81,6 +81,7 @@ movieTheaterRouter.get('', (_, res) => {
     });
 });
 movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -91,14 +92,18 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
             auth: req.user.authClient
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
+        const parentOrganizationIdEq = (_a = req.query.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield placeService.searchMovieTheaters({
-            limit: limit,
-            page: page,
-            project: { ids: [req.project.id] },
-            name: req.query.name
-        });
+        const { data } = yield placeService.searchMovieTheaters(Object.assign({ limit: limit, page: page, project: { ids: [req.project.id] }, name: req.query.name }, {
+            parentOrganization: {
+                id: {
+                    $eq: (typeof parentOrganizationIdEq === 'string' && parentOrganizationIdEq.length > 0)
+                        ? parentOrganizationIdEq
+                        : undefined
+                }
+            }
+        }));
         const results = data.map((movieTheater) => {
             var _a;
             const availabilityEndsGraceTimeInMinutes = (movieTheater.offers !== undefined

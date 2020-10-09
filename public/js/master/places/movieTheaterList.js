@@ -60,6 +60,40 @@ $(function () {
         });
     }
 
+    var parentOrganizationSelection = $('#parentOrganization\\[id\\]');
+    parentOrganizationSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '親組織選択',
+        allowClear: true,
+        ajax: {
+            url: '/sellers/getlist',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (seller) {
+                        return {
+                            id: seller.id,
+                            text: seller.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     // 追加特性を見る
     $(document).on('click', '.showAdditionalProperty', function (event) {
         var id = $(this).attr('data-id');
