@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 施設検索条件拡張
+- update @cinerino/sdk
 
 ### Deprecated
 
