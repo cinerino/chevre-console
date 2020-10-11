@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 販売者からlocationを削除
+- update @chevre/api-nodejs-client
+
 ### Deprecated
 
 ### Removed
