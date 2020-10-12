@@ -37,15 +37,15 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="identifier" class="bmd-label-static">
-                            コード
+                        <label for="branchCode" class="bmd-label-static">
+                            枝番号<span class="text-danger">＊</span>
                         </label>
-                        <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
-                            maxlength=30 value="<%= forms.identifier %>">
-                        <span class="bmd-help">半角30文字以内でご入力ください</span>
-                        <% if (errors && errors.identifier) { %>
+                        <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
+                            maxlength=20 value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                        <% if (errors && errors.branchCode) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors.identifier.msg %>
+                            <%- errors.branchCode.msg %>
                         </span>
                         <% } %>
                     </div>

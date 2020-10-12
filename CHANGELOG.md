@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.5.0 - 2020-10-12
+
+### Changed
+
+- 販売者にbranchCodeを追加
+
 ## v2.4.3 - 2020-10-12
 
 ### Changed
