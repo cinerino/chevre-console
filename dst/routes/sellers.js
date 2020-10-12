@@ -209,10 +209,10 @@ function createFromBody(req, isNew) {
                 throw new Error(`親組織の型が不適切です ${error.message}`);
             }
         }
-        const identifier = req.body.identifier;
+        const branchCode = req.body.branchCode;
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -220,23 +220,22 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined, areaServed: [] }, {
-            hasPOS: []
-        }), (typeof identifier === 'string' && identifier.length > 0) ? { identifier } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (parentOrganization !== undefined) ? { parentOrganization } : undefined), (!isNew)
+                : undefined, areaServed: [] }, (typeof branchCode === 'string' && branchCode.length > 0) ? { branchCode } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (parentOrganization !== undefined) ? { parentOrganization } : undefined), (!isNew)
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof identifier !== 'string' || identifier.length === 0) ? { identifier: 1 } : undefined), (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined), (parentOrganization === undefined) ? { parentOrganization: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined), (parentOrganization === undefined) ? { parentOrganization: 1 } : undefined)
             }
             : undefined);
     });
 }
 function validate() {
     return [
-        // body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
-        //     .notEmpty()
-        //     .isLength({ max: NAME_MAX_LENGTH_CODE })
-        //     .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
-        //     .matches(/^[0-9a-zA-Z\-_]+$/)
-        //     .withMessage(() => '英数字で入力してください'),
+        express_validator_1.body('branchCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
         express_validator_1.body('typeOf')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),

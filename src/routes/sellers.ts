@@ -255,7 +255,7 @@ async function createFromBody(
         }
     }
 
-    const identifier: string | undefined = req.body.identifier;
+    const branchCode: string | undefined = req.body.branchCode;
     const telephone: string | undefined = req.body.telephone;
     const url: string | undefined = req.body.url;
 
@@ -278,10 +278,7 @@ async function createFromBody(
                 })
             : undefined,
         areaServed: [],
-        ...{
-            hasPOS: []
-        },
-        ...(typeof identifier === 'string' && identifier.length > 0) ? { identifier } : undefined,
+        ...(typeof branchCode === 'string' && branchCode.length > 0) ? { branchCode } : undefined,
         ...(typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined,
         ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
         ...(hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined,
@@ -290,7 +287,6 @@ async function createFromBody(
         ...(!isNew)
             ? {
                 $unset: {
-                    ...(typeof identifier !== 'string' || identifier.length === 0) ? { identifier: 1 } : undefined,
                     ...(typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined,
                     ...(typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined,
                     ...(hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined,
@@ -304,12 +300,13 @@ async function createFromBody(
 
 function validate() {
     return [
-        // body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
-        //     .notEmpty()
-        //     .isLength({ max: NAME_MAX_LENGTH_CODE })
-        //     .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
-        //     .matches(/^[0-9a-zA-Z\-_]+$/)
-        //     .withMessage(() => '英数字で入力してください'),
+        body('branchCode')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .isLength({ max: 20 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
 
         body('typeOf')
             .notEmpty()
