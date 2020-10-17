@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- カテゴリーコード分類に決済方法区分を追加
+
 ### Changed
 
 ### Deprecated
