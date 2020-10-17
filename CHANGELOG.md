@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.6.0 - 2020-10-17
+
+### Added
+
+- カテゴリーコード分類に決済方法区分を追加
+
 ## v2.5.0 - 2020-10-12
 
 ### Changed
