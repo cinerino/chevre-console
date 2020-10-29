@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.7.1 - 2020-10-29
+
+### Changed
+
+- 細目作成前に細目コード重複確認処理を追加
+
 ## v2.7.0 - 2020-10-29
 
 ### Added
