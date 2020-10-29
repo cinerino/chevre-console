@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 決済サービス管理を追加
-
 ### Changed
 
 ### Deprecated
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.7.0 - 2020-10-29
+
+### Added
+
+- 決済サービス管理を追加
 
 ## v2.6.0 - 2020-10-17
 
