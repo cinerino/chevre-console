@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * プロダクトルーター
+ * 決済サービスルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
@@ -19,19 +19,13 @@ const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
-const productType_1 = require("../factory/productType");
-const addOn_1 = require("./products/addOn");
+const paymentServiceType_1 = require("../factory/paymentServiceType");
 const NUM_ADDITIONAL_PROPERTY = 10;
-const productsRouter = express_1.Router();
-productsRouter.use('/addOn', addOn_1.default);
-productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const paymentServicesRouter = express_1.Router();
+paymentServicesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -54,7 +48,7 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
                 }
                 product = yield productService.create(product);
                 req.flash('message', '登録しました');
-                res.redirect(`/products/${product.id}`);
+                res.redirect(`/paymentServices/${product.id}`);
                 return;
             }
             catch (error) {
@@ -74,70 +68,42 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
             return {};
         }));
     }
-    const searchOfferCatalogsResult = yield offerCatalogService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
-    });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
-    res.render('products/new', {
+    res.render('paymentServices/new', {
         message: message,
         errors: errors,
         forms: forms,
-        offerCatalogs: searchOfferCatalogsResult.data,
-        productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
-            ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes,
+        paymentServiceTypes: paymentServiceType_1.paymentServiceTypes,
         sellers: searchSellersResult.data
     });
 }));
-productsRouter.get('/search', 
+paymentServicesRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a;
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const offersValidFromLte = (typeof ((_b = (_a = req.query.offers) === null || _a === void 0 ? void 0 : _a.$elemMatch) === null || _b === void 0 ? void 0 : _b.validThrough) === 'string'
-            && req.query.offers.$elemMatch.validThrough.length > 0)
-            ? moment(`${req.query.offers.$elemMatch.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate()
-            : undefined;
-        const offersValidThroughGte = (typeof ((_d = (_c = req.query.offers) === null || _c === void 0 ? void 0 : _c.$elemMatch) === null || _d === void 0 ? void 0 : _d.validFrom) === 'string'
-            && req.query.offers.$elemMatch.validFrom.length > 0)
-            ? moment(`${req.query.offers.$elemMatch.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate()
-            : undefined;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const searchConditions = {
             limit: limit,
             page: page,
-            // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq },
-            offers: {
-                $elemMatch: {
-                    validFrom: {
-                        $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
-                    },
-                    validThrough: {
-                        $gte: (offersValidThroughGte instanceof Date) ? offersValidThroughGte : undefined
-                    },
-                    'seller.id': {
-                        $in: (typeof ((_h = (_g = (_f = req.query.offers) === null || _f === void 0 ? void 0 : _f.$elemMatch) === null || _g === void 0 ? void 0 : _g.seller) === null || _h === void 0 ? void 0 : _h.id) === 'string'
-                            && req.query.offers.$elemMatch.seller.id.length > 0)
-                            ? [req.query.offers.$elemMatch.seller.id]
-                            : undefined
-                    }
+            typeOf: (typeof ((_a = req.query.typeOf) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
+                ? { $eq: req.query.typeOf.$eq }
+                : {
+                    $in: [
+                        chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                        chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                    ]
                 }
-            }
         };
         const { data } = yield productService.search(searchConditions);
         res.json({
@@ -160,17 +126,13 @@ productsRouter.get('/search',
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-productsRouter.all('/:id', ...validate(), 
+paymentServicesRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let message = '';
         let errors = {};
         const productService = new chevre.service.Product({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -211,22 +173,16 @@ productsRouter.all('/:id', ...validate(),
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD')
                 : '' });
-        const searchOfferCatalogsResult = yield offerCatalogService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: product.typeOf } }
-        });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
-        res.render('products/update', {
+        res.render('paymentServices/update', {
             message: message,
             errors: errors,
             forms: forms,
-            offerCatalogs: searchOfferCatalogsResult.data,
-            productTypes: productType_1.productTypes.filter((p) => p.codeValue === product.typeOf),
+            paymentServiceTypes: paymentServiceType_1.paymentServiceTypes,
             sellers: searchSellersResult.data
         });
     }
@@ -234,29 +190,28 @@ productsRouter.all('/:id', ...validate(),
         next(err);
     }
 }));
-productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+paymentServicesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
-    res.render('products/index', {
+    res.render('paymentServices/index', {
         message: '',
-        productTypes: (typeof req.query.typeOf === 'string')
-            ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes,
+        paymentServiceTypes: paymentServiceType_1.paymentServiceTypes,
         sellers: searchSellersResult.data
     });
 }));
 // tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e;
-    let hasOfferCatalog;
-    if (typeof ((_a = req.body.hasOfferCatalog) === null || _a === void 0 ? void 0 : _a.id) === 'string' && ((_b = req.body.hasOfferCatalog) === null || _b === void 0 ? void 0 : _b.id.length) > 0) {
-        hasOfferCatalog = {
-            typeOf: 'OfferCatalog',
-            id: (_c = req.body.hasOfferCatalog) === null || _c === void 0 ? void 0 : _c.id
-        };
+    let availableChannel;
+    if (typeof req.body.availableChannelStr === 'string' && req.body.availableChannelStr.length > 0) {
+        try {
+            availableChannel = JSON.parse(req.body.availableChannelStr);
+        }
+        catch (error) {
+            throw new Error(`invalid offers ${error.message}`);
+        }
     }
     let serviceOutput;
     if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
@@ -267,50 +222,9 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
     }
-    let offers;
-    let sellerIds = (_e = (_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.seller) === null || _e === void 0 ? void 0 : _e.id;
-    if (typeof sellerIds === 'string' && sellerIds.length > 0) {
-        sellerIds = [sellerIds];
-    }
-    if (Array.isArray(sellerIds)) {
-        if (typeof req.body.offersValidFrom === 'string'
-            && req.body.offersValidFrom.length > 0
-            && typeof req.body.offersValidThrough === 'string'
-            && req.body.offersValidThrough.length > 0) {
-            const validFrom = moment(`${req.body.offersValidFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate();
-            const validThrough = moment(`${req.body.offersValidThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .add(1, 'day')
-                .toDate();
-            offers = sellerIds.map((sellerId) => {
-                return {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.offerType.Offer,
-                    priceCurrency: chevre.factory.priceCurrency.JPY,
-                    availabilityEnds: validThrough,
-                    availabilityStarts: validFrom,
-                    validFrom: validFrom,
-                    validThrough: validThrough,
-                    seller: {
-                        id: sellerId
-                    }
-                };
-            });
-        }
-    }
-    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
-        // try {
-        //     offers = JSON.parse(req.body.offersStr);
-        //     if (!Array.isArray(offers)) {
-        //         throw Error('offers must be an array');
-        //     }
-        // } catch (error) {
-        //     throw new Error(`invalid offers ${error.message}`);
-        // }
-    }
-    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined), (offers !== undefined) ? { offers } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
-            $unset: Object.assign(Object.assign(Object.assign({}, (hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined), (offers === undefined) ? { offers: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
+            $unset: Object.assign(Object.assign({}, (availableChannel === undefined) ? { availableChannel: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }
         : undefined);
 }
@@ -336,4 +250,4 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('名称', 30))
     ];
 }
-exports.default = productsRouter;
+exports.default = paymentServicesRouter;
