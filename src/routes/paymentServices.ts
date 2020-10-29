@@ -1,5 +1,5 @@
 /**
- * プロダクトルーター
+ * 決済サービスルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Request, Router } from 'express';
@@ -12,17 +12,13 @@ import * as _ from 'underscore';
 
 import * as Message from '../message';
 
-import { ProductType, productTypes } from '../factory/productType';
-
-import addOnRouter from './products/addOn';
+import { paymentServiceTypes } from '../factory/paymentServiceType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-const productsRouter = Router();
+const paymentServicesRouter = Router();
 
-productsRouter.use('/addOn', addOnRouter);
-
-productsRouter.all<any>(
+paymentServicesRouter.all<any>(
     '/new',
     ...validate(),
     async (req, res) => {
@@ -30,11 +26,6 @@ productsRouter.all<any>(
         let errors: any = {};
 
         const productService = new chevre.service.Product({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -60,7 +51,7 @@ productsRouter.all<any>(
 
                     product = await productService.create(product);
                     req.flash('message', '登録しました');
-                    res.redirect(`/products/${product.id}`);
+                    res.redirect(`/paymentServices/${product.id}`);
 
                     return;
                 } catch (error) {
@@ -91,32 +82,23 @@ productsRouter.all<any>(
             }));
         }
 
-        const searchOfferCatalogsResult = await offerCatalogService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: ProductType.Product } }
-        });
-
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
-        res.render('products/new', {
+        res.render('paymentServices/new', {
             message: message,
             errors: errors,
             forms: forms,
-            offerCatalogs: searchOfferCatalogsResult.data,
-            productTypes: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
-                ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes,
+            paymentServiceTypes: paymentServiceTypes,
             sellers: searchSellersResult.data
         });
     }
 );
 
-productsRouter.get(
+paymentServicesRouter.get(
     '/search',
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
@@ -126,41 +108,20 @@ productsRouter.get(
                 auth: req.user.authClient
             });
 
-            const offersValidFromLte = (typeof req.query.offers?.$elemMatch?.validThrough === 'string'
-                && req.query.offers.$elemMatch.validThrough.length > 0)
-                ? moment(`${req.query.offers.$elemMatch.validThrough}T23:59:59+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                    .toDate()
-                : undefined;
-            const offersValidThroughGte = (typeof req.query.offers?.$elemMatch?.validFrom === 'string'
-                && req.query.offers.$elemMatch.validFrom.length > 0)
-                ? moment(`${req.query.offers.$elemMatch.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                    .toDate()
-                : undefined;
-
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const searchConditions: chevre.factory.product.ISearchConditions = {
                 limit: limit,
                 page: page,
-                // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
-                typeOf: { $eq: req.query.typeOf?.$eq },
-                offers: {
-                    $elemMatch: {
-                        validFrom: {
-                            $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
-                        },
-                        validThrough: {
-                            $gte: (offersValidThroughGte instanceof Date) ? offersValidThroughGte : undefined
-                        },
-                        'seller.id': {
-                            $in: (typeof req.query.offers?.$elemMatch?.seller?.id === 'string'
-                                && req.query.offers.$elemMatch.seller.id.length > 0)
-                                ? [req.query.offers.$elemMatch.seller.id]
-                                : undefined
-                        }
+                typeOf: (typeof req.query.typeOf?.$eq === 'string' && req.query.typeOf.$eq.length > 0)
+                    ? { $eq: req.query.typeOf.$eq }
+                    : <any>{
+                        $in: [
+                            chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                            chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                        ]
                     }
-                }
             };
             const { data } = await productService.search(searchConditions);
 
@@ -187,7 +148,7 @@ productsRouter.get(
 );
 
 // tslint:disable-next-line:use-default-type-parameter
-productsRouter.all<ParamsDictionary>(
+paymentServicesRouter.all<ParamsDictionary>(
     '/:id',
     ...validate(),
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
@@ -197,11 +158,6 @@ productsRouter.all<ParamsDictionary>(
             let errors: any = {};
 
             const productService = new chevre.service.Product({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-
-            const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
@@ -250,24 +206,17 @@ productsRouter.all<ParamsDictionary>(
                     : ''
             };
 
-            const searchOfferCatalogsResult = await offerCatalogService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: product.typeOf } }
-            });
-
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
-            res.render('products/update', {
+            res.render('paymentServices/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                offerCatalogs: searchOfferCatalogsResult.data,
-                productTypes: productTypes.filter((p) => p.codeValue === product.typeOf),
+                paymentServiceTypes: paymentServiceTypes,
                 sellers: searchSellersResult.data
             });
         } catch (err) {
@@ -276,7 +225,7 @@ productsRouter.all<ParamsDictionary>(
     }
 );
 
-productsRouter.get(
+paymentServicesRouter.get(
     '',
     async (req, res) => {
         const sellerService = new chevre.service.Seller({
@@ -285,11 +234,9 @@ productsRouter.get(
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
-        res.render('products/index', {
+        res.render('paymentServices/index', {
             message: '',
-            productTypes: (typeof req.query.typeOf === 'string')
-                ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes,
+            paymentServiceTypes: paymentServiceTypes,
             sellers: searchSellersResult.data
         });
     }
@@ -297,12 +244,13 @@ productsRouter.get(
 
 // tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IProduct {
-    let hasOfferCatalog: any;
-    if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
-        hasOfferCatalog = {
-            typeOf: 'OfferCatalog',
-            id: req.body.hasOfferCatalog?.id
-        };
+    let availableChannel: chevre.factory.service.paymentService.IAvailableChannel | undefined;
+    if (typeof req.body.availableChannelStr === 'string' && req.body.availableChannelStr.length > 0) {
+        try {
+            availableChannel = JSON.parse(req.body.availableChannelStr);
+        } catch (error) {
+            throw new Error(`invalid offers ${error.message}`);
+        }
     }
 
     let serviceOutput: chevre.factory.product.IServiceOutput | chevre.factory.product.IServiceOutput | undefined;
@@ -314,65 +262,18 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
         }
     }
 
-    let offers: chevre.factory.offer.IOffer[] | undefined;
-    let sellerIds: string[] | string | undefined = req.body.offers?.seller?.id;
-    if (typeof sellerIds === 'string' && sellerIds.length > 0) {
-        sellerIds = [sellerIds];
-    }
-
-    if (Array.isArray(sellerIds)) {
-        if (typeof req.body.offersValidFrom === 'string'
-            && req.body.offersValidFrom.length > 0
-            && typeof req.body.offersValidThrough === 'string'
-            && req.body.offersValidThrough.length > 0) {
-            const validFrom = moment(`${req.body.offersValidFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .toDate();
-            const validThrough = moment(`${req.body.offersValidThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                .add(1, 'day')
-                .toDate();
-
-            offers = sellerIds.map((sellerId) => {
-                return {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.offerType.Offer,
-                    priceCurrency: chevre.factory.priceCurrency.JPY,
-                    availabilityEnds: validThrough,
-                    availabilityStarts: validFrom,
-                    validFrom: validFrom,
-                    validThrough: validThrough,
-                    seller: {
-                        id: sellerId
-                    }
-                };
-            });
-        }
-    }
-
-    if (typeof req.body.offersStr === 'string' && req.body.offersStr.length > 0) {
-        // try {
-        //     offers = JSON.parse(req.body.offersStr);
-        //     if (!Array.isArray(offers)) {
-        //         throw Error('offers must be an array');
-        //     }
-        // } catch (error) {
-        //     throw new Error(`invalid offers ${error.message}`);
-        // }
-    }
-
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: req.body.typeOf,
         id: req.params.id,
         productID: req.body.productID,
         name: req.body.name,
-        ...(hasOfferCatalog !== undefined) ? { hasOfferCatalog } : undefined,
-        ...(offers !== undefined) ? { offers } : undefined,
+        ...(availableChannel !== undefined) ? { availableChannel } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
-                    ...(hasOfferCatalog === undefined) ? { hasOfferCatalog: 1 } : undefined,
-                    ...(offers === undefined) ? { offers: 1 } : undefined,
+                    ...(availableChannel === undefined) ? { availableChannel: 1 } : undefined,
                     ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined
                 }
             }
@@ -405,4 +306,4 @@ function validate() {
     ];
 }
 
-export default productsRouter;
+export default paymentServicesRouter;
