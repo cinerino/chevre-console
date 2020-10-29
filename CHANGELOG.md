@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 細目作成前に細目コード重複確認処理を追加
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.7.1 - 2020-10-29
+
+### Changed
+
+- 細目作成前に細目コード重複確認処理を追加
 
 ## v2.7.0 - 2020-10-29
 
