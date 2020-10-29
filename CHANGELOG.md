@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 細目作成前に細目コード重複確認処理を追加
+
 ### Deprecated
 
 ### Removed

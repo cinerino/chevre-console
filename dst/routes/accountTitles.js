@@ -108,6 +108,15 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             try {
                 const accountTitle = yield createFromBody(req);
                 debug('saving account title...', accountTitle);
+                // 細目コード重複確認
+                const searchAccountTitlesResult = yield accountTitleService.search({
+                    limit: 1,
+                    project: { ids: [req.project.id] },
+                    codeValue: { $eq: accountTitle.codeValue }
+                });
+                if (searchAccountTitlesResult.data.length > 0) {
+                    throw new Error('既に存在するコードです');
+                }
                 yield accountTitleService.create(accountTitle);
                 req.flash('message', '登録しました');
                 res.redirect(`/accountTitles/${accountTitle.codeValue}`);
