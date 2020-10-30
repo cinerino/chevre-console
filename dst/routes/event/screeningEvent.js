@@ -700,7 +700,7 @@ function createMultipleEventFromBody(req, user) {
             const day = date.get('day')
                 .toString();
             if (weekDays.indexOf(day) >= 0) {
-                // tslint:disable-next-line:max-func-body-length
+                // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
                 timeData.forEach((data, i) => {
                     var _a;
                     // tslint:disable-next-line:max-line-length
@@ -708,9 +708,6 @@ function createMultipleEventFromBody(req, user) {
                         ? Number(req.body.endSaleTimeAfterScreening)
                         : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
                     const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
-                        .toDate();
-                    const salesEndDate = moment(eventStartDate)
-                        .add(offersValidAfterStart, 'minutes')
                         .toDate();
                     const endDayRelative = Number(data.endDayRelative);
                     // tslint:disable-next-line:no-magic-numbers
@@ -737,6 +734,25 @@ function createMultipleEventFromBody(req, user) {
                         default:
                             salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYY/MM/DDTHHmmZ')
                                 .add(parseInt(req.body.saleStartDays, 10) * -1, 'day')
+                                .toDate();
+                    }
+                    // 販売終了日時は、施設設定 or 絶対指定
+                    let salesEndDate;
+                    switch (String(req.body.saleEndDateType)) {
+                        case SaleStartDateType.Absolute:
+                            salesEndDate = moment(`${String(req.body.saleEndDate)}T${req.body.saleEndTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
+                                .toDate();
+                            break;
+                        // case SaleStartDateType.Relative:
+                        //     salesStartDate = moment(`${moment(eventStartDate)
+                        //         .tz('Asia/Tokyo')
+                        //         .format('YYYY-MM-DD')}T00:00:00+09:00`)
+                        //         .add(Number(req.body.saleStartDate) * -1, 'days')
+                        //         .toDate();
+                        //     break;
+                        default:
+                            salesEndDate = moment(eventStartDate)
+                                .add(offersValidAfterStart, 'minutes')
                                 .toDate();
                     }
                     // オンライン表示開始日時は、絶対指定or相対指定

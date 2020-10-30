@@ -65,7 +65,7 @@ $(function () {
     $(document).on('click', '.delete-button', deletePerformance);
 
     // 絶対・相対切り替え
-    $(document).on('change', 'input[name=onlineDisplayType], input[name=saleStartDateType]', changeInputType)
+    $(document).on('change', 'input[name=onlineDisplayType], input[name=saleStartDateType], input[name=saleEndDateType]', changeInputType)
 
     // 施設検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
@@ -500,6 +500,15 @@ function regist() {
         ? modal.find('input[name=saleStartTime]').val().replace(':', '')
         : 'default';
 
+    // 販売終了日時
+    var saleEndDateType = modal.find('input[name=saleEndDateType]:checked').val();
+    var saleEndDate = (saleEndDateType === 'absolute')
+        ? modal.find('input[name=saleEndDateAbsolute]').val()
+        : 'default';
+    var saleEndTime = (saleEndDateType === 'absolute')
+        ? modal.find('input[name=saleEndTime]').val().replace(':', '')
+        : 'default';
+
     var onlineDisplayType = modal.find('input[name=onlineDisplayType]:checked').val();
     var onlineDisplayStartDate = (onlineDisplayType === 'absolute')
         ? modal.find('input[name=onlineDisplayStartDateAbsolute]').val()
@@ -527,6 +536,8 @@ function regist() {
         || typeof screeningEventId !== 'string' || screeningEventId.length === 0
         || typeof saleStartDate !== 'string' || saleStartDate.length === 0
         || typeof saleStartTime !== 'string' || saleStartTime.length === 0
+        || typeof saleEndDate !== 'string' || saleEndDate.length === 0
+        || typeof saleEndTime !== 'string' || saleEndTime.length === 0
         || typeof onlineDisplayStartDate !== 'string' || onlineDisplayStartDate.length === 0
         || typeof onlineDisplayStartTime !== 'string' || onlineDisplayStartTime.length === 0
     ) {
@@ -612,6 +623,9 @@ function regist() {
             saleStartDateType: saleStartDateType,
             saleStartDate: saleStartDate,
             saleStartTime: saleStartTime,
+            saleEndDateType: saleEndDateType,
+            saleEndDate: saleEndDate,
+            saleEndTime: saleEndTime,
             onlineDisplayType: onlineDisplayType,
             onlineDisplayStartDate: onlineDisplayStartDate,
             onlineDisplayStartTime: onlineDisplayStartTime,
