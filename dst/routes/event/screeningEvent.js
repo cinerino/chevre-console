@@ -509,9 +509,15 @@ function createEventFromBody(req) {
             .toDate();
         const salesStartDate = moment(`${req.body.saleStartDate}T${req.body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
             .toDate();
-        const salesEndDate = moment(startDate)
-            .add(offersValidAfterStart, 'minutes')
-            .toDate();
+        const salesEndDate = (typeof req.body.saleEndDate === 'string'
+            && req.body.saleEndDate.length > 0
+            && typeof req.body.saleEndTime === 'string'
+            && req.body.saleEndTime.length > 0)
+            ? moment(`${req.body.saleEndDate}T${req.body.saleEndTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+                .toDate()
+            : moment(startDate)
+                .add(offersValidAfterStart, 'minutes')
+                .toDate();
         // オンライン表示開始日時は、絶対指定or相対指定
         const onlineDisplayStartDate = (String(req.body.onlineDisplayType) === OnlineDisplayType.Relative)
             ? moment(`${moment(startDate)

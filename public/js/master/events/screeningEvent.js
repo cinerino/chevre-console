@@ -669,6 +669,8 @@ function update() {
     var seller = modal.find('select[name=seller]').val();
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var saleStartTime = modal.find('input[name=saleStartTime]').val().replace(':', '');
+    var saleEndDate = modal.find('input[name=saleEndDate]').val();
+    var saleEndTime = modal.find('input[name=saleEndTime]').val().replace(':', '');
     var onlineDisplayStartDate = modal.find('input[name=onlineDisplayStartDate]').val();
     var onlineDisplayStartTime = modal.find('input[name=onlineDisplayStartTime]').val().replace(':', '');
     var maxSeatNumber = modal.find('input[name=maxSeatNumber]').val();
@@ -692,6 +694,8 @@ function update() {
         || ticketTypeGroup === ''
         || saleStartDate === ''
         || saleStartTime === ''
+        || saleEndDate === ''
+        || saleEndTime === ''
         || onlineDisplayStartDate === ''
         || onlineDisplayStartTime === ''
     ) {
@@ -733,6 +737,8 @@ function update() {
                 seller: seller,
                 saleStartDate: saleStartDate,
                 saleStartTime: saleStartTime,
+                saleEndDate: saleEndDate,
+                saleEndTime: saleEndTime,
                 onlineDisplayStartDate: onlineDisplayStartDate,
                 onlineDisplayStartTime: onlineDisplayStartTime,
                 maxSeatNumber: maxSeatNumber,
@@ -1321,6 +1327,20 @@ function createScheduler() {
                     modal.find('input[name=saleStartDate]').val('');
                     modal.find('input[name=saleStartTime]').val('');
                 }
+
+                // 販売終了日時
+                var saleEndDate = (performance.offers === undefined)
+                    ? '' : moment(performance.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD');
+                var saleEndTime = (performance.offers === undefined)
+                    ? '' : moment(performance.offers.validThrough).tz('Asia/Tokyo').format('HH:mm');
+                if (saleEndDate !== '' && saleEndTime !== '') {
+                    modal.find('input[name=saleEndDate]').datepicker('update', saleEndDate);
+                    modal.find('input[name=saleEndTime]').val(saleEndTime);
+                } else {
+                    modal.find('input[name=saleEndDate]').val('');
+                    modal.find('input[name=saleEndTime]').val('');
+                }
+
                 // オンライン表示
                 var onlineDisplayStartDate = (performance.offers)
                     ? moment(performance.offers.availabilityStarts).tz('Asia/Tokyo').format('YYYY/MM/DD') : '';

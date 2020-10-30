@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- イベント更新時に販売終了日時を変更できるように調整
+
 ### Deprecated
 
 ### Removed
