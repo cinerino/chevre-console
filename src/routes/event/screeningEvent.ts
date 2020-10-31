@@ -16,7 +16,7 @@ import { ProductType } from '../../factory/productType';
 
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
 
-enum SaleStartDateType {
+enum DateTimeSettingType {
     Default = 'default',
     Absolute = 'absolute',
     Relative = 'relative'
@@ -858,12 +858,12 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 // 販売開始日時は、施設設定 or 絶対指定 or 相対指定
                 let salesStartDate: Date;
                 switch (String(req.body.saleStartDateType)) {
-                    case SaleStartDateType.Absolute:
+                    case DateTimeSettingType.Absolute:
                         salesStartDate = moment(`${String(req.body.saleStartDate)}T${req.body.saleStartTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                         break;
 
-                    case SaleStartDateType.Relative:
+                    case DateTimeSettingType.Relative:
                         salesStartDate = moment(`${moment(eventStartDate)
                             .tz('Asia/Tokyo')
                             .format('YYYY-MM-DD')}T00:00:00+09:00`)
@@ -880,18 +880,16 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 // 販売終了日時は、施設設定 or 絶対指定
                 let salesEndDate: Date;
                 switch (String(req.body.saleEndDateType)) {
-                    case SaleStartDateType.Absolute:
+                    case DateTimeSettingType.Absolute:
                         salesEndDate = moment(`${String(req.body.saleEndDate)}T${req.body.saleEndTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                         break;
 
-                    // case SaleStartDateType.Relative:
-                    //     salesStartDate = moment(`${moment(eventStartDate)
-                    //         .tz('Asia/Tokyo')
-                    //         .format('YYYY-MM-DD')}T00:00:00+09:00`)
-                    //         .add(Number(req.body.saleStartDate) * -1, 'days')
-                    //         .toDate();
-                    //     break;
+                    case DateTimeSettingType.Relative:
+                        salesEndDate = moment(eventStartDate)
+                            .add(Number(req.body.saleEndDate), 'minutes')
+                            .toDate();
+                        break;
 
                     default:
                         salesEndDate = moment(eventStartDate)
