@@ -52,7 +52,7 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
                 if (searchProductsResult.data.length > 0) {
                     throw new Error('既に存在するプロダクトIDです');
                 }
-                product = yield productService.create(product);
+                product = (yield productService.create(product));
                 req.flash('message', '登録しました');
                 res.redirect(`/products/${product.id}`);
                 return;

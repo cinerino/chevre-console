@@ -16,7 +16,6 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
 const paymentServiceType_1 = require("../factory/paymentServiceType");
@@ -46,7 +45,7 @@ paymentServicesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
                 if (searchProductsResult.data.length > 0) {
                     throw new Error('既に存在するプロダクトIDです');
                 }
-                product = yield productService.create(product);
+                product = (yield productService.create(product));
                 req.flash('message', '登録しました');
                 res.redirect(`/paymentServices/${product.id}`);
                 return;
@@ -160,19 +159,7 @@ paymentServicesRouter.all('/:id', ...validate(),
                 .end();
             return;
         }
-        const forms = Object.assign(Object.assign({}, product), { offersValidFrom: (Array.isArray(product.offers) && product.offers.length > 0 && product.offers[0].validFrom !== undefined)
-                ? moment(product.offers[0].validFrom)
-                    // .add(-1, 'day')
-                    .tz('Asia/Tokyo')
-                    .format('YYYY/MM/DD')
-                : '', offersValidThrough: (Array.isArray(product.offers)
-                && product.offers.length > 0
-                && product.offers[0].validThrough !== undefined)
-                ? moment(product.offers[0].validThrough)
-                    .add(-1, 'day')
-                    .tz('Asia/Tokyo')
-                    .format('YYYY/MM/DD')
-                : '' });
+        const forms = Object.assign({}, product);
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -222,7 +209,9 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
     }
-    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID, name: req.body.name }, (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID }, {
+        name: req.body.name
+    }), (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign({}, (availableChannel === undefined) ? { availableChannel: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }

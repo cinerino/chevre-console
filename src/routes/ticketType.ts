@@ -466,7 +466,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     }
     if (Array.isArray(addOnItemOfferedIds)) {
         for (const addOnItemOfferedId of addOnItemOfferedIds) {
-            const addOn = await productService.findById({
+            const addOn = <chevre.factory.product.IProduct>await productService.findById({
                 id: addOnItemOfferedId
             });
             if (addOn.hasOfferCatalog === undefined) {

@@ -64,18 +64,12 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
     }
 }));
 categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const projectService = new chevre.service.Project({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -104,18 +98,30 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         }
     }
     const forms = Object.assign({ appliesToCategoryCode: {} }, req.body);
+    const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchProductsResult = yield productService.search({
+        project: { id: { $eq: req.project.id } },
+        typeOf: {
+            $in: [
+                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+            ]
+        }
+    });
     res.render('categoryCodes/new', {
         message: message,
         errors: errors,
         forms: forms,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
-        paymentServices: (_a = project.settings) === null || _a === void 0 ? void 0 : _a.paymentServices
+        paymentServices: searchProductsResult.data
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
 categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -125,11 +131,6 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     let categoryCode = yield categoryCodeService.findById({
         id: req.params.id
     });
-    const projectService = new chevre.service.Project({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -149,13 +150,26 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         }
     }
     const forms = Object.assign(Object.assign({}, categoryCode), req.body);
+    const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchProductsResult = yield productService.search({
+        project: { id: { $eq: req.project.id } },
+        typeOf: {
+            $in: [
+                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+            ]
+        }
+    });
     res.render('categoryCodes/update', {
         message: message,
         errors: errors,
         forms: forms,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
-        paymentServices: (_b = project.settings) === null || _b === void 0 ? void 0 : _b.paymentServices
+        paymentServices: searchProductsResult.data
     });
 }));
 function createMovieFromBody(req) {

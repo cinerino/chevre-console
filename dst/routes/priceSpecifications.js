@@ -110,7 +110,6 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
     }
 }));
 priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -141,11 +140,6 @@ priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(voi
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
     });
-    const projectService = new chevre.service.Project({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -168,6 +162,19 @@ priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(voi
         }
     }
     const forms = Object.assign({ appliesToCategoryCode: {} }, req.body);
+    const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchProductsResult = yield productService.search({
+        project: { id: { $eq: req.project.id } },
+        typeOf: {
+            $in: [
+                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+            ]
+        }
+    });
     res.render('priceSpecifications/new', {
         message: message,
         errors: errors,
@@ -179,12 +186,13 @@ priceSpecificationsRouter.all('/new', ...validate(), (req, res) => __awaiter(voi
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-        paymentServices: (_a = project.settings) === null || _a === void 0 ? void 0 : _a.paymentServices
+        paymentServices: searchProductsResult.data
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
-priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+priceSpecificationsRouter.all('/:id/update', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
@@ -222,11 +230,6 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
     let priceSpecification = yield priceSpecificationService.findById({
         id: req.params.id
     });
-    const projectService = new chevre.service.Project({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const project = yield projectService.findById({ id: req.project.id });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -251,6 +254,19 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
         : { appliesToCategoryCode: {} }
     // ...req.body
     );
+    const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchProductsResult = yield productService.search({
+        project: { id: { $eq: req.project.id } },
+        typeOf: {
+            $in: [
+                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+            ]
+        }
+    });
     res.render('priceSpecifications/update', {
         message: message,
         errors: errors,
@@ -262,7 +278,7 @@ priceSpecificationsRouter.all('/:id/update', ...validate(), (req, res) => __awai
         soundFormatTypes: searchSoundFormatFormatTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-        paymentServices: (_b = project.settings) === null || _b === void 0 ? void 0 : _b.paymentServices
+        paymentServices: searchProductsResult.data
     });
 }));
 // tslint:disable-next-line:max-func-body-length

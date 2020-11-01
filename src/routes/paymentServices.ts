@@ -7,7 +7,6 @@ import { Request, Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
-import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -49,7 +48,7 @@ paymentServicesRouter.all<any>(
                         throw new Error('既に存在するプロダクトIDです');
                     }
 
-                    product = await productService.create(product);
+                    product = <chevre.factory.service.paymentService.IService>await productService.create(product);
                     req.flash('message', '登録しました');
                     res.redirect(`/paymentServices/${product.id}`);
 
@@ -189,21 +188,7 @@ paymentServicesRouter.all<ParamsDictionary>(
             }
 
             const forms = {
-                ...product,
-                offersValidFrom: (Array.isArray(product.offers) && product.offers.length > 0 && product.offers[0].validFrom !== undefined)
-                    ? moment(product.offers[0].validFrom)
-                        // .add(-1, 'day')
-                        .tz('Asia/Tokyo')
-                        .format('YYYY/MM/DD')
-                    : '',
-                offersValidThrough: (Array.isArray(product.offers)
-                    && product.offers.length > 0
-                    && product.offers[0].validThrough !== undefined)
-                    ? moment(product.offers[0].validThrough)
-                        .add(-1, 'day')
-                        .tz('Asia/Tokyo')
-                        .format('YYYY/MM/DD')
-                    : ''
+                ...product
             };
 
             const sellerService = new chevre.service.Seller({
@@ -243,7 +228,7 @@ paymentServicesRouter.get(
 );
 
 // tslint:disable-next-line:cyclomatic-complexity
-function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IProduct {
+function createFromBody(req: Request, isNew: boolean): chevre.factory.service.paymentService.IService {
     let availableChannel: chevre.factory.service.paymentService.IAvailableChannel | undefined;
     if (typeof req.body.availableChannelStr === 'string' && req.body.availableChannelStr.length > 0) {
         try {
@@ -267,7 +252,9 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
         typeOf: req.body.typeOf,
         id: req.params.id,
         productID: req.body.productID,
-        name: req.body.name,
+        ...{
+            name: req.body.name
+        },
         ...(availableChannel !== undefined) ? { availableChannel } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(!isNew)

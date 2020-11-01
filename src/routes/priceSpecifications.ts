@@ -169,12 +169,6 @@ priceSpecificationsRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
 
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -203,6 +197,20 @@ priceSpecificationsRouter.all<any>(
             ...req.body
         };
 
+        const productService = new chevre.service.Product({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = await productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
+
         res.render('priceSpecifications/new', {
             message: message,
             errors: errors,
@@ -214,7 +222,7 @@ priceSpecificationsRouter.all<any>(
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            paymentServices: project.settings?.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
 );
@@ -223,6 +231,7 @@ priceSpecificationsRouter.all<any>(
 priceSpecificationsRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -268,12 +277,6 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             id: req.params.id
         });
 
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -302,6 +305,20 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             // ...req.body
         };
 
+        const productService = new chevre.service.Product({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = await productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
+
         res.render('priceSpecifications/update', {
             message: message,
             errors: errors,
@@ -313,7 +330,7 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             soundFormatTypes: searchSoundFormatFormatTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            paymentServices: project.settings?.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
 );

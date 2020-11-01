@@ -90,12 +90,6 @@ categoryCodesRouter.all<any>(
             auth: req.user.authClient
         });
 
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -132,13 +126,27 @@ categoryCodesRouter.all<any>(
             ...req.body
         };
 
+        const productService = new chevre.service.Product({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = await productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
+
         res.render('categoryCodes/new', {
             message: message,
             errors: errors,
             forms: forms,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
             categoryCodeSets: categoryCodeSets,
-            paymentServices: project.settings?.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
 );
@@ -158,12 +166,6 @@ categoryCodesRouter.all<ParamsDictionary>(
         let categoryCode = await categoryCodeService.findById({
             id: req.params.id
         });
-
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
 
         if (req.method === 'POST') {
             // バリデーション
@@ -189,13 +191,27 @@ categoryCodesRouter.all<ParamsDictionary>(
             ...req.body
         };
 
+        const productService = new chevre.service.Product({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = await productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
+
         res.render('categoryCodes/update', {
             message: message,
             errors: errors,
             forms: forms,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
             categoryCodeSets: categoryCodeSets,
-            paymentServices: project.settings?.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
 );

@@ -57,12 +57,6 @@ screeningEventSeriesRouter.all<any>(
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
 
-        const projectService = new chevre.service.Project({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = await projectService.findById({ id: req.project.id });
-
         let message = '';
         let errors: any = {};
         if (req.method === 'POST') {
@@ -114,6 +108,20 @@ screeningEventSeriesRouter.all<any>(
             }));
         }
 
+        const productService = new chevre.service.Product({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = await productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
+
         // 作品マスタ画面遷移
         debug('errors:', errors);
         res.render('events/screeningEventSeries/add', {
@@ -123,7 +131,7 @@ screeningEventSeriesRouter.all<any>(
             movie: undefined,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            paymentServices: project.settings?.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
 );
@@ -361,12 +369,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 throw new Error(`Movie ${event.workPerformed.identifier} Not Found`);
             }
 
-            const projectService = new chevre.service.Project({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const project = await projectService.findById({ id: req.project.id });
-
             if (req.method === 'POST') {
                 // バリデーション
                 const validatorResult = validationResult(req);
@@ -449,6 +451,20 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 }));
             }
 
+            const productService = new chevre.service.Product({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const searchProductsResult = await productService.search({
+                project: { id: { $eq: req.project.id } },
+                typeOf: {
+                    $in: [
+                        chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                        chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                    ]
+                }
+            });
+
             // 作品マスタ画面遷移
             res.render('events/screeningEventSeries/edit', {
                 message: message,
@@ -457,7 +473,7 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 movie: movie,
                 movieTheaters: searchMovieTheatersResult.data,
                 videoFormatTypes: searchVideoFormatTypesResult.data,
-                paymentServices: project.settings?.paymentServices
+                paymentServices: searchProductsResult.data
             });
         } catch (error) {
             next(error);
