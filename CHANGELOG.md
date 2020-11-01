@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - イベント更新時に販売終了日時を変更できるように調整
 - イベント作成時に販売終了日時を設定できるように調整
+- 外部決済サービスをプロダクト検索から取得するように調整
+- サブスクリプション情報をChevreプロジェクトから取得するように調整
 
 ### Deprecated
 
