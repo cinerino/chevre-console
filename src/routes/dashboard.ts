@@ -84,18 +84,18 @@ dashboardRouter.get(
             const project = await projectService.findById({ id: projectId });
             (<any>req.session).project = project;
 
-            let subscriptionIdentifier: string | undefined = (<any>project).subscription?.identifier;
-            if (subscriptionIdentifier === undefined) {
-                subscriptionIdentifier = 'Free';
-            }
-            (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
-
             try {
                 const chevreProjectService = new chevre.service.Project({
                     endpoint: <string>process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
-                await chevreProjectService.findById({ id: project.id });
+                const chevreProject = await chevreProjectService.findById({ id: project.id });
+
+                let subscriptionIdentifier = chevreProject.subscription?.identifier;
+                if (subscriptionIdentifier === undefined) {
+                    subscriptionIdentifier = 'Free';
+                }
+                (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
             } catch (error) {
                 // プロジェクト未作成であれば初期化プロセスへ
                 if (error.code === NOT_FOUND) {

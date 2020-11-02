@@ -18,6 +18,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.8.0 - 2020-11-02
+
+### Changed
+
+- イベント更新時に販売終了日時を変更できるように調整
+- イベント作成時に販売終了日時を設定できるように調整
+- 外部決済サービスをプロダクト検索から取得するように調整
+- サブスクリプション情報をChevreプロジェクトから取得するように調整
+
 ## v2.7.1 - 2020-10-29
 
 ### Changed

@@ -58,7 +58,7 @@ productsRouter.all<any>(
                         throw new Error('既に存在するプロダクトIDです');
                     }
 
-                    product = await productService.create(product);
+                    product = <chevre.factory.product.IProduct>await productService.create(product);
                     req.flash('message', '登録しました');
                     res.redirect(`/products/${product.id}`);
 
@@ -206,7 +206,7 @@ productsRouter.all<ParamsDictionary>(
                 auth: req.user.authClient
             });
 
-            let product = await productService.findById({ id: req.params.id });
+            let product = <chevre.factory.product.IProduct>await productService.findById({ id: req.params.id });
 
             if (req.method === 'POST') {
                 // 検証

@@ -137,6 +137,21 @@
                                     </div>
                                 </div>
                                 <div class="form-group bmd-form-group col-md-4">
+                                    <label class="bmd-label-static" for="saleEndDate">販売終了日時</label>
+                                    <div class="input-group">
+                                        <input class="form-control datepicker" name="saleEndDate"
+                                            placeholder="YYYY/MM/DD" maxlength=10>&nbsp;&nbsp;
+                                        <%- include('../../common/part/_timeSelector', {
+                                            name: 'saleEndTime',
+                                            hourName: 'saleEndDateHour',
+                                            minuteName: 'saleEndDateMinutes'
+                                        }) %>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-4">
                                     <label class="bmd-label-static" for="onlineDisplayStartDate">オンライン表示開始日時</label>
                                     <div class="input-group">
                                         <input class="form-control datepicker" name="onlineDisplayStartDate"

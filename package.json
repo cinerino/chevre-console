@@ -13,7 +13,7 @@
     }
   ],
   "dependencies": {
-    "@chevre/api-nodejs-client": "^3.43.0",
+    "@chevre/api-nodejs-client": "^3.44.1",
     "@cinerino/sdk": "^1.14.0",
     "@json-editor/json-editor": "^1.4.0-beta.0",
     "body-parser": "^1.19.0",
@@ -100,5 +100,5 @@
     "scss": "node-sass public/scss/import.scss public/css/style.css",
     "public-ts": "webpack --progress --colors --config ./public/webpack.config.js --watch"
   },
-  "version": "2.7.1"
+  "version": "2.8.0"
 }

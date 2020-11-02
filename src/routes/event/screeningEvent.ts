@@ -16,7 +16,7 @@ import { ProductType } from '../../factory/productType';
 
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
 
-enum SaleStartDateType {
+enum DateTimeSettingType {
     Default = 'default',
     Absolute = 'absolute',
     Relative = 'relative'
@@ -590,9 +590,15 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
         .toDate();
     const salesStartDate = moment(`${req.body.saleStartDate}T${req.body.saleStartTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
         .toDate();
-    const salesEndDate = moment(startDate)
-        .add(offersValidAfterStart, 'minutes')
-        .toDate();
+    const salesEndDate = (typeof req.body.saleEndDate === 'string'
+        && req.body.saleEndDate.length > 0
+        && typeof req.body.saleEndTime === 'string'
+        && req.body.saleEndTime.length > 0)
+        ? moment(`${req.body.saleEndDate}T${req.body.saleEndTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+            .toDate()
+        : moment(startDate)
+            .add(offersValidAfterStart, 'minutes')
+            .toDate();
 
     // オンライン表示開始日時は、絶対指定or相対指定
     const onlineDisplayStartDate = (String(req.body.onlineDisplayType) === OnlineDisplayType.Relative)
@@ -832,16 +838,13 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
         const day = date.get('day')
             .toString();
         if (weekDays.indexOf(day) >= 0) {
-            // tslint:disable-next-line:max-func-body-length
+            // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
             timeData.forEach((data, i) => {
                 // tslint:disable-next-line:max-line-length
                 const offersValidAfterStart = (req.body.endSaleTimeAfterScreening !== undefined && req.body.endSaleTimeAfterScreening !== '')
                     ? Number(req.body.endSaleTimeAfterScreening)
                     : DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES;
                 const eventStartDate = moment(`${formattedDate}T${data.startTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
-                    .toDate();
-                const salesEndDate = moment(eventStartDate)
-                    .add(offersValidAfterStart, 'minutes')
                     .toDate();
                 const endDayRelative = Number(data.endDayRelative);
                 // tslint:disable-next-line:no-magic-numbers
@@ -855,12 +858,12 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                 // 販売開始日時は、施設設定 or 絶対指定 or 相対指定
                 let salesStartDate: Date;
                 switch (String(req.body.saleStartDateType)) {
-                    case SaleStartDateType.Absolute:
+                    case DateTimeSettingType.Absolute:
                         salesStartDate = moment(`${String(req.body.saleStartDate)}T${req.body.saleStartTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
                             .toDate();
                         break;
 
-                    case SaleStartDateType.Relative:
+                    case DateTimeSettingType.Relative:
                         salesStartDate = moment(`${moment(eventStartDate)
                             .tz('Asia/Tokyo')
                             .format('YYYY-MM-DD')}T00:00:00+09:00`)
@@ -871,6 +874,26 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                     default:
                         salesStartDate = moment(`${formattedDate}T0000+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .add(parseInt(req.body.saleStartDays, 10) * -1, 'day')
+                            .toDate();
+                }
+
+                // 販売終了日時は、施設設定 or 絶対指定
+                let salesEndDate: Date;
+                switch (String(req.body.saleEndDateType)) {
+                    case DateTimeSettingType.Absolute:
+                        salesEndDate = moment(`${String(req.body.saleEndDate)}T${req.body.saleEndTime}:00+09:00`, 'YYYY/MM/DDTHHmm:ssZ')
+                            .toDate();
+                        break;
+
+                    case DateTimeSettingType.Relative:
+                        salesEndDate = moment(eventStartDate)
+                            .add(Number(req.body.saleEndDate), 'minutes')
+                            .toDate();
+                        break;
+
+                    default:
+                        salesEndDate = moment(eventStartDate)
+                            .add(offersValidAfterStart, 'minutes')
                             .toDate();
                 }
 

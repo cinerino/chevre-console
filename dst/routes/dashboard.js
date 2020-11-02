@@ -69,17 +69,17 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
         });
         const project = yield projectService.findById({ id: projectId });
         req.session.project = project;
-        let subscriptionIdentifier = (_a = project.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
-        if (subscriptionIdentifier === undefined) {
-            subscriptionIdentifier = 'Free';
-        }
-        req.session.subscriptionIdentifier = subscriptionIdentifier;
         try {
             const chevreProjectService = new chevre.service.Project({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            yield chevreProjectService.findById({ id: project.id });
+            const chevreProject = yield chevreProjectService.findById({ id: project.id });
+            let subscriptionIdentifier = (_a = chevreProject.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+            if (subscriptionIdentifier === undefined) {
+                subscriptionIdentifier = 'Free';
+            }
+            req.session.subscriptionIdentifier = subscriptionIdentifier;
         }
         catch (error) {
             // プロジェクト未作成であれば初期化プロセスへ

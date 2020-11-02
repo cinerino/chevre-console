@@ -30,7 +30,7 @@ const screeningEventSeriesRouter = express_1.Router();
 screeningEventSeriesRouter.all('/add', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -56,11 +56,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
     });
-    const projectService = new chevre.service.Project({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const project = yield projectService.findById({ id: req.project.id });
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -104,6 +99,19 @@ screeningEventSeriesRouter.all('/add', ...validate(),
             return {};
         }));
     }
+    const productService = new chevre.service.Product({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchProductsResult = yield productService.search({
+        project: { id: { $eq: req.project.id } },
+        typeOf: {
+            $in: [
+                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+            ]
+        }
+    });
     // 作品マスタ画面遷移
     debug('errors:', errors);
     res.render('events/screeningEventSeries/add', {
@@ -113,7 +121,7 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         movie: undefined,
         movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
-        paymentServices: (_c = project.settings) === null || _c === void 0 ? void 0 : _c.paymentServices
+        paymentServices: searchProductsResult.data
     });
 }));
 screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -129,7 +137,7 @@ screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
     });
 }));
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f;
+    var _c, _d, _e;
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -149,8 +157,8 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
                 branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
             },
             workPerformed: {
-                identifiers: (typeof ((_d = req.query.workPerformed) === null || _d === void 0 ? void 0 : _d.identifier) === 'string' && ((_e = req.query.workPerformed) === null || _e === void 0 ? void 0 : _e.identifier.length) > 0)
-                    ? [(_f = req.query.workPerformed) === null || _f === void 0 ? void 0 : _f.identifier]
+                identifiers: (typeof ((_c = req.query.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier) === 'string' && ((_d = req.query.workPerformed) === null || _d === void 0 ? void 0 : _d.identifier.length) > 0)
+                    ? [(_e = req.query.workPerformed) === null || _e === void 0 ? void 0 : _e.identifier]
                     : undefined
             }
         });
@@ -273,7 +281,7 @@ screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0
 screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g, _h;
+    var _f;
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -314,11 +322,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         if (movie === undefined) {
             throw new Error(`Movie ${event.workPerformed.identifier} Not Found`);
         }
-        const projectService = new chevre.service.Project({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = yield projectService.findById({ id: req.project.id });
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = express_validator_1.validationResult(req);
@@ -354,7 +357,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             }
         }
         let mvtkFlg = 1;
-        const unacceptedPaymentMethod = (_g = event.offers) === null || _g === void 0 ? void 0 : _g.unacceptedPaymentMethod;
+        const unacceptedPaymentMethod = (_f = event.offers) === null || _f === void 0 ? void 0 : _f.unacceptedPaymentMethod;
         if (Array.isArray(unacceptedPaymentMethod)
             && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
             mvtkFlg = 0;
@@ -383,6 +386,19 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                 return {};
             }));
         }
+        const productService = new chevre.service.Product({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProductsResult = yield productService.search({
+            project: { id: { $eq: req.project.id } },
+            typeOf: {
+                $in: [
+                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                ]
+            }
+        });
         // 作品マスタ画面遷移
         res.render('events/screeningEventSeries/edit', {
             message: message,
@@ -391,7 +407,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             movie: movie,
             movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
-            paymentServices: (_h = project.settings) === null || _h === void 0 ? void 0 : _h.paymentServices
+            paymentServices: searchProductsResult.data
         });
     }
     catch (error) {
