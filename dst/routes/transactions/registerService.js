@@ -113,7 +113,6 @@ registerServiceTransactionsRouter.all('/start',
                     },
                     object: object
                 });
-                console.log(transaction);
                 // 確認画面へ情報を引き継ぐために
                 // const transaction = {
                 //     transactionNumber: transactionNumber,
