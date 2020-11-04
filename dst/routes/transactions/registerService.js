@@ -150,9 +150,13 @@ function createServiceOutputIdentifier(params) {
             });
             return Object.assign(Object.assign({}, o), { itemOffered: Object.assign(Object.assign({}, o.itemOffered), { serviceOutput: Object.assign(Object.assign({}, (_a = o.itemOffered) === null || _a === void 0 ? void 0 : _a.serviceOutput), { 
                         // tslint:disable-next-line:no-suspicious-comment
-                        accessCode: '1234', project: params.product.project, typeOf: String((_b = params.product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf), identifier: identifier }) }) });
+                        accessCode: createAccessCode(), project: params.product.project, typeOf: String((_b = params.product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf), identifier: identifier }) }) });
         })));
     });
+}
+function createAccessCode() {
+    // tslint:disable-next-line:insecure-random no-magic-numbers
+    return String(Math.floor((Math.random() * 9000) + 1000));
 }
 /**
  * 予約取引確認

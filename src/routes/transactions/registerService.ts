@@ -167,7 +167,7 @@ function createServiceOutputIdentifier(params: {
                     serviceOutput: {
                         ...o.itemOffered?.serviceOutput,
                         // tslint:disable-next-line:no-suspicious-comment
-                        accessCode: '1234', // TODO 自動生成する
+                        accessCode: createAccessCode(), // TODO 自動生成する
                         project: params.product.project,
                         typeOf: String(params.product.serviceOutput?.typeOf),
                         identifier: identifier
@@ -176,6 +176,11 @@ function createServiceOutputIdentifier(params: {
             };
         }));
     };
+}
+
+function createAccessCode() {
+    // tslint:disable-next-line:insecure-random no-magic-numbers
+    return String(Math.floor((Math.random() * 9000) + 1000));
 }
 
 /**
