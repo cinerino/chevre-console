@@ -17,8 +17,10 @@ const csvtojson = require("csvtojson");
 const createDebug = require("debug");
 const express = require("express");
 const moment = require("moment");
+const registerService_1 = require("./transactions/registerService");
 const debug = createDebug('chevre-console:router');
 const transactionsRouter = express.Router();
+transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerService_1.default);
 /**
  * 取引検索
  */
