@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - サービス登録画面を追加
+- イベント作成時の販売終了日時の相対設定を負の値に対応
 
 ### Changed
 

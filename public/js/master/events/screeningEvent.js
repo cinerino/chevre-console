@@ -504,7 +504,7 @@ function regist() {
     var saleEndDateType = modal.find('input[name=saleEndDateType]:checked').val();
     var saleEndDate = (saleEndDateType === 'absolute')
         ? modal.find('input[name=saleEndDateAbsolute]').val()
-        : (saleStartDateType === 'relative')
+        : (saleEndDateType === 'relative')
             ? modal.find('input[name=saleEndDateRelative]').val()
             : 'default';
     var saleEndTime = (saleEndDateType === 'absolute')
