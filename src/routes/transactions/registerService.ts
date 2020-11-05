@@ -2,7 +2,6 @@
  * サービス登録取引ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-// import * as csvtojson from 'csvtojson';
 // import * as createDebug from 'debug';
 import * as express from 'express';
 import * as moment from 'moment';
@@ -29,7 +28,7 @@ registerServiceTransactionsRouter.all(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const serviceOutputIdentifierService = new chevre.service.ServiceOutputIdentifier({
+            const serviceOutputService = new chevre.service.ServiceOutput({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
@@ -95,7 +94,7 @@ registerServiceTransactionsRouter.all(
 
                     let object: chevre.factory.transaction.registerService.IObjectWithoutDetail = acceptedOffer;
                     object = await createServiceOutputIdentifier({ acceptedOffer, product })({
-                        serviceOutputIdentifierService: serviceOutputIdentifierService
+                        serviceOutputService: serviceOutputService
                     });
 
                     const { transactionNumber } = await transactionNumberService.publish({
@@ -115,12 +114,7 @@ registerServiceTransactionsRouter.all(
                         object: object
                     });
 
-                    // 確認画面へ情報を引き継ぐために
-                    // const transaction = {
-                    //     transactionNumber: transactionNumber,
-                    //     object: object
-                    // };
-
+                    // 確認画面へ情報を引き継ぐ
                     // セッションに取引追加
                     (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`] = transaction;
 
@@ -152,25 +146,25 @@ function createServiceOutputIdentifier(params: {
     product: chevre.factory.product.IProduct;
 }) {
     return async (repos: {
-        serviceOutputIdentifierService: chevre.service.ServiceOutputIdentifier;
+        serviceOutputService: chevre.service.ServiceOutput;
     }): Promise<chevre.factory.transaction.registerService.IObjectWithoutDetail> => {
-        // 識別子を発行
-        return Promise.all(params.acceptedOffer.map(async (o) => {
-            const { identifier } = await repos.serviceOutputIdentifierService.publish({
-                project: { id: params.product.project.id }
-            });
+        const publishParams = params.acceptedOffer.map(() => {
+            return { project: { id: params.product.project.id } };
+        });
+        const publishIdentifierResult = await repos.serviceOutputService.publishIdentifier(publishParams);
 
+        // 識別子を発行
+        return Promise.all(params.acceptedOffer.map(async (o, key) => {
             return {
                 ...o,
                 itemOffered: {
                     ...o.itemOffered,
                     serviceOutput: {
                         ...o.itemOffered?.serviceOutput,
-                        // tslint:disable-next-line:no-suspicious-comment
-                        accessCode: createAccessCode(), // TODO 自動生成する
+                        accessCode: createAccessCode(),
                         project: params.product.project,
                         typeOf: String(params.product.serviceOutput?.typeOf),
-                        identifier: identifier
+                        identifier: publishIdentifierResult[key].identifier
                     }
                 }
             };

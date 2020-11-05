@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * サービス登録取引ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-// import * as csvtojson from 'csvtojson';
 // import * as createDebug from 'debug';
 const express = require("express");
 const moment = require("moment");
@@ -37,7 +36,7 @@ registerServiceTransactionsRouter.all('/start',
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const serviceOutputIdentifierService = new chevre.service.ServiceOutputIdentifier({
+        const serviceOutputService = new chevre.service.ServiceOutput({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
@@ -96,7 +95,7 @@ registerServiceTransactionsRouter.all('/start',
                     .toDate();
                 let object = acceptedOffer;
                 object = yield createServiceOutputIdentifier({ acceptedOffer, product })({
-                    serviceOutputIdentifierService: serviceOutputIdentifierService
+                    serviceOutputService: serviceOutputService
                 });
                 const { transactionNumber } = yield transactionNumberService.publish({
                     project: { id: req.project.id }
@@ -113,11 +112,7 @@ registerServiceTransactionsRouter.all('/start',
                     },
                     object: object
                 });
-                // 確認画面へ情報を引き継ぐために
-                // const transaction = {
-                //     transactionNumber: transactionNumber,
-                //     object: object
-                // };
+                // 確認画面へ情報を引き継ぐ
                 // セッションに取引追加
                 req.session[`transaction:${transaction.transactionNumber}`] = transaction;
                 res.redirect(`/transactions/${transaction.typeOf}/${transaction.transactionNumber}/confirm`);
@@ -142,15 +137,14 @@ registerServiceTransactionsRouter.all('/start',
 }));
 function createServiceOutputIdentifier(params) {
     return (repos) => __awaiter(this, void 0, void 0, function* () {
+        const publishParams = params.acceptedOffer.map(() => {
+            return { project: { id: params.product.project.id } };
+        });
+        const publishIdentifierResult = yield repos.serviceOutputService.publishIdentifier(publishParams);
         // 識別子を発行
-        return Promise.all(params.acceptedOffer.map((o) => __awaiter(this, void 0, void 0, function* () {
+        return Promise.all(params.acceptedOffer.map((o, key) => __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
-            const { identifier } = yield repos.serviceOutputIdentifierService.publish({
-                project: { id: params.product.project.id }
-            });
-            return Object.assign(Object.assign({}, o), { itemOffered: Object.assign(Object.assign({}, o.itemOffered), { serviceOutput: Object.assign(Object.assign({}, (_a = o.itemOffered) === null || _a === void 0 ? void 0 : _a.serviceOutput), { 
-                        // tslint:disable-next-line:no-suspicious-comment
-                        accessCode: createAccessCode(), project: params.product.project, typeOf: String((_b = params.product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf), identifier: identifier }) }) });
+            return Object.assign(Object.assign({}, o), { itemOffered: Object.assign(Object.assign({}, o.itemOffered), { serviceOutput: Object.assign(Object.assign({}, (_a = o.itemOffered) === null || _a === void 0 ? void 0 : _a.serviceOutput), { accessCode: createAccessCode(), project: params.product.project, typeOf: String((_b = params.product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf), identifier: publishIdentifierResult[key].identifier }) }) });
         })));
     });
 }
