@@ -6,7 +6,7 @@ export interface ICategoryCodeSet {
 }
 
 const sets: ICategoryCodeSet[] = [
-    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '口座区分' },
+    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '通貨区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType, name: 'レイティング区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType, name: '配給区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType, name: '決済カード(ムビチケ券種)区分' },

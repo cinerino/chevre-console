@@ -6,8 +6,8 @@ export interface IPaymentServiceType {
 }
 
 const types: IPaymentServiceType[] = [
-    { codeValue: chevre.factory.service.paymentService.PaymentServiceType.CreditCard, name: 'クレジットカードインターフェース' },
-    { codeValue: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket, name: 'ムビチケインターフェース' }
+    { codeValue: chevre.factory.service.paymentService.PaymentServiceType.CreditCard, name: 'クレジットカードIF' },
+    { codeValue: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket, name: 'ムビチケIF' }
 ];
 
 export const paymentServiceTypes = types;

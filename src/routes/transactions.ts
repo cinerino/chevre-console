@@ -7,8 +7,12 @@ import * as createDebug from 'debug';
 import * as express from 'express';
 import * as moment from 'moment';
 
+import registerServiceTransactionsRouter from './transactions/registerService';
+
 const debug = createDebug('chevre-console:router');
 const transactionsRouter = express.Router();
+
+transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerServiceTransactionsRouter);
 
 /**
  * 取引検索

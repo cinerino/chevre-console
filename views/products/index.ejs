@@ -96,9 +96,8 @@ PR-00
                             <tbody>
                                 <tr id="templateRow">
                                     <td name="id__productID">
-                                        <a target="_blank" href="/products/$id$">
+                                        <a href="javascript:void(0)" class="showProduct" data-id="$id$">
                                             $productID$
-                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
                                     <td name="name.ja">
@@ -150,6 +149,8 @@ PR-00
             </div>
         </div>
     </div>
+
+    <%- include('show') %>
 </div>
 
 <%- include('../common/master/_loading') %>

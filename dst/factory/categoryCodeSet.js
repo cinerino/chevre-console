@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.categoryCodeSets = void 0;
 const chevre = require("@chevre/api-nodejs-client");
 const sets = [
-    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '口座区分' },
+    { identifier: chevre.factory.categoryCode.CategorySetIdentifier.AccountType, name: '通貨区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType, name: 'レイティング区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType, name: '配給区分' },
     { identifier: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType, name: '決済カード(ムビチケ券種)区分' },

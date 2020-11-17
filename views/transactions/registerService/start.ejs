@@ -1,0 +1,69 @@
+<%- contentFor('title') %>
+サービス登録取引
+<%- contentFor('displayId') %>
+RT-00
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/transactions/registerService.js"></script>
+
+<%- contentFor('body') %>
+<div class="card">
+    <!-- <div class="card-header">
+        <h3 class="card-title">Quick Example</h3>
+    </div> -->
+    <!-- /.card-header -->
+
+    <!-- form start -->
+    <form role="form" method="post">
+        <%- include('../../common/messages') %>
+
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-12">
+                    <label class="bmd-label-static">プロダクト</label>
+                    <input type="hidden" name="product" value="<%= product.id %>">
+                </div>
+            </div>
+
+            <dl class="row">
+                <dt class="col-md-1">名称</dt>
+                <dd class="col-md-11"><%= product.name.ja %></dd>
+                <dt class="col-md-1">アウトプット</dt>
+                <dd class="col-md-11"><%= product.serviceOutput.typeOf %></dd>
+            </dl>
+
+            <div class="form-row">
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="serviceOutput[name]">アウトプット名称</label>
+                    <input type="text" class="form-control" id="serviceOutput[name]" name="serviceOutput[name]"
+                        placeholder="アウトプット名称" value="">
+                </div>
+
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="serviceOutput[issuedBy][id]">アウトプット発行者</label>
+                    <select class="form-control" id="serviceOutput[issuedBy][id]" name="serviceOutput[issuedBy][id]">
+                        <% for (const seller of sellers) { %>
+                        <option value="<%= seller.id %>">
+                            <%= seller.name.ja %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="form-group bmd-form-group col-md-3">
+                    <label class="bmd-label-static" for="numSeats">アウトプット数</label>
+                    <input type="number" class="form-control" id="numOutputs" name="numOutputs" placeholder="2" value=""
+                        min="1" max="10">
+                </div>
+
+            </div>
+        </div>
+        <!-- /.card-body -->
+
+        <div class="card-footer">
+            <button type="submit" class="btn btn-primary">確認</button>
+        </div>
+    </form>
+</div>
+<!-- /.card -->

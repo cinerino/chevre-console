@@ -25,6 +25,11 @@ $(function () {
         search(1);
     });
 
+    $(document).on('click', '.showProduct', function (event) {
+        var id = $(this).attr('data-id');
+        showProduct(id);
+    });
+
     $(document).on('click', '.showOffers', function (event) {
         var id = $(this).attr('data-id');
         showOffers(id);
@@ -70,6 +75,74 @@ $(function () {
     }
 });
 
+function showProduct(id) {
+    var product = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (product === undefined) {
+        alert('プロダクト' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#showModal');
+
+    modal.find('a.edit')
+        .off('click')
+        .on('click', function () {
+            var url = '/products/' + product.id;
+            window.open(url, '_blank');
+        });
+
+    modal.find('a.registerService')
+        .addClass('disabled')
+        .attr('aria-disabled', true)
+        .off('click');
+    if (['MembershipService', 'Account', 'PaymentCard'].indexOf(product.typeOf) >= 0) {
+        modal.find('a.registerService')
+            .removeClass('disabled')
+            .attr('aria-disabled', false)
+            .off('click')
+            .on('click', function () {
+                var url = '/transactions/registerService/start?product=' + product.id;
+                window.open(url, '_blank');
+            });
+    }
+
+    var details = $('<dl>').addClass('row')
+        .append($('<dt>').addClass('col-md-3').append('プロダクトID'))
+        .append($('<dd>').addClass('col-md-9').append(product.productID))
+        .append($('<dt>').addClass('col-md-3').append('名称'))
+        .append($('<dd>').addClass('col-md-9').append(product.name.ja));
+
+    details.append($('<dt>').addClass('col-md-3').append('カタログ'));
+    if (product.hasOfferCatalog !== undefined) {
+        details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
+            target: '_blank',
+            'href': '/offerCatalogs/' + product.hasOfferCatalog.id + '/update'
+        }).text(product.hasOfferCatalog.id)));
+    } else {
+        details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));
+    }
+
+    // details.append($('<dt>').addClass('col-md-3').append('販売者'))
+    //     .append($('<dd>').addClass('col-md-9').append(seller.id))
+    //     .append($('<dt>').addClass('col-md-3').append('販売期間'))
+    //     .append($('<dd>').addClass('col-md-9').append(
+    //         moment(performance.offers.validFrom).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
+    //         + ' - '
+    //         + moment(performance.offers.validThrough).tz('Asia/Tokyo').format('YYYY-MM-DD HH:mm')
+    //     ))
+    //     ;
+
+    var div = $('<div>')
+        .append(details);
+
+    // modal.find('.modal-title').text('イベントオファー');
+    modal.find('.modal-body').html(div);
+
+    modal.modal();
+}
 function showOffers(id) {
     var product = $.CommonMasterList.getDatas().find(function (data) {
         return data.id === id
