@@ -8,12 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- サービス登録画面を追加
-- イベント作成時の販売終了日時の相対設定を負の値に対応
-
 ### Changed
-
-- AccountプロダクトタイプをPaymentCardに統合
 
 ### Deprecated
 
@@ -22,6 +17,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.9.0 - 2020-11-17
+
+### Added
+
+- サービス登録画面を追加
+- イベント作成時の販売終了日時の相対設定を負の値に対応
+
+### Changed
+
+- AccountプロダクトタイプをPaymentCardに統合
 
 ## v2.8.0 - 2020-11-02
 
