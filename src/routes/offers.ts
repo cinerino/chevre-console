@@ -624,7 +624,6 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     let itemOffered: chevre.factory.service.IService;
     const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
-        case ProductType.Account:
         case ProductType.Product:
             itemOffered = {
                 project: { typeOf: req.project.typeOf, id: req.project.id },

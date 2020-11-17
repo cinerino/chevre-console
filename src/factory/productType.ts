@@ -1,6 +1,6 @@
-import * as chevre from '@chevre/api-nodejs-client';
+import { factory } from '@chevre/api-nodejs-client';
 
-export import ProductType = chevre.factory.product.ProductType;
+export import ProductType = factory.product.ProductType;
 
 export interface IProductType {
     codeValue: string;
@@ -21,15 +21,9 @@ if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.MembershipService)) {
         { codeValue: ProductType.MembershipService, name: 'メンバーシップ' }
     );
 }
-if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.Account)) {
-    types.push(
-        { codeValue: ProductType.Account, name: '口座' }
-    );
-}
 if (AVAILABLE_PRODUCT_TYPES.includes(ProductType.PaymentCard)) {
     types.push(
         { codeValue: ProductType.PaymentCard, name: 'ペイメントカード' }
-        // { codeValue: ProductType.PointCard, name: 'ポイントカード' }
     );
 }
 
