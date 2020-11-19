@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const categoryCodesRouter = express_1.Router();
@@ -171,6 +172,31 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
         paymentServices: searchProductsResult.data
     });
+}));
+categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const eventService = new chevre.service.Event({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const categoryCode = yield categoryCodeService.findById({ id: req.params.id });
+        // tslint:disable-next-line:no-suspicious-comment
+        // TODO 削除して問題ないかどうか検証
+        if (categoryCode.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType) {
+            // no op
+        }
+        yield categoryCodeService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
 }));
 function createMovieFromBody(req) {
     var _a;

@@ -343,7 +343,7 @@ async function createMovieTheaterFromBody(
     const seller = await sellerService.findById({ id: parentOrganizationId });
 
     const parentOrganization: chevre.factory.place.movieTheater.IParentOrganization = {
-        project: { typeOf: seller.project.typeOf, id: seller.project.id },
+        // project: { typeOf: seller.project.typeOf, id: seller.project.id },
         typeOf: seller.typeOf,
         id: seller.id
     };

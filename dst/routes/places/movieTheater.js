@@ -274,7 +274,7 @@ function createMovieTheaterFromBody(req, isNew) {
         });
         const seller = yield sellerService.findById({ id: parentOrganizationId });
         const parentOrganization = {
-            project: { typeOf: seller.project.typeOf, id: seller.project.id },
+            // project: { typeOf: seller.project.typeOf, id: seller.project.id },
             typeOf: seller.typeOf,
             id: seller.id
         };
