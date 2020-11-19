@@ -18,6 +18,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.10.0 - 2020-11-19
+
+### Added
+
+- カテゴリーコード削除を追加
+
+### Changed
+
+- update @chevre/factory
+
 ## v2.9.0 - 2020-11-17
 
 ### Added

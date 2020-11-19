@@ -59,7 +59,7 @@ registerServiceTransactionsRouter.all(
 
                     const seller = await sellerService.findById({ id: req.body.serviceOutput?.issuedBy?.id });
                     const issuedBy: chevre.factory.organization.IOrganization = {
-                        project: seller.project,
+                        // project: seller.project,
                         id: seller.id,
                         name: seller.name,
                         typeOf: seller.typeOf

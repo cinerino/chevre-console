@@ -227,7 +227,7 @@ async function createFromBody(
         }
     }
 
-    let hasMerchantReturnPolicy: chevre.factory.seller.IHasMerchantReturnPolicy | undefined;
+    let hasMerchantReturnPolicy: chevre.factory.organization.IHasMerchantReturnPolicy | undefined;
     if (typeof req.body.hasMerchantReturnPolicyStr === 'string' && req.body.hasMerchantReturnPolicyStr.length > 0) {
         try {
             hasMerchantReturnPolicy = JSON.parse(req.body.hasMerchantReturnPolicyStr);
@@ -246,7 +246,7 @@ async function createFromBody(
     }
 
     // 親組織のデフォルトはCinerinoプロジェクトの親組織
-    let parentOrganization: chevre.factory.seller.IParentOrganization | undefined = req.project.parentOrganization;
+    let parentOrganization: chevre.factory.organization.IParentOrganization | undefined = req.project.parentOrganization;
     if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
         try {
             parentOrganization = JSON.parse(req.body.parentOrganizationStr);

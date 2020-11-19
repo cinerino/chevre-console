@@ -63,7 +63,7 @@ registerServiceTransactionsRouter.all('/start',
                     : 1;
                 const seller = yield sellerService.findById({ id: (_c = (_b = req.body.serviceOutput) === null || _b === void 0 ? void 0 : _b.issuedBy) === null || _c === void 0 ? void 0 : _c.id });
                 const issuedBy = {
-                    project: seller.project,
+                    // project: seller.project,
                     id: seller.id,
                     name: seller.name,
                     typeOf: seller.typeOf

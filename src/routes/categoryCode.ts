@@ -6,6 +6,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, Meta, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 
 import * as Message from '../message';
 
@@ -213,6 +214,38 @@ categoryCodesRouter.all<ParamsDictionary>(
             categoryCodeSets: categoryCodeSets,
             paymentServices: searchProductsResult.data
         });
+    }
+);
+
+categoryCodesRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            // const eventService = new chevre.service.Event({
+            //     endpoint: <string>process.env.API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const categoryCode = await categoryCodeService.findById({ id: req.params.id });
+
+            // tslint:disable-next-line:no-suspicious-comment
+            // TODO 削除して問題ないかどうか検証
+            if (categoryCode.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType) {
+                // no op
+            }
+
+            await categoryCodeService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
     }
 );
 
