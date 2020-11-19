@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const priceSpecificationType_1 = require("../factory/priceSpecificationType");
@@ -280,6 +281,24 @@ priceSpecificationsRouter.all('/:id/update', ...validate(),
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
         paymentServices: searchProductsResult.data
     });
+}));
+priceSpecificationsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const priceSpecificationService = new chevre.service.PriceSpecification({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // tslint:disable-next-line:no-suspicious-comment
+        // TODO 削除して問題ないかどうか検証
+        // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+        yield priceSpecificationService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
 }));
 // tslint:disable-next-line:max-func-body-length
 function createMovieFromBody(req, isNew) {

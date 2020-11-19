@@ -414,6 +414,24 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         next(error);
     }
 }));
+screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // tslint:disable-next-line:no-suspicious-comment
+        // TODO 削除して問題ないかどうか検証
+        // const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({ id: req.params.id });
+        yield eventService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
+}));
 screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({

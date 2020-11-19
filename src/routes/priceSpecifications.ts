@@ -6,6 +6,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, Meta, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 
 import * as Message from '../message';
 
@@ -332,6 +333,30 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
             paymentServices: searchProductsResult.data
         });
+    }
+);
+
+priceSpecificationsRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const priceSpecificationService = new chevre.service.PriceSpecification({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            // tslint:disable-next-line:no-suspicious-comment
+            // TODO 削除して問題ないかどうか検証
+            // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+
+            await priceSpecificationService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
     }
 );
 

@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- コンテンツ削除を追加
+- 施設コンテンツ削除を追加
+- オファー削除を追加
+- 価格仕様削除を追加
+
 ### Changed
 
 ### Deprecated
