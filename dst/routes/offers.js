@@ -431,9 +431,9 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // tslint:disable-next-line:no-suspicious-comment
-        // TODO 削除して問題ないかどうか検証
-        // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+        // validation
+        const offer = yield offerService.findById({ id: req.params.id });
+        yield preDelete(req, offer);
         yield offerService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -443,6 +443,25 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(req, offer) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchCatalogsResult = yield offerCatalogService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            itemListElement: {
+                id: { $in: [String(offer.id)] }
+            }
+        });
+        if (searchCatalogsResult.data.length > 0) {
+            throw new Error('関連するオファーカタログが存在します');
+        }
+    });
+}
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d, _e, _f;

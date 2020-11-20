@@ -307,9 +307,9 @@ movieRouter.delete(
                 auth: req.user.authClient
             });
 
-            // tslint:disable-next-line:no-suspicious-comment
-            // TODO 削除して問題ないかどうか検証
-            // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+            // validation
+            const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+            await preDelete(req, movie);
 
             await creativeWorkService.deleteMovie({ id: req.params.id });
 
@@ -321,6 +321,26 @@ movieRouter.delete(
         }
     }
 );
+
+async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.ICreativeWork) {
+    // 施設コンテンツが存在するかどうか
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEventSeries,
+        workPerformed: {
+            identifiers: [movie.identifier]
+        }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連する施設コンテンツが存在します');
+    }
+}
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.creativeWork.movie.ICreativeWork> {

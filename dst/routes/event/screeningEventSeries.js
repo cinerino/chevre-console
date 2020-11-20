@@ -420,9 +420,9 @@ screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // tslint:disable-next-line:no-suspicious-comment
-        // TODO 削除して問題ないかどうか検証
-        // const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({ id: req.params.id });
+        // validation
+        const event = yield eventService.findById({ id: req.params.id });
+        yield preDelete(req, event);
         yield eventService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -432,6 +432,24 @@ screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(req, eventSeries) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            superEvent: { ids: [eventSeries.id] }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連するスケジュールが存在します');
+        }
+    });
+}
 screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({

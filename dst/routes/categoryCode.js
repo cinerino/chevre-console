@@ -184,11 +184,7 @@ categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             auth: req.user.authClient
         });
         const categoryCode = yield categoryCodeService.findById({ id: req.params.id });
-        // tslint:disable-next-line:no-suspicious-comment
-        // TODO 削除して問題ないかどうか検証
-        if (categoryCode.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType) {
-            // no op
-        }
+        yield preDelete(req, categoryCode);
         yield categoryCodeService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -198,6 +194,124 @@ categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             .json({ error: { message: error.message } });
     }
 }));
+// tslint:disable-next-line:max-func-body-length
+function preDelete(req, categoryCode) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        // const creativeWorkService = new chevre.service.CreativeWork({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // const offerCatalogService = new chevre.service.OfferCatalog({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        // const placeService = new chevre.service.Place({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        const priceSpecificationService = new chevre.service.PriceSpecification({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // 関連する価格仕様
+        const searchPriceSpecificationsResult = yield priceSpecificationService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            appliesToCategoryCode: {
+                $elemMatch: {
+                    codeValue: { $eq: categoryCode.codeValue },
+                    'inCodeSet.identifier': { $eq: categoryCode.inCodeSet.identifier }
+                }
+            }
+        });
+        if (searchPriceSpecificationsResult.data.length > 0) {
+            throw new Error('関連する価格仕様が存在します');
+        }
+        switch (categoryCode.inCodeSet.identifier) {
+            // 通貨区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.AccountType:
+                break;
+            // レイティング区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
+                // const searchMoviesResult = await creativeWorkService.searchMovies({
+                //     limit: 1,
+                //     project: { ids: [req.project.id] }
+                // });
+                // if (searchMoviesResult.data.length > 0) {
+                //     throw new Error('関連するコンテンツが存在します');
+                // }
+                break;
+            // 配給区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
+                // const searchMoviesResult = await creativeWorkService.searchMovies({
+                //     limit: 1,
+                //     project: { ids: [req.project.id] }
+                // });
+                // if (searchMoviesResult.data.length > 0) {
+                //     throw new Error('関連するコンテンツが存在します');
+                // }
+                break;
+            // 決済カード(ムビチケ券種)区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
+                // const searchOffersResult = await offerService.search({
+                //     limit: 1,
+                //     project: { id: { $eq: req.project.id } }
+                // });
+                // if (searchOffersResult.data.length > 0) {
+                //     throw new Error('関連するオファーが存在します');
+                // }
+                break;
+            // オファーカテゴリー区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType:
+                const searchOffersResult = yield offerService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    category: { codeValue: { $in: [categoryCode.codeValue] } }
+                });
+                if (searchOffersResult.data.length > 0) {
+                    throw new Error('関連するオファーが存在します');
+                }
+                break;
+            // 決済方法区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
+                break;
+            // 座席区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.SeatingType:
+                // const searchSeatsResult = await placeService.searchSeats({
+                //     limit: 1,
+                //     project: { id: { $eq: req.project.id } }
+                // });
+                // if (searchSeatsResult.data.length > 0) {
+                //     throw new Error('関連する座席が存在します');
+                // }
+                break;
+            // サービス区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
+                // const searchOfferCatalogsResult = await offerCatalogService.search({
+                //     limit: 1,
+                //     project: { id: { $eq: req.project.id } }
+                // });
+                // if (searchOfferCatalogsResult.data.length > 0) {
+                //     throw new Error('関連するオファーカタログが存在します');
+                // }
+                break;
+            // 音響方式区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType:
+                // 関連する施設コンテンツ
+                break;
+            // 上映方式区分
+            case chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType:
+                // 関連する施設コンテンツ
+                break;
+            default:
+        }
+    });
+}
 function createMovieFromBody(req) {
     var _a;
     const paymentMethodType = (_a = req.body.paymentMethod) === null || _a === void 0 ? void 0 : _a.typeOf;

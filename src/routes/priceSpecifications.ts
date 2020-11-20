@@ -345,9 +345,9 @@ priceSpecificationsRouter.delete(
                 auth: req.user.authClient
             });
 
-            // tslint:disable-next-line:no-suspicious-comment
-            // TODO 削除して問題ないかどうか検証
-            // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+            // validation
+            const priceSpecification = await priceSpecificationService.findById({ id: req.params.id });
+            await preDelete(req, priceSpecification);
 
             await priceSpecificationService.deleteById({ id: req.params.id });
 
@@ -359,6 +359,10 @@ priceSpecificationsRouter.delete(
         }
     }
 );
+
+async function preDelete(__: Request, __2: chevre.factory.priceSpecification.IPriceSpecification<any>) {
+    // validation
+}
 
 // tslint:disable-next-line:max-func-body-length
 async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre.factory.priceSpecification.IPriceSpecification<any>> {

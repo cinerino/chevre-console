@@ -490,9 +490,9 @@ screeningEventSeriesRouter.delete(
                 auth: req.user.authClient
             });
 
-            // tslint:disable-next-line:no-suspicious-comment
-            // TODO 削除して問題ないかどうか検証
-            // const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({ id: req.params.id });
+            // validation
+            const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({ id: req.params.id });
+            await preDelete(req, event);
 
             await eventService.deleteById({ id: req.params.id });
 
@@ -504,6 +504,23 @@ screeningEventSeriesRouter.delete(
         }
     }
 );
+
+async function preDelete(req: Request, eventSeries: chevre.factory.event.screeningEventSeries.IEvent) {
+    // validation
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        superEvent: { ids: [eventSeries.id] }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連するスケジュールが存在します');
+    }
+}
 
 screeningEventSeriesRouter.get(
     '/:eventId/screeningEvents',

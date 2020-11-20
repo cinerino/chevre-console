@@ -288,9 +288,9 @@ priceSpecificationsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0,
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        // tslint:disable-next-line:no-suspicious-comment
-        // TODO 削除して問題ないかどうか検証
-        // const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+        // validation
+        const priceSpecification = yield priceSpecificationService.findById({ id: req.params.id });
+        yield preDelete(req, priceSpecification);
         yield priceSpecificationService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -300,6 +300,11 @@ priceSpecificationsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0,
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(__, __2) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+    });
+}
 // tslint:disable-next-line:max-func-body-length
 function createMovieFromBody(req, isNew) {
     var _a, _b;
