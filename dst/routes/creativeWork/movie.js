@@ -103,6 +103,7 @@ movieRouter.get('', (__, res) => {
     res.render('creativeWorks/movie/index', {});
 });
 movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -125,6 +126,18 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             page: page,
             sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
+            contentRating: {
+                $eq: (typeof ((_a = req.query.contentRating) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.contentRating.$eq.length > 0)
+                    ? req.query.contentRating.$eq
+                    : undefined
+            },
+            distributor: {
+                codeValue: {
+                    $eq: (typeof ((_c = (_b = req.query.distributor) === null || _b === void 0 ? void 0 : _b.codeValue) === null || _c === void 0 ? void 0 : _c.$eq) === 'string' && req.query.distributor.codeValue.$eq.length > 0)
+                        ? req.query.distributor.codeValue.$eq
+                        : undefined
+                }
+            },
             identifier: req.query.identifier,
             name: req.query.name,
             datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
@@ -166,7 +179,7 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 // tslint:disable-next-line:use-default-type-parameter
 movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _d;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -208,7 +221,7 @@ movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, vo
             ? (movie.datePublished !== undefined) ? moment(movie.datePublished)
                 .tz('Asia/Tokyo')
                 .format('YYYY/MM/DD') : ''
-            : req.body.datePublished, offers: (typeof ((_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) !== 'string')
+            : req.body.datePublished, offers: (typeof ((_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.availabilityEnds) !== 'string')
             ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                 ? {
                     availabilityEnds: moment(movie.offers.availabilityEnds)

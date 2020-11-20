@@ -153,6 +153,18 @@ movieRouter.get(
                 page: page,
                 sort: { identifier: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
+                contentRating: {
+                    $eq: (typeof req.query.contentRating?.$eq === 'string' && req.query.contentRating.$eq.length > 0)
+                        ? req.query.contentRating.$eq
+                        : undefined
+                },
+                distributor: {
+                    codeValue: {
+                        $eq: (typeof req.query.distributor?.codeValue?.$eq === 'string' && req.query.distributor.codeValue.$eq.length > 0)
+                            ? req.query.distributor.codeValue.$eq
+                            : undefined
+                    }
+                },
                 identifier: req.query.identifier,
                 name: req.query.name,
                 datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
