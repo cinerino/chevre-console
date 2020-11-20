@@ -23,27 +23,6 @@ priceSpecificationsRouter.get(
             auth: req.user.authClient
         });
 
-        // 上映方式タイプ検索
-        const searchVideoFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-        });
-
-        // 上映方式タイプ検索
-        const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
-        });
-
-        // 座席区分検索
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-        });
-
         // 決済カード(ムビチケ券種)区分検索
         const searchMovieTicketTypesResult = await categoryCodeService.search({
             limit: 100,
@@ -56,9 +35,6 @@ priceSpecificationsRouter.get(
             movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             priceSpecificationTypes: priceSpecificationTypes,
-            videoFormatTypes: searchVideoFormatTypesResult.data,
-            soundFormatTypes: searchSoundFormatFormatTypesResult.data,
-            seatingTypes: searchSeatingTypesResult.data,
             CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
@@ -85,11 +61,12 @@ priceSpecificationsRouter.get(
                     serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
                 },
                 appliesToCategoryCode: {
-                    ...(typeof req.query.appliesToCategoryCode === 'string' && req.query.appliesToCategoryCode.length > 0)
+                    ...(typeof req.query.appliesToCategoryCode?.$elemMatch === 'string'
+                        && req.query.appliesToCategoryCode.$elemMatch.length > 0)
                         ? {
                             $elemMatch: {
-                                codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode).codeValue },
-                                'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode).inCodeSet.identifier }
+                                codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).codeValue },
+                                'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).inCodeSet.identifier }
                             }
                         }
                         : {}

@@ -44,31 +44,11 @@ PS-02
                                 </div>
 
                                 <div class="form-group bmd-form-group col-md-3">
-                                    <label for="appliesToCategoryCode" class="bmd-label-static">
+                                    <label for="appliesToCategoryCode[$elemMatch]" class="bmd-label-static">
                                         適用区分
                                     </label>
-                                    <select class="form-control" name="appliesToCategoryCode">
-                                        <option value="">選択してください</option>
-                                        <% videoFormatTypes.forEach((videoFormatType) => { %>
-                                        <option
-                                            value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>">
-                                            上映方式区分 <%= videoFormatType.name.ja %>
-                                        </option>
-                                        <% }) %>
-
-                                        <% soundFormatTypes.forEach((soundFormatType) => { %>
-                                        <option
-                                            value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>">
-                                            音響方式区分 <%= soundFormatType.name.ja %>
-                                        </option>
-                                        <% }) %>
-
-                                        <% seatingTypes.forEach((seatingType) => { %>
-                                        <option
-                                            value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>">
-                                            座席区分 <%= seatingType.name.ja %>
-                                        </option>
-                                        <% }) %>
+                                    <select class="form-control" name="appliesToCategoryCode[$elemMatch]"
+                                        id="appliesToCategoryCode[$elemMatch]" style="width: 100%;">
                                     </select>
                                 </div>
 

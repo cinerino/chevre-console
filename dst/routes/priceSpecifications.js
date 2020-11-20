@@ -25,24 +25,6 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    // 上映方式タイプ検索
-    const searchVideoFormatTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-    });
-    // 上映方式タイプ検索
-    const searchSoundFormatFormatTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
-    });
-    // 座席区分検索
-    const searchSeatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-    });
     // 決済カード(ムビチケ券種)区分検索
     const searchMovieTicketTypesResult = yield categoryCodeService.search({
         limit: 100,
@@ -54,13 +36,11 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
         movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
-        videoFormatTypes: searchVideoFormatTypesResult.data,
-        soundFormatTypes: searchSoundFormatFormatTypesResult.data,
-        seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
@@ -77,11 +57,12 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
             appliesToMovieTicket: {
                 serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
             },
-            appliesToCategoryCode: Object.assign({}, (typeof req.query.appliesToCategoryCode === 'string' && req.query.appliesToCategoryCode.length > 0)
+            appliesToCategoryCode: Object.assign({}, (typeof ((_a = req.query.appliesToCategoryCode) === null || _a === void 0 ? void 0 : _a.$elemMatch) === 'string'
+                && req.query.appliesToCategoryCode.$elemMatch.length > 0)
                 ? {
                     $elemMatch: {
-                        codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode).codeValue },
-                        'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode).inCodeSet.identifier }
+                        codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).codeValue },
+                        'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).inCodeSet.identifier }
                     }
                 }
                 : {})
