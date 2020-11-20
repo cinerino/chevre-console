@@ -96,7 +96,7 @@ seatRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 seatRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23;
+    var _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -133,6 +133,11 @@ seatRouter.get('/search',
                         }
                     }
                 }
+            },
+            seatingType: {
+                $eq: (typeof ((_24 = req.query.seatingType) === null || _24 === void 0 ? void 0 : _24.$eq) === 'string' && req.query.seatingType.$eq.length > 0)
+                    ? req.query.seatingType.$eq
+                    : undefined
             }
             // name: req.query.name
         });

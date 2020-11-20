@@ -63,7 +63,7 @@ $(function () {
     var parentOrganizationSelection = $('#parentOrganization\\[id\\]');
     parentOrganizationSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '親組織選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/sellers/getlist',

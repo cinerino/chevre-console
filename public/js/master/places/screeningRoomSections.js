@@ -29,7 +29,7 @@ $(function () {
     var screenBranchCodeSelection = $('#screenBranchCode');
     screenBranchCodeSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'ルーム選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/places/screeningRoom/search',

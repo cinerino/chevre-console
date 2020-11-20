@@ -155,6 +155,11 @@ seatRouter.get(
                             }
                         }
                     }
+                },
+                seatingType: {
+                    $eq: (typeof req.query.seatingType?.$eq === 'string' && req.query.seatingType.$eq.length > 0)
+                        ? req.query.seatingType.$eq
+                        : undefined
                 }
                 // name: req.query.name
             });

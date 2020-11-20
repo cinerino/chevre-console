@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - コンテンツ検索条件拡張
+- 座席検索条件拡張
+- オファーカタログ検索条件拡張
 
 ### Deprecated
 
