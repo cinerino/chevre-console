@@ -53,9 +53,13 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
             page: page,
             sort: { price: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
-            typeOf: (req.query.typeOf !== '') ? req.query.typeOf : undefined,
+            typeOf: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
+                ? req.query.typeOf
+                : undefined,
             appliesToMovieTicket: {
-                serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
+                serviceTypes: (typeof req.query.appliesToMovieTicket === 'string' && req.query.appliesToMovieTicket.length > 0)
+                    ? [req.query.appliesToMovieTicket]
+                    : undefined
             },
             appliesToCategoryCode: Object.assign({}, (typeof ((_a = req.query.appliesToCategoryCode) === null || _a === void 0 ? void 0 : _a.$elemMatch) === 'string'
                 && req.query.appliesToCategoryCode.$elemMatch.length > 0)

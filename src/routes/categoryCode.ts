@@ -40,13 +40,19 @@ categoryCodesRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
+                inCodeSet: {
+                    identifier: {
+                        $eq: (typeof req.query.inCodeSet?.identifier === 'string' && req.query.inCodeSet.identifier.length > 0)
+                            ? req.query.inCodeSet.identifier
+                            : undefined,
+                        $in: (Array.isArray(req.query.inCodeSet?.identifier?.$in))
+                            ? req.query.inCodeSet?.identifier.$in
+                            : undefined
+                    }
+                },
                 ...(req.query.codeValue !== undefined && req.query.codeValue !== null
                     && typeof req.query.codeValue.$eq === 'string' && req.query.codeValue.$eq.length > 0)
                     ? { codeValue: { $eq: req.query.codeValue.$eq } }
-                    : undefined,
-                ...(req.query.inCodeSet !== undefined && req.query.inCodeSet !== null
-                    && typeof req.query.inCodeSet.identifier === 'string' && req.query.inCodeSet.identifier.length > 0)
-                    ? { inCodeSet: { identifier: { $eq: req.query.inCodeSet.identifier } } }
                     : undefined,
                 ...(req.query.name !== undefined && req.query.name !== null
                     && typeof req.query.name.$regex === 'string' && req.query.name.$regex.length > 0)
