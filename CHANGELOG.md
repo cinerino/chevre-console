@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.11.0 - 2020-11-20
+
+### Added
+
 - コンテンツ削除を追加
 - 施設コンテンツ削除を追加
 - オファー削除を追加
@@ -18,14 +32,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - コンテンツ検索条件拡張
 - 座席検索条件拡張
 - オファーカタログ検索条件拡張
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v2.10.0 - 2020-11-19
 
