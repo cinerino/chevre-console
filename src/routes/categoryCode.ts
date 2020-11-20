@@ -247,22 +247,22 @@ categoryCodesRouter.delete(
 // tslint:disable-next-line:max-func-body-length
 async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode.ICategoryCode) {
     // validation
-    // const creativeWorkService = new chevre.service.CreativeWork({
-    //     endpoint: <string>process.env.API_ENDPOINT,
-    //     auth: req.user.authClient
-    // });
+    const creativeWorkService = new chevre.service.CreativeWork({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    // const offerCatalogService = new chevre.service.OfferCatalog({
-    //     endpoint: <string>process.env.API_ENDPOINT,
-    //     auth: req.user.authClient
-    // });
-    // const placeService = new chevre.service.Place({
-    //     endpoint: <string>process.env.API_ENDPOINT,
-    //     auth: req.user.authClient
-    // });
+    const offerCatalogService = new chevre.service.OfferCatalog({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const priceSpecificationService = new chevre.service.PriceSpecification({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -289,23 +289,25 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             break;
         // レイティング区分
         case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
-            // const searchMoviesResult = await creativeWorkService.searchMovies({
-            //     limit: 1,
-            //     project: { ids: [req.project.id] }
-            // });
-            // if (searchMoviesResult.data.length > 0) {
-            //     throw new Error('関連するコンテンツが存在します');
-            // }
+            const searchMoviesResult4contentRating = await creativeWorkService.searchMovies({
+                limit: 1,
+                project: { ids: [req.project.id] },
+                contentRating: { $eq: categoryCode.codeValue }
+            });
+            if (searchMoviesResult4contentRating.data.length > 0) {
+                throw new Error('関連するコンテンツが存在します');
+            }
             break;
         // 配給区分
         case chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
-            // const searchMoviesResult = await creativeWorkService.searchMovies({
-            //     limit: 1,
-            //     project: { ids: [req.project.id] }
-            // });
-            // if (searchMoviesResult.data.length > 0) {
-            //     throw new Error('関連するコンテンツが存在します');
-            // }
+            const searchMoviesResult4distributorType = await creativeWorkService.searchMovies({
+                limit: 1,
+                project: { ids: [req.project.id] },
+                distributor: { codeValue: { $eq: categoryCode.codeValue } }
+            });
+            if (searchMoviesResult4distributorType.data.length > 0) {
+                throw new Error('関連するコンテンツが存在します');
+            }
             break;
         // 決済カード(ムビチケ券種)区分
         case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
@@ -333,23 +335,25 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             break;
         // 座席区分
         case chevre.factory.categoryCode.CategorySetIdentifier.SeatingType:
-            // const searchSeatsResult = await placeService.searchSeats({
-            //     limit: 1,
-            //     project: { id: { $eq: req.project.id } }
-            // });
-            // if (searchSeatsResult.data.length > 0) {
-            //     throw new Error('関連する座席が存在します');
-            // }
+            const searchSeatsResult = await placeService.searchSeats({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                seatingType: { $eq: categoryCode.codeValue }
+            });
+            if (searchSeatsResult.data.length > 0) {
+                throw new Error('関連する座席が存在します');
+            }
             break;
         // サービス区分
         case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
-            // const searchOfferCatalogsResult = await offerCatalogService.search({
-            //     limit: 1,
-            //     project: { id: { $eq: req.project.id } }
-            // });
-            // if (searchOfferCatalogsResult.data.length > 0) {
-            //     throw new Error('関連するオファーカタログが存在します');
-            // }
+            const searchOfferCatalogsResult = await offerCatalogService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { serviceType: { codeValue: { $eq: categoryCode.codeValue } } }
+            });
+            if (searchOfferCatalogsResult.data.length > 0) {
+                throw new Error('関連するオファーカタログが存在します');
+            }
             break;
         // 音響方式区分
         case chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType:
