@@ -257,6 +257,10 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -364,10 +368,28 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
         // 音響方式区分
         case chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType:
             // 関連する施設コンテンツ
+            const searchEventsResult4soundFormatType = await eventService.search({
+                limit: 1,
+                project: { ids: [req.project.id] },
+                typeOf: chevre.factory.eventType.ScreeningEventSeries,
+                soundFormat: { typeOf: { $eq: categoryCode.codeValue } }
+            });
+            if (searchEventsResult4soundFormatType.data.length > 0) {
+                throw new Error('関連する施設コンテンツが存在します');
+            }
             break;
         // 上映方式区分
         case chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType:
             // 関連する施設コンテンツ
+            const searchEventsResult4videoFormatType = await eventService.search({
+                limit: 1,
+                project: { ids: [req.project.id] },
+                typeOf: chevre.factory.eventType.ScreeningEventSeries,
+                videoFormat: { typeOf: { $eq: categoryCode.codeValue } }
+            });
+            if (searchEventsResult4videoFormatType.data.length > 0) {
+                throw new Error('関連する施設コンテンツが存在します');
+            }
             break;
         default:
     }
