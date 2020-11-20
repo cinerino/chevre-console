@@ -29,7 +29,7 @@ $(function () {
     var screenBranchCodeSelection = $('#screenBranchCode');
     screenBranchCodeSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'ルーム選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/places/screeningRoom/search',
@@ -65,7 +65,7 @@ $(function () {
     var screeningRoomSectionBranchCodeSelection = $('#screeningRoomSectionBranchCode');
     screeningRoomSectionBranchCodeSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'セクション選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/places/screeningRoomSection/search',
@@ -91,6 +91,44 @@ $(function () {
                         return {
                             id: screeningRoomSection.branchCode,
                             text: screeningRoomSection.branchCode + ' ' + screeningRoomSection.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    var seatingTypeSelection = $('#seatingType\\[\\$eq\\]');
+    seatingTypeSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: { identifier: 'SeatingType' }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                console.log(data);
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: categoryCode.codeValue,
+                            text: categoryCode.name.ja
                         }
                     })
                 };

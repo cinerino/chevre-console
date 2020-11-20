@@ -7,6 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -152,6 +153,18 @@ movieRouter.get(
                 page: page,
                 sort: { identifier: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
+                contentRating: {
+                    $eq: (typeof req.query.contentRating?.$eq === 'string' && req.query.contentRating.$eq.length > 0)
+                        ? req.query.contentRating.$eq
+                        : undefined
+                },
+                distributor: {
+                    codeValue: {
+                        $eq: (typeof req.query.distributor?.codeValue?.$eq === 'string' && req.query.distributor.codeValue.$eq.length > 0)
+                            ? req.query.distributor.codeValue.$eq
+                            : undefined
+                    }
+                },
                 identifier: req.query.identifier,
                 name: req.query.name,
                 datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
@@ -296,6 +309,50 @@ movieRouter.all<ParamsDictionary>(
         });
     }
 );
+
+movieRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const creativeWorkService = new chevre.service.CreativeWork({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            // validation
+            const movie = await creativeWorkService.findMovieById({ id: req.params.id });
+            await preDelete(req, movie);
+
+            await creativeWorkService.deleteMovie({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
+    }
+);
+
+async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.ICreativeWork) {
+    // 施設コンテンツが存在するかどうか
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEventSeries,
+        workPerformed: {
+            identifiers: [movie.identifier]
+        }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連する施設コンテンツが存在します');
+    }
+}
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.creativeWork.movie.ICreativeWork> {

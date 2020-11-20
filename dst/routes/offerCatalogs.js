@@ -271,7 +271,7 @@ offerCatalogsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
     });
 }));
 offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d, _e, _f, _g;
+    var _b, _c, _d, _e, _f, _g, _h, _j, _k;
     try {
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
@@ -298,9 +298,17 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
             name: req.query.name,
             itemListElement: {},
             itemOffered: {
+                serviceType: {
+                    codeValue: {
+                        $eq: (typeof ((_d = (_c = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.serviceType) === null || _c === void 0 ? void 0 : _c.codeValue) === null || _d === void 0 ? void 0 : _d.$eq) === 'string'
+                            && req.query.itemOffered.serviceType.codeValue.$eq.length > 0)
+                            ? req.query.itemOffered.serviceType.codeValue.$eq
+                            : undefined
+                    }
+                },
                 typeOf: {
-                    $eq: (typeof ((_c = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf) === null || _c === void 0 ? void 0 : _c.$eq) === 'string' && ((_e = (_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === null || _e === void 0 ? void 0 : _e.$eq.length) > 0)
-                        ? (_g = (_f = req.query.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === null || _g === void 0 ? void 0 : _g.$eq : undefined
+                    $eq: (typeof ((_f = (_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq) === 'string' && ((_h = (_g = req.query.itemOffered) === null || _g === void 0 ? void 0 : _g.typeOf) === null || _h === void 0 ? void 0 : _h.$eq.length) > 0)
+                        ? (_k = (_j = req.query.itemOffered) === null || _j === void 0 ? void 0 : _j.typeOf) === null || _k === void 0 ? void 0 : _k.$eq : undefined
                 }
             }
         });
@@ -325,7 +333,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
     }
 }));
 offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _h;
+    var _l;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -341,7 +349,7 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
                 'priceSpecification.price': chevre.factory.sortType.Descending
             },
             project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: (_h = req.query.itemOffered) === null || _h === void 0 ? void 0 : _h.typeOf } },
+            itemOffered: { typeOf: { $eq: (_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf } },
             priceSpecification: {
                 // 売上金額で検索
                 accounting: {

@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
@@ -424,6 +425,43 @@ offersRouter.get('/getlist',
         });
     }
 }));
+offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // validation
+        const offer = yield offerService.findById({ id: req.params.id });
+        yield preDelete(req, offer);
+        yield offerService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
+}));
+function preDelete(req, offer) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchCatalogsResult = yield offerCatalogService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            itemListElement: {
+                id: { $in: [String(offer.id)] }
+            }
+        });
+        if (searchCatalogsResult.data.length > 0) {
+            throw new Error('関連するオファーカタログが存在します');
+        }
+    });
+}
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d, _e, _f;

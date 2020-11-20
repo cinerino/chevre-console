@@ -58,4 +58,94 @@ $(function () {
             $('#loadingModal').modal('hide');
         });
     }
+
+    var appliesToCategoryCodeSelection = $('#appliesToCategoryCode\\[\\$elemMatch\\]');
+    appliesToCategoryCodeSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: {
+                        identifier: {
+                            $in: [
+                                'SoundFormatType',
+                                'VideoFormatType',
+                                'SeatingType'
+                            ]
+                        }
+                    }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                console.log(data);
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: JSON.stringify({ codeValue: categoryCode.codeValue, inCodeSet: { identifier: categoryCode.inCodeSet.identifier } }),
+                            text: categoryCode.inCodeSet.identifier + ' ' + categoryCode.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    var appliesToMovieTicketSelection = $('#appliesToMovieTicket');
+    appliesToMovieTicketSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: {
+                        identifier: {
+                            $in: [
+                                'MovieTicketType'
+                            ]
+                        }
+                    }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                console.log(data);
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: categoryCode.codeValue,
+                            text: categoryCode.paymentMethod.typeOf + ' ' + categoryCode.codeValue + ' ' + categoryCode.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
 });

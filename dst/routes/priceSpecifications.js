@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const priceSpecificationType_1 = require("../factory/priceSpecificationType");
@@ -23,24 +24,6 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
-    });
-    // 上映方式タイプ検索
-    const searchVideoFormatTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-    });
-    // 上映方式タイプ検索
-    const searchSoundFormatFormatTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
-    });
-    // 座席区分検索
-    const searchSeatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
     });
     // 決済カード(ムビチケ券種)区分検索
     const searchMovieTicketTypesResult = yield categoryCodeService.search({
@@ -53,13 +36,11 @@ priceSpecificationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0
         movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
-        videoFormatTypes: searchVideoFormatTypesResult.data,
-        soundFormatTypes: searchSoundFormatFormatTypesResult.data,
-        seatingTypes: searchSeatingTypesResult.data,
         CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
@@ -72,15 +53,20 @@ priceSpecificationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0,
             page: page,
             sort: { price: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
-            typeOf: (req.query.typeOf !== '') ? req.query.typeOf : undefined,
+            typeOf: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
+                ? req.query.typeOf
+                : undefined,
             appliesToMovieTicket: {
-                serviceTypes: (req.query.appliesToMovieTicketType !== '') ? [req.query.appliesToMovieTicketType] : undefined
+                serviceTypes: (typeof req.query.appliesToMovieTicket === 'string' && req.query.appliesToMovieTicket.length > 0)
+                    ? [req.query.appliesToMovieTicket]
+                    : undefined
             },
-            appliesToCategoryCode: Object.assign({}, (typeof req.query.appliesToCategoryCode === 'string' && req.query.appliesToCategoryCode.length > 0)
+            appliesToCategoryCode: Object.assign({}, (typeof ((_a = req.query.appliesToCategoryCode) === null || _a === void 0 ? void 0 : _a.$elemMatch) === 'string'
+                && req.query.appliesToCategoryCode.$elemMatch.length > 0)
                 ? {
                     $elemMatch: {
-                        codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode).codeValue },
-                        'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode).inCodeSet.identifier }
+                        codeValue: { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).codeValue },
+                        'inCodeSet.identifier': { $eq: JSON.parse(req.query.appliesToCategoryCode.$elemMatch).inCodeSet.identifier }
                     }
                 }
                 : {})
@@ -281,6 +267,29 @@ priceSpecificationsRouter.all('/:id/update', ...validate(),
         paymentServices: searchProductsResult.data
     });
 }));
+priceSpecificationsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const priceSpecificationService = new chevre.service.PriceSpecification({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // validation
+        const priceSpecification = yield priceSpecificationService.findById({ id: req.params.id });
+        yield preDelete(req, priceSpecification);
+        yield priceSpecificationService.deleteById({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
+}));
+function preDelete(__, __2) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+    });
+}
 // tslint:disable-next-line:max-func-body-length
 function createMovieFromBody(req, isNew) {
     var _a, _b;

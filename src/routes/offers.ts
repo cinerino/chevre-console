@@ -7,6 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -497,6 +498,49 @@ offersRouter.get(
         }
     }
 );
+
+offersRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const offerService = new chevre.service.Offer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            // validation
+            const offer = await offerService.findById({ id: req.params.id });
+            await preDelete(req, offer);
+
+            await offerService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
+    }
+);
+
+async function preDelete(req: Request, offer: chevre.factory.offer.IOffer) {
+    // validation
+    const offerCatalogService = new chevre.service.OfferCatalog({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchCatalogsResult = await offerCatalogService.search({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        itemListElement: {
+            id: { $in: [String(offer.id)] }
+        }
+    });
+    if (searchCatalogsResult.data.length > 0) {
+        throw new Error('関連するオファーカタログが存在します');
+    }
+}
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {

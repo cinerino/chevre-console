@@ -361,6 +361,14 @@ offerCatalogsRouter.get(
                 name: req.query.name,
                 itemListElement: {},
                 itemOffered: {
+                    serviceType: {
+                        codeValue: {
+                            $eq: (typeof req.query.itemOffered?.serviceType?.codeValue?.$eq === 'string'
+                                && req.query.itemOffered.serviceType.codeValue.$eq.length > 0)
+                                ? req.query.itemOffered.serviceType.codeValue.$eq
+                                : undefined
+                        }
+                    },
                     typeOf: {
                         $eq: (typeof req.query.itemOffered?.typeOf?.$eq === 'string' && req.query.itemOffered?.typeOf?.$eq.length > 0)
                             ? req.query.itemOffered?.typeOf?.$eq

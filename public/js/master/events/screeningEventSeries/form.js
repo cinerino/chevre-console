@@ -1,5 +1,7 @@
+var eventId = '';
+
 $(function () {
-    var eventId = $('input[name="id"]').val();
+    eventId = $('input[name="id"]').val();
     var movieOptions = [];
     var selectedMovie;
 
@@ -154,5 +156,34 @@ $(function () {
     // datepickerセット
     $('.datepicker').datepicker({
         language: 'ja'
-    })
+    });
+
+    // 削除ボタン
+    $('.btn-delete').on('click', remove);
 });
+
+/**
+ * 削除
+ */
+function remove() {
+    if (window.confirm('元には戻せません。本当に削除しますか？')) {
+        $.ajax({
+            dataType: 'json',
+            url: '/events/screeningEventSeries/' + eventId,
+            type: 'DELETE'
+        })
+            .done(function () {
+                alert('削除しました');
+                location.href = '/events/screeningEventSeries';
+            })
+            .fail(function (jqxhr, textStatus, error) {
+                var message = '削除できませんでした';
+                if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
+                    message += ': ' + jqxhr.responseJSON.error.message;
+                }
+                alert(message);
+            })
+            .always(function () {
+            });
+    }
+}

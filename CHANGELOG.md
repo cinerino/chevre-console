@@ -18,6 +18,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.11.0 - 2020-11-20
+
+### Added
+
+- コンテンツ削除を追加
+- 施設コンテンツ削除を追加
+- オファー削除を追加
+- 価格仕様削除を追加
+
+### Changed
+
+- コンテンツ検索条件拡張
+- 座席検索条件拡張
+- オファーカタログ検索条件拡張
+
 ## v2.10.0 - 2020-11-19
 
 ### Added

@@ -7,7 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { INTERNAL_SERVER_ERROR } from 'http-status';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
@@ -480,6 +480,47 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
         }
     }
 );
+
+screeningEventSeriesRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const eventService = new chevre.service.Event({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            // validation
+            const event = await eventService.findById<chevre.factory.eventType.ScreeningEventSeries>({ id: req.params.id });
+            await preDelete(req, event);
+
+            await eventService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
+    }
+);
+
+async function preDelete(req: Request, eventSeries: chevre.factory.event.screeningEventSeries.IEvent) {
+    // validation
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        superEvent: { ids: [eventSeries.id] }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連するスケジュールが存在します');
+    }
+}
 
 screeningEventSeriesRouter.get(
     '/:eventId/screeningEvents',

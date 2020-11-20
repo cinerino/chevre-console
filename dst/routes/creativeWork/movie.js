@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../../message");
@@ -102,6 +103,7 @@ movieRouter.get('', (__, res) => {
     res.render('creativeWorks/movie/index', {});
 });
 movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -124,6 +126,18 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             page: page,
             sort: { identifier: chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
+            contentRating: {
+                $eq: (typeof ((_a = req.query.contentRating) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.contentRating.$eq.length > 0)
+                    ? req.query.contentRating.$eq
+                    : undefined
+            },
+            distributor: {
+                codeValue: {
+                    $eq: (typeof ((_c = (_b = req.query.distributor) === null || _b === void 0 ? void 0 : _b.codeValue) === null || _c === void 0 ? void 0 : _c.$eq) === 'string' && req.query.distributor.codeValue.$eq.length > 0)
+                        ? req.query.distributor.codeValue.$eq
+                        : undefined
+                }
+            },
             identifier: req.query.identifier,
             name: req.query.name,
             datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
@@ -165,7 +179,7 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 // tslint:disable-next-line:use-default-type-parameter
 movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _d;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -207,7 +221,7 @@ movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, vo
             ? (movie.datePublished !== undefined) ? moment(movie.datePublished)
                 .tz('Asia/Tokyo')
                 .format('YYYY/MM/DD') : ''
-            : req.body.datePublished, offers: (typeof ((_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.availabilityEnds) !== 'string')
+            : req.body.datePublished, offers: (typeof ((_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.availabilityEnds) !== 'string')
             ? (movie.offers !== undefined && movie.offers.availabilityEnds !== undefined)
                 ? {
                     availabilityEnds: moment(movie.offers.availabilityEnds)
@@ -241,6 +255,44 @@ movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, vo
         distributorTypes: searchDistributorTypesResult.data
     });
 }));
+movieRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const creativeWorkService = new chevre.service.CreativeWork({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // validation
+        const movie = yield creativeWorkService.findMovieById({ id: req.params.id });
+        yield preDelete(req, movie);
+        yield creativeWorkService.deleteMovie({ id: req.params.id });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
+}));
+function preDelete(req, movie) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // 施設コンテンツが存在するかどうか
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            workPerformed: {
+                identifiers: [movie.identifier]
+            }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連する施設コンテンツが存在します');
+        }
+    });
+}
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d;
