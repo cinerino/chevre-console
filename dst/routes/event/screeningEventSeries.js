@@ -143,6 +143,16 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchVideoFormatTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+        });
+        const videoFormatTypes = searchVideoFormatTypesResult.data;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield eventService.search({
@@ -167,7 +177,19 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
             count: (data.length === Number(limit))
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data
+            results: data.map((event) => {
+                const eventVideoFormatTypes = (Array.isArray(event.videoFormat))
+                    ? event.videoFormat.map((v) => v.typeOf)
+                    : [];
+                let videoFormatName = '';
+                if (Array.isArray(eventVideoFormatTypes)) {
+                    videoFormatName = videoFormatTypes
+                        .filter((category) => eventVideoFormatTypes.includes(category.codeValue))
+                        .map((category) => { var _a; return (typeof category.name === 'string') ? category.name : (_a = category.name) === null || _a === void 0 ? void 0 : _a.ja; })
+                        .join(' ');
+                }
+                return Object.assign(Object.assign({}, event), { videoFormatName });
+            })
         });
     }
     catch (error) {
@@ -205,7 +227,9 @@ screeningEventSeriesRouter.get('/searchMovies', (req, res) => __awaiter(void 0, 
         });
     }
 }));
-screeningEventSeriesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+screeningEventSeriesRouter.get('/search', 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,

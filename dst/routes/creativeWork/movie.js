@@ -119,6 +119,12 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
         });
         const distributorTypes = searchDistributorTypesResult.data;
+        const searchContentRatingTypesResult = yield categoryCodeService.search({
+            limit: 100,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+        });
+        const contentRatingTypes = searchContentRatingTypesResult.data;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const { data } = yield creativeWorkService.searchMovies({
@@ -163,9 +169,11 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
+                var _a;
                 const distributorType = distributorTypes.find((category) => { var _a; return category.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
+                const contentRatingName = (_a = contentRatingTypes.find((category) => category.codeValue === d.contentRating)) === null || _a === void 0 ? void 0 : _a.name;
                 const thumbnailUrl = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
-                return Object.assign(Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined), { thumbnailUrl });
+                return Object.assign(Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined), { contentRatingName: (typeof contentRatingName === 'string') ? contentRatingName : contentRatingName === null || contentRatingName === void 0 ? void 0 : contentRatingName.ja, thumbnailUrl });
             })
         });
     }

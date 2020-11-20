@@ -146,6 +146,13 @@ movieRouter.get(
             });
             const distributorTypes = searchDistributorTypesResult.data;
 
+            const searchContentRatingTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+            });
+            const contentRatingTypes = searchContentRatingTypesResult.data;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await creativeWorkService.searchMovies({
@@ -195,11 +202,14 @@ movieRouter.get(
                         (category) => category.codeValue === (<any>d).distributor?.codeValue
                     );
 
+                    const contentRatingName = contentRatingTypes.find((category) => category.codeValue === d.contentRating)?.name;
+
                     const thumbnailUrl: string = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
 
                     return {
                         ...d,
                         ...(distributorType !== undefined) ? { distributorName: (<any>distributorType.name).ja } : undefined,
+                        contentRatingName: (typeof contentRatingName === 'string') ? contentRatingName : contentRatingName?.ja,
                         thumbnailUrl
                     };
                 })
