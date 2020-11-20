@@ -161,7 +161,7 @@ $(function () {
 
                             case 'slice':
                                 if (arguments.length === 0) {
-                                    arguments = [0, 20];
+                                    arguments = [0, 15];
                                 } else {
                                     arguments = [0, arguments[0]];
                                 }

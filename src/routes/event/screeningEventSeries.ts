@@ -161,6 +161,18 @@ screeningEventSeriesRouter.get(
                 auth: req.user.authClient
             });
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const searchVideoFormatTypesResult = await categoryCodeService.search({
+                limit: 100,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+            });
+            const videoFormatTypes = searchVideoFormatTypesResult.data;
+
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
@@ -186,7 +198,23 @@ screeningEventSeriesRouter.get(
                 count: (data.length === Number(limit))
                     ? (Number(page) * Number(limit)) + 1
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-                results: data
+                results: data.map((event) => {
+                    const eventVideoFormatTypes = (Array.isArray(event.videoFormat))
+                        ? event.videoFormat.map((v) => v.typeOf)
+                        : [];
+                    let videoFormatName: string = '';
+                    if (Array.isArray(eventVideoFormatTypes)) {
+                        videoFormatName = videoFormatTypes
+                            .filter((category) => eventVideoFormatTypes.includes(category.codeValue))
+                            .map((category) => (typeof category.name === 'string') ? category.name : category.name?.ja)
+                            .join(' ');
+                    }
+
+                    return {
+                        ...event,
+                        videoFormatName
+                    };
+                })
             });
         } catch (error) {
             res.json({
@@ -231,6 +259,7 @@ screeningEventSeriesRouter.get(
 
 screeningEventSeriesRouter.get(
     '/search',
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         try {
             const eventService = new chevre.service.Event({
