@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 施設コンテンツ検索条件拡張
-- 施設検索結果表示最適化
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.12.0 - 2020-11-21
+
+### Changed
+
+- 施設コンテンツ検索条件拡張
+- 施設検索結果表示最適化
 
 ## v2.11.1 - 2020-11-20
 
