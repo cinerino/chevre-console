@@ -71,40 +71,30 @@ PS-02
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
-                                    <th>ID</th>
                                     <th>仕様タイプ</th>
                                     <th>名称</th>
                                     <th>適用区分</th>
-                                    <th>適用決済カード(ムビチケ券種)区分</th>
-                                    <th>決済カード(ムビチケ)適用上映方式</th>
+                                    <th>適用決済カード区分</th>
+                                    <th>決済カード適用上映方式</th>
                                     <th>金額</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
-                                    <td name="id__id">
-                                        <a target="_blank" href="/priceSpecifications/$id$/update">
-                                            $id$
-                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                        </a>
-                                    </td>
-                                    <td name="priceSpecificationTypeName">
+                                    <td name="priceSpecificationTypeName|slice">
                                         <span class="text-muted">$priceSpecificationTypeName$</span>
                                     </td>
-                                    <td name="name.ja">$name.ja$</td>
-                                    <td name="appliesToCategoryCodeSetName__appliesToCategoryCode.codeValue">
-                                        $appliesToCategoryCodeSetName$
-                                        $appliesToCategoryCode.codeValue$</td>
-                                    <td
-                                        name="appliesToMovieTicket.serviceOutput.typeOf__appliesToMovieTicket.serviceType__appliesToMovieTicket.name">
-                                        $appliesToMovieTicket.serviceOutput.typeOf$
-                                        $appliesToMovieTicket.serviceType$
-                                        $appliesToMovieTicket.name$
-                                    </td>
-                                    <td name="appliesToVideoFormat">
-                                        $appliesToVideoFormat$
-                                    </td>
+                                    <td name="name.ja|slice">$name.ja$</td>
+                                    <td name="appliesToCategoryCodeName|slice">$appliesToCategoryCodeName$</td>
+                                    <td name="appliesToMovieTicketName">$appliesToMovieTicketName$</td>
+                                    <td name="appliesToVideoFormatName">$appliesToVideoFormatName$</td>
                                     <td name="price__priceCurrency">$price$ $priceCurrency$</td>
+                                    <td name="id">
+                                        <a target="_blank" href="/priceSpecifications/$id$/update">
+                                            <i class="material-icons" style="font-size: 1.2em;">edit</i>
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

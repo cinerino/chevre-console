@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 価格仕様検索結果表示最適化
+
 ### Deprecated
 
 ### Removed
