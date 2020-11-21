@@ -137,7 +137,7 @@ screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
     });
 }));
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e;
+    var _c, _d, _e, _f, _g, _h, _j;
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -164,11 +164,31 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
             endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
             location: {
-                branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
+                branchCode: {
+                    $eq: (typeof req.query.locationBranchCode === 'string' && req.query.locationBranchCode.length > 0)
+                        ? req.query.locationBranchCode
+                        : undefined
+                }
+            },
+            soundFormat: {
+                typeOf: {
+                    $eq: (typeof ((_d = (_c = req.query.soundFormat) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq) === 'string'
+                        && req.query.soundFormat.typeOf.$eq.length > 0)
+                        ? req.query.soundFormat.typeOf.$eq
+                        : undefined
+                }
+            },
+            videoFormat: {
+                typeOf: {
+                    $eq: (typeof ((_f = (_e = req.query.videoFormat) === null || _e === void 0 ? void 0 : _e.typeOf) === null || _f === void 0 ? void 0 : _f.$eq) === 'string'
+                        && req.query.videoFormat.typeOf.$eq.length > 0)
+                        ? req.query.videoFormat.typeOf.$eq
+                        : undefined
+                }
             },
             workPerformed: {
-                identifiers: (typeof ((_c = req.query.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier) === 'string' && ((_d = req.query.workPerformed) === null || _d === void 0 ? void 0 : _d.identifier.length) > 0)
-                    ? [(_e = req.query.workPerformed) === null || _e === void 0 ? void 0 : _e.identifier]
+                identifiers: (typeof ((_g = req.query.workPerformed) === null || _g === void 0 ? void 0 : _g.identifier) === 'string' && ((_h = req.query.workPerformed) === null || _h === void 0 ? void 0 : _h.identifier.length) > 0)
+                    ? [(_j = req.query.workPerformed) === null || _j === void 0 ? void 0 : _j.identifier]
                     : undefined
             }
         });
@@ -305,7 +325,7 @@ screeningEventSeriesRouter.get('/search',
 screeningEventSeriesRouter.all('/:eventId/update', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _f;
+    var _k;
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
@@ -381,7 +401,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             }
         }
         let mvtkFlg = 1;
-        const unacceptedPaymentMethod = (_f = event.offers) === null || _f === void 0 ? void 0 : _f.unacceptedPaymentMethod;
+        const unacceptedPaymentMethod = (_k = event.offers) === null || _k === void 0 ? void 0 : _k.unacceptedPaymentMethod;
         if (Array.isArray(unacceptedPaymentMethod)
             && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
             mvtkFlg = 0;
