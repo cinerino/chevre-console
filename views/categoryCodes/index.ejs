@@ -29,7 +29,7 @@ CC-00
                             <%- include('../common/master/_hidden') %>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="inCodeSet[identifier]" class="bmd-label-static">
                                         分類
                                     </label>
@@ -42,7 +42,7 @@ CC-00
                                     </select>
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="codeValue[$eq]" class="bmd-label-static">
                                         コード
                                     </label>
@@ -50,7 +50,7 @@ CC-00
                                         placeholder="" maxlength=64 value="">
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="name[$regex]" class="bmd-label-static">
                                         名称
                                     </label>
@@ -86,7 +86,7 @@ CC-00
                                         </a>
                                     </td>
                                     <td name="categoryCodeSetName">$categoryCodeSetName$</td>
-                                    <td name="name.ja">
+                                    <td name="name.ja|slice">
                                         $name.ja$
                                     </td>
                                     <td name="paymentMethod.typeOf">
