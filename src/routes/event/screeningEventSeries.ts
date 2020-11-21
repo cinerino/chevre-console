@@ -184,7 +184,27 @@ screeningEventSeriesRouter.get(
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
                 location: {
-                    branchCodes: (req.query.locationBranchCode !== '') ? [req.query.locationBranchCode] : undefined
+                    branchCode: {
+                        $eq: (typeof req.query.locationBranchCode === 'string' && req.query.locationBranchCode.length > 0)
+                            ? req.query.locationBranchCode
+                            : undefined
+                    }
+                },
+                soundFormat: {
+                    typeOf: {
+                        $eq: (typeof req.query.soundFormat?.typeOf?.$eq === 'string'
+                            && req.query.soundFormat.typeOf.$eq.length > 0)
+                            ? req.query.soundFormat.typeOf.$eq
+                            : undefined
+                    }
+                },
+                videoFormat: {
+                    typeOf: {
+                        $eq: (typeof req.query.videoFormat?.typeOf?.$eq === 'string'
+                            && req.query.videoFormat.typeOf.$eq.length > 0)
+                            ? req.query.videoFormat.typeOf.$eq
+                            : undefined
+                    }
                 },
                 workPerformed: {
                     identifiers: (typeof req.query.workPerformed?.identifier === 'string' && req.query.workPerformed?.identifier.length > 0)

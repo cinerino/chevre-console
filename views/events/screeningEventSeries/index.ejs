@@ -66,14 +66,23 @@ Aa-3
                                         value="">
                                 </div>
 
-                                <div class="form-group bmd-form-group col-md-2">
+                                <div class="form-group bmd-form-group col-md-1">
+                                    <label for="videoFormat[typeOf][$eq]" class="bmd-label-static">
+                                        上映方式
+                                    </label>
+                                    <select class="form-control" name="videoFormat[typeOf][$eq]"
+                                        id="videoFormat[typeOf][$eq]" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-1">
                                     <label for="containsEnded" class="bmd-label-static">
                                     </label>
                                     <div class="form-check">
                                         <label class="form-check-label" for="containsEnded">
                                             <input class="form-check-input" type="checkbox" name="containsEnded"
                                                 value="1" id="containsEnded">
-                                            終了コンテンツを含む
+                                            終了済含む
                                             <span class="form-check-sign">
                                                 <span class="check"></span>
                                             </span>
@@ -125,8 +134,9 @@ Aa-3
                                     </td>
                                     <td name="startDate|date:YYYY-MM-DD HH:mm:ss">$startDate$</td>
                                     <td name="endDate|date:YYYY-MM-DD HH:mm:ss">$endDate$</td>
-                                    <td name="videoFormatName">
-                                        $videoFormatName$
+                                    <td name="videoFormatName__videoFormatName|slice">
+                                        <a href="javascript:void(0)" title="$videoFormatName$">$videoFormatName$</a>
+
                                     </td>
                                     <td name="id__additionalProperty">
                                         <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
