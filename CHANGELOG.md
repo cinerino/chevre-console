@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 区分削除前のバリデーション強化
+
 ### Deprecated
 
 ### Removed

@@ -200,8 +200,9 @@ categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             .json({ error: { message: error.message } });
     }
 }));
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function preDelete(req, categoryCode) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // validation
         const creativeWorkService = new chevre.service.CreativeWork({
@@ -270,13 +271,19 @@ function preDelete(req, categoryCode) {
                 break;
             // 決済カード(ムビチケ券種)区分
             case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
-                // const searchOffersResult = await offerService.search({
-                //     limit: 1,
-                //     project: { id: { $eq: req.project.id } }
-                // });
-                // if (searchOffersResult.data.length > 0) {
-                //     throw new Error('関連するオファーが存在します');
-                // }
+                const searchOffersResult4movieTicketType = yield offerService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    priceSpecification: {
+                        appliesToMovieTicket: {
+                            serviceType: { $eq: categoryCode.codeValue },
+                            serviceOutput: { typeOf: { $eq: (_a = categoryCode.paymentMethod) === null || _a === void 0 ? void 0 : _a.typeOf } }
+                        }
+                    }
+                });
+                if (searchOffersResult4movieTicketType.data.length > 0) {
+                    throw new Error('関連するオファーが存在します');
+                }
                 break;
             // オファーカテゴリー区分
             case chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType:
@@ -301,6 +308,16 @@ function preDelete(req, categoryCode) {
                 });
                 if (searchSeatsResult.data.length > 0) {
                     throw new Error('関連する座席が存在します');
+                }
+                const searchOffersResult4seatingType = yield offerService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    eligibleSeatingType: {
+                        codeValue: { $eq: categoryCode.codeValue }
+                    }
+                });
+                if (searchOffersResult4seatingType.data.length > 0) {
+                    throw new Error('関連するオファーが存在します');
                 }
                 break;
             // サービス区分
