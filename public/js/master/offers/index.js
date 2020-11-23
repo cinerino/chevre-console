@@ -105,7 +105,7 @@ $(function () {
 
     $('#application').select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'アプリ選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/applications/search',
@@ -129,6 +129,114 @@ $(function () {
                         return {
                             id: application.id,
                             text: application.name
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    $('#category\\[codeValue\\]').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: { identifier: 'OfferCategoryType' }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: categoryCode.codeValue,
+                            text: categoryCode.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    $('#appliesToMovieTicket').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: { identifier: 'MovieTicketType' }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: JSON.stringify({ codeValue: categoryCode.codeValue, paymentMethod: categoryCode.paymentMethod }),
+                            text: categoryCode.paymentMethod.typeOf + ' ' + categoryCode.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    $('#eligibleSeatingType').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: { identifier: 'SeatingType' }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (categoryCode) {
+                        return {
+                            id: categoryCode.codeValue,
+                            text: categoryCode.name.ja
                         }
                     })
                 };

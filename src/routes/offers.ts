@@ -405,6 +405,14 @@ offersRouter.get(
                     }
                 },
                 project: { id: { $eq: req.project.id } },
+                eligibleSeatingType: {
+                    codeValue: {
+                        $eq: (typeof req.query.eligibleSeatingType === 'string'
+                            && req.query.eligibleSeatingType.length > 0)
+                            ? req.query.eligibleSeatingType
+                            : undefined
+                    }
+                },
                 itemOffered: {
                     typeOf: {
                         $eq: (typeof req.query.itemOffered?.typeOf === 'string' && req.query.itemOffered?.typeOf.length > 0)
@@ -421,6 +429,22 @@ offersRouter.get(
                     ? { $regex: req.query.name }
                     : undefined,
                 priceSpecification: {
+                    appliesToMovieTicket: {
+                        serviceType: {
+                            $eq: (typeof req.query.appliesToMovieTicket === 'string'
+                                && req.query.appliesToMovieTicket.length > 0)
+                                ? <string>JSON.parse(req.query.appliesToMovieTicket).codeValue
+                                : undefined
+                        },
+                        serviceOutput: {
+                            typeOf: {
+                                $eq: (typeof req.query.appliesToMovieTicket === 'string'
+                                    && req.query.appliesToMovieTicket.length > 0)
+                                    ? <string>JSON.parse(req.query.appliesToMovieTicket).paymentMethod?.typeOf
+                                    : undefined
+                            }
+                        }
+                    },
                     price: {
                         $gte: (req.query.priceSpecification !== undefined
                             && req.query.priceSpecification.minPrice !== undefined
@@ -469,6 +493,14 @@ offersRouter.get(
                     const productType = productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
                     const itemAvailability = itemAvailabilities.find((i) => i.codeValue === t.availability);
 
+                    const priceUnitStr = (t.priceSpecification?.referenceQuantity.unitCode === chevre.factory.unitCode.C62)
+                        ? '枚'
+                        : t.priceSpecification?.referenceQuantity.unitCode;
+                    const priceCurrencyStr = (t.priceSpecification?.priceCurrency === chevre.factory.priceCurrency.JPY)
+                        ? '円'
+                        : t.priceSpecification?.priceCurrency;
+                    const priceStr = `${t.priceSpecification?.price} ${priceCurrencyStr} / ${t.priceSpecification?.referenceQuantity.value} ${priceUnitStr}`;
+
                     return {
                         ...t,
                         itemOfferedName: productType?.name,
@@ -484,7 +516,8 @@ offersRouter.get(
                             : '',
                         addOnCount: (Array.isArray(t.addOn))
                             ? t.addOn.length
-                            : 0
+                            : 0,
+                        priceStr
                     };
                 })
             });
