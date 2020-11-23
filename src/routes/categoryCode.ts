@@ -250,7 +250,7 @@ categoryCodesRouter.delete(
     }
 );
 
-// tslint:disable-next-line:max-func-body-length
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode.ICategoryCode) {
     // validation
     const creativeWorkService = new chevre.service.CreativeWork({
@@ -321,13 +321,19 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             break;
         // 決済カード(ムビチケ券種)区分
         case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
-            // const searchOffersResult = await offerService.search({
-            //     limit: 1,
-            //     project: { id: { $eq: req.project.id } }
-            // });
-            // if (searchOffersResult.data.length > 0) {
-            //     throw new Error('関連するオファーが存在します');
-            // }
+            const searchOffersResult4movieTicketType = await offerService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                priceSpecification: {
+                    appliesToMovieTicket: {
+                        serviceType: { $eq: categoryCode.codeValue },
+                        serviceOutput: { typeOf: { $eq: categoryCode.paymentMethod?.typeOf } }
+                    }
+                }
+            });
+            if (searchOffersResult4movieTicketType.data.length > 0) {
+                throw new Error('関連するオファーが存在します');
+            }
             break;
         // オファーカテゴリー区分
         case chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType:
@@ -353,6 +359,18 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             if (searchSeatsResult.data.length > 0) {
                 throw new Error('関連する座席が存在します');
             }
+
+            const searchOffersResult4seatingType = await offerService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                eligibleSeatingType: {
+                    codeValue: { $eq: categoryCode.codeValue }
+                }
+            });
+            if (searchOffersResult4seatingType.data.length > 0) {
+                throw new Error('関連するオファーが存在します');
+            }
+
             break;
         // サービス区分
         case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:

@@ -314,7 +314,7 @@ offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f;
+    var _d, _e, _f, _g;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -345,6 +345,14 @@ offersRouter.get('/getlist',
                 }
             },
             project: { id: { $eq: req.project.id } },
+            eligibleSeatingType: {
+                codeValue: {
+                    $eq: (typeof req.query.eligibleSeatingType === 'string'
+                        && req.query.eligibleSeatingType.length > 0)
+                        ? req.query.eligibleSeatingType
+                        : undefined
+                }
+            },
             itemOffered: {
                 typeOf: {
                     $eq: (typeof ((_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === 'string' && ((_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf.length) > 0)
@@ -360,6 +368,22 @@ offersRouter.get('/getlist',
                 ? { $regex: req.query.name }
                 : undefined,
             priceSpecification: {
+                appliesToMovieTicket: {
+                    serviceType: {
+                        $eq: (typeof req.query.appliesToMovieTicket === 'string'
+                            && req.query.appliesToMovieTicket.length > 0)
+                            ? JSON.parse(req.query.appliesToMovieTicket).codeValue
+                            : undefined
+                    },
+                    serviceOutput: {
+                        typeOf: {
+                            $eq: (typeof req.query.appliesToMovieTicket === 'string'
+                                && req.query.appliesToMovieTicket.length > 0)
+                                ? (_g = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _g === void 0 ? void 0 : _g.typeOf
+                                : undefined
+                        }
+                    }
+                },
                 price: {
                     $gte: (req.query.priceSpecification !== undefined
                         && req.query.priceSpecification.minPrice !== undefined
@@ -401,18 +425,25 @@ offersRouter.get('/getlist',
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             // tslint:disable-next-line:cyclomatic-complexity
             results: data.map((t) => {
-                var _a, _b, _c;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j;
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                 const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
                 const itemAvailability = itemAvailability_1.itemAvailabilities.find((i) => i.codeValue === t.availability);
+                const priceUnitStr = (((_b = t.priceSpecification) === null || _b === void 0 ? void 0 : _b.referenceQuantity.unitCode) === chevre.factory.unitCode.C62)
+                    ? '枚'
+                    : (_c = t.priceSpecification) === null || _c === void 0 ? void 0 : _c.referenceQuantity.unitCode;
+                const priceCurrencyStr = (((_d = t.priceSpecification) === null || _d === void 0 ? void 0 : _d.priceCurrency) === chevre.factory.priceCurrency.JPY)
+                    ? '円'
+                    : (_e = t.priceSpecification) === null || _e === void 0 ? void 0 : _e.priceCurrency;
+                const priceStr = `${(_f = t.priceSpecification) === null || _f === void 0 ? void 0 : _f.price} ${priceCurrencyStr} / ${(_g = t.priceSpecification) === null || _g === void 0 ? void 0 : _g.referenceQuantity.value} ${priceUnitStr}`;
                 return Object.assign(Object.assign({}, t), { itemOfferedName: productType === null || productType === void 0 ? void 0 : productType.name, availabilityName: itemAvailability === null || itemAvailability === void 0 ? void 0 : itemAvailability.name, availableAtOrFromCount: (Array.isArray(t.availableAtOrFrom))
                         ? t.availableAtOrFrom.length
                         : 0, categoryName: (typeof categoryCode === 'string')
-                        ? (_c = (_b = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _b === void 0 ? void 0 : _b.name) === null || _c === void 0 ? void 0 : _c.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
+                        ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
                         ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
                         : '', addOnCount: (Array.isArray(t.addOn))
                         ? t.addOn.length
-                        : 0 });
+                        : 0, priceStr });
             })
         });
     }
