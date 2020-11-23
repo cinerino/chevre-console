@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 区分削除前のバリデーション強化
-- オファー検索条件拡張
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.13.0 - 2020-11-23
+
+### Changed
+
+- 区分削除前のバリデーション強化
+- オファー検索条件拡張
 
 ## v2.12.1 - 2020-11-21
 
