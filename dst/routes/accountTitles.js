@@ -50,6 +50,7 @@ accountTitlesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, func
     });
 }));
 accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c;
     try {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
@@ -66,11 +67,12 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
                 ? { $eq: req.query.codeValue }
                 : undefined,
             inCodeSet: {
-                codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                codeValue: (typeof ((_a = req.query.inCodeSet) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && req.query.inCodeSet.codeValue.length > 0)
                     ? { $eq: req.query.inCodeSet.codeValue }
                     : undefined,
                 inCodeSet: {
-                    codeValue: (req.query.inCodeSet.inCodeSet.codeValue !== undefined && req.query.inCodeSet.inCodeSet.codeValue !== '')
+                    codeValue: (typeof ((_c = (_b = req.query.inCodeSet) === null || _b === void 0 ? void 0 : _b.inCodeSet) === null || _c === void 0 ? void 0 : _c.codeValue) === 'string'
+                        && req.query.inCodeSet.inCodeSet.codeValue.length > 0)
                         ? { $eq: req.query.inCodeSet.inCodeSet.codeValue }
                         : undefined
                 }
@@ -86,6 +88,7 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
     }
     catch (error) {
         res.json({
+            message: error.message,
             success: false,
             count: 0,
             results: []

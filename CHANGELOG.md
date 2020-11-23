@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- オファー編集の区分を動的選択肢に変更
+
 ### Deprecated
 
 ### Removed
