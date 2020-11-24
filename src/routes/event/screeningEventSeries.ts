@@ -318,7 +318,8 @@ screeningEventSeriesRouter.get(
                     : undefined,
                 location: {
                     branchCodes: [branchCode]
-                }
+                },
+                name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             });
             const results = data.map((event) => {
                 let mvtkFlg = 1;
