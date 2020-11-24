@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.14.0 - 2020-11-24
+
+### Changed
+
 - オファー編集の区分を動的選択肢に変更
 - 細目検索条件拡張
 - イベント作成時の施設コンテンツを動的選択肢に変更
@@ -18,15 +30,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベント検索条件を動的選択肢に変更
 - 勘定科目検索条件を動的選択肢に変更
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - 編集時に名称が表示されないバグ対応
-
-### Security
 
 ## v2.13.0 - 2020-11-23
 
