@@ -773,6 +773,7 @@ function regist() {
         if ($('.search select[name=theater]').val() !== theater) {
             // getScreens(theater, 'none');
             $('.search select[name=theater]').val(theater);
+            initializeLocationSelection();
         }
         searchSchedule();
 
