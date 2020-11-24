@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- 編集時に名称が表示されないバグ対応
+
 ### Security
 
 ## v2.13.0 - 2020-11-23
