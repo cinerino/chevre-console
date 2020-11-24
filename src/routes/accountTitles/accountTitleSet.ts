@@ -39,7 +39,7 @@ accountTitleSetRouter.get(
                         ? req.query.codeValue
                         : undefined,
                     inCodeSet: {
-                        codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                        codeValue: (typeof req.query.inCodeSet?.codeValue === 'string' && req.query.inCodeSet.codeValue.length > 0)
                             ? { $eq: req.query.inCodeSet.codeValue }
                             : undefined
                     },

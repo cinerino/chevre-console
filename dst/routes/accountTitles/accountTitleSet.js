@@ -22,6 +22,7 @@ const NAME_MAX_LENGTH_CODE = 30;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const accountTitleSetRouter = express_1.Router();
 accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -39,7 +40,7 @@ accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
                     ? req.query.codeValue
                     : undefined,
                 inCodeSet: {
-                    codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                    codeValue: (typeof ((_a = req.query.inCodeSet) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && req.query.inCodeSet.codeValue.length > 0)
                         ? { $eq: req.query.inCodeSet.codeValue }
                         : undefined
                 },

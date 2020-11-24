@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 区分検索条件拡張
 - 勘定科目検索条件拡張
 - イベント検索条件を動的選択肢に変更
+- 勘定科目検索条件を動的選択肢に変更
 
 ### Deprecated
 

@@ -33,14 +33,8 @@ AT-04
                                     <label for="inCodeSet[codeValue]" class="bmd-label-static">
                                         科目分類
                                     </label>
-                                    <select class="form-control" name="inCodeSet[codeValue]">
-                                        <option value="">選択してください</option>
-                                        <% for (const accountTitleCategory of accountTitleCategories) { %>
-                                        <option value="<%= accountTitleCategory.codeValue %>">
-                                            <%= accountTitleCategory.codeValue %>
-                                            <%= accountTitleCategory.name %>
-                                        </option>
-                                        <% } %>
+                                    <select class="form-control" name="inCodeSet[codeValue]" id="inCodeSet[codeValue]"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
 
@@ -83,8 +77,8 @@ AT-04
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="name">$name$</td>
-                                    <td name="inCodeSet.codeValue__inCodeSet.name">
+                                    <td name="name|slice">$name$</td>
+                                    <td name="inCodeSet.codeValue__inCodeSet.name|slice">
                                         <a target="_blank"
                                             href="/accountTitles/accountTitleCategory/$inCodeSet.codeValue$">
                                             $inCodeSet.name$
