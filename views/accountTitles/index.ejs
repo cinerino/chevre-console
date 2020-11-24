@@ -29,40 +29,37 @@ AT-01
                             <%- include('../common/master/_hidden') %>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="inCodeSet[inCodeSet][codeValue]" class="bmd-label-static">
                                         科目分類
                                     </label>
-                                    <select class="form-control" name="inCodeSet[inCodeSet][codeValue]">
-                                        <option value="">選択してください</option>
-                                        <% for (const accountTitleCategory of accountTitleCategories) { %>
-                                        <option value="<%= accountTitleCategory.codeValue %>">
-                                            <%= accountTitleCategory.codeValue %>
-                                            <%= accountTitleCategory.name %>
-                                        </option>
-                                        <% } %>
+                                    <select class="form-control" name="inCodeSet[inCodeSet][codeValue]"
+                                        id="inCodeSet[inCodeSet][codeValue]" style="width: 100%;">
                                     </select>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-3">
+
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="inCodeSet[codeValue]" class="bmd-label-static">
                                         科目
                                     </label>
-                                    <select class="form-control" name="inCodeSet[codeValue]">
-                                        <option value="">選択してください</option>
-                                        <% for (const accountTitleSet of accountTitleSets) { %>
-                                        <option value="<%= accountTitleSet.codeValue %>">
-                                            <%= accountTitleSet.codeValue %>
-                                            <%= accountTitleSet.name %>
-                                        </option>
-                                        <% } %>
+                                    <select class="form-control" name="inCodeSet[codeValue]" id="inCodeSet[codeValue]"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
-                                <div class="form-group bmd-form-group col-md-3">
+
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="codeValue" class="bmd-label-static">
                                         コード
                                     </label>
                                     <input type="text" class="form-control" name="codeValue" id="codeValue"
                                         placeholder="" maxlength=64 value="">
+                                </div>
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input type="text" class="form-control" name="name" id="name" placeholder=""
+                                        maxlength=64 value="">
                                 </div>
                             </div>
                         </form>
@@ -88,15 +85,15 @@ AT-01
                                             $codeValue$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
-                                    <td name="name">$name$</td>
-                                    <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.name">
+                                    <td name="name|slice">$name$</td>
+                                    <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.name|slice">
                                         <a target="_blank"
                                             href="/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
                                             $inCodeSet.inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="inCodeSet.codeValue__inCodeSet.name">
+                                    <td name="inCodeSet.codeValue__inCodeSet.name|slice">
                                         <a target="_blank" href="/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
                                             $inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>

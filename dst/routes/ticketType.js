@@ -94,17 +94,30 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
             return {};
         }));
     }
-    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-    // 決済カード(ムビチケ券種)区分検索
-    const searchMovieTicketTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-    });
+    // カテゴリーを検索
+    if (req.method === 'POST') {
+        // カテゴリーを保管
+        if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+            forms.category = JSON.parse(req.body.category);
+        }
+        else {
+            forms.category = undefined;
+        }
+        // 細目を保管
+        if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+            forms.accounting = JSON.parse(req.body.accounting);
+        }
+        else {
+            forms.accounting = undefined;
+        }
+        // 適用決済カードを保管
+        if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+            forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+        }
+        else {
+            forms.appliesToMovieTicket = undefined;
+        }
+    }
     // 座席区分検索
     const searchSeatingTypesResult = yield categoryCodeService.search({
         limit: 100,
@@ -117,7 +130,6 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         project: { id: { $eq: req.project.id } },
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
     });
-    const accountTitles = yield searchAllAccountTitles(req);
     const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
         limit: 100
     }));
@@ -128,11 +140,8 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         message: message,
         errors: errors,
         forms: forms,
-        movieTicketTypes: searchMovieTicketTypesResult.data,
         seatingTypes: searchSeatingTypesResult.data,
         accountTypes: searchAccountTypesResult.data,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        accountTitles: accountTitles,
         addOns: searchAddOnsResult.data,
         applications: searchApplicationsResult.data.map((d) => d.member)
             .sort((a, b) => {
@@ -151,6 +160,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
 ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -169,6 +179,10 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         endpoint: process.env.CINERINO_API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
+    });
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
     });
     try {
         let ticketType = yield offerService.findById({ id: req.params.id });
@@ -219,7 +233,9 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             : '';
         const forms = Object.assign(Object.assign(Object.assign(Object.assign({ additionalProperty: [], alternateName: {}, priceSpecification: {
                 referenceQuantity: {}
-            } }, ticketType), { category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '', price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit), validFrom: (ticketType.validFrom !== undefined)
+            } }, ticketType), { 
+            // category: (ticketType.category !== undefined) ? ticketType.category.codeValue : '',
+            price: Math.floor(Number(ticketType.priceSpecification.price) / seatReservationUnit), accountsReceivable: Math.floor(Number(accountsReceivable) / seatReservationUnit), validFrom: (ticketType.validFrom !== undefined)
                 ? moment(ticketType.validFrom)
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD')
@@ -238,17 +254,60 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 return {};
             }));
         }
-        const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-        });
-        // 決済カード(ムビチケ券種)区分検索
-        const searchMovieTicketTypesResult = yield categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
+        if (req.method === 'POST') {
+            // カテゴリーを保管
+            if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+                forms.category = JSON.parse(req.body.category);
+            }
+            else {
+                forms.category = undefined;
+            }
+            // 細目を保管
+            if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+                forms.accounting = JSON.parse(req.body.accounting);
+            }
+            else {
+                forms.accounting = undefined;
+            }
+            // 適用決済カードを保管
+            if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+                forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+            }
+            else {
+                forms.appliesToMovieTicket = undefined;
+            }
+        }
+        else {
+            // カテゴリーを検索
+            if (typeof ((_a = ticketType.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string') {
+                const searchOfferCategoriesResult = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                    codeValue: { $eq: ticketType.category.codeValue }
+                });
+                forms.category = searchOfferCategoriesResult.data[0];
+            }
+            // 細目を検索
+            if (typeof ((_d = (_c = (_b = ticketType.priceSpecification) === null || _b === void 0 ? void 0 : _b.accounting) === null || _c === void 0 ? void 0 : _c.operatingRevenue) === null || _d === void 0 ? void 0 : _d.codeValue) === 'string') {
+                const searchAccountTitlesResult = yield accountTitleService.search({
+                    limit: 1,
+                    project: { ids: [req.project.id] },
+                    codeValue: { $eq: (_e = ticketType.priceSpecification.accounting.operatingRevenue) === null || _e === void 0 ? void 0 : _e.codeValue }
+                });
+                forms.accounting = searchAccountTitlesResult.data[0];
+            }
+            // 適用決済カードを検索
+            if (typeof ((_g = (_f = ticketType.priceSpecification) === null || _f === void 0 ? void 0 : _f.appliesToMovieTicket) === null || _g === void 0 ? void 0 : _g.serviceType) === 'string') {
+                const searchAppliesToMovieTicketsResult = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
+                    codeValue: { $eq: (_j = (_h = ticketType.priceSpecification) === null || _h === void 0 ? void 0 : _h.appliesToMovieTicket) === null || _j === void 0 ? void 0 : _j.serviceType }
+                });
+                forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
+            }
+        }
         // 座席区分検索
         const searchSeatingTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -264,7 +323,6 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
             limit: 100
         }));
-        const accountTitles = yield searchAllAccountTitles(req);
         const searchApplicationsResult = yield iamService.searchMembers({
             member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
@@ -272,11 +330,8 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             message: message,
             errors: errors,
             forms: forms,
-            movieTicketTypes: searchMovieTicketTypesResult.data,
             seatingTypes: searchSeatingTypesResult.data,
             accountTypes: searchAccountTypesResult.data,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: accountTitles,
             addOns: searchAddOnsResult.data,
             applications: searchApplicationsResult.data.map((d) => d.member)
                 .sort((a, b) => {
@@ -334,32 +389,30 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
         next(error);
     }
 }));
-function searchAllAccountTitles(req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const limit = 100;
-        let page = 0;
-        let numData = limit;
-        const accountTitles = [];
-        while (numData === limit) {
-            page += 1;
-            const searchAccountTitlesResult = yield accountTitleService.search({
-                limit: limit,
-                page: page,
-                project: { ids: [req.project.id] }
-            });
-            numData = searchAccountTitlesResult.data.length;
-            accountTitles.push(...searchAccountTitlesResult.data);
-        }
-        return accountTitles;
-    });
-}
+// async function searchAllAccountTitles(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle[]> {
+//     const accountTitleService = new chevre.service.AccountTitle({
+//         endpoint: <string>process.env.API_ENDPOINT,
+//         auth: req.user.authClient
+//     });
+//     const limit = 100;
+//     let page = 0;
+//     let numData: number = limit;
+//     const accountTitles: chevre.factory.accountTitle.IAccountTitle[] = [];
+//     while (numData === limit) {
+//         page += 1;
+//         const searchAccountTitlesResult = await accountTitleService.search({
+//             limit: limit,
+//             page: page,
+//             project: { ids: [req.project.id] }
+//         });
+//         numData = searchAccountTitlesResult.data.length;
+//         accountTitles.push(...searchAccountTitlesResult.data);
+//     }
+//     return accountTitles;
+// }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -371,11 +424,12 @@ function createFromBody(req, isNew) {
         });
         let offerCategory;
         if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+            const selectedCategory = JSON.parse(req.body.category);
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-                codeValue: { $eq: req.body.category }
+                codeValue: { $eq: selectedCategory.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
                 throw new Error('オファーカテゴリーが見つかりません');
@@ -465,18 +519,12 @@ function createFromBody(req, isNew) {
             : undefined;
         let appliesToMovieTicketType;
         let appliesToMovieTicketServiceOutputType;
-        // appliesToMovieTicketType =
-        //     (typeof req.body.priceSpecification?.appliesToMovieTicket?.serviceType === 'string'
-        //         && (<string>req.body.priceSpecification.appliesToMovieTicket.serviceType).length > 0)
-        //         ? <string>req.body.priceSpecification.appliesToMovieTicket.serviceType
-        //         : undefined;
-        // appliesToMovieTicketServiceOutputType = req.body.priceSpecification?.appliesToMovieTicket?.serviceOutput?.typeOf;
-        if (typeof ((_e = (_d = req.body.priceSpecification) === null || _d === void 0 ? void 0 : _d.appliesToMovieTicket) === null || _e === void 0 ? void 0 : _e.id) === 'string'
-            && req.body.priceSpecification.appliesToMovieTicket.id.length > 0) {
+        if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+            const selectedMovieTicketType = JSON.parse(req.body.appliesToMovieTicket);
             const searchMovieTicketTypesResult = yield categoryCodeService.search({
                 limit: 1,
-                id: { $eq: req.body.priceSpecification.appliesToMovieTicket.id },
                 project: { id: { $eq: req.project.id } },
+                codeValue: { $eq: selectedMovieTicketType.codeValue },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
             const movieTicketType = searchMovieTicketTypesResult.data.shift();
@@ -484,7 +532,7 @@ function createFromBody(req, isNew) {
                 throw new Error('適用決済カード区分が見つかりません');
             }
             appliesToMovieTicketType = movieTicketType.codeValue;
-            appliesToMovieTicketServiceOutputType = (_f = movieTicketType.paymentMethod) === null || _f === void 0 ? void 0 : _f.typeOf;
+            appliesToMovieTicketServiceOutputType = (_d = movieTicketType.paymentMethod) === null || _d === void 0 ? void 0 : _d.typeOf;
         }
         // const eligibleCustomerType: string[] | undefined = (body.eligibleCustomerType !== undefined && body.eligibleCustomerType !== '')
         //     ? [body.eligibleCustomerType]
@@ -494,11 +542,12 @@ function createFromBody(req, isNew) {
             operatingRevenue: undefined,
             accountsReceivable: Number(req.body.accountsReceivable) * referenceQuantityValue
         };
-        if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
+        if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+            const selectedAccountTitle = JSON.parse(req.body.accounting);
             accounting.operatingRevenue = {
                 typeOf: 'AccountTitle',
-                codeValue: req.body.accountTitle,
-                identifier: req.body.accountTitle,
+                codeValue: selectedAccountTitle.codeValue,
+                identifier: selectedAccountTitle.codeValue,
                 name: ''
             };
         }

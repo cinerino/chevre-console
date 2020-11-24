@@ -27,7 +27,7 @@ categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, functi
     });
 }));
 categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e, _f, _g;
     try {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -35,7 +35,11 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield categoryCodeService.search(Object.assign(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } }, inCodeSet: {
+        const { data } = yield categoryCodeService.search({
+            limit: limit,
+            page: page,
+            project: { id: { $eq: req.project.id } },
+            inCodeSet: {
                 identifier: {
                     $eq: (typeof ((_a = req.query.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier) === 'string' && req.query.inCodeSet.identifier.length > 0)
                         ? req.query.inCodeSet.identifier
@@ -43,13 +47,25 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                     $in: (Array.isArray((_c = (_b = req.query.inCodeSet) === null || _b === void 0 ? void 0 : _b.identifier) === null || _c === void 0 ? void 0 : _c.$in))
                         ? (_d = req.query.inCodeSet) === null || _d === void 0 ? void 0 : _d.identifier.$in : undefined
                 }
-            } }, (req.query.codeValue !== undefined && req.query.codeValue !== null
-            && typeof req.query.codeValue.$eq === 'string' && req.query.codeValue.$eq.length > 0)
-            ? { codeValue: { $eq: req.query.codeValue.$eq } }
-            : undefined), (req.query.name !== undefined && req.query.name !== null
-            && typeof req.query.name.$regex === 'string' && req.query.name.$regex.length > 0)
-            ? { name: { $regex: req.query.name.$regex } }
-            : undefined));
+            },
+            codeValue: {
+                $eq: (typeof ((_e = req.query.codeValue) === null || _e === void 0 ? void 0 : _e.$eq) === 'string' && req.query.codeValue.$eq.length > 0)
+                    ? req.query.codeValue.$eq
+                    : undefined
+            },
+            name: {
+                $regex: (typeof ((_f = req.query.name) === null || _f === void 0 ? void 0 : _f.$regex) === 'string' && req.query.name.$regex.length > 0)
+                    ? req.query.name.$regex
+                    : undefined
+            },
+            paymentMethod: {
+                typeOf: {
+                    $eq: (typeof ((_g = req.query.paymentMethod) === null || _g === void 0 ? void 0 : _g.typeOf) === 'string' && req.query.paymentMethod.typeOf.length > 0)
+                        ? req.query.paymentMethod.typeOf
+                        : undefined
+                }
+            }
+        });
         res.json({
             success: true,
             count: (data.length === Number(limit))

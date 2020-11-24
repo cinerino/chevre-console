@@ -8,7 +8,10 @@ var ITEMS_ON_PAGE;
 var conditions = {};
 var SEARCH_URL = '/events/screeningEvent/search';
 
+var locationSelection;
+
 $(function () {
+    locationSelection = $('#screen');
     ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
     // 開催日
@@ -46,7 +49,7 @@ $(function () {
     scheduler = createScheduler();
 
     // ルーム選択肢初期化
-    getScreens($('.search select[name="theater"]').val(), 'none');
+    // getScreens($('.search select[name="theater"]').val(), 'none');
 
     searchSchedule();
 
@@ -70,10 +73,21 @@ $(function () {
     // 施設検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
-        getScreens(theater, 'none');
+        // getScreens(theater, 'none');
+        initializeLocationSelection();
     }, 500));
 
-    $(document).on('change', '#newModal select[name="screeningEventSeriesId"]', function () {
+    // $(document).on('change', '#newModal select[name="screeningEventSeriesId"]', function () {
+    //     var mvtkFlg = $(this).find('option:selected').attr('data-mvtk-flag');
+    //     if (mvtkFlg != 1) {
+    //         $('#newModal input[name=mvtkExcludeFlg]').removeAttr('checked');
+    //         $('#newModal .mvtk').hide();
+    //     } else {
+    //         $('#newModal .mvtk').show();
+    //     }
+    // });
+
+    $(document).on('change', '#newModal select[name="superEvent"]', function () {
         var mvtkFlg = $(this).find('option:selected').attr('data-mvtk-flag');
         if (mvtkFlg != 1) {
             $('#newModal input[name=mvtkExcludeFlg]').removeAttr('checked');
@@ -96,6 +110,7 @@ $(function () {
 
         getScreens(theater, 'add');
         getEventSeries(theater);
+        initializeSuperEventSelection(theater);
     }, 500));
 
     $(document).on('change', '.search input[name="date"]', _.debounce(function () {
@@ -167,10 +182,54 @@ $(function () {
         showPerformance(id);
     });
 
+    locationSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            // url: function () {
+            //     var movieTheater = $('.search select[name="theater"]').val();
+
+            //     return '/places/movieTheater/' + movieTheater + '/screeningRooms';
+            // },
+            url: '/places/screeningRoom/search',
+            dataType: 'json',
+            data: function (params) {
+                var movieTheaterId = $('.search select[name="theater"]').val();
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    containedInPlace: {
+                        id: { $eq: movieTheaterId }
+                    }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (place) {
+                        return {
+                            id: place.branchCode,
+                            text: place.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     var movieSelection = $('#superEvent\\[workPerformed\\]\\[identifier\\]');
     movieSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'コンテンツ選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/creativeWorks/movie/getlist',
@@ -225,6 +284,72 @@ $(function () {
         }
     });
 });
+
+function initializeLocationSelection() {
+    locationSelection.val(null)
+        .trigger('change');
+}
+
+function initializeSuperEventSelection(theater) {
+    if (!theater) {
+        return;
+    }
+
+    var superEventSelection = $('#superEvent');
+    superEventSelection.val(null).trigger('change');
+    superEventSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        templateSelection: function (data, container) {
+            // Add custom attributes to the <option> tag for the selected option
+            $(data.element).attr({
+                'data-mvtk-flag': data['data-mvtk-flag'],
+                'data-startDate': data['data-startDate'],
+                'data-endDate': data['data-endDate'],
+            });
+
+            return data.text;
+        },
+        ajax: {
+            url: '/events/screeningEventSeries/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    locationId: theater,
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (eventSeries) {
+
+                        // return '<option value="' + e.id + '"'
+                        //     + ' data-mvtk-flag="' + e.mvtkFlg + '"'
+                        //     + ' data-startDate="' + e.startDate + '"'
+                        //     + ' data-endDate="' + e.endDate + '"'
+                        //     + '>' + e.filmNameJa + '</option>';
+                        return {
+                            id: eventSeries.id,
+                            text: eventSeries.filmNameJa,
+                            'data-mvtk-flag': eventSeries.mvtkFlg,
+                            'data-startDate': eventSeries.startDate,
+                            'data-endDate': eventSeries.endDate
+                        }
+                    })
+                };
+            }
+        }
+    });
+}
 
 /**
  * イベントシリーズ取得
@@ -486,7 +611,8 @@ function regist() {
     var maximumAttendeeCapacity = modal.find('input[name=maximumAttendeeCapacity]').val();
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
-    var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
+    // var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
+    var screeningEventId = modal.find('select[name=superEvent]').val();
     var seller = modal.find('select[name=seller]').val();
 
     // 販売開始日時
@@ -586,8 +712,10 @@ function regist() {
     }
 
     // 登録期間が興行期間に含まれているかどうか確認
-    var eventSeriesStartDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-startDate');
-    var eventSeriesEndDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-endDate');
+    // var eventSeriesStartDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-startDate');
+    // var eventSeriesEndDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-endDate');
+    var eventSeriesStartDate = modal.find('select[name=superEvent]').find('option:selected').attr('data-startDate');
+    var eventSeriesEndDate = modal.find('select[name=superEvent]').find('option:selected').attr('data-endDate');
     if (moment(startDate + 'T00:00:00+09:00', 'YYYY/MM/DDTHH:mm:ssZ') < moment(eventSeriesStartDate)
         || moment(toDate + 'T00:00:00+09:00', 'YYYY/MM/DDTHH:mm:ssZ').add(1, 'day') > moment(eventSeriesEndDate)) {
         creatingSchedules = false;
@@ -643,8 +771,9 @@ function regist() {
     }).done(function (data) {
         modal.modal('hide');
         if ($('.search select[name=theater]').val() !== theater) {
-            getScreens(theater, 'none');
+            // getScreens(theater, 'none');
             $('.search select[name=theater]').val(theater);
+            initializeLocationSelection();
         }
         searchSchedule();
 
@@ -903,6 +1032,12 @@ function add() {
     var modal = $('#newModal');
     modal.find('select[name=theater]').val('');
     modal.find('input[name=weekDay]').prop('checked', true);
+    modal.find('select[name=superEvent]')
+        .html('<option selected disabled>施設を選択してください</option>');
+    // try {
+    //     modal.find('#superEvent').select2('destory');
+    // } catch (error) {
+    // }
     modal.find('select[name=screeningEventSeriesId]')
         .html('<option selected disabled>施設を選択してください</option>');
     modal.find('select[name=screen]')

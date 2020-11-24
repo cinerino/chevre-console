@@ -50,14 +50,23 @@ categoryCodesRouter.get(
                             : undefined
                     }
                 },
-                ...(req.query.codeValue !== undefined && req.query.codeValue !== null
-                    && typeof req.query.codeValue.$eq === 'string' && req.query.codeValue.$eq.length > 0)
-                    ? { codeValue: { $eq: req.query.codeValue.$eq } }
-                    : undefined,
-                ...(req.query.name !== undefined && req.query.name !== null
-                    && typeof req.query.name.$regex === 'string' && req.query.name.$regex.length > 0)
-                    ? { name: { $regex: req.query.name.$regex } }
-                    : undefined
+                codeValue: {
+                    $eq: (typeof req.query.codeValue?.$eq === 'string' && req.query.codeValue.$eq.length > 0)
+                        ? req.query.codeValue.$eq
+                        : undefined
+                },
+                name: {
+                    $regex: (typeof req.query.name?.$regex === 'string' && req.query.name.$regex.length > 0)
+                        ? req.query.name.$regex
+                        : undefined
+                },
+                paymentMethod: {
+                    typeOf: {
+                        $eq: (typeof req.query.paymentMethod?.typeOf === 'string' && req.query.paymentMethod.typeOf.length > 0)
+                            ? req.query.paymentMethod.typeOf
+                            : undefined
+                    }
+                }
             });
 
             res.json({

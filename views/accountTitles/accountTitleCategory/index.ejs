@@ -29,12 +29,20 @@ AT-07
                             <%- include('../../common/master/_hidden') %>
 
                             <div class="form-row">
-                                <div class="form-group bmd-form-group col-md-3">
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="codeValue" class="bmd-label-static">
                                         コード
                                     </label>
                                     <input type="text" class="form-control" name="codeValue" id="codeValue"
                                         placeholder="" maxlength=64 value="">
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input type="text" class="form-control" name="name" id="name" placeholder=""
+                                        maxlength=64 value="">
                                 </div>
                             </div>
                         </form>
@@ -59,7 +67,7 @@ AT-07
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
-                                    <td name="name">$name$</td>
+                                    <td name="name|slice">$name$</td>
                                 </tr>
                             </tbody>
                         </table>

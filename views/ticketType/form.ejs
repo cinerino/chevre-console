@@ -66,16 +66,13 @@
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="name[ja]" class="bmd-label-static">
+                        <label for="category" class="bmd-label-static">
                             カテゴリー
                         </label>
-                        <select class="form-control" name="category">
-                            <option value="" selected>指定しない</option>
-                            <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-                            <option value="<%= ticketTypeCategory.codeValue %>"
-                                <% if (forms.category === ticketTypeCategory.codeValue ) { %> selected <% } %>>
-                                <%= ticketTypeCategory.name.ja %>
-                            </option>
+                        <select class="form-control" name="category" id="category" style="width: 100%;">
+                            <% if (forms.category !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.category) %>" selected="selected">
+                                <%= forms.category.name.ja %></option>
                             <% } %>
                         </select>
                     </div>
@@ -227,23 +224,15 @@
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="accountTitle" class="bmd-label-static">
+                        <label for="accounting" class="bmd-label-static">
                             細目
                         </label>
-                        <select class="form-control" name="accountTitle">
-                            <option value="" selected>指定しない</option>
-                            <% for (let accountTitle of accountTitles) { %>
-                            <option value="<%= accountTitle.codeValue %>"
-                                <% if (forms.accountTitle==accountTitle.codeValue) { %> selected <% } %>>
-                                <%= accountTitle.name %>
-                            </option>
+                        <select class="form-control" name="accounting" id="accounting" style="width: 100%;">
+                            <% if (forms.accounting !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.accounting) %>" selected="selected">
+                                <%= forms.accounting.codeValue %> <%= forms.accounting.name %></option>
                             <% } %>
                         </select>
-                        <% if (errors && errors.accountTitle) { %>
-                        <span class="bmd-help text-danger d-block">
-                            <%- errors.accountTitle.msg %>
-                        </span>
-                        <% } %>
                     </div>
                 </div>
 
@@ -311,35 +300,20 @@
             <div class="tab-pane" id="link2">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="priceSpecification[appliesToMovieTicket][id]" class="bmd-label-static">
+                        <label for="appliesToMovieTicket" class="bmd-label-static">
                             適用決済カード(ムビチケ券種)区分
                         </label>
-                        <div class="input-group">
-                            <select class="form-control" name="priceSpecification[appliesToMovieTicket][id]">
-                                <option value="" selected>なし</option>
-                                <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                                <%
-                                var selected = forms.priceSpecification !== undefined
-                                    && forms.priceSpecification.appliesToMovieTicket !== undefined
-                                    && (forms.priceSpecification.appliesToMovieTicket.id === movieTicketType.id
-                                        || (movieTicketType.codeValue === forms.priceSpecification.appliesToMovieTicket.serviceType
-                                            && movieTicketType.paymentMethod.typeOf === forms.priceSpecification.appliesToMovieTicket.serviceOutput.typeOf)
-                                        );
-                                %>
-                                <option value="<%= movieTicketType.id %>" <% if (selected) { %> selected<% } %>>
-                                    <%= movieTicketType.paymentMethod.typeOf %> <%= movieTicketType.codeValue %>
-                                    <%= movieTicketType.name.ja %>
-                                </option>
-                                <% }) %>
-                            </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2"></span>
-                            </div>
-                        </div>
-
-                        <% if (errors && errors['appliesToMovieTicket.serviceType']) { %>
+                        <select class="form-control" name="appliesToMovieTicket" id="appliesToMovieTicket"
+                            style="width: 100%;">
+                            <% if (forms.appliesToMovieTicket !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.appliesToMovieTicket) %>" selected="selected">
+                                <%= forms.appliesToMovieTicket.paymentMethod.typeOf%>
+                                <%= forms.appliesToMovieTicket.name.ja %></option>
+                            <% } %>
+                        </select>
+                        <% if (errors && errors['appliesToMovieTicket']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['appliesToMovieTicket.serviceType'].msg %>
+                            <%- errors['appliesToMovieTicket'].msg %>
                         </span>
                         <% } %>
                     </div>

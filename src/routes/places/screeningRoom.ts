@@ -121,6 +121,13 @@ screeningRoomRouter.get(
                         : undefined
                 },
                 containedInPlace: {
+                    id: {
+                        $eq: (typeof req.query?.containedInPlace?.id?.$eq === 'string'
+                            && req.query?.containedInPlace.id.$eq.length > 0)
+                            ? req.query?.containedInPlace.id.$eq
+                            : undefined
+
+                    },
                     branchCode: {
                         $eq: (typeof req.query?.containedInPlace?.branchCode?.$eq === 'string'
                             && req.query?.containedInPlace?.branchCode?.$eq.length > 0)

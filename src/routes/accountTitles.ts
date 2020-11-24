@@ -72,19 +72,21 @@ accountTitlesRouter.get(
                 limit: limit,
                 page: page,
                 project: { ids: [req.project.id] },
-                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '')
-                    ? { $eq: req.query.codeValue }
+                codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
+                    ? req.query.codeValue
                     : undefined,
                 inCodeSet: {
-                    codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
+                    codeValue: (typeof req.query.inCodeSet?.codeValue === 'string' && req.query.inCodeSet.codeValue.length > 0)
                         ? { $eq: req.query.inCodeSet.codeValue }
                         : undefined,
                     inCodeSet: {
-                        codeValue: (req.query.inCodeSet.inCodeSet.codeValue !== undefined && req.query.inCodeSet.inCodeSet.codeValue !== '')
+                        codeValue: (typeof req.query.inCodeSet?.inCodeSet?.codeValue === 'string'
+                            && req.query.inCodeSet.inCodeSet.codeValue.length > 0)
                             ? { $eq: req.query.inCodeSet.inCodeSet.codeValue }
                             : undefined
                     }
-                }
+                },
+                name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             });
             res.json({
                 success: true,
@@ -95,6 +97,7 @@ accountTitlesRouter.get(
             });
         } catch (error) {
             res.json({
+                message: error.message,
                 success: false,
                 count: 0,
                 results: []

@@ -35,7 +35,8 @@ accountTitleCategoryRouter.get(
                     limit: limit,
                     page: page,
                     project: { ids: [req.project.id] },
-                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined
+                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined,
+                    name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
                 });
                 res.json({
                     success: true,

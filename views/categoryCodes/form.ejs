@@ -70,7 +70,7 @@
                         </label>
                         <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
                             maxlength=30
-                            value=<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>>
+                            value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
                         <span class="bmd-help">30文字以内でご入力ください</span>
                         <% if (errors && errors['name.ja']) { %>
                         <span class="bmd-help text-danger d-block">
