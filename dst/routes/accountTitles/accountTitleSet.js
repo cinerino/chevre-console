@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
 const NAME_MAX_LENGTH_CODE = 30;
@@ -117,6 +118,7 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
 }));
 // tslint:disable-next-line:use-default-type-parameter
 accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     let message = '';
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
@@ -156,6 +158,24 @@ accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(
                 message = error.message;
             }
         }
+    }
+    else if (req.method === 'DELETE') {
+        try {
+            yield accountTitleService.deleteAccounTitleSet({
+                project: { id: req.project.id },
+                codeValue: accountTitleSet.codeValue,
+                inCodeSet: {
+                    codeValue: String((_b = accountTitleSet.inCodeSet) === null || _b === void 0 ? void 0 : _b.codeValue)
+                }
+            });
+            res.status(http_status_1.NO_CONTENT)
+                .end();
+        }
+        catch (error) {
+            res.status(http_status_1.BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
+        return;
     }
     const forms = Object.assign(Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitleSet), req.body);
     res.render('accountTitles/accountTitleSet/edit', {

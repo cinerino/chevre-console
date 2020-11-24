@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../message");
 const debug = createDebug('chevre-backend:routes');
 const NAME_MAX_LENGTH_CODE = 30;
@@ -153,62 +154,89 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
-accountTitlesRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let message = '';
-    let errors = {};
-    const accountTitleService = new chevre.service.AccountTitle({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchAccountTitlesResult = yield accountTitleService.search({
-        project: { ids: [req.project.id] },
-        codeValue: { $eq: req.params.codeValue }
-    });
-    let accountTitle = searchAccountTitlesResult.data.shift();
-    if (accountTitle === undefined) {
-        throw new chevre.factory.errors.NotFound('AccounTitle');
-    }
-    if (req.method === 'POST') {
-        // バリデーション
-        // validate(req);
-        const validatorResult = express_validator_1.validationResult(req);
-        errors = validatorResult.mapped();
-        console.error('errors', errors);
-        if (validatorResult.isEmpty()) {
-            // コンテンツDB登録
-            try {
-                accountTitle = yield createFromBody(req);
-                debug('saving account title...', accountTitle);
-                yield accountTitleService.update(accountTitle);
-                req.flash('message', '更新しました');
-                res.redirect(req.originalUrl);
-                return;
-            }
-            catch (error) {
-                message = error.message;
+accountTitlesRouter.all('/:codeValue', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d, _e, _f;
+    try {
+        let message = '';
+        let errors = {};
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchAccountTitlesResult = yield accountTitleService.search({
+            project: { ids: [req.project.id] },
+            codeValue: { $eq: req.params.codeValue }
+        });
+        let accountTitle = searchAccountTitlesResult.data.shift();
+        if (accountTitle === undefined) {
+            throw new chevre.factory.errors.NotFound('AccounTitle');
+        }
+        if (req.method === 'POST') {
+            // バリデーション
+            // validate(req);
+            const validatorResult = express_validator_1.validationResult(req);
+            errors = validatorResult.mapped();
+            console.error('errors', errors);
+            if (validatorResult.isEmpty()) {
+                // コンテンツDB登録
+                try {
+                    accountTitle = yield createFromBody(req);
+                    debug('saving account title...', accountTitle);
+                    yield accountTitleService.update(accountTitle);
+                    req.flash('message', '更新しました');
+                    res.redirect(req.originalUrl);
+                    return;
+                }
+                catch (error) {
+                    message = error.message;
+                }
             }
         }
+        else if (req.method === 'DELETE') {
+            try {
+                yield accountTitleService.deleteByCodeValue({
+                    project: { id: req.project.id },
+                    codeValue: accountTitle.codeValue,
+                    inCodeSet: {
+                        codeValue: String((_d = accountTitle.inCodeSet) === null || _d === void 0 ? void 0 : _d.codeValue),
+                        inCodeSet: {
+                            codeValue: String((_f = (_e = accountTitle.inCodeSet) === null || _e === void 0 ? void 0 : _e.inCodeSet) === null || _f === void 0 ? void 0 : _f.codeValue)
+                        }
+                    }
+                });
+                res.status(http_status_1.NO_CONTENT)
+                    .end();
+            }
+            catch (error) {
+                res.status(http_status_1.BAD_REQUEST)
+                    .json({ error: { message: error.message } });
+            }
+            return;
+        }
+        // 科目分類検索
+        const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
+            limit: 100,
+            sort: { codeValue: chevre.factory.sortType.Ascending },
+            project: { ids: [req.project.id] }
+        });
+        const accountTitleSets = searchAccountTitleSetsResult.data;
+        const forms = Object.assign(Object.assign({ additionalProperty: [] }, accountTitle), req.body);
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+        res.render('accountTitles/edit', {
+            message: message,
+            errors: errors,
+            forms: forms,
+            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
+        });
     }
-    // 科目分類検索
-    const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
-        limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] }
-    });
-    const accountTitleSets = searchAccountTitleSetsResult.data;
-    const forms = Object.assign(Object.assign({ additionalProperty: [] }, accountTitle), req.body);
-    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-        // tslint:disable-next-line:prefer-array-literal
-        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-            return {};
-        }));
+    catch (error) {
+        next(error);
     }
-    res.render('accountTitles/edit', {
-        message: message,
-        errors: errors,
-        forms: forms,
-        accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
-    });
 }));
 function createFromBody(req) {
     var _a;

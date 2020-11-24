@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
 const NAME_MAX_LENGTH_CODE = 30;
@@ -127,6 +128,21 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
                     message = error.message;
                 }
             }
+        }
+        else if (req.method === 'DELETE') {
+            try {
+                yield accountTitleService.deleteAccounTitleCategory({
+                    project: { id: req.project.id },
+                    codeValue: accountTitleCategory.codeValue
+                });
+                res.status(http_status_1.NO_CONTENT)
+                    .end();
+            }
+            catch (error) {
+                res.status(http_status_1.BAD_REQUEST)
+                    .json({ error: { message: error.message } });
+            }
+            return;
         }
         const forms = Object.assign(Object.assign({}, accountTitleCategory), req.body);
         res.render('accountTitles/accountTitleCategory/edit', {

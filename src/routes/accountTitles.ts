@@ -7,6 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -182,72 +183,98 @@ accountTitlesRouter.all<any>(
 accountTitlesRouter.all<ParamsDictionary>(
     '/:codeValue',
     ...validate(),
-    async (req, res) => {
-        let message = '';
-        let errors: any = {};
+    async (req, res, next) => {
+        try {
+            let message = '';
+            let errors: any = {};
 
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+            const accountTitleService = new chevre.service.AccountTitle({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
 
-        const searchAccountTitlesResult = await accountTitleService.search({
-            project: { ids: [req.project.id] },
-            codeValue: { $eq: req.params.codeValue }
-        });
-        let accountTitle = searchAccountTitlesResult.data.shift();
-        if (accountTitle === undefined) {
-            throw new chevre.factory.errors.NotFound('AccounTitle');
-        }
-
-        if (req.method === 'POST') {
-            // バリデーション
-            // validate(req);
-            const validatorResult = validationResult(req);
-            errors = validatorResult.mapped();
-            console.error('errors', errors);
-            if (validatorResult.isEmpty()) {
-                // コンテンツDB登録
-                try {
-                    accountTitle = await createFromBody(req);
-                    debug('saving account title...', accountTitle);
-                    await accountTitleService.update(accountTitle);
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
-
-                    return;
-                } catch (error) {
-                    message = error.message;
-                }
+            const searchAccountTitlesResult = await accountTitleService.search({
+                project: { ids: [req.project.id] },
+                codeValue: { $eq: req.params.codeValue }
+            });
+            let accountTitle = searchAccountTitlesResult.data.shift();
+            if (accountTitle === undefined) {
+                throw new chevre.factory.errors.NotFound('AccounTitle');
             }
+
+            if (req.method === 'POST') {
+                // バリデーション
+                // validate(req);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
+                console.error('errors', errors);
+                if (validatorResult.isEmpty()) {
+                    // コンテンツDB登録
+                    try {
+                        accountTitle = await createFromBody(req);
+                        debug('saving account title...', accountTitle);
+                        await accountTitleService.update(accountTitle);
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
+
+                        return;
+                    } catch (error) {
+                        message = error.message;
+                    }
+                }
+            } else if (req.method === 'DELETE') {
+                try {
+                    await accountTitleService.deleteByCodeValue({
+                        project: { id: req.project.id },
+                        codeValue: accountTitle.codeValue,
+                        inCodeSet: {
+                            codeValue: String(accountTitle.inCodeSet?.codeValue),
+                            inCodeSet: {
+                                codeValue: String(accountTitle.inCodeSet?.inCodeSet?.codeValue)
+                            }
+                        }
+                    });
+
+                    res.status(NO_CONTENT)
+                        .end();
+
+                } catch (error) {
+                    res.status(BAD_REQUEST)
+                        .json({ error: { message: error.message } });
+                }
+
+                return;
+            }
+
+            // 科目分類検索
+            const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+                limit: 100,
+                sort: { codeValue: chevre.factory.sortType.Ascending },
+                project: { ids: [req.project.id] }
+            });
+            const accountTitleSets = searchAccountTitleSetsResult.data;
+
+            const forms = {
+                additionalProperty: [],
+                ...accountTitle,
+                ...req.body
+            };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            res.render('accountTitles/edit', {
+                message: message,
+                errors: errors,
+                forms: forms,
+                accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
+            });
+        } catch (error) {
+            next(error);
         }
-
-        // 科目分類検索
-        const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-        const accountTitleSets = searchAccountTitleSetsResult.data;
-
-        const forms = {
-            additionalProperty: [],
-            ...accountTitle,
-            ...req.body
-        };
-        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-            // tslint:disable-next-line:prefer-array-literal
-            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-                return {};
-            }));
-        }
-
-        res.render('accountTitles/edit', {
-            message: message,
-            errors: errors,
-            forms: forms,
-            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
-        });
     }
 );
 
