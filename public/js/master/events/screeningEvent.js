@@ -8,7 +8,10 @@ var ITEMS_ON_PAGE;
 var conditions = {};
 var SEARCH_URL = '/events/screeningEvent/search';
 
+var locationSelection;
+
 $(function () {
+    locationSelection = $('#screen');
     ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
     // 開催日
@@ -46,7 +49,7 @@ $(function () {
     scheduler = createScheduler();
 
     // ルーム選択肢初期化
-    getScreens($('.search select[name="theater"]').val(), 'none');
+    // getScreens($('.search select[name="theater"]').val(), 'none');
 
     searchSchedule();
 
@@ -70,7 +73,8 @@ $(function () {
     // 施設検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
-        getScreens(theater, 'none');
+        // getScreens(theater, 'none');
+        initializeLocationSelection();
     }, 500));
 
     // $(document).on('change', '#newModal select[name="screeningEventSeriesId"]', function () {
@@ -178,10 +182,54 @@ $(function () {
         showPerformance(id);
     });
 
+    locationSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            // url: function () {
+            //     var movieTheater = $('.search select[name="theater"]').val();
+
+            //     return '/places/movieTheater/' + movieTheater + '/screeningRooms';
+            // },
+            url: '/places/screeningRoom/search',
+            dataType: 'json',
+            data: function (params) {
+                var movieTheaterId = $('.search select[name="theater"]').val();
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    containedInPlace: {
+                        id: { $eq: movieTheaterId }
+                    }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (place) {
+                        return {
+                            id: place.branchCode,
+                            text: place.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     var movieSelection = $('#superEvent\\[workPerformed\\]\\[identifier\\]');
     movieSelection.select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'コンテンツ選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/creativeWorks/movie/getlist',
@@ -236,6 +284,11 @@ $(function () {
         }
     });
 });
+
+function initializeLocationSelection() {
+    locationSelection.val(null)
+        .trigger('change');
+}
 
 function initializeSuperEventSelection(theater) {
     if (!theater) {
@@ -718,7 +771,7 @@ function regist() {
     }).done(function (data) {
         modal.modal('hide');
         if ($('.search select[name=theater]').val() !== theater) {
-            getScreens(theater, 'none');
+            // getScreens(theater, 'none');
             $('.search select[name=theater]').val(theater);
         }
         searchSchedule();

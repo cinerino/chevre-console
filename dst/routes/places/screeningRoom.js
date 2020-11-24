@@ -84,7 +84,7 @@ screeningRoomRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, func
     });
 }));
 screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x;
+    var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -102,16 +102,21 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                     ? (_g = (_f = req.query) === null || _f === void 0 ? void 0 : _f.branchCode) === null || _g === void 0 ? void 0 : _g.$regex : undefined
             },
             containedInPlace: {
+                id: {
+                    $eq: (typeof ((_k = (_j = (_h = req.query) === null || _h === void 0 ? void 0 : _h.containedInPlace) === null || _j === void 0 ? void 0 : _j.id) === null || _k === void 0 ? void 0 : _k.$eq) === 'string'
+                        && ((_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace.id.$eq.length) > 0)
+                        ? (_m = req.query) === null || _m === void 0 ? void 0 : _m.containedInPlace.id.$eq : undefined
+                },
                 branchCode: {
-                    $eq: (typeof ((_k = (_j = (_h = req.query) === null || _h === void 0 ? void 0 : _h.containedInPlace) === null || _j === void 0 ? void 0 : _j.branchCode) === null || _k === void 0 ? void 0 : _k.$eq) === 'string'
-                        && ((_o = (_m = (_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace) === null || _m === void 0 ? void 0 : _m.branchCode) === null || _o === void 0 ? void 0 : _o.$eq.length) > 0)
-                        ? (_r = (_q = (_p = req.query) === null || _p === void 0 ? void 0 : _p.containedInPlace) === null || _q === void 0 ? void 0 : _q.branchCode) === null || _r === void 0 ? void 0 : _r.$eq : undefined
+                    $eq: (typeof ((_q = (_p = (_o = req.query) === null || _o === void 0 ? void 0 : _o.containedInPlace) === null || _p === void 0 ? void 0 : _p.branchCode) === null || _q === void 0 ? void 0 : _q.$eq) === 'string'
+                        && ((_t = (_s = (_r = req.query) === null || _r === void 0 ? void 0 : _r.containedInPlace) === null || _s === void 0 ? void 0 : _s.branchCode) === null || _t === void 0 ? void 0 : _t.$eq.length) > 0)
+                        ? (_w = (_v = (_u = req.query) === null || _u === void 0 ? void 0 : _u.containedInPlace) === null || _v === void 0 ? void 0 : _v.branchCode) === null || _w === void 0 ? void 0 : _w.$eq : undefined
                 }
             },
             name: {
-                $regex: (typeof ((_t = (_s = req.query) === null || _s === void 0 ? void 0 : _s.name) === null || _t === void 0 ? void 0 : _t.$regex) === 'string'
-                    && ((_v = (_u = req.query) === null || _u === void 0 ? void 0 : _u.name) === null || _v === void 0 ? void 0 : _v.$regex.length) > 0)
-                    ? (_x = (_w = req.query) === null || _w === void 0 ? void 0 : _w.name) === null || _x === void 0 ? void 0 : _x.$regex : undefined
+                $regex: (typeof ((_y = (_x = req.query) === null || _x === void 0 ? void 0 : _x.name) === null || _y === void 0 ? void 0 : _y.$regex) === 'string'
+                    && ((_0 = (_z = req.query) === null || _z === void 0 ? void 0 : _z.name) === null || _0 === void 0 ? void 0 : _0.$regex.length) > 0)
+                    ? (_2 = (_1 = req.query) === null || _1 === void 0 ? void 0 : _1.name) === null || _2 === void 0 ? void 0 : _2.$regex : undefined
             }
         });
         const results = data.map((screeningRoom) => {

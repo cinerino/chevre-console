@@ -33,24 +33,13 @@ Aa-3
                                     <label for="locationBranchCode" class="bmd-label-static">
                                         施設
                                     </label>
-                                    <select class="form-control" name="locationBranchCode">
-                                        <option value="">選択してください</option>
-                                        <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                                        <% for (const movieTheater of movieTheaters) { %>
-                                        <option value="<%= movieTheater.branchCode %>">
-                                            <%= movieTheater.name.ja %>
-                                        </option>
-                                        <% } %>
-                                        <% } else { %>
-                                        <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                                        <option value="<%= movieTheater.branchCode %>"><%= movieTheater.name.ja %>
-                                        </option>
-                                        <% } %>
-                                        <% } %>
+                                    <select class="form-control" name="locationBranchCode" id="locationBranchCode"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
+
                                 <div class="form-group bmd-form-group col-md-2">
-                                    <label for="movieIdentifier" class="bmd-label-static">
+                                    <label for="workPerformed[identifier]" class="bmd-label-static">
                                         コンテンツ
                                     </label>
                                     <select class="form-control" name="workPerformed[identifier]"
