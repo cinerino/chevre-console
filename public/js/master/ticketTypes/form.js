@@ -88,7 +88,7 @@ $(function () {
                 var query = {
                     limit: 100,
                     page: 1,
-                    name: { $regex: params.term }
+                    name: params.term
                 }
 
                 // Query parameters will be ?search=[term]&type=public

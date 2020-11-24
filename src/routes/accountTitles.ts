@@ -85,7 +85,8 @@ accountTitlesRouter.get(
                             ? { $eq: req.query.inCodeSet.inCodeSet.codeValue }
                             : undefined
                     }
-                }
+                },
+                name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             });
             res.json({
                 success: true,
