@@ -35,12 +35,15 @@ accountTitleSetRouter.get(
                     limit: limit,
                     page: page,
                     project: { ids: [req.project.id] },
-                    codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? { $eq: req.query.codeValue } : undefined,
+                    codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
+                        ? req.query.codeValue
+                        : undefined,
                     inCodeSet: {
                         codeValue: (req.query.inCodeSet.codeValue !== undefined && req.query.inCodeSet.codeValue !== '')
                             ? { $eq: req.query.inCodeSet.codeValue }
                             : undefined
-                    }
+                    },
+                    name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
                 });
                 res.json({
                     success: true,

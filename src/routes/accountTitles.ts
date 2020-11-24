@@ -72,8 +72,8 @@ accountTitlesRouter.get(
                 limit: limit,
                 page: page,
                 project: { ids: [req.project.id] },
-                codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '')
-                    ? { $eq: req.query.codeValue }
+                codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
+                    ? req.query.codeValue
                     : undefined,
                 inCodeSet: {
                     codeValue: (typeof req.query.inCodeSet?.codeValue === 'string' && req.query.inCodeSet.codeValue.length > 0)

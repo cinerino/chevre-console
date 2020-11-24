@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファー編集の区分を動的選択肢に変更
 - 細目検索条件拡張
 - イベント作成時の施設コンテンツを動的選択肢に変更
+- 区分検索条件拡張
+- 勘定科目検索条件拡張
 
 ### Deprecated
 
