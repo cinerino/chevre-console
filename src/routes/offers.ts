@@ -432,8 +432,8 @@ offersRouter.get(
                     accounting: {
                         operatingRevenue: {
                             codeValue: {
-                                $eq: (typeof req.query.accounting === 'string' && req.query.accounting.length > 0)
-                                    ? String(req.query.accounting)
+                                $eq: (typeof req.query.accountTitle?.codeValue === 'string' && req.query.accountTitle.codeValue.length > 0)
+                                    ? String(req.query.accountTitle.codeValue)
                                     : undefined
                             }
                         }
