@@ -96,7 +96,7 @@ seatRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 seatRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24;
+    var _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -138,8 +138,12 @@ seatRouter.get('/search',
                 $eq: (typeof ((_24 = req.query.seatingType) === null || _24 === void 0 ? void 0 : _24.$eq) === 'string' && req.query.seatingType.$eq.length > 0)
                     ? req.query.seatingType.$eq
                     : undefined
+            },
+            name: {
+                $regex: (typeof ((_25 = req.query.name) === null || _25 === void 0 ? void 0 : _25.$regex) === 'string' && req.query.name.$regex.length > 0)
+                    ? req.query.name.$regex
+                    : undefined
             }
-            // name: req.query.name
         });
         const results = data.map((seat, index) => {
             return Object.assign(Object.assign({}, seat), { seatingTypeStr: (Array.isArray(seat.seatingType)) ? seat.seatingType.join(',') : '', id: `${seat.branchCode}:${index}` });
@@ -271,11 +275,17 @@ seatRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
         .end();
 }));
 function createFromBody(req, isNew) {
+    var _a, _b;
     let seatingType;
     if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
         seatingType = [req.body.seatingType];
     }
-    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: req.body.branchCode, containedInPlace: {
+    let name;
+    if ((typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.ja) === 'string' && req.body.name.ja.length > 0)
+        || (typeof ((_b = req.body.name) === null || _b === void 0 ? void 0 : _b.en) === 'string' && req.body.name.en.length > 0)) {
+        name = req.body.name;
+    }
+    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: req.body.branchCode, containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.ScreeningRoomSection,
             branchCode: req.body.containedInPlace.branchCode,
@@ -297,9 +307,11 @@ function createFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined }, (Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined), (!isNew)
+            : undefined }, (name !== undefined) ? { name: req.body.name } : undefined), (Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined), (!isNew)
         ? {
-            $unset: Object.assign({ noExistingAttributeName: 1 }, (seatingType === undefined)
+            $unset: Object.assign(Object.assign({ noExistingAttributeName: 1 }, (name === undefined)
+                ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].name': 1 }
+                : undefined), (seatingType === undefined)
                 ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
                 : undefined)
         }
@@ -309,11 +321,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z\-]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('containedInPlace.containedInPlace.containedInPlace.branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
@@ -322,13 +334,17 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', 'ルーム')),
         express_validator_1.body('containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'セクション'))
-        // body('name.ja')
-        //     .notEmpty()
-        //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
-        //     .isLength({ max: 64 })
-        //     // tslint:disable-next-line:no-magic-numbers
-        //     .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'セクション')),
+        express_validator_1.body('name.ja')
+            .optional()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        express_validator_1.body('name.en')
+            .optional()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
 }
 exports.default = seatRouter;

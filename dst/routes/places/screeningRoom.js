@@ -117,10 +117,11 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                 $regex: (typeof ((_y = (_x = req.query) === null || _x === void 0 ? void 0 : _x.name) === null || _y === void 0 ? void 0 : _y.$regex) === 'string'
                     && ((_0 = (_z = req.query) === null || _z === void 0 ? void 0 : _z.name) === null || _0 === void 0 ? void 0 : _0.$regex.length) > 0)
                     ? (_2 = (_1 = req.query) === null || _1 === void 0 ? void 0 : _1.name) === null || _2 === void 0 ? void 0 : _2.$regex : undefined
-            }
+            },
+            openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined
         });
         const results = data.map((screeningRoom) => {
-            return Object.assign({}, screeningRoom);
+            return Object.assign(Object.assign({}, screeningRoom), { openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined });
         });
         res.json({
             success: true,

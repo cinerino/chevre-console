@@ -270,18 +270,23 @@ function createFromBody(req, isNew) {
                         && seatBranchCodeRegex.test(p.branchCode);
                 })
                     .map((p) => {
-                    var _a;
+                    var _a, _b, _c;
                     let seatingTypeCodeValue;
                     if (typeof p.seatingType === 'string') {
                         seatingTypeCodeValue = (_a = seatingTypes.find((s) => s.codeValue === p.seatingType)) === null || _a === void 0 ? void 0 : _a.codeValue;
                     }
-                    return {
-                        project: { typeOf: req.project.typeOf, id: req.project.id },
-                        typeOf: chevre.factory.placeType.Seat,
-                        branchCode: p.branchCode,
-                        seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [],
-                        additionalProperty: []
-                    };
+                    const name = Object.assign(Object.assign({}, (typeof ((_b = p.name) === null || _b === void 0 ? void 0 : _b.ja) === 'string' && p.name.ja.length > 0) ? {
+                        ja: String(p.name.ja)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .slice(0, 64)
+                    } : undefined), (typeof ((_c = p.name) === null || _c === void 0 ? void 0 : _c.en) === 'string' && p.name.en.length > 0) ? {
+                        en: String(p.name.en)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .slice(0, 64)
+                    } : undefined);
+                    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: String(p.branchCode)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .slice(0, 20), seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [], additionalProperty: [] }, (typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined);
                 });
             }
         }

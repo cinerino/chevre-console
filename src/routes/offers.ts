@@ -429,6 +429,15 @@ offersRouter.get(
                     ? { $regex: req.query.name }
                     : undefined,
                 priceSpecification: {
+                    accounting: {
+                        operatingRevenue: {
+                            codeValue: {
+                                $eq: (typeof req.query.accounting === 'string' && req.query.accounting.length > 0)
+                                    ? String(req.query.accounting)
+                                    : undefined
+                            }
+                        }
+                    },
                     appliesToMovieTicket: {
                         serviceType: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'

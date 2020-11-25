@@ -329,12 +329,28 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                         seatingTypeCodeValue = seatingTypes.find((s) => s.codeValue === p.seatingType)?.codeValue;
                     }
 
+                    const name: chevre.factory.multilingualString = {
+                        ...(typeof p.name?.ja === 'string' && p.name.ja.length > 0) ? {
+                            ja: String(p.name.ja)
+                                // tslint:disable-next-line:no-magic-numbers
+                                .slice(0, 64)
+                        } : undefined,
+                        ...(typeof p.name?.en === 'string' && p.name.en.length > 0) ? {
+                            en: String(p.name.en)
+                                // tslint:disable-next-line:no-magic-numbers
+                                .slice(0, 64)
+                        } : undefined
+                    };
+
                     return {
                         project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
-                        branchCode: p.branchCode,
+                        branchCode: String(p.branchCode)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .slice(0, 20),
                         seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [],
-                        additionalProperty: []
+                        additionalProperty: [],
+                        ...(typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined
                     };
                 });
         }

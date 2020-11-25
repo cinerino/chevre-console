@@ -285,9 +285,16 @@ function createMovieTheaterFromBody(req, isNew) {
         if (!Array.isArray(hasPOS)) {
             throw new Error('hasPOSはArrayを入力してください');
         }
+        let hasEntranceGate = [];
+        if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
+            hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
+        }
+        if (!Array.isArray(hasEntranceGate)) {
+            throw new Error('hasEntranceGateはArrayを入力してください');
+        }
         const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

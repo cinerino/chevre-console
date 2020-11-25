@@ -140,12 +140,14 @@ screeningRoomRouter.get(
                         && req.query?.name?.$regex.length > 0)
                         ? req.query?.name?.$regex
                         : undefined
-                }
+                },
+                openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined
             });
 
             const results = data.map((screeningRoom) => {
                 return {
-                    ...screeningRoom
+                    ...screeningRoom,
+                    openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined
                 };
             });
 

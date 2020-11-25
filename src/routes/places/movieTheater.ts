@@ -356,6 +356,14 @@ async function createMovieTheaterFromBody(
         throw new Error('hasPOSはArrayを入力してください');
     }
 
+    let hasEntranceGate: chevre.factory.place.movieTheater.IEntranceGate[] = [];
+    if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
+        hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
+    }
+    if (!Array.isArray(hasEntranceGate)) {
+        throw new Error('hasEntranceGateはArrayを入力してください');
+    }
+
     const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
 
     // tslint:disable-next-line:no-unnecessary-local-variable
@@ -366,6 +374,7 @@ async function createMovieTheaterFromBody(
         branchCode: req.body.branchCode,
         name: req.body.name,
         kanaName: req.body.kanaName,
+        hasEntranceGate: hasEntranceGate,
         hasPOS: hasPOS,
         offers: JSON.parse(req.body.offersStr),
         parentOrganization: parentOrganization,

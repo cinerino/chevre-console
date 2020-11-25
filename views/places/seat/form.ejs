@@ -98,10 +98,12 @@
                         </span>
                         <% } %>
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
                         <label class="bmd-label-static">
-                            枝番号
+                            コード
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
@@ -119,6 +121,33 @@
 
                     </div>
 
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[ja]" class="bmd-label-static">
+                            名称
+                        </label>
+                        <input class="form-control" name="name[ja]" id="name[ja]" placeholder="" maxlength=64
+                            value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.ja : '' %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.ja']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.ja'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="name[en]" class="bmd-label-static">
+                            名称(English)
+                        </label>
+                        <input class="form-control" name="name[en]" id="name[en]" placeholder="" maxlength=64
+                            value="<%= (forms.name !== undefined && forms.name !== null) ? forms.name.en : '' %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name.en']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name.en'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
                 </div>
 
                 <div class="form-row">

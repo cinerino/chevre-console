@@ -160,8 +160,12 @@ seatRouter.get(
                     $eq: (typeof req.query.seatingType?.$eq === 'string' && req.query.seatingType.$eq.length > 0)
                         ? req.query.seatingType.$eq
                         : undefined
+                },
+                name: {
+                    $regex: (typeof req.query.name?.$regex === 'string' && req.query.name.$regex.length > 0)
+                        ? req.query.name.$regex
+                        : undefined
                 }
-                // name: req.query.name
             });
 
             const results = data.map((seat, index) => {
@@ -331,6 +335,12 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat
         seatingType = [req.body.seatingType];
     }
 
+    let name: chevre.factory.multilingualString | undefined;
+    if ((typeof req.body.name?.ja === 'string' && req.body.name.ja.length > 0)
+        || (typeof req.body.name?.en === 'string' && req.body.name.en.length > 0)) {
+        name = req.body.name;
+    }
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.Seat,
@@ -359,11 +369,15 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat
                     };
                 })
             : undefined,
+        ...(name !== undefined) ? { name: req.body.name } : undefined,
         ...(Array.isArray(seatingType)) ? { seatingType: seatingType } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
                     noExistingAttributeName: 1, // $unsetは空だとエラーになるので
+                    ...(name === undefined)
+                        ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].name': 1 }
+                        : undefined,
                     ...(seatingType === undefined)
                         ? { 'containsPlace.$[screeningRoom].containsPlace.$[screeningRoomSection].containsPlace.$[seat].seatingType': 1 }
                         : undefined
@@ -377,11 +391,11 @@ function validate() {
     return [
         body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z\-]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         body('containedInPlace.containedInPlace.containedInPlace.branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
@@ -390,14 +404,17 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', 'ルーム')),
         body('containedInPlace.branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'セクション'))
-
-        // body('name.ja')
-        //     .notEmpty()
-        //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
-        //     .isLength({ max: 64 })
-        //     // tslint:disable-next-line:no-magic-numbers
-        //     .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'セクション')),
+        body('name.ja')
+            .optional()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        body('name.en')
+            .optional()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
 }
 
