@@ -13,12 +13,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 科目管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
-const debug = createDebug('chevre-backend:routes');
 const NAME_MAX_LENGTH_CODE = 30;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const accountTitleSetRouter = express_1.Router();
@@ -30,7 +28,6 @@ accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
     });
     if (req.xhr) {
         try {
-            debug('searching accountTitleCategories...', req.query);
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
             const { data } = yield accountTitleService.searchAccountTitleSets({
@@ -64,16 +61,7 @@ accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
         }
     }
     else {
-        // 科目分類検索
-        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-        res.render('accountTitles/accountTitleSet/index', {
-            forms: {},
-            accountTitleCategories: searchAccountTitleCategoriesResult.data
-        });
+        res.render('accountTitles/accountTitleSet/index', {});
     }
 }));
 accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -90,7 +78,6 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
         if (validatorResult.isEmpty()) {
             try {
                 const accountTitleSet = yield createFromBody(req, true);
-                debug('saving account title...', accountTitleSet);
                 yield accountTitleService.createAccounTitleSet(accountTitleSet);
                 req.flash('message', '登録しました');
                 res.redirect(`/accountTitles/accountTitleSet/${accountTitleSet.codeValue}`);
@@ -101,23 +88,26 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
             }
         }
     }
-    const forms = Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, req.body);
-    // 科目分類検索
-    const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
-        limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] }
-    });
-    const accountTitleCategories = searchAccountTitleCategoriesResult.data;
+    const forms = Object.assign({}, req.body);
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+            forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+        }
+        else {
+            forms.inCodeSet = undefined;
+        }
+    }
     res.render('accountTitles/accountTitleSet/add', {
         message: message,
         errors: errors,
-        forms: forms,
-        accountTitleCategories: accountTitleCategories
+        forms: forms
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
-accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+accountTitleSetRouter.all('/:codeValue', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     let message = '';
     let errors = {};
@@ -133,14 +123,6 @@ accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(
     if (accountTitleSet === undefined) {
         throw new chevre.factory.errors.NotFound('AccounTitle');
     }
-    debug('accountTitle found', accountTitleSet);
-    // 科目分類検索
-    const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
-        limit: 100,
-        sort: { codeValue: chevre.factory.sortType.Ascending },
-        project: { ids: [req.project.id] }
-    });
-    const accountTitleCategories = searchAccountTitleCategoriesResult.data;
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -148,7 +130,6 @@ accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(
         if (validatorResult.isEmpty()) {
             try {
                 accountTitleSet = yield createFromBody(req, false);
-                debug('saving account title...', accountTitleSet);
                 yield accountTitleService.updateAccounTitleSet(accountTitleSet);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -178,12 +159,20 @@ accountTitleSetRouter.all('/:codeValue', ...validate(), (req, res) => __awaiter(
         }
         return;
     }
-    const forms = Object.assign(Object.assign({ inCodeSet: {}, inDefinedTermSet: {} }, accountTitleSet), req.body);
+    const forms = Object.assign(Object.assign({}, accountTitleSet), req.body);
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+            forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+        }
+        else {
+            forms.inCodeSet = undefined;
+        }
+    }
     res.render('accountTitles/accountTitleSet/edit', {
         message: message,
         errors: errors,
-        forms: forms,
-        accountTitleCategories: accountTitleCategories
+        forms: forms
     });
 }));
 function preDelete(req, accountTitleSet) {
@@ -251,19 +240,22 @@ function preDelete(req, accountTitleSet) {
     });
 }
 function createFromBody(req, isNew) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
         // 科目分類検索
-        const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
-            limit: 1,
-            project: { ids: [req.project.id] },
-            codeValue: { $eq: (_a = req.body.inCodeSet) === null || _a === void 0 ? void 0 : _a.codeValue }
-        });
-        const accountTitleCategory = searchAccountTitleCategoriesResult.data.shift();
+        let accountTitleCategory;
+        if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+            const selectedAccountTitleCategory = JSON.parse(req.body.inCodeSet);
+            const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
+                limit: 1,
+                project: { ids: [req.project.id] },
+                codeValue: { $eq: selectedAccountTitleCategory.codeValue }
+            });
+            accountTitleCategory = searchAccountTitleCategoriesResult.data.shift();
+        }
         if (accountTitleCategory === undefined) {
             throw new Error('科目分類が見つかりません');
         }
@@ -277,7 +269,7 @@ function createFromBody(req, isNew) {
  */
 function validate() {
     return [
-        express_validator_1.body('inCodeSet.codeValue')
+        express_validator_1.body('inCodeSet')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '科目分類')),
         express_validator_1.body('codeValue')

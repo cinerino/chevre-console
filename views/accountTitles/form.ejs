@@ -27,28 +27,24 @@
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
-                        <label for="inCodeSet[codeValue]" class="bmd-label-static">
+                        <label for="inCodeSet" class="bmd-label-static">
                             科目<span class="text-danger">＊</span>
                         </label>
                         <% if (!isNew) { %>
-                        <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
+                        <input type="hidden" name="inCodeSet" value="<%= JSON.stringify(forms.inCodeSet) %>">
                         <% } %>
-                        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
-                            <option value="">選択してください</option>
-                            <% for (const accountTitleSet of accountTitleSets) { %>
-                            <option value="<%= accountTitleSet.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleSet.codeValue)
-                                    { %> selected <% } %>>
-                                <%= accountTitleSet.inCodeSet.codeValue %>
-                                <%= accountTitleSet.inCodeSet.name %>
-                                -
-                                <%= accountTitleSet.codeValue %>
-                                <%= accountTitleSet.name %>
-                            </option>
+                        <select class="form-control" name="inCodeSet" id="inCodeSet" style="width: 100%;"
+                            <% if (!isNew) { %> disabled <% } %>>
+                            <% if (forms.inCodeSet !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.inCodeSet) %>" selected="selected">
+                                <%= forms.inCodeSet.inCodeSet.codeValue %> <%= forms.inCodeSet.inCodeSet.name %> -
+                                <%= forms.inCodeSet.codeValue %> <%= forms.inCodeSet.name %></option>
                             <% } %>
                         </select>
-                        <% if (errors && errors['inCodeSet.codeValue']) { %>
+
+                        <% if (errors && errors['inCodeSet']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['inCodeSet.codeValue'].msg %>
+                            <%- errors['inCodeSet'].msg %>
                         </span>
                         <% } %>
                     </div>

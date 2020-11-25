@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファー編集の適用条件を動的選択肢に変更
 - イベント編集のカタログを動的選択肢に変更
 - コンテンツ編集の選択肢を動的に変更
+- 勘定科目編集の選択肢を動的に変更
 
 ### Deprecated
 
