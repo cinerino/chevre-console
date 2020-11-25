@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 「枝番号」表記を「コード」に統一
 - オファー編集の適用条件を動的選択肢に変更
 - イベント編集のカタログを動的選択肢に変更
+- コンテンツ編集の選択肢を動的に変更
 
 ### Deprecated
 
