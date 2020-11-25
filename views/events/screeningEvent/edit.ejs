@@ -1,4 +1,4 @@
-<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal fade" id="editModal">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -76,14 +76,11 @@
 
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-4">
-                                    <label class="bmd-label-static" for="ticketTypeGroup">カタログ</label>
-                                    <select class="form-control" name="ticketTypeGroup">
-                                        <option value="">選択してください</option>
-                                        <% for (ticketType of ticketGroups) { %>
-                                        <option value="<%= ticketType.id %>">
-                                            <%= ticketType.name.ja %>
-                                        </option>
-                                        <% } %>
+                                    <label for="hasOfferCatalog"" class=" bmd-label-static">
+                                        カタログ
+                                    </label>
+                                    <select class="form-control" name="hasOfferCatalog" id="hasOfferCatalog4edit"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
                             </div>

@@ -35,10 +35,10 @@ screeningEventRouter.get(
     '',
     async (req, res, next) => {
         try {
-            const offerCatalogService = new chevre.service.OfferCatalog({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
+            // const offerCatalogService = new chevre.service.OfferCatalog({
+            //     endpoint: <string>process.env.API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
@@ -55,17 +55,17 @@ screeningEventRouter.get(
                 throw new Error('施設が見つかりません');
             }
 
-            const searchTicketTypeGroupsResult = await offerCatalogService.search({
-                project: { id: { $eq: req.project.id } },
-                itemOffered: { typeOf: { $eq: ProductType.EventService } }
-            });
+            // const searchTicketTypeGroupsResult = await offerCatalogService.search({
+            //     project: { id: { $eq: req.project.id } },
+            //     itemOffered: { typeOf: { $eq: ProductType.EventService } }
+            // });
 
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
             res.render('events/screeningEvent/index', {
                 movieTheaters: searchMovieTheatersResult.data,
                 moment: moment,
-                ticketGroups: searchTicketTypeGroupsResult.data,
+                // ticketGroups: searchTicketTypeGroupsResult.data,
                 sellers: searchSellersResult.data,
                 useAdvancedScheduling: req.subscription?.settings.useAdvancedScheduling
             });
@@ -87,10 +87,10 @@ screeningEventRouter.get(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+        // const offerCatalogService = new chevre.service.OfferCatalog({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
 
         try {
             debug('searching...query:', req.query);
@@ -201,15 +201,15 @@ screeningEventRouter.get(
                     events.push(...searchEventsResult.data);
                 }
 
-                const searchTicketTypeGroupsResult = await offerCatalogService.search({
-                    project: { id: { $eq: req.project.id } },
-                    itemOffered: { typeOf: { $eq: ProductType.EventService } }
-                });
+                // const searchTicketTypeGroupsResult = await offerCatalogService.search({
+                //     project: { id: { $eq: req.project.id } },
+                //     itemOffered: { typeOf: { $eq: ProductType.EventService } }
+                // });
 
                 res.json({
                     performances: events,
-                    screens: searchScreeningRoomsResult.data,
-                    ticketGroups: searchTicketTypeGroupsResult.data
+                    screens: searchScreeningRoomsResult.data
+                    // ticketGroups: searchTicketTypeGroupsResult.data
                 });
             }
         } catch (err) {
@@ -394,6 +394,37 @@ screeningEventRouter.post(
         } catch (err) {
             res.status(INTERNAL_SERVER_ERROR)
                 .json(err);
+        }
+    }
+);
+
+screeningEventRouter.get(
+    '/:id/hasOfferCatalog',
+    async (req, res) => {
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const offerCatalogService = new chevre.service.OfferCatalog({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        try {
+            const event = await eventService.findById({ id: req.params.id });
+
+            if (typeof event.hasOfferCatalog?.id !== 'string') {
+                throw new chevre.factory.errors.NotFound('OfferCatalog');
+            }
+
+            const offerCatalog = await offerCatalogService.findById({ id: event.hasOfferCatalog.id });
+
+            res.json(offerCatalog);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
         }
     }
 );

@@ -123,6 +123,7 @@ $(function () {
         'input[name="doorTime"]',
         'input[name="startTime"]',
         'input[name="endTime"]',
+        'select[name="hasOfferCatalog"]',
         'select[name="ticketTypeGroup"]'
     ];
     $(document).on(
@@ -280,6 +281,44 @@ $(function () {
                 id: relativeDay,
                 text: relativeDay + '日後',
                 newTag: true // add additional parameters
+            }
+        }
+    });
+
+    $('select[name="hasOfferCatalog"]').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: 'カタログ選択',
+        allowClear: true,
+        ajax: {
+            url: '/offerCatalogs/getlist',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: params.term,
+                    itemOffered: {
+                        typeOf: { $eq: 'EventService' }
+                    }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (offerCatalog) {
+                        return {
+                            id: offerCatalog.id,
+                            text: offerCatalog.name.ja
+                        }
+                    })
+                };
             }
         }
     });
@@ -478,7 +517,8 @@ function getTableData() {
                 startTime: $(row).find('input[name="startTime"]').val(),
                 endTime: $(row).find('input[name="endTime"]').val(),
                 endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
-                ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
+                ticketTypeGroup: $(row).find('select[name="hasOfferCatalog"]').val(),
+                // ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
                 mvtkExcludeFlg: mvtkExcludeFlg
             };
 
@@ -507,7 +547,8 @@ function getTableData() {
             var repeatEveryMinutes = $(row).find('input[name="repeatEveryMinutes"]').val();
             var repeatFrom = $(row).find('input[name="repeatFrom"]').val();
             var repeatThrough = $(row).find('input[name="repeatThrough"]').val();
-            var ticketTypeGroup = $(row).find('select[name="ticketTypeGroup"]').val();
+            var ticketTypeGroup = $(row).find('select[name="hasOfferCatalog"]').val();
+            // var ticketTypeGroup = $(row).find('select[name="ticketTypeGroup"]').val();
 
             var isValidRow = true;
 
@@ -810,7 +851,8 @@ function update() {
     var doorTime = modal.find('input[name=doorTime]').val().replace(':', '');
     var startTime = modal.find('input[name=startTime]').val().replace(':', '');
     var endTime = modal.find('input[name=endTime]').val().replace(':', '');
-    var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    // var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
+    var ticketTypeGroup = modal.find('select[name="hasOfferCatalog"]').val();
     var seller = modal.find('select[name=seller]').val();
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
     var saleStartTime = modal.find('input[name=saleStartTime]').val().replace(':', '');
@@ -836,7 +878,7 @@ function update() {
         || startTime === ''
         || endTime === ''
         || endDay === ''
-        || ticketTypeGroup === ''
+        || typeof ticketTypeGroup !== 'string' || ticketTypeGroup === ''
         || saleStartDate === ''
         || saleStartTime === ''
         || saleEndDate === ''
@@ -1002,25 +1044,26 @@ function deletePerformance() {
 /**
  * モーダル初期化
  */
-function modalInit(theater, date, ticketGroups) {
-    var ticketGroupDom = [];
-    ticketGroupDom.push('<option value="">カタログ選択</option>');
-    for (var i = 0; i < ticketGroups.length; i++) {
-        var ticketGroup = ticketGroups[i];
-        ticketGroupDom.push('<option value="' + ticketGroup._id + '">' + ticketGroup.name.ja + '</option>')
-    }
+function modalInit(theater, date) {
+    // function modalInit(theater, date, ticketGroups) {
+    // var ticketGroupDom = [];
+    // ticketGroupDom.push('<option value="">カタログ選択</option>');
+    // for (var i = 0; i < ticketGroups.length; i++) {
+    //     var ticketGroup = ticketGroups[i];
+    //     ticketGroupDom.push('<option value="' + ticketGroup._id + '">' + ticketGroup.name.ja + '</option>')
+    // }
 
     var newModal = $('#newModal');
     newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     newModal.find('.day span').text(moment(date, 'YYYY/MM/DD').format('YYYY年MM月DD日(ddd)'));
     newModal.find('input[name=theater]').val(theater);
     newModal.find('input[name=day]').val(date);
-    newModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
+    // newModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 
     var editModal = $('#editModal');
     editModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     editModal.find('.theater input').val($('.search select[name=theater] option[value=' + theater + ']').text());
-    editModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
+    // editModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 }
 
 /**
@@ -1050,7 +1093,10 @@ function add() {
     // modal.find('select[name=endDayRelative]').val('0');
     modal.find('select[name=endDayRelative]').select2('val', '0');
     modal.find('input[name=mvtkExcludeFlg]').removeAttr('checked');
-    modal.find('select[name=ticketTypeGroup]').val('');
+    modal.find('select[name="hasOfferCatalog"]')
+        .val(null)
+        .trigger('change');
+    // modal.find('select[name=ticketTypeGroup]').val('');
     modal.find('input[name=saleStartDateAbsolute]').datepicker('update', '');
     modal.find('input[name=saleStartTime]').val('');
     modal.find('input[name=onlineDisplayStartDateRelative]').val('');
@@ -1140,7 +1186,8 @@ function createScheduler() {
 
                 this.searchScreeningEvent()
                     .then(function (data) {
-                        modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
+                        modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date);
+                        // modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
                         _this.createScheduleData(data);
                     })
                     .catch(function (error) {
@@ -1289,6 +1336,27 @@ function createScheduler() {
                 });
                 return filterResult.length;
             },
+
+            /**
+             * イベントのカタログを取得する
+             */
+            findCatalogByPerformance: function (performance) {
+                var options = {
+                    dataType: 'json',
+                    url: '/events/screeningEvent/' + performance.id + '/hasOfferCatalog',
+                    type: 'GET',
+                    data: {},
+                    beforeSend: function () {
+                        $('#loadingModal').modal({ backdrop: 'static' });
+                    }
+                };
+
+                return $.ajax(options)
+                    .always(function () {
+                        $('#loadingModal').modal('hide');
+                    });
+            },
+
             /**
              * パフォーマンス表示
              */
@@ -1300,7 +1368,15 @@ function createScheduler() {
                 modal.find('a.edit')
                     .off('click')
                     .on('click', function () {
-                        _this.editPerformance(performance);
+                        // カタログを取得
+                        _this.findCatalogByPerformance(performance)
+                            .then(function (catalog) {
+                                console.log('catalog found.', catalog);
+                                _this.editPerformance(performance, catalog);
+                            })
+                            .catch(function (error) {
+                                alert('カタログを検索できませんでした');
+                            });
                     });
 
                 modal.find('a.reserve')
@@ -1392,7 +1468,7 @@ function createScheduler() {
             /**
              * パフォーマンス編集
              */
-            editPerformance: function (performance) {
+            editPerformance: function (performance, offerCatalog) {
                 this.editingPerforamce = performance;
                 console.log('editing...', this.editingPerforamce);
 
@@ -1448,22 +1524,17 @@ function createScheduler() {
                 modal.find('input[name=endDay]').datepicker('update', endDay);
 
                 if (performance.hasOfferCatalog !== undefined) {
-                    modal.find('select[name=ticketTypeGroup]').val(performance.hasOfferCatalog.id);
+                    // カタログの初期値を設定する
+                    var hasOfferCatalogNewOption = new Option(offerCatalog.name.ja, offerCatalog.id, true, true);
+                    modal.find('select[name="hasOfferCatalog"]')
+                        .append(hasOfferCatalogNewOption)
+                        .trigger('change');
+                    // modal.find('select[name="ticketTypeGroup"]').val(performance.hasOfferCatalog.id);
                 }
 
                 var seller = performance.offers.seller;
                 if (seller !== undefined && seller !== null) {
                     modal.find('select[name=seller]').val(seller.id);
-                } else {
-                    // var theaterName = performance.superEvent.location.name.ja;
-
-                    // // 販売者に同名称の選択肢があれば自動選択
-                    // modal.find('select[name=seller] option').each(function () {
-                    //     if ($(this).text() === theaterName) {
-                    //         console.log('matched!');
-                    //         $(this).prop('selected', true);
-                    //     }
-                    // });
                 }
 
                 // 販売開始日時
