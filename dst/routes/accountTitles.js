@@ -194,6 +194,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(), (req, res, next) => __awai
         }
         else if (req.method === 'DELETE') {
             try {
+                yield preDelete(req, accountTitle);
                 yield accountTitleService.deleteByCodeValue({
                     project: { id: req.project.id },
                     codeValue: accountTitle.codeValue,
@@ -238,6 +239,30 @@ accountTitlesRouter.all('/:codeValue', ...validate(), (req, res, next) => __awai
         next(error);
     }
 }));
+function preDelete(req, accountTitle) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // 関連するオファー
+        const searchOffersResult = yield offerService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            priceSpecification: {
+                accounting: {
+                    operatingRevenue: {
+                        codeValue: { $eq: accountTitle.codeValue }
+                    }
+                }
+            }
+        });
+        if (searchOffersResult.data.length > 0) {
+            throw new Error('関連するオファーが存在します');
+        }
+    });
+}
 function createFromBody(req) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {

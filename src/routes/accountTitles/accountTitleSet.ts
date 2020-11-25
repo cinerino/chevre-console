@@ -181,6 +181,8 @@ accountTitleSetRouter.all<ParamsDictionary>(
             }
         } else if (req.method === 'DELETE') {
             try {
+                await preDelete(req, accountTitleSet);
+
                 await accountTitleService.deleteAccounTitleSet({
                     project: { id: req.project.id },
                     codeValue: accountTitleSet.codeValue,
@@ -215,6 +217,73 @@ accountTitleSetRouter.all<ParamsDictionary>(
         });
     }
 );
+
+async function preDelete(req: Request, accountTitleSet: chevre.factory.accountTitle.IAccountTitle) {
+    // validation
+    const accountTitleService = new chevre.service.AccountTitle({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const offerService = new chevre.service.Offer({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // 科目に属する全細目
+    const limit = 100;
+    let page = 0;
+    let numData: number = limit;
+    const accountTitles: chevre.factory.accountTitle.IAccountTitle[] = [];
+    while (numData === limit) {
+        page += 1;
+        const searchAccountTitlesResult = await accountTitleService.search({
+            limit: limit,
+            page: page,
+            project: { ids: [req.project.id] },
+            inCodeSet: {
+                codeValue: { $eq: accountTitleSet.codeValue },
+                inCodeSet: {
+                    codeValue: { $eq: accountTitleSet.inCodeSet?.codeValue }
+                }
+            }
+        });
+        numData = searchAccountTitlesResult.data.length;
+        accountTitles.push(...searchAccountTitlesResult.data);
+    }
+
+    const searchOffersPer = 10;
+    if (accountTitles.length > 0) {
+        // 関連するオファーを10件ずつ確認する(queryの長さは有限なので)
+        // tslint:disable-next-line:no-magic-numbers
+        const searchCount = Math.ceil(accountTitles.length / searchOffersPer);
+
+        // tslint:disable-next-line:prefer-array-literal
+        const searchNubmers = [...Array(searchCount)].map((__, i) => i);
+
+        for (const i of searchNubmers) {
+            const start = i * searchOffersPer;
+            const end = Math.min(start + searchOffersPer - 1, accountTitles.length);
+
+            const searchOffersResult = await offerService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                priceSpecification: {
+                    accounting: {
+                        operatingRevenue: {
+                            codeValue: {
+                                $in: accountTitles.slice(start, end)
+                                    .map((a) => a.codeValue)
+                            }
+                        }
+                    }
+                }
+            });
+            if (searchOffersResult.data.length > 0) {
+                throw new Error('関連するオファーが存在します');
+            }
+        }
+    }
+}
 
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.accountTitle.IAccountTitle> {
     const accountTitleService = new chevre.service.AccountTitle({

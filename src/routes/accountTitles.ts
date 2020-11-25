@@ -224,6 +224,8 @@ accountTitlesRouter.all<ParamsDictionary>(
                 }
             } else if (req.method === 'DELETE') {
                 try {
+                    await preDelete(req, accountTitle);
+
                     await accountTitleService.deleteByCodeValue({
                         project: { id: req.project.id },
                         codeValue: accountTitle.codeValue,
@@ -277,6 +279,30 @@ accountTitlesRouter.all<ParamsDictionary>(
         }
     }
 );
+
+async function preDelete(req: Request, accountTitle: chevre.factory.accountTitle.IAccountTitle) {
+    // validation
+    const offerService = new chevre.service.Offer({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // 関連するオファー
+    const searchOffersResult = await offerService.search({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        priceSpecification: {
+            accounting: {
+                operatingRevenue: {
+                    codeValue: { $eq: accountTitle.codeValue }
+                }
+            }
+        }
+    });
+    if (searchOffersResult.data.length > 0) {
+        throw new Error('関連するオファーが存在します');
+    }
+}
 
 async function createFromBody(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle> {
     const accountTitleService = new chevre.service.AccountTitle({
