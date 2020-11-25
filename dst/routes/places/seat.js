@@ -45,7 +45,7 @@ seatRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, vo
                 // const { data } = await placeService.searchScreeningRooms({});
                 // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
                 // if (existingMovieTheater !== undefined) {
-                //     throw new Error('枝番号が重複しています');
+                //     throw new Error('コードが重複しています');
                 // }
                 yield placeService.createSeat(seat);
                 req.flash('message', '登録しました');

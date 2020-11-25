@@ -46,7 +46,7 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
                 // const { data } = await placeService.searchScreeningRooms({});
                 // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
                 // if (existingMovieTheater !== undefined) {
-                //     throw new Error('枝番号が重複しています');
+                //     throw new Error('コードが重複しています');
                 // }
                 yield placeService.createScreeningRoomSection(screeningRoomSection);
                 req.flash('message', '登録しました');
@@ -323,11 +323,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),

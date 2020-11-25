@@ -231,11 +231,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('typeOf')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),

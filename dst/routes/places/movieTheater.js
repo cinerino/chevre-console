@@ -43,7 +43,7 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
                 });
                 const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
                 if (existingMovieTheater !== undefined) {
-                    throw new Error('枝番号が重複しています');
+                    throw new Error('コードが重複しています');
                 }
                 debug('existingMovieTheater:', existingMovieTheater);
                 movieTheater = yield placeService.createMovieTheater(movieTheater);
@@ -314,11 +314,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
