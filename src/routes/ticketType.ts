@@ -32,7 +32,7 @@ const ticketTypeMasterRouter = Router();
 ticketTypeMasterRouter.all<any>(
     '/add',
     ...validateFormAdd(),
-    // tslint:disable-next-line:max-func-body-length
+    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -131,21 +131,28 @@ ticketTypeMasterRouter.all<any>(
             } else {
                 forms.appliesToMovieTicket = undefined;
             }
+
+            // 適用通貨区分を保管
+            if (typeof req.body.eligibleMonetaryAmount === 'string' && req.body.eligibleMonetaryAmount.length > 0) {
+                forms.eligibleMonetaryAmount = JSON.parse(req.body.eligibleMonetaryAmount);
+            } else {
+                forms.eligibleMonetaryAmount = undefined;
+            }
+
+            // 適用座席区分を保管
+            if (typeof req.body.eligibleSeatingType === 'string' && req.body.eligibleSeatingType.length > 0) {
+                forms.eligibleSeatingType = JSON.parse(req.body.eligibleSeatingType);
+            } else {
+                forms.eligibleSeatingType = undefined;
+            }
+
+            // 適用サブ予約を保管
+            if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
+                forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
+            } else {
+                forms.eligibleSubReservation = undefined;
+            }
         }
-
-        // 座席区分検索
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-        });
-
-        // 口座タイプ検索
-        const searchAccountTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
-        });
 
         const searchAddOnsResult = await productService.search({
             project: { id: { $eq: req.project.id } },
@@ -163,8 +170,6 @@ ticketTypeMasterRouter.all<any>(
             message: message,
             errors: errors,
             forms: forms,
-            seatingTypes: searchSeatingTypesResult.data,
-            accountTypes: searchAccountTypesResult.data,
             addOns: searchAddOnsResult.data,
             applications: searchApplicationsResult.data.map((d) => d.member)
                 .sort((a, b) => {
@@ -324,6 +329,27 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 } else {
                     forms.appliesToMovieTicket = undefined;
                 }
+
+                // 適用通貨区分を保管
+                if (typeof req.body.eligibleMonetaryAmount === 'string' && req.body.eligibleMonetaryAmount.length > 0) {
+                    forms.eligibleMonetaryAmount = JSON.parse(req.body.eligibleMonetaryAmount);
+                } else {
+                    forms.eligibleMonetaryAmount = undefined;
+                }
+
+                // 適用座席区分を保管
+                if (typeof req.body.eligibleSeatingType === 'string' && req.body.eligibleSeatingType.length > 0) {
+                    forms.eligibleSeatingType = JSON.parse(req.body.eligibleSeatingType);
+                } else {
+                    forms.eligibleSeatingType = undefined;
+                }
+
+                // 適用サブ予約を保管
+                if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
+                    forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
+                } else {
+                    forms.eligibleSubReservation = undefined;
+                }
             } else {
                 // カテゴリーを検索
                 if (typeof ticketType.category?.codeValue === 'string') {
@@ -356,21 +382,53 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                     });
                     forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
                 }
+
+                // 適用通貨区分を検索
+                if (Array.isArray(ticketType.eligibleMonetaryAmount)
+                    && typeof ticketType.eligibleMonetaryAmount[0]?.currency === 'string') {
+                    const searchEligibleAccountTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                        codeValue: { $eq: ticketType.eligibleMonetaryAmount[0]?.currency }
+                    });
+                    forms.eligibleMonetaryAmount = searchEligibleAccountTypesResult.data[0];
+                    forms.eligibleMonetaryAmountValue = ticketType.eligibleMonetaryAmount[0]?.value;
+                } else {
+                    forms.eligibleMonetaryAmount = undefined;
+                    forms.eligibleMonetaryAmountValue = undefined;
+                }
+
+                // 適用座席区分を検索
+                if (Array.isArray(ticketType.eligibleSeatingType)
+                    && typeof ticketType.eligibleSeatingType[0]?.codeValue === 'string') {
+                    const searcheEligibleSeatingTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                        codeValue: { $eq: ticketType.eligibleSeatingType[0]?.codeValue }
+                    });
+                    forms.eligibleSeatingType = searcheEligibleSeatingTypesResult.data[0];
+                } else {
+                    forms.eligibleSeatingType = undefined;
+                }
+
+                // 適用サブ予約を検索
+                if (Array.isArray(ticketType.eligibleSubReservation)
+                    && typeof ticketType.eligibleSubReservation[0]?.typeOfGood?.seatingType === 'string') {
+                    const searcheEligibleSubReservationSeatingTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                        codeValue: { $eq: ticketType.eligibleSubReservation[0].typeOfGood.seatingType }
+                    });
+                    forms.eligibleSubReservation = searcheEligibleSubReservationSeatingTypesResult.data[0];
+                    forms.eligibleSubReservationAmount = ticketType.eligibleSubReservation[0].amountOfThisGood;
+                } else {
+                    forms.eligibleSubReservation = undefined;
+                    forms.eligibleSubReservationAmount = undefined;
+                }
             }
-
-            // 座席区分検索
-            const searchSeatingTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-            });
-
-            // 口座タイプ検索
-            const searchAccountTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } }
-            });
 
             const searchAddOnsResult = await productService.search({
                 project: { id: { $eq: req.project.id } },
@@ -388,8 +446,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 message: message,
                 errors: errors,
                 forms: forms,
-                seatingTypes: searchSeatingTypesResult.data,
-                accountTypes: searchAccountTypesResult.data,
                 addOns: searchAddOnsResult.data,
                 applications: searchApplicationsResult.data.map((d) => d.member)
                     .sort((a, b) => {
@@ -645,17 +701,18 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     // 適用座席区分があれば設定
     let eligibleSeatingTypes: chevre.factory.offer.IEligibleCategoryCode[] | undefined;
-    if (Array.isArray(req.body.eligibleSeatingType) && req.body.eligibleSeatingType.length > 0
-        && typeof req.body.eligibleSeatingType[0].id === 'string' && req.body.eligibleSeatingType[0].id.length > 0) {
+    if (typeof req.body.eligibleSeatingType === 'string' && req.body.eligibleSeatingType.length > 0) {
+        const selectedSeatingType = JSON.parse(req.body.eligibleSeatingType);
+
         const searchSeatingTypeResult = await categoryCodeService.search({
             limit: 1,
-            id: { $eq: req.body.eligibleSeatingType[0].id },
             project: { id: { $eq: req.project.id } },
+            codeValue: { $eq: selectedSeatingType.codeValue },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const seatingType = searchSeatingTypeResult.data.shift();
         if (seatingType === undefined) {
-            throw new Error(`Seating Type ${req.body.eligibleSeatingType[0].id} Not Found`);
+            throw new Error(`Seating Type ${selectedSeatingType.codeValue} Not Found`);
         }
 
         eligibleSeatingTypes = [{
@@ -669,41 +726,48 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     // 適用口座があれば設定
     let eligibleMonetaryAmount: chevre.factory.offer.IEligibleMonetaryAmount[] | undefined;
-    if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
-        && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
-        && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
+    // if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
+    //     && typeof req.body.eligibleMonetaryAmount[0].currency === 'string' && req.body.eligibleMonetaryAmount[0].currency.length > 0
+    //     && typeof req.body.eligibleMonetaryAmount[0].value === 'string' && req.body.eligibleMonetaryAmount[0].value.length > 0) {
+    //     eligibleMonetaryAmount = [{
+    //         typeOf: 'MonetaryAmount',
+    //         currency: req.body.eligibleMonetaryAmount[0].currency,
+    //         value: Number(req.body.eligibleMonetaryAmount[0].value)
+    //     }];
+    // }
+    if (typeof req.body.eligibleMonetaryAmount === 'string' && req.body.eligibleMonetaryAmount.length > 0
+        && typeof req.body.eligibleMonetaryAmountValue === 'string' && req.body.eligibleMonetaryAmountValue.length > 0) {
+        const selectedAccountType = JSON.parse(req.body.eligibleMonetaryAmount);
+
         eligibleMonetaryAmount = [{
             typeOf: 'MonetaryAmount',
-            currency: req.body.eligibleMonetaryAmount[0].currency,
-            value: Number(req.body.eligibleMonetaryAmount[0].value)
+            currency: selectedAccountType.codeValue,
+            value: Number(req.body.eligibleMonetaryAmountValue)
         }];
     }
 
     // 適用サブ予約条件があれば設定
     let eligibleSubReservation: chevre.factory.offer.IEligibleSubReservation[] | undefined;
-    if (Array.isArray(req.body.eligibleSubReservation) && req.body.eligibleSubReservation.length > 0
-        && typeof req.body.eligibleSubReservation[0].typeOfGood !== undefined
-        && typeof req.body.eligibleSubReservation[0].typeOfGood !== null
-        && typeof req.body.eligibleSubReservation[0].typeOfGood.seatingType === 'string'
-        && req.body.eligibleSubReservation[0].typeOfGood.seatingType.length > 0
-        && typeof req.body.eligibleSubReservation[0].amountOfThisGood === 'string'
-        && req.body.eligibleSubReservation[0].amountOfThisGood.length > 0) {
+    if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0
+        && typeof req.body.eligibleSubReservationAmount === 'string' && req.body.eligibleSubReservationAmount.length > 0) {
+        const selectedSubReservationSeatingType = JSON.parse(req.body.eligibleSubReservation);
+
         const searchSeatingTypeResult = await categoryCodeService.search({
             limit: 1,
-            id: { $eq: req.body.eligibleSubReservation[0].typeOfGood.seatingType },
             project: { id: { $eq: req.project.id } },
+            codeValue: { $eq: selectedSubReservationSeatingType.codeValue },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const seatingType = searchSeatingTypeResult.data.shift();
         if (seatingType === undefined) {
-            throw new Error(`Seating Type ${req.body.eligibleSubReservation[0].typeOfGood.seatingType} Not Found`);
+            throw new Error(`Seating Type ${selectedSubReservationSeatingType.codeValue} Not Found`);
         }
 
         eligibleSubReservation = [{
             typeOfGood: {
                 seatingType: seatingType.codeValue
             },
-            amountOfThisGood: Number(req.body.eligibleSubReservation[0].amountOfThisGood)
+            amountOfThisGood: Number(req.body.eligibleSubReservationAmount)
         }];
     }
 
@@ -897,7 +961,7 @@ function validateFormAdd() {
             .custom((value) => Number(value) >= 0)
             .withMessage(() => '0もしくは正の値を入力してください'),
 
-        body('eligibleMonetaryAmount.*.value')
+        body('eligibleMonetaryAmountValue')
             .optional()
             .if((value: any) => typeof value === 'string' && value.length > 0)
             .isNumeric()
@@ -906,7 +970,7 @@ function validateFormAdd() {
             .custom((value) => Number(value) >= 0)
             .withMessage(() => '0もしくは正の値を入力してください'),
 
-        body('eligibleSubReservation.*.amountOfThisGood')
+        body('eligibleSubReservationAmount')
             .optional()
             .if((value: any) => typeof value === 'string' && value.length > 0)
             .isNumeric()

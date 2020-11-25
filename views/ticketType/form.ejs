@@ -130,8 +130,8 @@
                             発生金額<span class="text-danger">＊</span>
                         </label>
                         <div class="input-group">
-                            <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
-                                value="<%=forms.price %>">
+                            <input type="number" class="form-control" name="price" id="price" placeholder=""
+                                maxlength=10 value="<%=forms.price %>">
                             <div class="input-group-append">
                                 <span class="input-group-text">円 / 枚 ×</span>
                             </div>
@@ -165,7 +165,7 @@
                             売上金額<span class="text-danger">＊</span>
                         </label>
                         <div class="input-group">
-                            <input type="text" class="form-control" name="accountsReceivable" id="accountsReceivable"
+                            <input type="number" class="form-control" name="accountsReceivable" id="accountsReceivable"
                                 placeholder="" maxlength=10 value="<%=forms.accountsReceivable %>">
                             <div class="input-group-append">
                                 <span class="input-group-text">円 / 枚として計上</span>
@@ -318,103 +318,92 @@
                         <% } %>
                     </div>
 
-                    <% if (accountTypes.length > 0) { %>
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="eligibleMonetaryAmount[][currency]" class="bmd-label-static">
-                            適用口座
-                        </label>
-                        <div class="input-group">
-                            <select class="form-control" name="eligibleMonetaryAmount[][currency]">
-                                <option value="" selected>指定しない</option>
-                                <% Object.values(accountTypes).forEach((accountType) => { %>
-                                <%
-                                    const selected = Array.isArray(forms.eligibleMonetaryAmount)
-                                        && forms.eligibleMonetaryAmount.length > 0
-                                        && accountType.codeValue === forms.eligibleMonetaryAmount[0].currency;
-                                    %>
-                                <option value="<%= accountType.codeValue %>" <% if (selected) { %> selected<% } %>>
-                                    <%= accountType.codeValue %> <%= accountType.name.ja %>
-                                </option>
-                                <% }) %>
-                            </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">が</span>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="eligibleMonetaryAmount[][value]"
-                                id="eligibleMonetaryAmount[][value]" placeholder="" maxlength=10
-                                value="<%= (Array.isArray(forms.eligibleMonetaryAmount) && forms.eligibleMonetaryAmount.length > 0) ? forms.eligibleMonetaryAmount[0].value : '' %>">
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">必要</span>
-                            </div>
-                        </div>
-
-                        <% if (errors && errors['eligibleMonetaryAmount.0.value']) { %>
-                        <span class="bmd-help text-danger d-block">
-                            <%- errors['eligibleMonetaryAmount.0.value'].msg %>
-                        </span>
-                        <% } %>
-                    </div>
-                    <% } %>
-
-                    <div class="form-group bmd-form-group col-md-3">
-                        <label for="eligibleSeatingType[][id]" class="bmd-label-static">
+                        <label for="eligibleSeatingType" class="bmd-label-static">
                             適用座席区分
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="eligibleSeatingType[][id]">
-                                <option value="" selected>なし</option>
-                                <% Object.values(seatingTypes).forEach((seatingType) => { %>
-                                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSeatingType) && forms.eligibleSeatingType.length > 0
-                    && seatingType.codeValue === forms.eligibleSeatingType[0].codeValue) { %> selected<% } %>>
-                                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
-                                </option>
-                                <% }) %>
+                            <select class="form-control" name="eligibleSeatingType" id="eligibleSeatingType"
+                                style="width: 100%;">
+                                <% if (forms.eligibleSeatingType !== undefined) { %>
+                                <option value="<%= JSON.stringify(forms.eligibleSeatingType) %>" selected="selected">
+                                    <%= forms.eligibleSeatingType.name.ja %></option>
+                                <% } %>
                             </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">にのみ適用</span>
-                            </div>
                         </div>
 
-                        <% if (errors && errors['eligibleSeatingType.id']) { %>
+                        <% if (errors && errors['eligibleSeatingType']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['eligibleSeatingType.id'].msg %>
+                            <%- errors['eligibleSeatingType'].msg %>
                         </span>
                         <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="eligibleSubReservation[][typeOfGood][seatingType]" class="bmd-label-static">
+                        <label for="eligibleSubReservation" class="bmd-label-static">
                             適用サブ予約
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="eligibleSubReservation[][typeOfGood][seatingType]">
-                                <option value="" selected>指定しない</option>
-                                <% Object.values(seatingTypes).forEach((seatingType) => { %>
-                                <option value="<%= seatingType.id %>" <% if (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0
-                    && seatingType.codeValue === forms.eligibleSubReservation[0].typeOfGood.seatingType) { %>
-                                    selected<% } %>>
-                                    <%= seatingType.codeValue %> <%= seatingType.name.ja %>
-                                </option>
-                                <% }) %>
+                            <select class="form-control" name="eligibleSubReservation" id="eligibleSubReservation"
+                                style="width: 100%;">
+                                <% if (forms.eligibleSubReservation !== undefined) { %>
+                                <option value="<%= JSON.stringify(forms.eligibleSubReservation) %>" selected="selected">
+                                    <%= forms.eligibleSubReservation.name.ja %></option>
+                                <% } %>
                             </select>
-                            <div class="input-group-append">
-                                <span class="input-group-text" id="basic-addon2">が</span>
-                            </div>
                         </div>
                         <div class="input-group">
-                            <input type="text" class="form-control" name="eligibleSubReservation[][amountOfThisGood]"
-                                id="eligibleSubReservation[][amountOfThisGood]" placeholder="" maxlength=10
-                                value="<%= (Array.isArray(forms.eligibleSubReservation) && forms.eligibleSubReservation.length > 0) ? forms.eligibleSubReservation[0].amountOfThisGood : '' %>">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon2">が</span>
+                            </div>
+                            <input type="number" class="form-control" name="eligibleSubReservationAmount"
+                                id="eligibleSubReservationAmount" placeholder="" maxlength=10
+                                value="<%= forms.eligibleSubReservationAmount %>">
                             <div class="input-group-append">
                                 <span class="input-group-text" id="basic-addon2">席必要</span>
                             </div>
                         </div>
 
-                        <% if (errors && errors['eligibleSubReservation.0.amountOfThisGood']) { %>
+                        <% if (errors && errors['eligibleSubReservationAmount']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['eligibleSubReservation.0.amountOfThisGood'].msg %>
+                            <%- errors['eligibleSubReservationAmount'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="eligibleMonetaryAmount" class="bmd-label-static">
+                            適用通貨区分
+                        </label>
+                        <div class="input-group">
+                            <select class="form-control" name="eligibleMonetaryAmount" id="eligibleMonetaryAmount"
+                                style="width: 100%;">
+                                <% if (forms.eligibleMonetaryAmount !== undefined) { %>
+                                <option value="<%= JSON.stringify(forms.eligibleMonetaryAmount) %>" selected="selected">
+                                    <%= forms.eligibleMonetaryAmount.name.ja %></option>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon2">が</span>
+                            </div>
+                            <input type="number" class="form-control" name="eligibleMonetaryAmountValue"
+                                id="eligibleMonetaryAmountValue" placeholder="" maxlength=10
+                                value="<%= forms.eligibleMonetaryAmountValue %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">必要</span>
+                            </div>
+                        </div>
+
+                        <% if (errors && errors['eligibleMonetaryAmount']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['eligibleMonetaryAmount'].msg %>
+                        </span>
+                        <% } %>
+                        <% if (errors && errors['eligibleMonetaryAmountValue']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['eligibleMonetaryAmountValue'].msg %>
                         </span>
                         <% } %>
                     </div>
@@ -461,7 +450,7 @@
                             適用金額
                         </label>
                         <div class="input-group">
-                            <input type="text" class="form-control"
+                            <input type="number" class="form-control"
                                 name="priceSpecification[eligibleTransactionVolume][price]"
                                 id="priceSpecification[eligibleTransactionVolume][price]" placeholder=""
                                 value="<%= (forms.priceSpecification.eligibleTransactionVolume !== undefined) ? Number(forms.priceSpecification.eligibleTransactionVolume.price) : '' %>">

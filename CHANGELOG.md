@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 座席に名称を追加
 - オファー検索条件拡張
 - 「枝番号」表記を「コード」に統一
+- オファー編集の適用条件を動的選択肢に変更
 
 ### Deprecated
 
