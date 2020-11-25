@@ -41,10 +41,6 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
