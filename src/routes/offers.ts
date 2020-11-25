@@ -345,24 +345,14 @@ offersRouter.get(
     }
 );
 
+/**
+ * オファー検索
+ */
 offersRouter.get(
     '',
-    async (req, res) => {
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        const searchOfferCategoryTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-        });
-
-        // 券種マスタ画面遷移
+    async (__, res) => {
         res.render('offers/index', {
             message: '',
-            ticketTypeCategories: searchOfferCategoryTypesResult.data,
             productTypes: productTypes
         });
     }
