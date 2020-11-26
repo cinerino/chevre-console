@@ -72,7 +72,7 @@
                         <label for="price" class="bmd-label-static">
                             金額<span class="text-danger">＊</span>
                         </label>
-                        <input type="text" class="form-control" name="price" id="price" placeholder="" maxlength=10
+                        <input type="number" class="form-control" name="price" id="price" placeholder="" maxlength=10
                             value="<%= (typeof forms.price === 'string' || typeof forms.price === 'number') ? forms.price : '' %>">
                         <span class="bmd-help">半角10文字以内でご入力ください</span>
                         <% if (errors && errors.price) { %>
@@ -108,33 +108,26 @@
                 <div class="form-row">
                     <div
                         class="form-group bmd-form-group col-md-3 d-none appliesToConditions <%= PriceSpecificationType.MovieTicketTypeChargeSpecification %>">
-                        <label for="appliesToMovieTicket[id]" class="bmd-label-static">
+                        <label for="appliesToMovieTicket" class="bmd-label-static">
                             適用決済カード(ムビチケ券種)区分
                         </label>
                         <div class="input-group">
-                            <select class="form-control" name="appliesToMovieTicket[id]">
-                                <option value="" selected>選択してください</option>
-                                <% Object.values(movieTicketTypes).forEach((movieTicketType) => { %>
-                                <%
-                                const selected = forms.appliesToMovieTicket !== undefined 
-                                    && (forms.appliesToMovieTicket.id === movieTicketType.id
-                                    || (forms.appliesToMovieTicket.serviceType === movieTicketType.codeValue
-                                    && forms.appliesToMovieTicket.serviceOutput.typeOf === movieTicketType.paymentMethod.typeOf));
-                                %>
-                                <option value="<%= movieTicketType.id %>" <% if (selected) { %> selected<% } %>>
-                                    <%= movieTicketType.paymentMethod.typeOf %> <%= movieTicketType.codeValue %>
-                                    <%= movieTicketType.name.ja %>
-                                </option>
-                                <% }) %>
+                            <select class="form-control" name="appliesToMovieTicket" id="appliesToMovieTicket"
+                                style="width: 100%;">
+                                <% if (forms.appliesToMovieTicket !== undefined) { %>
+                                <option value="<%= JSON.stringify(forms.appliesToMovieTicket) %>" selected="selected">
+                                    <%= forms.appliesToMovieTicket.inCodeSet.identifier %>
+                                    <%= forms.appliesToMovieTicket.name.ja %></option>
+                                <% } %>
                             </select>
                             <div class="input-group-append">
                                 <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
 
-                        <% if (errors && errors['appliesToMovieTicket.id']) { %>
+                        <% if (errors && errors['appliesToMovieTicket']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['appliesToMovieTicket.id'].msg %>
+                            <%- errors['appliesToMovieTicket'].msg %>
                         </span>
                         <% } %>
                     </div>

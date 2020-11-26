@@ -138,7 +138,7 @@ priceSpecificationsRouter.get(
                         appliesToCategoryCodeSetName: categoryCodeSet?.name,
                         appliesToCategoryCode: appliesToCategoryCode,
                         appliesToCategoryCodeName: (applicableCategoryCode !== undefined)
-                            ? `${categoryCodeSet?.name} ${(<chevre.factory.multilingualString>applicableCategoryCode.name).ja}`
+                            ? `${(<chevre.factory.multilingualString>applicableCategoryCode.name).ja}`
                             : '',
                         appliesToMovieTicketName: (applicableMovieTicket !== undefined)
                             ? `${applicableMovieTicket.paymentMethod?.typeOf} ${(<chevre.factory.multilingualString>applicableMovieTicket.name).ja}`
@@ -213,6 +213,13 @@ priceSpecificationsRouter.all<any>(
                 forms.appliesToCategoryCode = JSON.parse(req.body.appliesToCategoryCode);
             } else {
                 forms.appliesToCategoryCode = undefined;
+            }
+
+            // 適用決済カード区分を保管
+            if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+                forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+            } else {
+                forms.appliesToMovieTicket = undefined;
             }
 
             // 適用上映方式を保管
@@ -312,6 +319,13 @@ priceSpecificationsRouter.all<ParamsDictionary>(
                     forms.appliesToCategoryCode = undefined;
                 }
 
+                // 適用決済カード区分を保管
+                if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+                    forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+                } else {
+                    forms.appliesToMovieTicket = undefined;
+                }
+
                 // 適用上映方式を保管
                 if (typeof req.body.appliesToVideoFormat === 'string' && req.body.appliesToVideoFormat.length > 0) {
                     forms.appliesToVideoFormat = JSON.parse(req.body.appliesToVideoFormat);
@@ -339,6 +353,26 @@ priceSpecificationsRouter.all<ParamsDictionary>(
                     forms.appliesToCategoryCode = searchAppliesToCategoryCodesResult.data[0];
                 } else {
                     forms.appliesToCategoryCode = undefined;
+                }
+
+                if (typeof (<any>priceSpecification).appliesToMovieTicket?.serviceType === 'string'
+                    && typeof (<any>priceSpecification).appliesToMovieTicket?.serviceOutput?.typeOf === 'string') {
+                    const searchAppliesToMovieTicketsResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: {
+                            identifier: {
+                                $in: [
+                                    chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType
+                                ]
+                            }
+                        },
+                        codeValue: { $eq: (<any>priceSpecification).appliesToMovieTicket.serviceType },
+                        paymentMethod: { typeOf: { $eq: (<any>priceSpecification).appliesToMovieTicket.serviceOutput.typeOf } }
+                    });
+                    forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
+                } else {
+                    forms.appliesToMovieTicket = undefined;
                 }
 
                 if (typeof (<any>priceSpecification).appliesToVideoFormat === 'string'
@@ -437,17 +471,19 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
             break;
 
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
-            // req.body.appliesToMovieTicket?.id
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
 
+            const selectedMovieTicketType = JSON.parse(req.body.appliesToMovieTicket);
+
             const searchMovieTicketTypesResult = await categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                id: { $eq: req.body.appliesToMovieTicket?.id },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
+                codeValue: { $eq: selectedMovieTicketType.codeValue },
+                paymentMethod: { typeOf: { $eq: selectedMovieTicketType.paymentMethod?.typeOf } }
             });
             const movieTicketTypeCharge = searchMovieTicketTypesResult.data.shift();
             if (movieTicketTypeCharge === undefined) {
@@ -455,10 +491,6 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
             }
             appliesToMovieTicketType = movieTicketTypeCharge.codeValue;
             appliesToMovieTicketServiceOutputTypeOf = movieTicketTypeCharge.paymentMethod?.typeOf;
-
-            // req.body.appliesToMovieTicket?.serviceTypeがコードの場合
-            // appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
-            // appliesToMovieTicketServiceOutputTypeOf = req.body.appliesToMovieTicket?.serviceOutput?.typeOf;
 
             appliesToCategoryCode = undefined;
 
@@ -548,10 +580,10 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
 
-        body('appliesToMovieTicket.id')
+        body('appliesToMovieTicket')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード(ムビチケ券種)区分')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード区分')),
 
         body('appliesToVideoFormat')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
