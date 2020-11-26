@@ -89,39 +89,14 @@
                         <label for="appliesToCategoryCode" class="bmd-label-static">
                             適用区分
                         </label>
-                        <select class="form-control" name="appliesToCategoryCode">
-                            <option value="" selected>選択してください</option>
-
-                            <% videoFormatTypes.forEach((videoFormatType) => { %>
-                            <option
-                                value="<%= JSON.stringify({codeValue: videoFormatType.codeValue, inCodeSet:{identifier:videoFormatType.inCodeSet.identifier}}) %>"
-                                <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                            && forms.appliesToCategoryCode.codeValue === videoFormatType.codeValue
-                            && forms.appliesToCategoryCode.inCodeSet.identifier === videoFormatType.inCodeSet.identifier) { %> selected<% } %>>
-                                上映方式区分 <%= videoFormatType.codeValue %>
-                            </option>
-                            <% }) %>
-
-                            <% soundFormatTypes.forEach((soundFormatType) => { %>
-                            <option
-                                value="<%= JSON.stringify({codeValue: soundFormatType.codeValue, inCodeSet:{identifier:soundFormatType.inCodeSet.identifier}}) %>"
-                                <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                                && forms.appliesToCategoryCode.codeValue === soundFormatType.codeValue
-                                && forms.appliesToCategoryCode.inCodeSet.identifier === soundFormatType.inCodeSet.identifier) { %> selected<% } %>>
-                                音響方式区分 <%= soundFormatType.codeValue %>
-                            </option>
-                            <% }) %>
-
-                            <% seatingTypes.forEach((seatingType) => { %>
-                            <option
-                                value="<%= JSON.stringify({codeValue: seatingType.codeValue, inCodeSet:{identifier:seatingType.inCodeSet.identifier}}) %>"
-                                <% if (typeof forms.appliesToCategoryCode.codeValue === 'string'
-                                    && forms.appliesToCategoryCode.codeValue === seatingType.codeValue
-                                    && forms.appliesToCategoryCode.inCodeSet.identifier === seatingType.inCodeSet.identifier) { %> selected<% } %>>
-                                座席区分 <%= seatingType.codeValue %>
-                            </option>
-                            <% }) %>
+                        <select class="form-control" name="appliesToCategoryCode" id="appliesToCategoryCode"
+                            style="width: 100%;">
+                            <% if (forms.appliesToCategoryCode !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.appliesToCategoryCode) %>" selected="selected">
+                                <%= forms.appliesToCategoryCode.name.ja %></option>
+                            <% } %>
                         </select>
+
                         <% if (errors && errors['appliesToCategoryCode']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['appliesToCategoryCode'].msg %>
@@ -169,16 +144,14 @@
                         <label for="appliesToVideoFormat" class="bmd-label-static">
                             決済カード(ムビチケ)適用上映方式
                         </label>
-                        <select class="form-control" name="appliesToVideoFormat">
-                            <option value="" selected>選択してください</option>
-
-                            <% videoFormatTypes.forEach((videoFormatType) => { %>
-                            <option value="<%= videoFormatType.codeValue %>"
-                                <% if (videoFormatType.codeValue === forms.appliesToVideoFormat) { %> selected<% } %>>
-                                <%= videoFormatType.codeValue %>
-                            </option>
-                            <% }) %>
+                        <select class="form-control" name="appliesToVideoFormat" id="appliesToVideoFormat"
+                            style="width: 100%;">
+                            <% if (forms.appliesToVideoFormat !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.appliesToVideoFormat) %>" selected="selected">
+                                <%= forms.appliesToVideoFormat.name.ja %></option>
+                            <% } %>
                         </select>
+
                         <% if (errors && errors['appliesToVideoFormat']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['appliesToVideoFormat'].msg %>

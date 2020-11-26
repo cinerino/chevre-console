@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベント編集のカタログを動的選択肢に変更
 - コンテンツ編集の選択肢を動的に変更
 - 勘定科目編集の選択肢を動的に変更
+- 価格仕様編集の選択肢を動的に変更
 
 ### Deprecated
 
