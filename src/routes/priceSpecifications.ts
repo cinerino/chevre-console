@@ -168,18 +168,6 @@ priceSpecificationsRouter.all<any>(
         let message = '';
         let errors: any = {};
 
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        // 決済カード(ムビチケ券種)区分検索
-        const searchMovieTicketTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -230,29 +218,13 @@ priceSpecificationsRouter.all<any>(
             }
         }
 
-        const productService = new chevre.service.Product({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchProductsResult = await productService.search({
-            project: { id: { $eq: req.project.id } },
-            typeOf: {
-                $in: [
-                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-                ]
-            }
-        });
-
         res.render('priceSpecifications/new', {
             message: message,
             errors: errors,
             forms: forms,
-            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             priceSpecificationTypes: priceSpecificationTypes,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            paymentServices: searchProductsResult.data
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
 );
@@ -270,13 +242,6 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
-            });
-
-            // 決済カード(ムビチケ券種)区分検索
-            const searchMovieTicketTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
 
             const priceSpecificationService = new chevre.service.PriceSpecification({
@@ -395,29 +360,13 @@ priceSpecificationsRouter.all<ParamsDictionary>(
                 }
             }
 
-            const productService = new chevre.service.Product({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const searchProductsResult = await productService.search({
-                project: { id: { $eq: req.project.id } },
-                typeOf: {
-                    $in: [
-                        chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                        chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-                    ]
-                }
-            });
-
             res.render('priceSpecifications/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                movieTicketTypes: searchMovieTicketTypesResult.data,
                 PriceSpecificationType: chevre.factory.priceSpecificationType,
                 priceSpecificationTypes: priceSpecificationTypes,
-                CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-                paymentServices: searchProductsResult.data
+                CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
             });
         } catch (error) {
             next(error);

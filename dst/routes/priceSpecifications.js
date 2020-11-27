@@ -142,16 +142,6 @@ priceSpecificationsRouter.all('/new', ...validate(),
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const categoryCodeService = new chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    // 決済カード(ムビチケ券種)区分検索
-    const searchMovieTicketTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-    });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -197,28 +187,13 @@ priceSpecificationsRouter.all('/new', ...validate(),
             forms.appliesToVideoFormat = undefined;
         }
     }
-    const productService = new chevre.service.Product({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchProductsResult = yield productService.search({
-        project: { id: { $eq: req.project.id } },
-        typeOf: {
-            $in: [
-                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-            ]
-        }
-    });
     res.render('priceSpecifications/new', {
         message: message,
         errors: errors,
         forms: forms,
-        movieTicketTypes: searchMovieTicketTypesResult.data,
         PriceSpecificationType: chevre.factory.priceSpecificationType,
         priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-        paymentServices: searchProductsResult.data
+        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
@@ -232,12 +207,6 @@ priceSpecificationsRouter.all('/:id/update', ...validate(),
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
-        });
-        // 決済カード(ムビチケ券種)区分検索
-        const searchMovieTicketTypesResult = yield categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
         });
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
@@ -351,28 +320,13 @@ priceSpecificationsRouter.all('/:id/update', ...validate(),
                 forms.appliesToVideoFormat = undefined;
             }
         }
-        const productService = new chevre.service.Product({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchProductsResult = yield productService.search({
-            project: { id: { $eq: req.project.id } },
-            typeOf: {
-                $in: [
-                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-                ]
-            }
-        });
         res.render('priceSpecifications/update', {
             message: message,
             errors: errors,
             forms: forms,
-            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             priceSpecificationTypes: priceSpecificationType_1.priceSpecificationTypes,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            paymentServices: searchProductsResult.data
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
     catch (error) {
