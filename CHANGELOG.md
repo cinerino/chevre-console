@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.15.0 - 2020-11-27
+
+### Added
+
 - 勘定科目削除を追加
 - 施設編集にhasEntranceGateを追加
 
@@ -22,14 +36,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - コンテンツ編集の選択肢を動的に変更
 - 勘定科目編集の選択肢を動的に変更
 - 価格仕様編集の選択肢を動的に変更
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v2.14.0 - 2020-11-24
 
