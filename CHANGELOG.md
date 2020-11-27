@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 施設コンテンツ編集の上映方式を動的選択肢に変更
+
 ### Deprecated
 
 ### Removed
