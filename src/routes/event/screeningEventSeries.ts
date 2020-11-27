@@ -46,10 +46,6 @@ screeningEventSeriesRouter.all<any>(
             auth: req.user.authClient
         });
 
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
-
         // 上映方式タイプ検索
         const searchVideoFormatTypesResult = await categoryCodeService.search({
             limit: 100,
@@ -75,7 +71,8 @@ screeningEventSeriesRouter.all<any>(
                         throw new Error(`Movie ${req.body.workPerformed?.identifier} Not Found`);
                     }
 
-                    const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
+                    const selectedLocation = JSON.parse(req.body.location);
+                    const movieTheater = await placeService.findMovieTheaterById({ id: selectedLocation.id });
                     const attributes = createEventFromBody(req, movie, movieTheater, true);
                     debug('saving an event...', attributes);
                     const events = await eventService.create(attributes);
@@ -108,6 +105,15 @@ screeningEventSeriesRouter.all<any>(
             }));
         }
 
+        if (req.method === 'POST') {
+            // 施設を保管
+            if (typeof req.body.location === 'string' && req.body.location.length > 0) {
+                forms.location = JSON.parse(req.body.location);
+            } else {
+                forms.location = undefined;
+            }
+        }
+
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -129,7 +135,6 @@ screeningEventSeriesRouter.all<any>(
             errors: errors,
             forms: forms,
             movie: undefined,
-            movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             paymentServices: searchProductsResult.data
         });
@@ -138,16 +143,8 @@ screeningEventSeriesRouter.all<any>(
 
 screeningEventSeriesRouter.get(
     '',
-    async (req, res) => {
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
+    async (__, res) => {
         res.render('events/screeningEventSeries/index', {
-            movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
@@ -392,10 +389,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 auth: req.user.authClient
             });
 
-            const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-                project: { ids: [req.project.id] }
-            });
-
             // 上映方式タイプ検索
             const searchVideoFormatTypesResult = await categoryCodeService.search({
                 limit: 100,
@@ -435,7 +428,8 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                             throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                         }
 
-                        const movieTheater = await placeService.findMovieTheaterById({ id: req.body.locationId });
+                        const selectedLocation = JSON.parse(req.body.location);
+                        const movieTheater = await placeService.findMovieTheaterById({ id: selectedLocation.id });
                         const attributes = createEventFromBody(req, movie, movieTheater, false);
                         debug('saving an event...', attributes);
                         await eventService.update({
@@ -478,7 +472,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
                 duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
                     .asMinutes() : req.body.duration,
-                locationId: event.location.id,
                 translationType: translationType,
                 videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
                 startDate: (_.isEmpty(req.body.startDate)) ?
@@ -501,6 +494,24 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 }));
             }
 
+            if (req.method === 'POST') {
+                // 施設を保管
+                if (typeof req.body.location === 'string' && req.body.location.length > 0) {
+                    forms.location = JSON.parse(req.body.location);
+                } else {
+                    forms.location = undefined;
+                }
+            } else {
+                if (typeof event.location.id === 'string') {
+                    const movieTheater = await placeService.findMovieTheaterById({
+                        id: event.location.id
+                    });
+                    forms.location = movieTheater;
+                } else {
+                    forms.location = undefined;
+                }
+            }
+
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
@@ -521,7 +532,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 movie: movie,
-                movieTheaters: searchMovieTheatersResult.data,
                 videoFormatTypes: searchVideoFormatTypesResult.data,
                 paymentServices: searchProductsResult.data
             });
@@ -726,6 +736,9 @@ function createEventFromBody(
 
 function validate() {
     return [
+        body('location')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         body('workPerformed.identifier', Message.Common.required.replace('$fieldName$', 'コード'))
             .notEmpty(),
         body('workPerformed.identifier', Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE))

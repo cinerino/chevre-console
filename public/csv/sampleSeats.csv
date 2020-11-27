@@ -1,4 +1,4 @@
-branchCode,seatingType
-A-0,Premium
-A-1
+branchCode,seatingType,name.ja,name.en
+A-0,Premium,座席名称A0,Seat Name
+A-1,,座席名称A1
 A-2

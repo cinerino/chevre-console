@@ -43,10 +43,6 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
     if (req.method === 'POST') {
         // バリデーション
         const validatorResult = express_validator_1.validationResult(req);
@@ -81,22 +77,26 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
             return {};
         }));
     }
-    const searchContentRatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-    });
-    const searchDistributorTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
-    });
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.contentRating === 'string' && req.body.contentRating.length > 0) {
+            forms.contentRating = JSON.parse(req.body.contentRating);
+        }
+        else {
+            forms.contentRating = undefined;
+        }
+        // 配給を保管
+        if (typeof req.body.distributor === 'string' && req.body.distributor.length > 0) {
+            forms.distributor = JSON.parse(req.body.distributor);
+        }
+        else {
+            forms.distributor = undefined;
+        }
+    }
     res.render('creativeWorks/movie/add', {
         message: message,
         errors: errors,
-        forms: forms,
-        contentRatingTypes: searchContentRatingTypesResult.data,
-        distributorTypes: searchDistributorTypesResult.data
+        forms: forms
     });
 }));
 movieRouter.get('', (__, res) => {
@@ -186,8 +186,10 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d;
+movieRouter.all('/:id/update', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d, _e;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -245,22 +247,52 @@ movieRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, vo
             return {};
         }));
     }
-    const searchContentRatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
-    });
-    const searchDistributorTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
-    });
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.contentRating === 'string' && req.body.contentRating.length > 0) {
+            forms.contentRating = JSON.parse(req.body.contentRating);
+        }
+        else {
+            forms.contentRating = undefined;
+        }
+        // 配給を保管
+        if (typeof req.body.distributor === 'string' && req.body.distributor.length > 0) {
+            forms.distributor = JSON.parse(req.body.distributor);
+        }
+        else {
+            forms.distributor = undefined;
+        }
+    }
+    else {
+        if (typeof movie.contentRating === 'string') {
+            const searchContentRatingsResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } },
+                codeValue: { $eq: movie.contentRating }
+            });
+            forms.contentRating = searchContentRatingsResult.data[0];
+        }
+        else {
+            forms.contentRating = undefined;
+        }
+        if (typeof ((_e = movie.distributor) === null || _e === void 0 ? void 0 : _e.codeValue) === 'string') {
+            const searchDistributorTypesResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
+                codeValue: { $eq: movie.distributor.codeValue }
+            });
+            forms.distributor = searchDistributorTypesResult.data[0];
+        }
+        else {
+            forms.distributor = undefined;
+        }
+    }
     res.render('creativeWorks/movie/edit', {
         message: message,
         errors: errors,
-        forms: forms,
-        contentRatingTypes: searchContentRatingTypesResult.data,
-        distributorTypes: searchDistributorTypesResult.data
+        forms: forms
     });
 }));
 movieRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -303,7 +335,7 @@ function preDelete(req, movie) {
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -311,7 +343,8 @@ function createFromBody(req, isNew) {
         });
         let contentRating;
         if (typeof req.body.contentRating === 'string' && req.body.contentRating.length > 0) {
-            contentRating = req.body.contentRating;
+            const selectedContenRating = JSON.parse(req.body.contentRating);
+            contentRating = selectedContenRating.codeValue;
         }
         let duration;
         if (typeof req.body.duration === 'string' && req.body.duration.length > 0) {
@@ -335,19 +368,20 @@ function createFromBody(req, isNew) {
         }
         const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
         let distributor;
-        const distributorCodeParam = (_d = req.body.distributor) === null || _d === void 0 ? void 0 : _d.codeValue;
-        if (typeof distributorCodeParam === 'string' && distributorCodeParam.length > 0) {
+        if (typeof req.body.distributor === 'string' && req.body.distributor.length > 0) {
+            const selectedDistributor = JSON.parse(req.body.distributor);
             const searchDistributorTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
-                codeValue: { $eq: distributorCodeParam }
+                codeValue: { $eq: selectedDistributor.codeValue }
             });
             const distributorType = searchDistributorTypesResult.data.shift();
             if (distributorType === undefined) {
                 throw new Error('配給区分が見つかりません');
             }
             distributor = Object.assign({ id: distributorType.id, codeValue: distributorType.codeValue }, {
+                // 互換性維持対応
                 distributorType: distributorType.codeValue
             });
         }

@@ -294,27 +294,19 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
         });
     }
 }));
-offersRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categoryCodeService = new chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-    // 券種マスタ画面遷移
+/**
+ * オファー検索
+ */
+offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('offers/index', {
         message: '',
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
         productTypes: productType_1.productTypes
     });
 }));
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g;
+    var _d, _e, _f, _g, _h;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -368,6 +360,15 @@ offersRouter.get('/getlist',
                 ? { $regex: req.query.name }
                 : undefined,
             priceSpecification: {
+                accounting: {
+                    operatingRevenue: {
+                        codeValue: {
+                            $eq: (typeof ((_g = req.query.accountTitle) === null || _g === void 0 ? void 0 : _g.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
+                                ? String(req.query.accountTitle.codeValue)
+                                : undefined
+                        }
+                    }
+                },
                 appliesToMovieTicket: {
                     serviceType: {
                         $eq: (typeof req.query.appliesToMovieTicket === 'string'
@@ -379,7 +380,7 @@ offersRouter.get('/getlist',
                         typeOf: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'
                                 && req.query.appliesToMovieTicket.length > 0)
-                                ? (_g = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _g === void 0 ? void 0 : _g.typeOf
+                                ? (_h = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _h === void 0 ? void 0 : _h.typeOf
                                 : undefined
                         }
                     }

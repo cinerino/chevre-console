@@ -85,8 +85,8 @@
                             上映時間
                         </label>
                         <div class="input-group">
-                            <input class="form-control" name="duration" id="duration" placeholder="" maxlength=10
-                                value="<%= forms.duration %>">
+                            <input type="number" class="form-control" name="duration" id="duration" placeholder=""
+                                maxlength=10 value="<%= forms.duration %>">
                             <div class="input-group-append">
                                 <span class="input-group-text">分</span>
                             </div>
@@ -103,15 +103,13 @@
                         <label for="contentRating" class="bmd-label-static">
                             レイティング
                         </label>
-                        <select name="contentRating" id="contentRating" class="form-control">
-                            <option value="">なし</option>
-                            <% for (let rating of contentRatingTypes) { %>
-                            <option value="<%= rating.codeValue %>"
-                                <% if (forms.contentRating === rating.codeValue) { %> selected="selected" <% } %>>
-                                <%- rating.name.ja %>
-                            </option>
+                        <select class="form-control" name="contentRating" id="contentRating" style="width: 100%;">
+                            <% if (forms.contentRating !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.contentRating) %>" selected="selected">
+                                <%= forms.contentRating.name.ja %></option>
                             <% } %>
                         </select>
+
                         <% if (errors && errors.contentRating) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors.contentRating.msg %>
@@ -120,22 +118,19 @@
                     </div>
 
                     <div class="form-group bmd-form-group col-md-2">
-                        <label for="distributor[codeValue]" class="bmd-label-static">
+                        <label for="distributor" class="bmd-label-static">
                             配給
                         </label>
-                        <select name="distributor[codeValue]" id="distributor[codeValue]" class="form-control">
-                            <option value="">---</option>
-                            <% for (let distributorType of distributorTypes) { %>
-                            <option value="<%= distributorType.codeValue %>"
-                                <% if (forms.distributor !== undefined && forms.distributor !== null && forms.distributor.codeValue === distributorType.codeValue) { %>
-                                selected="selected" <% } %>>
-                                <%- distributorType.name.ja %>
-                            </option>
+                        <select class="form-control" name="distributor" id="distributor" style="width: 100%;">
+                            <% if (forms.distributor !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.distributor) %>" selected="selected">
+                                <%= forms.distributor.name.ja %></option>
                             <% } %>
                         </select>
-                        <% if (errors && errors.contentRating) { %>
+
+                        <% if (errors && errors.distributor) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors.contentRating.msg %>
+                            <%- errors.distributor.msg %>
                         </span>
                         <% } %>
                     </div>

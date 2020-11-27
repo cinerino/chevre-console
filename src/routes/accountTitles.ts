@@ -7,6 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -28,30 +29,8 @@ accountTitlesRouter.use('/accountTitleSet', accountTitleSetRouter);
 
 accountTitlesRouter.get(
     '',
-    async (req, res) => {
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        // 科目分類検索
-        const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-
-        // 科目検索
-        const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-
+    async (__, res) => {
         res.render('accountTitles/index', {
-            forms: {},
-            accountTitleCategories: searchAccountTitleCategoriesResult.data,
-            accountTitleSets: searchAccountTitleSetsResult.data.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
         });
     }
 );
@@ -151,7 +130,6 @@ accountTitlesRouter.all<any>(
 
         const forms = {
             additionalProperty: [],
-            inCodeSet: {},
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -161,19 +139,19 @@ accountTitlesRouter.all<any>(
             }));
         }
 
-        // 科目分類検索
-        const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-        const accountTitleSets = searchAccountTitleSetsResult.data;
+        if (req.method === 'POST') {
+            // レイティングを保管
+            if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+                forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+            } else {
+                forms.inCodeSet = undefined;
+            }
+        }
 
         res.render('accountTitles/new', {
             message: message,
             errors: errors,
-            forms: forms,
-            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
+            forms: forms
         });
     }
 );
@@ -182,74 +160,127 @@ accountTitlesRouter.all<any>(
 accountTitlesRouter.all<ParamsDictionary>(
     '/:codeValue',
     ...validate(),
-    async (req, res) => {
-        let message = '';
-        let errors: any = {};
+    // tslint:disable-next-line:max-func-body-length
+    async (req, res, next) => {
+        try {
+            let message = '';
+            let errors: any = {};
 
-        const accountTitleService = new chevre.service.AccountTitle({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+            const accountTitleService = new chevre.service.AccountTitle({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
 
-        const searchAccountTitlesResult = await accountTitleService.search({
-            project: { ids: [req.project.id] },
-            codeValue: { $eq: req.params.codeValue }
-        });
-        let accountTitle = searchAccountTitlesResult.data.shift();
-        if (accountTitle === undefined) {
-            throw new chevre.factory.errors.NotFound('AccounTitle');
-        }
+            const searchAccountTitlesResult = await accountTitleService.search({
+                project: { ids: [req.project.id] },
+                codeValue: { $eq: req.params.codeValue }
+            });
+            let accountTitle = searchAccountTitlesResult.data.shift();
+            if (accountTitle === undefined) {
+                throw new chevre.factory.errors.NotFound('AccounTitle');
+            }
 
-        if (req.method === 'POST') {
-            // バリデーション
-            // validate(req);
-            const validatorResult = validationResult(req);
-            errors = validatorResult.mapped();
-            console.error('errors', errors);
-            if (validatorResult.isEmpty()) {
-                // コンテンツDB登録
+            if (req.method === 'POST') {
+                // バリデーション
+                // validate(req);
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
+                console.error('errors', errors);
+                if (validatorResult.isEmpty()) {
+                    // コンテンツDB登録
+                    try {
+                        accountTitle = await createFromBody(req);
+                        debug('saving account title...', accountTitle);
+                        await accountTitleService.update(accountTitle);
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
+
+                        return;
+                    } catch (error) {
+                        message = error.message;
+                    }
+                }
+            } else if (req.method === 'DELETE') {
                 try {
-                    accountTitle = await createFromBody(req);
-                    debug('saving account title...', accountTitle);
-                    await accountTitleService.update(accountTitle);
-                    req.flash('message', '更新しました');
-                    res.redirect(req.originalUrl);
+                    await preDelete(req, accountTitle);
 
-                    return;
+                    await accountTitleService.deleteByCodeValue({
+                        project: { id: req.project.id },
+                        codeValue: accountTitle.codeValue,
+                        inCodeSet: {
+                            codeValue: String(accountTitle.inCodeSet?.codeValue),
+                            inCodeSet: {
+                                codeValue: String(accountTitle.inCodeSet?.inCodeSet?.codeValue)
+                            }
+                        }
+                    });
+
+                    res.status(NO_CONTENT)
+                        .end();
+
                 } catch (error) {
-                    message = error.message;
+                    res.status(BAD_REQUEST)
+                        .json({ error: { message: error.message } });
+                }
+
+                return;
+            }
+
+            const forms = {
+                additionalProperty: [],
+                ...accountTitle,
+                ...req.body
+            };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            if (req.method === 'POST') {
+                // レイティングを保管
+                if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+                    forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+                } else {
+                    forms.inCodeSet = undefined;
+                }
+            }
+
+            res.render('accountTitles/edit', {
+                message: message,
+                errors: errors,
+                forms: forms
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+async function preDelete(req: Request, accountTitle: chevre.factory.accountTitle.IAccountTitle) {
+    // validation
+    const offerService = new chevre.service.Offer({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    // 関連するオファー
+    const searchOffersResult = await offerService.search({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        priceSpecification: {
+            accounting: {
+                operatingRevenue: {
+                    codeValue: { $eq: accountTitle.codeValue }
                 }
             }
         }
-
-        // 科目分類検索
-        const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-            limit: 100,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] }
-        });
-        const accountTitleSets = searchAccountTitleSetsResult.data;
-
-        const forms = {
-            additionalProperty: [],
-            ...accountTitle,
-            ...req.body
-        };
-        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
-            // tslint:disable-next-line:prefer-array-literal
-            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
-                return {};
-            }));
-        }
-
-        res.render('accountTitles/edit', {
-            message: message,
-            errors: errors,
-            forms: forms,
-            accountTitleSets: accountTitleSets.sort((a, b) => Number(a.codeValue) - Number(b.codeValue))
-        });
+    });
+    if (searchOffersResult.data.length > 0) {
+        throw new Error('関連するオファーが存在します');
     }
-);
+}
 
 async function createFromBody(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle> {
     const accountTitleService = new chevre.service.AccountTitle({
@@ -258,12 +289,16 @@ async function createFromBody(req: Request): Promise<chevre.factory.accountTitle
     });
 
     // 科目検索
-    const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-        limit: 1,
-        project: { ids: [req.project.id] },
-        codeValue: { $eq: req.body.inCodeSet?.codeValue }
-    });
-    const accountTitleSet = searchAccountTitleSetsResult.data.shift();
+    let accountTitleSet: chevre.factory.accountTitle.IAccountTitle | undefined;
+    if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+        const selectedAccountTitleSet = JSON.parse(req.body.inCodeSet);
+        const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            codeValue: { $eq: selectedAccountTitleSet.codeValue }
+        });
+        accountTitleSet = searchAccountTitleSetsResult.data.shift();
+    }
     if (accountTitleSet === undefined) {
         throw new Error('科目が見つかりません');
     }
@@ -291,7 +326,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.accountTitle
  */
 function validate() {
     return [
-        body('inCodeSet.codeValue')
+        body('inCodeSet')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '科目')),
         body('codeValue')

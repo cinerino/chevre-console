@@ -43,7 +43,7 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
                 });
                 const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
                 if (existingMovieTheater !== undefined) {
-                    throw new Error('枝番号が重複しています');
+                    throw new Error('コードが重複しています');
                 }
                 debug('existingMovieTheater:', existingMovieTheater);
                 movieTheater = yield placeService.createMovieTheater(movieTheater);
@@ -285,9 +285,16 @@ function createMovieTheaterFromBody(req, isNew) {
         if (!Array.isArray(hasPOS)) {
             throw new Error('hasPOSはArrayを入力してください');
         }
+        let hasEntranceGate = [];
+        if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
+            hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
+        }
+        if (!Array.isArray(hasEntranceGate)) {
+            throw new Error('hasEntranceGateはArrayを入力してください');
+        }
         const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -307,11 +314,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

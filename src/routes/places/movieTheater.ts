@@ -43,7 +43,7 @@ movieTheaterRouter.all<any>(
                     });
                     const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
                     if (existingMovieTheater !== undefined) {
-                        throw new Error('枝番号が重複しています');
+                        throw new Error('コードが重複しています');
                     }
 
                     debug('existingMovieTheater:', existingMovieTheater);
@@ -356,6 +356,14 @@ async function createMovieTheaterFromBody(
         throw new Error('hasPOSはArrayを入力してください');
     }
 
+    let hasEntranceGate: chevre.factory.place.movieTheater.IEntranceGate[] = [];
+    if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
+        hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
+    }
+    if (!Array.isArray(hasEntranceGate)) {
+        throw new Error('hasEntranceGateはArrayを入力してください');
+    }
+
     const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
 
     // tslint:disable-next-line:no-unnecessary-local-variable
@@ -366,6 +374,7 @@ async function createMovieTheaterFromBody(
         branchCode: req.body.branchCode,
         name: req.body.name,
         kanaName: req.body.kanaName,
+        hasEntranceGate: hasEntranceGate,
         hasPOS: hasPOS,
         offers: JSON.parse(req.body.offersStr),
         parentOrganization: parentOrganization,
@@ -397,11 +406,11 @@ function validate() {
     return [
         body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
 
         body('name.ja')
             .notEmpty()

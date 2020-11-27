@@ -41,7 +41,7 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
                 // const { data } = await placeService.searchScreeningRooms({});
                 // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
                 // if (existingMovieTheater !== undefined) {
-                //     throw new Error('枝番号が重複しています');
+                //     throw new Error('コードが重複しています');
                 // }
                 yield placeService.createScreeningRoom(screeningRoom);
                 req.flash('message', '登録しました');
@@ -117,10 +117,11 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                 $regex: (typeof ((_y = (_x = req.query) === null || _x === void 0 ? void 0 : _x.name) === null || _y === void 0 ? void 0 : _y.$regex) === 'string'
                     && ((_0 = (_z = req.query) === null || _z === void 0 ? void 0 : _z.name) === null || _0 === void 0 ? void 0 : _0.$regex.length) > 0)
                     ? (_2 = (_1 = req.query) === null || _1 === void 0 ? void 0 : _1.name) === null || _2 === void 0 ? void 0 : _2.$regex : undefined
-            }
+            },
+            openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined
         });
         const results = data.map((screeningRoom) => {
-            return Object.assign({}, screeningRoom);
+            return Object.assign(Object.assign({}, screeningRoom), { openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined });
         });
         res.json({
             success: true,
@@ -243,11 +244,11 @@ function validate() {
     return [
         express_validator_1.body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

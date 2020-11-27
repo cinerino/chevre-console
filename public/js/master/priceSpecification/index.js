@@ -97,7 +97,7 @@ $(function () {
                     results: data.results.map(function (categoryCode) {
                         return {
                             id: JSON.stringify({ codeValue: categoryCode.codeValue, inCodeSet: { identifier: categoryCode.inCodeSet.identifier } }),
-                            text: categoryCode.inCodeSet.identifier + ' ' + categoryCode.name.ja
+                            text: categoryCode.name.ja
                         }
                     })
                 };
@@ -141,7 +141,7 @@ $(function () {
                     results: data.results.map(function (categoryCode) {
                         return {
                             id: categoryCode.codeValue,
-                            text: categoryCode.paymentMethod.typeOf + ' ' + categoryCode.codeValue + ' ' + categoryCode.name.ja
+                            text: categoryCode.paymentMethod.typeOf + ' ' + categoryCode.name.ja
                         }
                     })
                 };

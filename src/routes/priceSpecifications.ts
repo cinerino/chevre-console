@@ -138,7 +138,7 @@ priceSpecificationsRouter.get(
                         appliesToCategoryCodeSetName: categoryCodeSet?.name,
                         appliesToCategoryCode: appliesToCategoryCode,
                         appliesToCategoryCodeName: (applicableCategoryCode !== undefined)
-                            ? `${categoryCodeSet?.name} ${(<chevre.factory.multilingualString>applicableCategoryCode.name).ja}`
+                            ? `${(<chevre.factory.multilingualString>applicableCategoryCode.name).ja}`
                             : '',
                         appliesToMovieTicketName: (applicableMovieTicket !== undefined)
                             ? `${applicableMovieTicket.paymentMethod?.typeOf} ${(<chevre.factory.multilingualString>applicableMovieTicket.name).ja}`
@@ -163,42 +163,10 @@ priceSpecificationsRouter.get(
 priceSpecificationsRouter.all<any>(
     '/new',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
-
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        // 上映方式タイプ検索
-        const searchVideoFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-        });
-
-        // 上映方式タイプ検索
-        const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
-        });
-
-        // 座席区分検索
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-        });
-
-        // 決済カード(ムビチケ券種)区分検索
-        const searchMovieTicketTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
-        });
 
         if (req.method === 'POST') {
             // バリデーション
@@ -224,36 +192,39 @@ priceSpecificationsRouter.all<any>(
         }
 
         const forms = {
-            appliesToCategoryCode: {},
             ...req.body
         };
 
-        const productService = new chevre.service.Product({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchProductsResult = await productService.search({
-            project: { id: { $eq: req.project.id } },
-            typeOf: {
-                $in: [
-                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-                ]
+        if (req.method === 'POST') {
+            // 適用区分を保管
+            if (typeof req.body.appliesToCategoryCode === 'string' && req.body.appliesToCategoryCode.length > 0) {
+                forms.appliesToCategoryCode = JSON.parse(req.body.appliesToCategoryCode);
+            } else {
+                forms.appliesToCategoryCode = undefined;
             }
-        });
+
+            // 適用決済カード区分を保管
+            if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+                forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+            } else {
+                forms.appliesToMovieTicket = undefined;
+            }
+
+            // 適用上映方式を保管
+            if (typeof req.body.appliesToVideoFormat === 'string' && req.body.appliesToVideoFormat.length > 0) {
+                forms.appliesToVideoFormat = JSON.parse(req.body.appliesToVideoFormat);
+            } else {
+                forms.appliesToVideoFormat = undefined;
+            }
+        }
 
         res.render('priceSpecifications/new', {
             message: message,
             errors: errors,
             forms: forms,
-            movieTicketTypes: searchMovieTicketTypesResult.data,
             PriceSpecificationType: chevre.factory.priceSpecificationType,
             priceSpecificationTypes: priceSpecificationTypes,
-            videoFormatTypes: searchVideoFormatTypesResult.data,
-            soundFormatTypes: searchSoundFormatFormatTypesResult.data,
-            seatingTypes: searchSeatingTypesResult.data,
-            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-            paymentServices: searchProductsResult.data
+            CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
         });
     }
 );
@@ -271,34 +242,6 @@ priceSpecificationsRouter.all<ParamsDictionary>(
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
-            });
-
-            // 上映方式タイプ検索
-            const searchVideoFormatTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-            });
-
-            // 上映方式タイプ検索
-            const searchSoundFormatFormatTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType } }
-            });
-
-            // 座席区分検索
-            const searchSeatingTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-            });
-
-            // 決済カード(ムビチケ券種)区分検索
-            const searchMovieTicketTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
 
             const priceSpecificationService = new chevre.service.PriceSpecification({
@@ -330,39 +273,100 @@ priceSpecificationsRouter.all<ParamsDictionary>(
 
             const forms = {
                 ...priceSpecification,
-                ...(Array.isArray((<any>priceSpecification).appliesToCategoryCode)
-                    && (<any>priceSpecification).appliesToCategoryCode.length > 0)
-                    ? { appliesToCategoryCode: (<any>priceSpecification).appliesToCategoryCode[0] }
-                    : { appliesToCategoryCode: {} }
-                // ...req.body
+                ...req.body
             };
 
-            const productService = new chevre.service.Product({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const searchProductsResult = await productService.search({
-                project: { id: { $eq: req.project.id } },
-                typeOf: {
-                    $in: [
-                        chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                        chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
-                    ]
+            if (req.method === 'POST') {
+                // 適用区分を保管
+                if (typeof req.body.appliesToCategoryCode === 'string' && req.body.appliesToCategoryCode.length > 0) {
+                    forms.appliesToCategoryCode = JSON.parse(req.body.appliesToCategoryCode);
+                } else {
+                    forms.appliesToCategoryCode = undefined;
                 }
-            });
+
+                // 適用決済カード区分を保管
+                if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
+                    forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
+                } else {
+                    forms.appliesToMovieTicket = undefined;
+                }
+
+                // 適用上映方式を保管
+                if (typeof req.body.appliesToVideoFormat === 'string' && req.body.appliesToVideoFormat.length > 0) {
+                    forms.appliesToVideoFormat = JSON.parse(req.body.appliesToVideoFormat);
+                } else {
+                    forms.appliesToVideoFormat = undefined;
+                }
+            } else {
+                if (Array.isArray((<any>priceSpecification).appliesToCategoryCode)
+                    && (<any>priceSpecification).appliesToCategoryCode.length > 0) {
+                    const searchAppliesToCategoryCodesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: {
+                            identifier: {
+                                $in: [
+                                    chevre.factory.categoryCode.CategorySetIdentifier.SeatingType,
+                                    chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType,
+                                    chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType,
+                                    chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType
+                                ]
+                            }
+                        },
+                        codeValue: { $eq: (<any>priceSpecification).appliesToCategoryCode[0].codeValue }
+                    });
+                    forms.appliesToCategoryCode = searchAppliesToCategoryCodesResult.data[0];
+                } else {
+                    forms.appliesToCategoryCode = undefined;
+                }
+
+                if (typeof (<any>priceSpecification).appliesToMovieTicket?.serviceType === 'string'
+                    && typeof (<any>priceSpecification).appliesToMovieTicket?.serviceOutput?.typeOf === 'string') {
+                    const searchAppliesToMovieTicketsResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: {
+                            identifier: {
+                                $in: [
+                                    chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType
+                                ]
+                            }
+                        },
+                        codeValue: { $eq: (<any>priceSpecification).appliesToMovieTicket.serviceType },
+                        paymentMethod: { typeOf: { $eq: (<any>priceSpecification).appliesToMovieTicket.serviceOutput.typeOf } }
+                    });
+                    forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
+                } else {
+                    forms.appliesToMovieTicket = undefined;
+                }
+
+                if (typeof (<any>priceSpecification).appliesToVideoFormat === 'string'
+                    && (<any>priceSpecification).appliesToVideoFormat.length > 0) {
+                    const searchAppliesToVideoFormatsResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: {
+                            identifier: {
+                                $in: [
+                                    chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType
+                                ]
+                            }
+                        },
+                        codeValue: { $eq: (<any>priceSpecification).appliesToVideoFormat }
+                    });
+                    forms.appliesToVideoFormat = searchAppliesToVideoFormatsResult.data[0];
+                } else {
+                    forms.appliesToVideoFormat = undefined;
+                }
+            }
 
             res.render('priceSpecifications/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                movieTicketTypes: searchMovieTicketTypesResult.data,
                 PriceSpecificationType: chevre.factory.priceSpecificationType,
                 priceSpecificationTypes: priceSpecificationTypes,
-                videoFormatTypes: searchVideoFormatTypesResult.data,
-                soundFormatTypes: searchSoundFormatFormatTypesResult.data,
-                seatingTypes: searchSeatingTypesResult.data,
-                CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
-                paymentServices: searchProductsResult.data
+                CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier
             });
         } catch (error) {
             next(error);
@@ -416,17 +420,19 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
             break;
 
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
-            // req.body.appliesToMovieTicket?.id
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
 
+            const selectedMovieTicketType = JSON.parse(req.body.appliesToMovieTicket);
+
             const searchMovieTicketTypesResult = await categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                id: { $eq: req.body.appliesToMovieTicket?.id },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
+                codeValue: { $eq: selectedMovieTicketType.codeValue },
+                paymentMethod: { typeOf: { $eq: selectedMovieTicketType.paymentMethod?.typeOf } }
             });
             const movieTicketTypeCharge = searchMovieTicketTypesResult.data.shift();
             if (movieTicketTypeCharge === undefined) {
@@ -435,12 +441,10 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
             appliesToMovieTicketType = movieTicketTypeCharge.codeValue;
             appliesToMovieTicketServiceOutputTypeOf = movieTicketTypeCharge.paymentMethod?.typeOf;
 
-            // req.body.appliesToMovieTicket?.serviceTypeがコードの場合
-            // appliesToMovieTicketType = req.body.appliesToMovieTicket?.serviceType;
-            // appliesToMovieTicketServiceOutputTypeOf = req.body.appliesToMovieTicket?.serviceOutput?.typeOf;
-
             appliesToCategoryCode = undefined;
-            appliesToVideoFormat = req.body.appliesToVideoFormat;
+
+            const selectedVideoFormat = JSON.parse(req.body.appliesToVideoFormat);
+            appliesToVideoFormat = selectedVideoFormat.codeValue;
 
             break;
 
@@ -468,7 +472,7 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
             }
             : undefined,
         ...(typeof appliesToVideoFormat === 'string' && appliesToVideoFormat.length > 0)
-            ? { appliesToVideoFormat: req.body.appliesToVideoFormat }
+            ? { appliesToVideoFormat }
             : undefined,
         ...(typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
             ? {
@@ -525,15 +529,15 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '適用区分')),
 
-        body('appliesToMovieTicket.id')
+        body('appliesToMovieTicket')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード(ムビチケ券種)区分')),
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用決済カード区分')),
 
         body('appliesToVideoFormat')
             .if((_: any, { req }: Meta) => req.body.typeOf === chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification)
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '決済カード(ムビチケ)適用上映方式区分'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '適用上映方式区分'))
     ];
 
 }

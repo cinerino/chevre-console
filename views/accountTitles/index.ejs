@@ -73,9 +73,10 @@ AT-01
                             <thead class="text-primary">
                                 <tr>
                                     <th>コード</th>
-                                    <th>名称</th>
                                     <th>科目分類</th>
                                     <th>科目</th>
+                                    <th>名称</th>
+                                    <th>追加特性</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,7 +86,6 @@ AT-01
                                             $codeValue$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
-                                    <td name="name|slice">$name$</td>
                                     <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.name|slice">
                                         <a target="_blank"
                                             href="/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
@@ -97,6 +97,13 @@ AT-01
                                         <a target="_blank" href="/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
                                             $inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
+                                        </a>
+                                    </td>
+                                    <td name="name|slice">$name$</td>
+                                    <td name="codeValue__addtionalProperty">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty"
+                                            data-codeValue="$codeValue$">
+                                            <span>表示</span>
                                         </a>
                                     </td>
                                 </tr>

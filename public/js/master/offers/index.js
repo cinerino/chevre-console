@@ -244,6 +244,42 @@ $(function () {
         }
     });
 
+
+    $('#accountTitle\\[codeValue\\]').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/accountTitles/getlist',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (accountTitle) {
+                        return {
+                            id: accountTitle.codeValue,
+                            text: accountTitle.name
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     /**
      * 追加特性を見る
      */

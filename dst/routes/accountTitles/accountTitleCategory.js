@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
+const http_status_1 = require("http-status");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
 const NAME_MAX_LENGTH_CODE = 30;
@@ -128,6 +129,22 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
                 }
             }
         }
+        else if (req.method === 'DELETE') {
+            try {
+                yield preDelete(req, accountTitleCategory);
+                yield accountTitleService.deleteAccounTitleCategory({
+                    project: { id: req.project.id },
+                    codeValue: accountTitleCategory.codeValue
+                });
+                res.status(http_status_1.NO_CONTENT)
+                    .end();
+            }
+            catch (error) {
+                res.status(http_status_1.BAD_REQUEST)
+                    .json({ error: { message: error.message } });
+            }
+            return;
+        }
         const forms = Object.assign(Object.assign({}, accountTitleCategory), req.body);
         res.render('accountTitles/accountTitleCategory/edit', {
             message: message,
@@ -139,6 +156,68 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
         next(error);
     }
 }));
+function preDelete(req, accountTitleCategory) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const accountTitleService = new chevre.service.AccountTitle({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // 科目に属する全細目
+        const limit = 100;
+        let page = 0;
+        let numData = limit;
+        const accountTitles = [];
+        while (numData === limit) {
+            page += 1;
+            const searchAccountTitlesResult = yield accountTitleService.search({
+                limit: limit,
+                page: page,
+                project: { ids: [req.project.id] },
+                inCodeSet: {
+                    inCodeSet: {
+                        codeValue: { $eq: accountTitleCategory.codeValue }
+                    }
+                }
+            });
+            numData = searchAccountTitlesResult.data.length;
+            accountTitles.push(...searchAccountTitlesResult.data);
+        }
+        const searchOffersPer = 10;
+        if (accountTitles.length > 0) {
+            // 関連するオファーを10件ずつ確認する(queryの長さは有限なので)
+            // tslint:disable-next-line:no-magic-numbers
+            const searchCount = Math.ceil(accountTitles.length / searchOffersPer);
+            // tslint:disable-next-line:prefer-array-literal
+            const searchNubmers = [...Array(searchCount)].map((__, i) => i);
+            for (const i of searchNubmers) {
+                const start = i * searchOffersPer;
+                const end = Math.min(start + searchOffersPer - 1, accountTitles.length);
+                const searchOffersResult = yield offerService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    priceSpecification: {
+                        accounting: {
+                            operatingRevenue: {
+                                codeValue: {
+                                    $in: accountTitles.slice(start, end)
+                                        .map((a) => a.codeValue)
+                                }
+                            }
+                        }
+                    }
+                });
+                if (searchOffersResult.data.length > 0) {
+                    throw new Error('関連するオファーが存在します');
+                }
+            }
+        }
+    });
+}
 function createFromBody(req, isNew) {
     return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name }, (isNew)
         ? { hasCategoryCode: [] }

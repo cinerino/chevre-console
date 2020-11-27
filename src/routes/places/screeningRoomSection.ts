@@ -48,7 +48,7 @@ screeningRoomSectionRouter.all<any>(
                     // const { data } = await placeService.searchScreeningRooms({});
                     // const existingMovieTheater = data.find((d) => d.branchCode === screeningRoom.branchCode);
                     // if (existingMovieTheater !== undefined) {
-                    //     throw new Error('枝番号が重複しています');
+                    //     throw new Error('コードが重複しています');
                     // }
 
                     await placeService.createScreeningRoomSection(screeningRoomSection);
@@ -329,12 +329,28 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                         seatingTypeCodeValue = seatingTypes.find((s) => s.codeValue === p.seatingType)?.codeValue;
                     }
 
+                    const name: chevre.factory.multilingualString = {
+                        ...(typeof p.name?.ja === 'string' && p.name.ja.length > 0) ? {
+                            ja: String(p.name.ja)
+                                // tslint:disable-next-line:no-magic-numbers
+                                .slice(0, 64)
+                        } : undefined,
+                        ...(typeof p.name?.en === 'string' && p.name.en.length > 0) ? {
+                            en: String(p.name.en)
+                                // tslint:disable-next-line:no-magic-numbers
+                                .slice(0, 64)
+                        } : undefined
+                    };
+
                     return {
                         project: { typeOf: req.project.typeOf, id: req.project.id },
                         typeOf: chevre.factory.placeType.Seat,
-                        branchCode: p.branchCode,
+                        branchCode: String(p.branchCode)
+                            // tslint:disable-next-line:no-magic-numbers
+                            .slice(0, 20),
                         seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [],
-                        additionalProperty: []
+                        additionalProperty: [],
+                        ...(typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined
                     };
                 });
         }
@@ -382,11 +398,11 @@ function validate() {
     return [
         body('branchCode')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '枝番号'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('枝番号', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20)),
         body('containedInPlace.containedInPlace.branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),

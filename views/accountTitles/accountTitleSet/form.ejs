@@ -4,6 +4,10 @@
             <!--        Here you can write extra buttons/actions for the toolbar              -->
             <a class="btn btn-primary btn-ok" href="javascript:void(0)">
                 <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
         </div>
 
         <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
@@ -18,25 +22,23 @@
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
-                        <label for="inCodeSet[codeValue]" class="bmd-label-static">
+                        <label for="inCodeSet" class="bmd-label-static">
                             科目分類<span class="text-danger">＊</span>
                         </label>
                         <% if (!isNew) { %>
-                        <input type="hidden" name="inCodeSet[codeValue]" value="<%= forms.inCodeSet.codeValue %>">
+                        <input type="hidden" name="inCodeSet" value="<%= JSON.stringify(forms.inCodeSet) %>">
                         <% } %>
-                        <select class="form-control" name="inCodeSet[codeValue]" <% if (!isNew) { %> disabled <% } %>>
-                            <option value="">選択してください</option>
-                            <% for (const accountTitleCategory of accountTitleCategories) { %>
-                            <option value="<%= accountTitleCategory.codeValue %>" <% if (forms.inCodeSet.codeValue===accountTitleCategory.codeValue)
-                            { %> selected <% } %>>
-                                <%= accountTitleCategory.codeValue %>
-                                <%= accountTitleCategory.name %>
-                            </option>
+                        <select class="form-control" name="inCodeSet" id="inCodeSet" style="width: 100%;"
+                            <% if (!isNew) { %> disabled <% } %>>
+                            <% if (forms.inCodeSet !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.inCodeSet) %>" selected="selected">
+                                <%= forms.inCodeSet.codeValue %> <%= forms.inCodeSet.name %></option>
                             <% } %>
                         </select>
-                        <% if (errors && errors['inCodeSet.codeValue']) { %>
+
+                        <% if (errors && errors['inCodeSet']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['inCodeSet.codeValue'].msg %>
+                            <%- errors['inCodeSet'].msg %>
                         </span>
                         <% } %>
                     </div>

@@ -73,6 +73,13 @@ ST-01
                                 </div>
 
                                 <div class="form-group bmd-form-group col-md-2">
+                                    <label for="name[$regex]" class="bmd-label-static">
+                                        名称
+                                    </label>
+                                    <input class="form-control" name="name[$regex]">
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
                                     <label for="seatingType[$eq]" class="bmd-label-static">
                                         座席区分
                                     </label>
@@ -96,6 +103,7 @@ ST-01
                                     <th>施設</th>
                                     <th>ルーム</th>
                                     <th>セクション</th>
+                                    <th>名称</th>
                                     <th>座席区分</th>
                                     <th>追加特性</th>
                                 </tr>
@@ -120,6 +128,9 @@ ST-01
                                     </td>
                                     <td name="containedInPlace.branchCode__containedInPlace.name.ja|slice">
                                         $containedInPlace.name.ja$
+                                    </td>
+                                    <td name="name.ja|slice">
+                                        $name.ja$
                                     </td>
                                     <td name="seatingTypeStr">
                                         $seatingTypeStr$<br>

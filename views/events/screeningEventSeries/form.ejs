@@ -27,24 +27,21 @@
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="locationId" class="bmd-label-static">
+                        <label for="location" class="bmd-label-static">
                             施設<span class="text-danger">＊</span>
                         </label>
-                        <select class="form-control" name="locationId">
-                            <option value="">選択してください</option>
-                            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                            <% for (const movieTheater of movieTheaters) { %>
-                            <option value="<%= movieTheater.id %>" <% if (forms.locationId === movieTheater.id) {
-                                        %> selected <% } %>>
-                                <%= movieTheater.name.ja %>
-                            </option>
-                            <% } %>
-                            <% } else { %>
-                            <% for (const movieTheater of user.cognitoGroups.movieTheaters) { %>
-                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                            <% } %>
+                        <select class="form-control" name="location" id="location" style="width: 100%;">
+                            <% if (forms.location !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.location) %>" selected="selected">
+                                <%= forms.location.name.ja %></option>
                             <% } %>
                         </select>
+
+                        <% if (errors && errors['location']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['location'].msg %>
+                        </span>
+                        <% } %>
                     </div>
 
                     <div class="form-group bmd-form-group col-md-3">

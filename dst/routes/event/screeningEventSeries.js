@@ -47,9 +47,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
     // 上映方式タイプ検索
     const searchVideoFormatTypesResult = yield categoryCodeService.search({
         limit: 100,
@@ -73,7 +70,8 @@ screeningEventSeriesRouter.all('/add', ...validate(),
                 if (movie === undefined) {
                     throw new Error(`Movie ${(_b = req.body.workPerformed) === null || _b === void 0 ? void 0 : _b.identifier} Not Found`);
                 }
-                const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
+                const selectedLocation = JSON.parse(req.body.location);
+                const movieTheater = yield placeService.findMovieTheaterById({ id: selectedLocation.id });
                 const attributes = createEventFromBody(req, movie, movieTheater, true);
                 debug('saving an event...', attributes);
                 const events = yield eventService.create(attributes);
@@ -99,6 +97,15 @@ screeningEventSeriesRouter.all('/add', ...validate(),
             return {};
         }));
     }
+    if (req.method === 'POST') {
+        // 施設を保管
+        if (typeof req.body.location === 'string' && req.body.location.length > 0) {
+            forms.location = JSON.parse(req.body.location);
+        }
+        else {
+            forms.location = undefined;
+        }
+    }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -119,22 +126,12 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         errors: errors,
         forms: forms,
         movie: undefined,
-        movieTheaters: searchMovieTheatersResult.data,
         videoFormatTypes: searchVideoFormatTypesResult.data,
         paymentServices: searchProductsResult.data
     });
 }));
-screeningEventSeriesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
-    res.render('events/screeningEventSeries/index', {
-        movieTheaters: searchMovieTheatersResult.data
-    });
+screeningEventSeriesRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.render('events/screeningEventSeries/index', {});
 }));
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d, _e, _f, _g, _h, _j;
@@ -344,9 +341,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
         // 上映方式タイプ検索
         const searchVideoFormatTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -382,7 +376,8 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                     if (movie === undefined) {
                         throw new Error(`Movie ${req.body.workPerformed.identifier} Not Found`);
                     }
-                    const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.locationId });
+                    const selectedLocation = JSON.parse(req.body.location);
+                    const movieTheater = yield placeService.findMovieTheaterById({ id: selectedLocation.id });
                     const attributes = createEventFromBody(req, movie, movieTheater, false);
                     debug('saving an event...', attributes);
                     yield eventService.update({
@@ -415,7 +410,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             translationType = '1';
         }
         const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [], headline: {} }, event), req.body), { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
-                .asMinutes() : req.body.duration, locationId: event.location.id, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
+                .asMinutes() : req.body.duration, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
                 (event.startDate !== null) ? moment(event.startDate)
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD') : '' :
@@ -430,6 +425,26 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+        if (req.method === 'POST') {
+            // 施設を保管
+            if (typeof req.body.location === 'string' && req.body.location.length > 0) {
+                forms.location = JSON.parse(req.body.location);
+            }
+            else {
+                forms.location = undefined;
+            }
+        }
+        else {
+            if (typeof event.location.id === 'string') {
+                const movieTheater = yield placeService.findMovieTheaterById({
+                    id: event.location.id
+                });
+                forms.location = movieTheater;
+            }
+            else {
+                forms.location = undefined;
+            }
         }
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -450,7 +465,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             errors: errors,
             forms: forms,
             movie: movie,
-            movieTheaters: searchMovieTheatersResult.data,
             videoFormatTypes: searchVideoFormatTypesResult.data,
             paymentServices: searchProductsResult.data
         });
@@ -585,6 +599,9 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
 }
 function validate() {
     return [
+        express_validator_1.body('location')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         express_validator_1.body('workPerformed.identifier', Message.Common.required.replace('$fieldName$', 'コード'))
             .notEmpty(),
         express_validator_1.body('workPerformed.identifier', Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE))
