@@ -13,7 +13,7 @@ import * as Message from '../../message';
 
 const debug = createDebug('chevre-console:router');
 
-const NUM_ADDITIONAL_PROPERTY = 5;
+const NUM_ADDITIONAL_PROPERTY = 10;
 
 const movieTheaterRouter = Router();
 
@@ -61,12 +61,26 @@ movieTheaterRouter.all<any>(
 
         const forms = {
             additionalProperty: [],
+            hasEntranceGate: [],
+            hasPOS: [],
             name: {},
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
                 return {};
             }));
         }
@@ -246,6 +260,8 @@ movieTheaterRouter.all<ParamsDictionary>(
 
         const forms = {
             additionalProperty: [],
+            hasEntranceGate: [],
+            hasPOS: [],
             // tslint:disable-next-line:no-null-keyword
             offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
             ...movieTheater,
@@ -254,6 +270,18 @@ movieTheaterRouter.all<ParamsDictionary>(
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
                 return {};
             }));
         }
@@ -343,25 +371,36 @@ async function createMovieTheaterFromBody(
     const seller = await sellerService.findById({ id: parentOrganizationId });
 
     const parentOrganization: chevre.factory.place.movieTheater.IParentOrganization = {
-        // project: { typeOf: seller.project.typeOf, id: seller.project.id },
         typeOf: seller.typeOf,
         id: seller.id
     };
 
     let hasPOS: chevre.factory.place.movieTheater.IPOS[] = [];
-    if (typeof req.body.hasPOSStr === 'string' && req.body.hasPOSStr.length > 0) {
-        hasPOS = JSON.parse(req.body.hasPOSStr);
-    }
-    if (!Array.isArray(hasPOS)) {
-        throw new Error('hasPOSはArrayを入力してください');
+    if (Array.isArray(req.body.hasPOS)) {
+        hasPOS = req.body.hasPOS.filter((p: any) => typeof p.id === 'string' && p.id.length > 0
+            && typeof p.name === 'string' && p.name.length > 0)
+            .map((p: any) => {
+                return {
+                    id: String(p.id),
+                    name: String(p.name)
+                };
+            });
     }
 
     let hasEntranceGate: chevre.factory.place.movieTheater.IEntranceGate[] = [];
-    if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
-        hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
-    }
-    if (!Array.isArray(hasEntranceGate)) {
-        throw new Error('hasEntranceGateはArrayを入力してください');
+    if (Array.isArray(req.body.hasEntranceGate)) {
+        hasEntranceGate = req.body.hasEntranceGate.filter((p: any) => typeof p.identifier === 'string' && p.identifier.length > 0
+            && typeof p.name?.ja === 'string' && p.name.ja.length > 0)
+            .map((p: any) => {
+                return {
+                    typeOf: 'Place',
+                    identifier: String(p.identifier),
+                    name: {
+                        ja: String(p.name.ja),
+                        ...(typeof p.name?.en === 'string' && p.name.en.length > 0) ? { en: String(p.name.en) } : undefined
+                    }
+                };
+            });
     }
 
     const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
@@ -381,7 +420,7 @@ async function createMovieTheaterFromBody(
         telephone: req.body.telephone,
         screenCount: 0,
         additionalProperty: (Array.isArray(req.body.additionalProperty))
-            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name.length > 0)
                 .map((p: any) => {
                     return {
                         name: String(p.name),

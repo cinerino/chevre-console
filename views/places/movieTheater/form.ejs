@@ -17,6 +17,16 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4pos" role="tablist">
+                    POS
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4entranceGate" role="tablist">
+                    入場ゲート
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
                     追加特性
                 </a>
@@ -146,6 +156,18 @@
                 </div>
             </div>
 
+            <div class="tab-pane" id="link4pos">
+                <%- include('./_pos', {
+                    hasPOS: forms.hasPOS
+                }) %>
+            </div>
+
+            <div class="tab-pane" id="link4entranceGate">
+                <%- include('./_entranceGate', {
+                    hasEntranceGate: forms.hasEntranceGate
+                }) %>
+            </div>
+
             <div class="tab-pane" id="link2">
                 <%- include('../../common/part/_additionalProperty', {
                     additionalProperty: forms.additionalProperty
@@ -187,41 +209,6 @@
 
                         <div class="collapse" id="editOffersJson">
                             <textarea class="form-control" name="offersStr" rows=20><%= offersStr %></textarea>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
-                        <label for="" class="bmd-label-static">
-                            hasPOS
-                        </label>
-                        <a class="d-block pt-1" data-toggle="collapse" href="#editHasPOSJson" role="button"
-                            aria-expanded="false" aria-controls="editHasPOSJson">
-                            編集する
-                        </a>
-
-                        <div class="collapse" id="editHasPOSJson">
-                            <textarea class="form-control" name="hasPOSStr"
-                                rows=20><%= JSON.stringify(forms.hasPOS, null, '\t') %></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
-                        <label for="" class="bmd-label-static">
-                            hasEntranceGate
-                        </label>
-                        <a class="d-block pt-1" data-toggle="collapse" href="#editHasEntranceGateJson" role="button"
-                            aria-expanded="false" aria-controls="editHasEntranceGateJson">
-                            編集する
-                        </a>
-
-                        <div class="collapse" id="editHasEntranceGateJson">
-                            <textarea class="form-control" name="hasEntranceGateStr"
-                                rows=20><%= JSON.stringify(forms.hasEntranceGate, null, '\t') %></textarea>
                         </div>
                     </div>
                 </div>
