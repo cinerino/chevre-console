@@ -20,8 +20,11 @@ const _ = require("underscore");
 const Message = require("../message");
 const paymentServiceType_1 = require("../factory/paymentServiceType");
 const NUM_ADDITIONAL_PROPERTY = 10;
+const NUM_PROVIDER = 20;
 const paymentServicesRouter = express_1.Router();
-paymentServicesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+paymentServicesRouter.all('/new', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new chevre.service.Product({
@@ -55,7 +58,7 @@ paymentServicesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {}, description: {}, priceSpecification: {
+    const forms = Object.assign({ provider: [], additionalProperty: [], name: {}, alternateName: {}, description: {}, priceSpecification: {
             referenceQuantity: {
                 value: 1
             },
@@ -66,6 +69,25 @@ paymentServicesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
+    }
+    if (forms.provider.length < NUM_PROVIDER) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.provider.push(...[...Array(NUM_PROVIDER - forms.provider.length)].map(() => {
+            return {};
+        }));
+    }
+    if (req.method === 'POST') {
+        // プロバイダーを保管
+        if (Array.isArray(forms.provider)) {
+            forms.provider.forEach((provider, key) => {
+                if (typeof provider.seller === 'string' && provider.seller.length > 0) {
+                    forms.provider[key] = Object.assign(Object.assign({}, JSON.parse(provider.seller)), provider);
+                }
+                else {
+                    forms.provider[key] = {};
+                }
+            });
+        }
     }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
@@ -159,7 +181,26 @@ paymentServicesRouter.all('/:id', ...validate(),
                 .end();
             return;
         }
-        const forms = Object.assign({}, product);
+        const forms = Object.assign(Object.assign({ provider: [] }, product), req.body);
+        if (forms.provider.length < NUM_PROVIDER) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.provider.push(...[...Array(NUM_PROVIDER - forms.provider.length)].map(() => {
+                return {};
+            }));
+        }
+        if (req.method === 'POST') {
+            // プロバイダーを保管
+            if (Array.isArray(forms.provider)) {
+                forms.provider.forEach((provider, key) => {
+                    if (typeof provider.seller === 'string' && provider.seller.length > 0) {
+                        forms.provider[key] = Object.assign(Object.assign({}, JSON.parse(provider.seller)), provider);
+                    }
+                    else {
+                        forms.provider[key] = {};
+                    }
+                });
+            }
+        }
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -209,9 +250,31 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID }, {
+    let provider = [];
+    if (Array.isArray(req.body.provider)) {
+        provider = req.body.provider.filter((p) => typeof p.seller === 'string' && p.seller.length > 0)
+            .map((p) => {
+            var _a, _b, _c, _d;
+            const selectedSeller = JSON.parse(p.seller);
+            return {
+                typeOf: selectedSeller.typeOf,
+                id: String(selectedSeller.id),
+                name: selectedSeller.name,
+                credentials: Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof ((_a = p.credentials) === null || _a === void 0 ? void 0 : _a.shopId) === 'string' && p.credentials.shopId.length > 0)
+                    ? { shopId: p.credentials.shopId }
+                    : undefined), (typeof ((_b = p.credentials) === null || _b === void 0 ? void 0 : _b.shopPass) === 'string' && p.credentials.shopPass.length > 0)
+                    ? { shopPass: p.credentials.shopPass }
+                    : undefined), (typeof ((_c = p.credentials) === null || _c === void 0 ? void 0 : _c.kgygishCd) === 'string' && p.credentials.kgygishCd.length > 0)
+                    ? { kgygishCd: p.credentials.kgygishCd }
+                    : undefined), (typeof ((_d = p.credentials) === null || _d === void 0 ? void 0 : _d.stCd) === 'string' && p.credentials.stCd.length > 0)
+                    ? { stCd: p.credentials.stCd }
+                    : undefined)
+            };
+        });
+    }
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID }, {
         name: req.body.name
-    }), (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    }), { provider }), (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
         ? {
             $unset: Object.assign(Object.assign({}, (availableChannel === undefined) ? { availableChannel: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
         }

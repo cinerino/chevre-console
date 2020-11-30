@@ -14,12 +14,14 @@ import * as Message from '../message';
 import { paymentServiceTypes } from '../factory/paymentServiceType';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
+const NUM_PROVIDER = 20;
 
 const paymentServicesRouter = Router();
 
 paymentServicesRouter.all<any>(
     '/new',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -60,6 +62,7 @@ paymentServicesRouter.all<any>(
         }
 
         const forms = {
+            provider: [],
             additionalProperty: [],
             name: {},
             alternateName: {},
@@ -79,6 +82,29 @@ paymentServicesRouter.all<any>(
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+
+        if (forms.provider.length < NUM_PROVIDER) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.provider.push(...[...Array(NUM_PROVIDER - forms.provider.length)].map(() => {
+                return {};
+            }));
+        }
+
+        if (req.method === 'POST') {
+            // プロバイダーを保管
+            if (Array.isArray(forms.provider)) {
+                (<any[]>forms.provider).forEach((provider, key) => {
+                    if (typeof provider.seller === 'string' && provider.seller.length > 0) {
+                        forms.provider[key] = {
+                            ...JSON.parse(provider.seller),
+                            ...provider
+                        };
+                    } else {
+                        forms.provider[key] = {};
+                    }
+                });
+            }
         }
 
         const sellerService = new chevre.service.Seller({
@@ -188,8 +214,33 @@ paymentServicesRouter.all<ParamsDictionary>(
             }
 
             const forms = {
-                ...product
+                provider: [],
+                ...product,
+                ...req.body
             };
+
+            if (forms.provider.length < NUM_PROVIDER) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.provider.push(...[...Array(NUM_PROVIDER - forms.provider.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            if (req.method === 'POST') {
+                // プロバイダーを保管
+                if (Array.isArray(forms.provider)) {
+                    (<any[]>forms.provider).forEach((provider, key) => {
+                        if (typeof provider.seller === 'string' && provider.seller.length > 0) {
+                            forms.provider[key] = {
+                                ...JSON.parse(provider.seller),
+                                ...provider
+                            };
+                        } else {
+                            forms.provider[key] = {};
+                        }
+                    });
+                }
+            }
 
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
@@ -247,6 +298,34 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         }
     }
 
+    let provider: chevre.factory.service.paymentService.IProvider[] = [];
+    if (Array.isArray(req.body.provider)) {
+        provider = req.body.provider.filter((p: any) => typeof p.seller === 'string' && p.seller.length > 0)
+            .map((p: any) => {
+                const selectedSeller = JSON.parse(p.seller);
+
+                return {
+                    typeOf: selectedSeller.typeOf,
+                    id: String(selectedSeller.id),
+                    name: selectedSeller.name,
+                    credentials: {
+                        ...(typeof p.credentials?.shopId === 'string' && p.credentials.shopId.length > 0)
+                            ? { shopId: p.credentials.shopId }
+                            : undefined,
+                        ...(typeof p.credentials?.shopPass === 'string' && p.credentials.shopPass.length > 0)
+                            ? { shopPass: p.credentials.shopPass }
+                            : undefined,
+                        ...(typeof p.credentials?.kgygishCd === 'string' && p.credentials.kgygishCd.length > 0)
+                            ? { kgygishCd: p.credentials.kgygishCd }
+                            : undefined,
+                        ...(typeof p.credentials?.stCd === 'string' && p.credentials.stCd.length > 0)
+                            ? { stCd: p.credentials.stCd }
+                            : undefined
+                    }
+                };
+            });
+    }
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: req.body.typeOf,
@@ -255,6 +334,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         ...{
             name: req.body.name
         },
+        provider,
         ...(availableChannel !== undefined) ? { availableChannel } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(!isNew)

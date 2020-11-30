@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 決済サービスにプロバイダー編集を追加
+
 ### Changed
 
 - 施設コンテンツ編集の上映方式を動的選択肢に変更
