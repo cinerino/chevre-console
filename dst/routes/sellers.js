@@ -241,7 +241,7 @@ function createFromBody(req, isNew) {
             }
         }
         // 親組織のデフォルトはCinerinoプロジェクトの親組織
-        let parentOrganization = req.project.parentOrganization;
+        let parentOrganization;
         if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
             try {
                 parentOrganization = JSON.parse(req.body.parentOrganizationStr);

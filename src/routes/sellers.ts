@@ -288,7 +288,7 @@ async function createFromBody(
     }
 
     // 親組織のデフォルトはCinerinoプロジェクトの親組織
-    let parentOrganization: chevre.factory.organization.IParentOrganization | undefined = req.project.parentOrganization;
+    let parentOrganization: chevre.factory.organization.IParentOrganization | undefined;
     if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
         try {
             parentOrganization = JSON.parse(req.body.parentOrganizationStr);
