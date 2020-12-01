@@ -127,6 +127,30 @@
                         <% } %>
                     </div>
                 </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="paymentAccepted[]" class="bmd-label-static">
+                            対応決済方法
+                        </label>
+
+                        <select class="form-control" name="paymentAccepted[]" id="paymentAccepted[]" multiple="multiple"
+                            style="width: 100%;">
+                            <% if (Array.isArray(forms.paymentAccepted)) { %>
+                            <% forms.paymentAccepted.forEach((payment) => { %>
+                            <option value="<%= JSON.stringify(payment) %>" selected="selected">
+                                <%= payment.name.ja %></option>
+                            <% }) %>
+                            <% } %>
+                        </select>
+
+                        <% if (errors && errors.videoFormat) { %>
+                        <p class="text-danger">
+                            <%- errors.videoFormat.msg %>
+                        </p>
+                        <% } %>
+                    </div>
+                </div>
             </div>
 
             <div class="tab-pane" id="link3">
@@ -175,23 +199,6 @@
                             <%- errors['parentOrganizationStr'].msg %>
                         </span>
                         <% } %>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
-                        <label for="" class="bmd-label-static">
-                            paymentAccepted
-                        </label>
-                        <a class="d-block pt-1" data-toggle="collapse" href="#editPaymentAcceptedJson" role="button"
-                            aria-expanded="false" aria-controls="editPaymentAcceptedJson">
-                            編集する
-                        </a>
-
-                        <div class="collapse" id="editPaymentAcceptedJson">
-                            <textarea class="form-control" name="paymentAcceptedStr"
-                                rows=20><%= JSON.stringify(forms.paymentAccepted, null, '\t') %></textarea>
-                        </div>
                     </div>
                 </div>
 

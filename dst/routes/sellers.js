@@ -48,12 +48,21 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {} }, req.body);
+    const forms = Object.assign({ additionalProperty: [], paymentAccepted: [], name: {}, alternateName: {} }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
+    }
+    if (req.method === 'POST') {
+        // 対応決済方法を補完
+        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+            forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+        }
+        else {
+            forms.paymentAccepted = [];
+        }
     }
     res.render('sellers/new', {
         message: message,
@@ -81,6 +90,10 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
 sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -106,12 +119,37 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
                 }
             }
         }
-        const forms = Object.assign(Object.assign({}, seller), req.body);
+        const forms = Object.assign(Object.assign({ paymentAccepted: [] }, seller), req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+        if (req.method === 'POST') {
+            // 対応決済方法を補完
+            if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+            }
+            else {
+                forms.paymentAccepted = [];
+            }
+        }
+        else {
+            if (Array.isArray(seller.paymentAccepted) && seller.paymentAccepted.length > 0) {
+                const searchPaymentMethodTypesResult = yield categoryCodeService.search({
+                    limit: 100,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                    codeValue: { $in: seller.paymentAccepted.map((v) => v.paymentMethodType) }
+                });
+                forms.paymentAccepted = searchPaymentMethodTypesResult.data.map((c) => {
+                    return { codeValue: c.codeValue, name: c.name };
+                });
+            }
+            else {
+                forms.paymentAccepted = [];
+            }
         }
         res.render('sellers/update', {
             message: message,
@@ -191,9 +229,12 @@ function createFromBody(req, isNew) {
             }
         }
         let paymentAccepted;
-        if (typeof req.body.paymentAcceptedStr === 'string' && req.body.paymentAcceptedStr.length > 0) {
+        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
             try {
-                paymentAccepted = JSON.parse(req.body.paymentAcceptedStr);
+                paymentAccepted = req.body.paymentAccepted.map((p) => {
+                    const selectedPaymentMethod = JSON.parse(p);
+                    return { paymentMethodType: selectedPaymentMethod.codeValue };
+                });
             }
             catch (error) {
                 throw new Error(`対応決済方法の型が不適切です ${error.message}`);

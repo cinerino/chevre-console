@@ -54,6 +54,7 @@ sellersRouter.all<any>(
 
         const forms = {
             additionalProperty: [],
+            paymentAccepted: [],
             name: {},
             alternateName: {},
             ...req.body
@@ -63,6 +64,15 @@ sellersRouter.all<any>(
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+
+        if (req.method === 'POST') {
+            // 対応決済方法を補完
+            if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+            } else {
+                forms.paymentAccepted = [];
+            }
         }
 
         res.render('sellers/new', {
@@ -102,6 +112,10 @@ sellersRouter.all<ParamsDictionary>(
         let message = '';
         let errors: any = {};
 
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -132,6 +146,7 @@ sellersRouter.all<ParamsDictionary>(
             }
 
             const forms = {
+                paymentAccepted: [],
                 ...seller,
                 ...req.body
             };
@@ -140,6 +155,29 @@ sellersRouter.all<ParamsDictionary>(
                 forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                     return {};
                 }));
+            }
+
+            if (req.method === 'POST') {
+                // 対応決済方法を補完
+                if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                    forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+                } else {
+                    forms.paymentAccepted = [];
+                }
+            } else {
+                if (Array.isArray(seller.paymentAccepted) && seller.paymentAccepted.length > 0) {
+                    const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                        limit: 100,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                        codeValue: { $in: seller.paymentAccepted.map((v) => v.paymentMethodType) }
+                    });
+                    forms.paymentAccepted = searchPaymentMethodTypesResult.data.map((c) => {
+                        return { codeValue: c.codeValue, name: c.name };
+                    });
+                } else {
+                    forms.paymentAccepted = [];
+                }
             }
 
             res.render('sellers/update', {
@@ -237,9 +275,13 @@ async function createFromBody(
     }
 
     let paymentAccepted: chevre.factory.seller.IPaymentAccepted[] | undefined;
-    if (typeof req.body.paymentAcceptedStr === 'string' && req.body.paymentAcceptedStr.length > 0) {
+    if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
         try {
-            paymentAccepted = JSON.parse(req.body.paymentAcceptedStr);
+            paymentAccepted = (<any[]>req.body.paymentAccepted).map((p) => {
+                const selectedPaymentMethod = JSON.parse(p);
+
+                return { paymentMethodType: selectedPaymentMethod.codeValue };
+            });
         } catch (error) {
             throw new Error(`対応決済方法の型が不適切です ${error.message}`);
         }
