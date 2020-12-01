@@ -206,6 +206,20 @@
         </li>
         <% } %>
 
+        <%
+        let sellersActive = false;
+        if (displayId.slice(0, 3) === 'SE-') {
+            sellersActive = true;
+        }
+        %>
+        <li class="nav-item <%= (sellersActive) ? 'active': ''; %>">
+            <a class="nav-link" href="/sellers">
+                <i class="material-icons">business</i>
+                <p>販売者</b>
+                </p>
+            </a>
+        </li>
+
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
             <a class="nav-link" href="/reservations">
                 <i class="material-icons">event_seat</i>

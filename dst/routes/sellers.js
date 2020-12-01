@@ -168,6 +168,7 @@ sellersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
     });
 }));
 sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
@@ -179,6 +180,11 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
+            branchCode: {
+                $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
+                    ? req.query.branchCode.$regex
+                    : undefined
+            },
             name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
         };
         let data;

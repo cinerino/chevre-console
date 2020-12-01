@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 決済サービスにプロバイダー編集を追加
 - 販売者編集に対応決済方法を追加
+- サイドメニューに販売者を追加
 
 ### Changed
 

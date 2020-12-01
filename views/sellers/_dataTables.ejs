@@ -8,6 +8,14 @@
 
                     <div class="form-row">
                         <div class="form-group bmd-form-group col-md-2">
+                            <label for="branchCode[$regex]" class="bmd-label-static">
+                                コード
+                            </label>
+                            <input type="text" class="form-control" name="branchCode[$regex]" id="branchCode[$regex]"
+                                placeholder="" maxlength=64>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
                             <label for="name" class="bmd-label-static">
                                 名称
                             </label>
@@ -29,7 +37,6 @@
                             <th>Tel</th>
                             <th>URL</th>
                             <th>対応決済方法</th>
-                            <th>返品ポリシー</th>
                             <th>追加特性</th>
                         </tr>
                     </thead>
@@ -42,9 +49,9 @@
                                     <i class=" material-icons" style="font-size: 1.2em;">open_in_new</i>
                                 </a>
                             </td>
-                            <td name="branchCode">$branchCode$</td>
-                            <td name="name.ja">$name.ja$</td>
-                            <td name="telephone">$telephone$</td>
+                            <td name="branchCode|slice">$branchCode$</td>
+                            <td name="name.ja|slice">$name.ja$</td>
+                            <td name="telephone|slice">$telephone$</td>
                             <td name="url__url|slice">
                                 <a target="_blank" href="$url$">
                                     $url$
@@ -53,11 +60,6 @@
                             <td name="id__paymentAcceptedCount">
                                 <a href="javascript:void(0)" class="showPaymentAccepted" data-id="$id$">
                                     $paymentAcceptedCount$
-                                </a>
-                            </td>
-                            <td name="id__hasMerchantReturnPolicyCount">
-                                <a href="javascript:void(0)" class="showHasMerchantReturnPolicy" data-id="$id$">
-                                    $hasMerchantReturnPolicyCount$
                                 </a>
                             </td>
                             <td name="id__additionalProperty">
