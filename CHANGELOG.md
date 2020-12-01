@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 施設編集にPOSと入場ゲートフォームを追加
 - 座席編集の座席区分を動的選択肢に変更
 - 販売者の親組織を非必須属性に変更
+- サブスクリプションに関わらず区分管理を利用可能に変更
 
 ### Deprecated
 
