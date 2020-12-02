@@ -292,23 +292,13 @@ async function createFromBody(
         }
     }
 
-    // 親組織のデフォルトはCinerinoプロジェクトの親組織
-    let parentOrganization: chevre.factory.organization.IParentOrganization | undefined;
-    if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
-        try {
-            parentOrganization = JSON.parse(req.body.parentOrganizationStr);
-        } catch (error) {
-            throw new Error(`親組織の型が不適切です ${error.message}`);
-        }
-    }
-
     const branchCode: string | undefined = req.body.branchCode;
     const telephone: string | undefined = req.body.telephone;
     const url: string | undefined = req.body.url;
 
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: req.body.typeOf,
+        typeOf: chevre.factory.organizationType.Corporation,
         id: req.body.id,
         name: {
             ...nameFromJson,
@@ -330,15 +320,14 @@ async function createFromBody(
         ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
         ...(hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined,
         ...(paymentAccepted !== undefined) ? { paymentAccepted } : undefined,
-        ...(parentOrganization !== undefined) ? { parentOrganization } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
+                    parentOrganization: 1,
                     ...(typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined,
                     ...(typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined,
                     ...(hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined,
-                    ...(paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined,
-                    ...(parentOrganization === undefined) ? { parentOrganization: 1 } : undefined
+                    ...(paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined
                 }
             }
             : undefined
@@ -354,10 +343,6 @@ function validate() {
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('コード', 20)),
-
-        body('typeOf')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),
 
         body(['name.ja', 'name.en'])
             .notEmpty()
