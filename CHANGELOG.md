@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 座席編集の座席区分を動的選択肢に変更
 - サブスクリプションに関わらず区分管理を利用可能に変更
 - 販売者編集からtypeOfとparentOrganizationを削除
+- イベント作成時のルーム選択肢を動的に変更
 
 ### Deprecated
 
