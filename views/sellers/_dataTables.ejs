@@ -31,24 +31,18 @@
                     width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
                     <thead class="text-primary">
                         <tr>
-                            <th>ID</th>
                             <th>コード</th>
                             <th>名称</th>
                             <th>Tel</th>
                             <th>URL</th>
                             <th>対応決済方法</th>
                             <th>追加特性</th>
+                            <th></th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr id="templateRow" _id="$id$">
-                            <td name="id__id">
-                                <a target="_blank" href="/sellers/$id$/update">
-                                    $id$
-                                    <i class=" material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                </a>
-                            </td>
                             <td name="branchCode|slice">$branchCode$</td>
                             <td name="name.ja|slice">$name.ja$</td>
                             <td name="telephone|slice">$telephone$</td>
@@ -65,6 +59,11 @@
                             <td name="id__additionalProperty">
                                 <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                     表示
+                                </a>
+                            </td>
+                            <td name="id">
+                                <a target="_blank" href="/sellers/$id$/update">
+                                    <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                 </a>
                             </td>
                         </tr>
