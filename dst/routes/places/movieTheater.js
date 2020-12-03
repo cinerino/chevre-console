@@ -363,7 +363,60 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('名称', 64)),
         express_validator_1.body('parentOrganization.id')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '親組織'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
+        express_validator_1.body('hasPOS')
+            .optional()
+            .isArray()
+            .custom((value) => {
+            // POSコードの重複確認
+            const posCodes = value
+                .filter((p) => String(p.id).length > 0)
+                .map((p) => p.id);
+            const posCodesAreUnique = posCodes.length === [...new Set(posCodes)].length;
+            if (!posCodesAreUnique) {
+                throw new Error('POSコードが重複しています');
+            }
+            return true;
+        }),
+        express_validator_1.body('hasPOS.*.id')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64)),
+        express_validator_1.body('hasPOS.*.name')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        express_validator_1.body('hasEntranceGate')
+            .optional()
+            .isArray()
+            .custom((value) => {
+            // 入場ゲートコードの重複確認
+            const identifiers = value
+                .filter((p) => String(p.identifier).length > 0)
+                .map((p) => p.identifier);
+            const identifiersAreUnique = identifiers.length === [...new Set(identifiers)].length;
+            if (!identifiersAreUnique) {
+                throw new Error('入場ゲートコードが重複しています');
+            }
+            return true;
+        }),
+        express_validator_1.body('hasEntranceGate.*.identifier')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z_]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64))
     ];
 }
 exports.default = movieTheaterRouter;

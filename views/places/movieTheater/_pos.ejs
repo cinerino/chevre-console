@@ -1,3 +1,11 @@
+<% if (errors && errors[`hasPOS`]) { %>
+<div class="form-row">
+    <p class="bmd-help text-danger d-block">
+        <%- errors[`hasPOS`].msg %>
+    </p>
+</div>
+<% } %>
+
 <% hasPOS.forEach((place, key) => { %>
 <div class="form-row">
     <div class="form-group bmd-form-group col-6">

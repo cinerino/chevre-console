@@ -1,3 +1,11 @@
+<% if (errors && errors[`hasEntranceGate`]) { %>
+<div class="form-row">
+    <p class="bmd-help text-danger d-block">
+        <%- errors[`hasEntranceGate`].msg %>
+    </p>
+</div>
+<% } %>
+
 <% hasEntranceGate.forEach((place, key) => { %>
 <div class="form-row">
     <div class="form-group bmd-form-group col-4">
