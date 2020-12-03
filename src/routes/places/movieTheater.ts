@@ -20,6 +20,7 @@ const movieTheaterRouter = Router();
 movieTheaterRouter.all<any>(
     '/new',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -105,6 +106,15 @@ movieTheaterRouter.all<any>(
             forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
                 return {};
             }));
+        }
+
+        if (req.method === 'POST') {
+            // 親組織を補完
+            if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+                forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+            } else {
+                forms.parentOrganization = undefined;
+            }
         }
 
         const sellerService = new chevre.service.Seller({
@@ -247,6 +257,7 @@ movieTheaterRouter.delete(
 movieTheaterRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -255,6 +266,11 @@ movieTheaterRouter.all<ParamsDictionary>(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
         let movieTheater = await placeService.findMovieTheaterById({
             id: req.params.id
         });
@@ -307,16 +323,26 @@ movieTheaterRouter.all<ParamsDictionary>(
             }));
         }
 
-        // tslint:disable-next-line:no-empty
         if (req.method === 'POST') {
+            // 親組織を補完
+            if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+                forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+            } else {
+                forms.parentOrganization = undefined;
+            }
         } else {
             forms.offers = movieTheater.offers;
+
+            if (typeof movieTheater.parentOrganization?.id === 'string') {
+                const seller = await sellerService.findById({
+                    id: movieTheater.parentOrganization.id
+                });
+                forms.parentOrganization = { id: seller.id, name: seller.name };
+            } else {
+                forms.parentOrganization = undefined;
+            }
         }
 
-        const sellerService = new chevre.service.Seller({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('places/movieTheater/update', {
@@ -390,13 +416,12 @@ movieTheaterRouter.get(
 async function createMovieTheaterFromBody(
     req: Request, isNew: boolean
 ): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
-    const parentOrganizationId = req.body.parentOrganization?.id;
-
+    const selectedSeller = JSON.parse(req.body.parentOrganization);
     const sellerService = new chevre.service.Seller({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const seller = await sellerService.findById({ id: parentOrganizationId });
+    const seller = await sellerService.findById({ id: selectedSeller.id });
 
     const parentOrganization: chevre.factory.place.movieTheater.IParentOrganization = {
         typeOf: seller.typeOf,
@@ -513,7 +538,7 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
 
-        body('parentOrganization.id')
+        body('parentOrganization')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
 

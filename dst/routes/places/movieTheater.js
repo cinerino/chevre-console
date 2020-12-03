@@ -21,7 +21,9 @@ const Message = require("../../message");
 const debug = createDebug('chevre-console:router');
 const NUM_ADDITIONAL_PROPERTY = 10;
 const movieTheaterRouter = express_1.Router();
-movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/new', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -94,6 +96,15 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
         forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
             return {};
         }));
+    }
+    if (req.method === 'POST') {
+        // 親組織を補完
+        if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+            forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
     }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
@@ -202,10 +213,17 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/:id/update', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -250,16 +268,27 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
             return {};
         }));
     }
-    // tslint:disable-next-line:no-empty
     if (req.method === 'POST') {
+        // 親組織を補完
+        if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+            forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
     }
     else {
         forms.offers = movieTheater.offers;
+        if (typeof ((_c = movieTheater.parentOrganization) === null || _c === void 0 ? void 0 : _c.id) === 'string') {
+            const seller = yield sellerService.findById({
+                id: movieTheater.parentOrganization.id
+            });
+            forms.parentOrganization = { id: seller.id, name: seller.name };
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
     }
-    const sellerService = new chevre.service.Seller({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('places/movieTheater/update', {
         message: message,
@@ -314,14 +343,14 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
 }));
 // tslint:disable-next-line:max-func-body-length
 function createMovieTheaterFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
-        const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
+        const selectedSeller = JSON.parse(req.body.parentOrganization);
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const seller = yield sellerService.findById({ id: parentOrganizationId });
+        const seller = yield sellerService.findById({ id: selectedSeller.id });
         const parentOrganization = {
             typeOf: seller.typeOf,
             id: seller.id
@@ -358,13 +387,13 @@ function createMovieTheaterFromBody(req, isNew) {
             priceCurrency: chevre.factory.priceCurrency.JPY,
             project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
             typeOf: chevre.factory.offerType.Offer,
-            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.C62 }, (typeof ((_c = (_b = req.body.offers) === null || _b === void 0 ? void 0 : _b.eligibleQuantity) === null || _c === void 0 ? void 0 : _c.maxValue) === 'number')
+            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.C62 }, (typeof ((_b = (_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.eligibleQuantity) === null || _b === void 0 ? void 0 : _b.maxValue) === 'number')
                 ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
                 : undefined),
-            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Day }, (typeof ((_e = (_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.availabilityStartsGraceTime) === null || _e === void 0 ? void 0 : _e.value) === 'number')
+            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Day }, (typeof ((_d = (_c = req.body.offers) === null || _c === void 0 ? void 0 : _c.availabilityStartsGraceTime) === null || _d === void 0 ? void 0 : _d.value) === 'number')
                 ? { value: req.body.offers.availabilityStartsGraceTime.value }
                 : undefined),
-            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Sec }, (typeof ((_g = (_f = req.body.offers) === null || _f === void 0 ? void 0 : _f.availabilityEndsGraceTime) === null || _g === void 0 ? void 0 : _g.value) === 'number')
+            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Sec }, (typeof ((_f = (_e = req.body.offers) === null || _e === void 0 ? void 0 : _e.availabilityEndsGraceTime) === null || _f === void 0 ? void 0 : _f.value) === 'number')
                 ? { value: req.body.offers.availabilityEndsGraceTime.value }
                 : undefined)
         };
@@ -400,7 +429,7 @@ function validate() {
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
-        express_validator_1.body('parentOrganization.id')
+        express_validator_1.body('parentOrganization')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
         express_validator_1.body('offers.eligibleQuantity.maxValue')

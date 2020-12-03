@@ -65,19 +65,18 @@
                         <label for="containedInPlace[branchCode]" class="bmd-label-static">
                             親組織<span class="text-danger">＊</span>
                         </label>
-                        <select class="form-control" name="parentOrganization[id]">
-                            <option value="">選択してください</option>
-                            <% for (const seller of sellers) { %>
-                            <option value="<%= seller.id %>"
-                                <% if (forms.parentOrganization !== undefined && seller.id === forms.parentOrganization.id) { %>
-                                selected<% } %>>
-                                <%= seller.name.ja %>
-                            </option>
+
+                        <select class="form-control" name="parentOrganization" id="parentOrganization"
+                            style="width: 100%;">
+                            <% if (forms.parentOrganization !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.parentOrganization) %>" selected="selected">
+                                <%= forms.parentOrganization.name.ja %></option>
                             <% } %>
                         </select>
-                        <% if (errors && errors['parentOrganization.id']) { %>
+
+                        <% if (errors && errors['parentOrganization']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['parentOrganization.id'].msg %>
+                            <%- errors['parentOrganization'].msg %>
                         </span>
                         <% } %>
                     </div>
