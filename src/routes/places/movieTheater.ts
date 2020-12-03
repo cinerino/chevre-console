@@ -284,8 +284,6 @@ movieTheaterRouter.all<ParamsDictionary>(
             additionalProperty: [],
             hasEntranceGate: [],
             hasPOS: [],
-            // tslint:disable-next-line:no-null-keyword
-            offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
             ...movieTheater,
             ...req.body
         };
@@ -472,7 +470,6 @@ async function createMovieTheaterFromBody(
         kanaName: req.body.kanaName,
         hasEntranceGate: hasEntranceGate,
         hasPOS: hasPOS,
-        // offers: JSON.parse(req.body.offersStr),
         offers: offers,
         parentOrganization: parentOrganization,
         telephone: req.body.telephone,
