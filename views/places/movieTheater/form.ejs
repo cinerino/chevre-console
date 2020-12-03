@@ -27,13 +27,13 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
-                    追加特性
+                <a class="nav-link" data-toggle="tab" href="#link4offers" role="tablist">
+                    販売初期設定
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
-                    高度な設定
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
                 </a>
             </li>
         </ul>
@@ -168,51 +168,100 @@
                 }) %>
             </div>
 
+            <div class="tab-pane" id="link4offers">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="offers[eligibleQuantity][maxValue]" class="bmd-label-static">
+                            販売上限席数
+                            <a href="#" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>イベント作成時の初期設定として適用されます。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
+                        </label>
+
+                        <div class="input-group">
+                            <input type="number" class="form-control" name="offers[eligibleQuantity][maxValue]"
+                                id="offers[eligibleQuantity][maxValue]" placeholder="" maxlength=8
+                                value="<%= forms.offers.eligibleQuantity.maxValue %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text">席</span>
+                            </div>
+                        </div>
+
+                        <% if (errors && errors['offers.eligibleQuantity.maxValue']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['offers.eligibleQuantity.maxValue'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="offers[availabilityStartsGraceTime][value]" class="bmd-label-static">
+                            販売開始はイベント開始日の
+                            <a href="#" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>イベント作成時の初期設定として適用されます。イベント開始日以前に設定する場合、負の値を入力してください。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
+                        </label>
+
+                        <div class="input-group">
+                            <input type="number" class="form-control" name="offers[availabilityStartsGraceTime][value]"
+                                id="offers[availabilityStartsGraceTime][value]" placeholder="" maxlength=8
+                                value="<%= forms.offers.availabilityStartsGraceTime.value %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text">日後の0時</span>
+                            </div>
+                        </div>
+
+                        <% if (errors && errors['offers.availabilityStartsGraceTime.value']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['offers.availabilityStartsGraceTime.value'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="offers[availabilityEndsGraceTime][value]" class="bmd-label-static">
+                            販売終了はイベント開始日時の
+                            <a href="#" data-toggle="tooltip"
+                                title="<p class=&quot;text-left mb-0&quot;>イベント作成時の初期設定として適用されます。イベント開始日時以前に設定する場合、負の値を入力してください。</p>"
+                                style="pointer-events: auto;">
+                                <span class="material-icons" style="font-size: 1.2em;">
+                                    help
+                                </span>
+                            </a>
+                        </label>
+
+                        <div class="input-group">
+                            <input type="number" class="form-control" name="offers[availabilityEndsGraceTime][value]"
+                                id="offers[availabilityEndsGraceTime][value]" placeholder="" maxlength=8
+                                value="<%= forms.offers.availabilityEndsGraceTime.value %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text">秒後</span>
+                            </div>
+                        </div>
+
+                        <% if (errors && errors['offers.availabilityEndsGraceTime.value']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['offers.availabilityEndsGraceTime.value'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
             <div class="tab-pane" id="link2">
                 <%- include('../../common/part/_additionalProperty', {
                     additionalProperty: forms.additionalProperty
                 }) %>
             </div>
 
-            <div class="tab-pane" id="link3">
-                <div class="form-row">
-                    <div class="form-group bmd-form-group col-md-12">
-                        <label for="offersStr" class="bmd-label-static">
-                            offers
-                        </label>
-                        <%
-                        const offersStr = (!isNew) 
-                            ? forms.offersStr
-                            : JSON.stringify({
-                                "typeOf": "Offer",
-                                "eligibleQuantity": {
-                                "typeOf": "QuantitativeValue",
-                                "maxValue": 6,
-                                "unitCode": "C62"
-                                },
-                                "availabilityStartsGraceTime": {
-                                "typeOf": "QuantitativeValue",
-                                "value": -2,
-                                "unitCode": "DAY"
-                                },
-                                "availabilityEndsGraceTime": {
-                                "typeOf": "QuantitativeValue",
-                                "value": 1200,
-                                "unitCode": "SEC"
-                                }
-                            }, null, '\t');
-                        %>
-                        <a class="d-block pt-1" data-toggle="collapse" href="#editOffersJson" role="button"
-                            aria-expanded="false" aria-controls="editOffersJson">
-                            編集する
-                        </a>
-
-                        <div class="collapse" id="editOffersJson">
-                            <textarea class="form-control" name="offersStr" rows=20><%= offersStr %></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
     </div>

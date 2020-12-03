@@ -59,11 +59,33 @@ movieTheaterRouter.all<any>(
             }
         }
 
+        const defaultOffers: chevre.factory.place.movieTheater.IOffer = {
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: chevre.factory.offerType.Offer,
+            eligibleQuantity: {
+                typeOf: 'QuantitativeValue',
+                maxValue: 6,
+                unitCode: chevre.factory.unitCode.C62
+            },
+            availabilityStartsGraceTime: {
+                typeOf: 'QuantitativeValue',
+                value: -2,
+                unitCode: chevre.factory.unitCode.Day
+            },
+            availabilityEndsGraceTime: {
+                typeOf: 'QuantitativeValue',
+                value: 1200,
+                unitCode: chevre.factory.unitCode.Sec
+            }
+        };
+
         const forms = {
             additionalProperty: [],
             hasEntranceGate: [],
             hasPOS: [],
             name: {},
+            offers: defaultOffers,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -267,6 +289,7 @@ movieTheaterRouter.all<ParamsDictionary>(
             ...movieTheater,
             ...req.body
         };
+
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -284,6 +307,12 @@ movieTheaterRouter.all<ParamsDictionary>(
             forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
                 return {};
             }));
+        }
+
+        // tslint:disable-next-line:no-empty
+        if (req.method === 'POST') {
+        } else {
+            forms.offers = movieTheater.offers;
         }
 
         const sellerService = new chevre.service.Seller({
@@ -359,6 +388,7 @@ movieTheaterRouter.get(
     }
 );
 
+// tslint:disable-next-line:max-func-body-length
 async function createMovieTheaterFromBody(
     req: Request, isNew: boolean
 ): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
@@ -405,6 +435,33 @@ async function createMovieTheaterFromBody(
 
     const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
 
+    const offers: chevre.factory.place.movieTheater.IOffer = {
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+        typeOf: chevre.factory.offerType.Offer,
+        eligibleQuantity: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.C62,
+            ...(typeof req.body.offers?.eligibleQuantity?.maxValue === 'number')
+                ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
+                : undefined
+        },
+        availabilityStartsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.Day,
+            ...(typeof req.body.offers?.availabilityStartsGraceTime?.value === 'number')
+                ? { value: req.body.offers.availabilityStartsGraceTime.value }
+                : undefined
+        },
+        availabilityEndsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.Sec,
+            ...(typeof req.body.offers?.availabilityEndsGraceTime?.value === 'number')
+                ? { value: req.body.offers.availabilityEndsGraceTime.value }
+                : undefined
+        }
+    };
+
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom = {
         project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -415,7 +472,8 @@ async function createMovieTheaterFromBody(
         kanaName: req.body.kanaName,
         hasEntranceGate: hasEntranceGate,
         hasPOS: hasPOS,
-        offers: JSON.parse(req.body.offersStr),
+        // offers: JSON.parse(req.body.offersStr),
+        offers: offers,
         parentOrganization: parentOrganization,
         telephone: req.body.telephone,
         screenCount: 0,
@@ -461,6 +519,24 @@ function validate() {
         body('parentOrganization.id')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
+
+        body('offers.eligibleQuantity.maxValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売上限席数'))
+            .isInt()
+            .toInt(),
+
+        body('offers.availabilityStartsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売開始設定'))
+            .isInt()
+            .toInt(),
+
+        body('offers.availabilityEndsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売終了設定'))
+            .isInt()
+            .toInt(),
 
         body('hasPOS')
             .optional()

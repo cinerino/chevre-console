@@ -56,7 +56,27 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], hasEntranceGate: [], hasPOS: [], name: {} }, req.body);
+    const defaultOffers = {
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+        typeOf: chevre.factory.offerType.Offer,
+        eligibleQuantity: {
+            typeOf: 'QuantitativeValue',
+            maxValue: 6,
+            unitCode: chevre.factory.unitCode.C62
+        },
+        availabilityStartsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            value: -2,
+            unitCode: chevre.factory.unitCode.Day
+        },
+        availabilityEndsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            value: 1200,
+            unitCode: chevre.factory.unitCode.Sec
+        }
+    };
+    const forms = Object.assign({ additionalProperty: [], hasEntranceGate: [], hasPOS: [], name: {}, offers: defaultOffers }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -232,6 +252,12 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
             return {};
         }));
     }
+    // tslint:disable-next-line:no-empty
+    if (req.method === 'POST') {
+    }
+    else {
+        forms.offers = movieTheater.offers;
+    }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -288,8 +314,9 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
         });
     }
 }));
+// tslint:disable-next-line:max-func-body-length
 function createMovieTheaterFromBody(req, isNew) {
-    var _a;
+    var _a, _b, _c, _d, _e, _f, _g;
     return __awaiter(this, void 0, void 0, function* () {
         const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
         const sellerService = new chevre.service.Seller({
@@ -329,8 +356,24 @@ function createMovieTheaterFromBody(req, isNew) {
             });
         }
         const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
+        const offers = {
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: chevre.factory.offerType.Offer,
+            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.C62 }, (typeof ((_c = (_b = req.body.offers) === null || _b === void 0 ? void 0 : _b.eligibleQuantity) === null || _c === void 0 ? void 0 : _c.maxValue) === 'number')
+                ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
+                : undefined),
+            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Day }, (typeof ((_e = (_d = req.body.offers) === null || _d === void 0 ? void 0 : _d.availabilityStartsGraceTime) === null || _e === void 0 ? void 0 : _e.value) === 'number')
+                ? { value: req.body.offers.availabilityStartsGraceTime.value }
+                : undefined),
+            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Sec }, (typeof ((_g = (_f = req.body.offers) === null || _f === void 0 ? void 0 : _f.availabilityEndsGraceTime) === null || _g === void 0 ? void 0 : _g.value) === 'number')
+                ? { value: req.body.offers.availabilityEndsGraceTime.value }
+                : undefined)
+        };
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, 
+            // offers: JSON.parse(req.body.offersStr),
+            offers: offers, parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name.length > 0)
                     .map((p) => {
                     return {
@@ -364,6 +407,21 @@ function validate() {
         express_validator_1.body('parentOrganization.id')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
+        express_validator_1.body('offers.eligibleQuantity.maxValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売上限席数'))
+            .isInt()
+            .toInt(),
+        express_validator_1.body('offers.availabilityStartsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売開始設定'))
+            .isInt()
+            .toInt(),
+        express_validator_1.body('offers.availabilityEndsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売終了設定'))
+            .isInt()
+            .toInt(),
         express_validator_1.body('hasPOS')
             .optional()
             .isArray()
