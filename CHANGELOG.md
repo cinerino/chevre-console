@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 区分編集に追加特性、イメージ、カラーを追加
+
 ### Changed
 
 ### Deprecated

@@ -81,6 +81,7 @@ CC-00
                                     <th>分類</th>
                                     <th>名称</th>
                                     <th>決済方法</th>
+                                    <th>追加特性</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -98,6 +99,12 @@ CC-00
                                     <td name="paymentMethod.typeOf">
                                         $paymentMethod.typeOf$
                                     </td>
+                                    <td name="codeValue__addtionalProperty">
+                                        <a href="javascript:void(0)" class="showAdditionalProperty"
+                                            data-codeValue="$codeValue$">
+                                            <span>表示</span>
+                                        </a>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -113,6 +120,21 @@ CC-00
                         </div>
                         <div id="pager" class="div_pager_parent float-right"></div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-categoryCode" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
                 </div>
             </div>
         </div>
