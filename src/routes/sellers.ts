@@ -54,6 +54,7 @@ sellersRouter.all<any>(
 
         const forms = {
             additionalProperty: [],
+            paymentAccepted: [],
             name: {},
             alternateName: {},
             ...req.body
@@ -63,6 +64,15 @@ sellersRouter.all<any>(
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+
+        if (req.method === 'POST') {
+            // 対応決済方法を補完
+            if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+            } else {
+                forms.paymentAccepted = [];
+            }
         }
 
         res.render('sellers/new', {
@@ -102,6 +112,10 @@ sellersRouter.all<ParamsDictionary>(
         let message = '';
         let errors: any = {};
 
+        const categoryCodeService = new chevre.service.CategoryCode({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
@@ -132,6 +146,7 @@ sellersRouter.all<ParamsDictionary>(
             }
 
             const forms = {
+                paymentAccepted: [],
                 ...seller,
                 ...req.body
             };
@@ -140,6 +155,29 @@ sellersRouter.all<ParamsDictionary>(
                 forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                     return {};
                 }));
+            }
+
+            if (req.method === 'POST') {
+                // 対応決済方法を補完
+                if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                    forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+                } else {
+                    forms.paymentAccepted = [];
+                }
+            } else {
+                if (Array.isArray(seller.paymentAccepted) && seller.paymentAccepted.length > 0) {
+                    const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                        limit: 100,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                        codeValue: { $in: seller.paymentAccepted.map((v) => v.paymentMethodType) }
+                    });
+                    forms.paymentAccepted = searchPaymentMethodTypesResult.data.map((c) => {
+                        return { codeValue: c.codeValue, name: c.name };
+                    });
+                } else {
+                    forms.paymentAccepted = [];
+                }
             }
 
             res.render('sellers/update', {
@@ -179,6 +217,11 @@ sellersRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
+                branchCode: {
+                    $regex: (typeof req.query.branchCode?.$regex === 'string' && req.query.branchCode.$regex.length > 0)
+                        ? req.query.branchCode.$regex
+                        : undefined
+                },
                 name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             };
 
@@ -237,21 +280,15 @@ async function createFromBody(
     }
 
     let paymentAccepted: chevre.factory.seller.IPaymentAccepted[] | undefined;
-    if (typeof req.body.paymentAcceptedStr === 'string' && req.body.paymentAcceptedStr.length > 0) {
+    if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
         try {
-            paymentAccepted = JSON.parse(req.body.paymentAcceptedStr);
+            paymentAccepted = (<any[]>req.body.paymentAccepted).map((p) => {
+                const selectedPaymentMethod = JSON.parse(p);
+
+                return { paymentMethodType: selectedPaymentMethod.codeValue };
+            });
         } catch (error) {
             throw new Error(`対応決済方法の型が不適切です ${error.message}`);
-        }
-    }
-
-    // 親組織のデフォルトはCinerinoプロジェクトの親組織
-    let parentOrganization: chevre.factory.organization.IParentOrganization | undefined = req.project.parentOrganization;
-    if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
-        try {
-            parentOrganization = JSON.parse(req.body.parentOrganizationStr);
-        } catch (error) {
-            throw new Error(`親組織の型が不適切です ${error.message}`);
         }
     }
 
@@ -261,7 +298,7 @@ async function createFromBody(
 
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: req.body.typeOf,
+        typeOf: chevre.factory.organizationType.Corporation,
         id: req.body.id,
         name: {
             ...nameFromJson,
@@ -283,15 +320,14 @@ async function createFromBody(
         ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
         ...(hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined,
         ...(paymentAccepted !== undefined) ? { paymentAccepted } : undefined,
-        ...(parentOrganization !== undefined) ? { parentOrganization } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
+                    parentOrganization: 1,
                     ...(typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined,
                     ...(typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined,
                     ...(hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined,
-                    ...(paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined,
-                    ...(parentOrganization === undefined) ? { parentOrganization: 1 } : undefined
+                    ...(paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined
                 }
             }
             : undefined
@@ -307,10 +343,6 @@ function validate() {
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('コード', 20)),
-
-        body('typeOf')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),
 
         body(['name.ja', 'name.en'])
             .notEmpty()

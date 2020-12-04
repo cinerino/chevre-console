@@ -117,11 +117,11 @@ $(function () {
      * 追加特性を見る
      */
     function showAdditionalProperty(id) {
-        var offer = $.CommonMasterList.getDatas().find(function (data) {
+        var seller = $.CommonMasterList.getDatas().find(function (data) {
             return data.id === id
         });
-        if (offer === undefined) {
-            alert('オファー' + id + 'が見つかりません');
+        if (seller === undefined) {
+            alert('販売者' + id + 'が見つかりません');
 
             return;
         }
@@ -129,7 +129,7 @@ $(function () {
         var modal = $('#modal-seller');
         var div = $('<div>')
 
-        if (Array.isArray(offer.additionalProperty)) {
+        if (Array.isArray(seller.additionalProperty)) {
             var thead = $('<thead>').addClass('text-primary');
             var tbody = $('<tbody>');
             thead.append([
@@ -138,7 +138,7 @@ $(function () {
                     $('<th>').text('Value')
                 ])
             ]);
-            tbody.append(offer.additionalProperty.map(function (property) {
+            tbody.append(seller.additionalProperty.map(function (property) {
                 return $('<tr>').append([
                     $('<td>').text(property.name),
                     $('<td>').text(property.value)
@@ -170,14 +170,26 @@ $(function () {
         var modal = $('#modal-seller');
         var div = $('<div>')
 
-        div.append($('<textarea>')
-            .val(JSON.stringify(seller.paymentAccepted, null, '\t'))
-            .addClass('form-control')
-            .attr({
-                rows: '25',
-                disabled: ''
-            })
-        );
+        if (Array.isArray(seller.paymentAccepted)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('コード')
+                ])
+            ]);
+            tbody.append(seller.paymentAccepted.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.paymentMethodType)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
 
         modal.find('.modal-title').text('対応決済方法');
         modal.find('.modal-body').html(div);

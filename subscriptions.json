@@ -6,7 +6,7 @@
             "maximumAttendeeCapacity": 50,
             "useAdvancedScheduling": false,
             "useSeats": false,
-            "useCategoryCodes": false,
+            "useCategoryCodes": true,
             "useProducts": false,
             "usePriceSpecifications": false,
             "useAccountTitles": false

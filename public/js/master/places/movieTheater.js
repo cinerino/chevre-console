@@ -18,11 +18,43 @@ $(function () {
     JSONEditor.defaults.options.theme = 'bootstrap4';
     JSONEditor.defaults.options.iconlib = 'materialicons';
 
-    // JSONエディタをいったん無効化
-    // initOffer();
-
     // 削除ボタン
     $('.btn-delete').on('click', remove);
+
+    var parentOrganizationSelection = $('#parentOrganization');
+    parentOrganizationSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/sellers/getlist',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (seller) {
+                        return {
+                            id: JSON.stringify({ id: seller.id, name: seller.name }),
+                            text: seller.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
 });
 
 /**
@@ -49,55 +81,4 @@ function remove() {
             .always(function () {
             });
     }
-}
-
-/**
- * オファーエディタ初期化
- */
-function initOffer() {
-    var schema = {
-        type: 'object',
-        properties: {
-            typeOf: { type: 'string' },
-            eligibleQuantity: {
-                type: 'object',
-                format: "grid",
-                properties: {
-                    typeOf: { type: 'string' },
-                    maxValue: { type: 'integer' },
-                    unitCode: { type: 'string' }
-                }
-            },
-            availabilityStartsGraceTime: {
-                type: 'object',
-                format: "grid",
-                properties: {
-                    typeOf: { type: 'string' },
-                    value: { type: 'integer' },
-                    unitCode: { type: 'string' }
-                }
-            },
-            availabilityEndsGraceTime: {
-                type: 'object',
-                format: "grid",
-                properties: {
-                    typeOf: { type: 'string' },
-                    value: { type: 'integer' },
-                    unitCode: { type: 'string' }
-                }
-            }
-        }
-    };
-    var options = {
-        disable_array_reorder: true,
-        schema: schema
-    };
-    var editor = new JSONEditor(document.getElementById('offersStr'), options);
-    var value = $('textarea[name=offersStr]').val();
-    editor.setValue(JSON.parse(value));
-    editor.off('change');
-    editor.on('change', function () {
-        var value = editor.getValue();
-        $('textarea[name=offersStr]').val(JSON.stringify(value));
-    });
 }

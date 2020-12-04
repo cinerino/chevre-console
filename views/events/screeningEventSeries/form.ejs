@@ -157,18 +157,13 @@
                         <label for="translationType" class="bmd-label-static">
                             字幕/吹替
                         </label>
-                        <%
-                                let subtitles = [
-                                    {code: '0', name: {ja: '字幕', en:'subtitle'}},
-                                    {code: '1', name: {ja: '吹替', en:'dubbing'}}
-                                ];
-                            %>
                         <select name="translationType" id="translationType" class="form-control">
                             <option value="">---</option>
-                            <% for (let subtitle of subtitles) { %>
-                            <option value="<%= subtitle.code %>" <% if (forms.translationType===subtitle.code) { %>
-                                selected="selected" <% } %>>
-                                <%- subtitle.name.ja %>
+                            <% for (let translationType of translationTypes) { %>
+                            <option value="<%= translationType.codeValue %>"
+                                <% if (forms.translationType === translationType.codeValue) { %> selected="selected"
+                                <% } %>>
+                                <%- translationType.name.ja %>
                             </option>
                             <% } %>
                         </select>
@@ -191,28 +186,23 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
-                        <label for="videoFormatType[]" class="bmd-label-static">
+                        <label for="videoFormat[]" class="bmd-label-static">
                             上映方式
                         </label>
 
-                        <% videoFormatTypes.forEach((videoFormatType, key) => { %>
-                        <div class="form-check form-check-inline">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox" id="videoFormatType[]<%= key %>"
-                                    name="videoFormatType[]" value="<%= videoFormatType.codeValue %>" <% if
-                                        (forms.videoFormatType.indexOf(videoFormatType.codeValue)>= 0) { %>
-                                    checked="checked" <% } %>>
-                                <%= videoFormatType.name.ja %>
-                                <span class="form-check-sign">
-                                    <span class="check"></span>
-                                </span>
-                            </label>
-                        </div>
-                        <% }) %>
+                        <select class="js-example-basic-multiple" name="videoFormat[]" id="videoFormat[]"
+                            multiple="multiple" style="width: 100%;">
+                            <% if (Array.isArray(forms.videoFormat)) { %>
+                            <% forms.videoFormat.forEach((videoFormatType) => { %>
+                            <option value="<%= JSON.stringify(videoFormatType) %>" selected="selected">
+                                <%= videoFormatType.name.ja %></option>
+                            <% }) %>
+                            <% } %>
+                        </select>
 
-                        <% if (errors && errors.videoFormatType) { %>
+                        <% if (errors && errors.videoFormat) { %>
                         <p class="text-danger">
-                            <%- errors.videoFormatType.msg %>
+                            <%- errors.videoFormat.msg %>
                         </p>
                         <% } %>
                     </div>

@@ -19,9 +19,11 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
 const debug = createDebug('chevre-console:router');
-const NUM_ADDITIONAL_PROPERTY = 5;
+const NUM_ADDITIONAL_PROPERTY = 10;
 const movieTheaterRouter = express_1.Router();
-movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/new', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     if (req.method === 'POST') {
@@ -56,12 +58,53 @@ movieTheaterRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, vo
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {} }, req.body);
+    const defaultOffers = {
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+        typeOf: chevre.factory.offerType.Offer,
+        eligibleQuantity: {
+            typeOf: 'QuantitativeValue',
+            maxValue: 6,
+            unitCode: chevre.factory.unitCode.C62
+        },
+        availabilityStartsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            value: -2,
+            unitCode: chevre.factory.unitCode.Day
+        },
+        availabilityEndsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            value: 1200,
+            unitCode: chevre.factory.unitCode.Sec
+        }
+    };
+    const forms = Object.assign({ additionalProperty: [], hasEntranceGate: [], hasPOS: [], name: {}, offers: defaultOffers }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
+    }
+    if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+            return {};
+        }));
+    }
+    if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
+            return {};
+        }));
+    }
+    if (req.method === 'POST') {
+        // 親組織を補完
+        if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+            forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
     }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
@@ -170,10 +213,17 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieTheaterRouter.all('/:id/update', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c;
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -199,19 +249,46 @@ movieTheaterRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(voi
             }
         }
     }
-    const forms = Object.assign(Object.assign({ additionalProperty: [], 
-        // tslint:disable-next-line:no-null-keyword
-        offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}' }, movieTheater), req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [], hasEntranceGate: [], hasPOS: [] }, movieTheater), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
     }
-    const sellerService = new chevre.service.Seller({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
+    if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+            return {};
+        }));
+    }
+    if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
+            return {};
+        }));
+    }
+    if (req.method === 'POST') {
+        // 親組織を補完
+        if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+            forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
+    }
+    else {
+        forms.offers = movieTheater.offers;
+        if (typeof ((_c = movieTheater.parentOrganization) === null || _c === void 0 ? void 0 : _c.id) === 'string') {
+            const seller = yield sellerService.findById({
+                id: movieTheater.parentOrganization.id
+            });
+            forms.parentOrganization = { id: seller.id, name: seller.name };
+        }
+        else {
+            forms.parentOrganization = undefined;
+        }
+    }
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('places/movieTheater/update', {
         message: message,
@@ -264,38 +341,89 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
         });
     }
 }));
-function createMovieTheaterFromBody(req, isNew) {
-    var _a;
-    return __awaiter(this, void 0, void 0, function* () {
-        const parentOrganizationId = (_a = req.body.parentOrganization) === null || _a === void 0 ? void 0 : _a.id;
+movieTheaterRouter.get('/:id/seller', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d;
+    try {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const seller = yield sellerService.findById({ id: parentOrganizationId });
+        const movieTheater = yield placeService.findMovieTheaterById({
+            id: req.params.id
+        });
+        const seller = yield sellerService.findById({ id: String((_d = movieTheater.parentOrganization) === null || _d === void 0 ? void 0 : _d.id) });
+        res.json(seller);
+    }
+    catch (err) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: err.message
+        });
+    }
+}));
+// tslint:disable-next-line:max-func-body-length
+function createMovieTheaterFromBody(req, isNew) {
+    var _a, _b, _c, _d, _e, _f;
+    return __awaiter(this, void 0, void 0, function* () {
+        const selectedSeller = JSON.parse(req.body.parentOrganization);
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const seller = yield sellerService.findById({ id: selectedSeller.id });
         const parentOrganization = {
-            // project: { typeOf: seller.project.typeOf, id: seller.project.id },
             typeOf: seller.typeOf,
             id: seller.id
         };
         let hasPOS = [];
-        if (typeof req.body.hasPOSStr === 'string' && req.body.hasPOSStr.length > 0) {
-            hasPOS = JSON.parse(req.body.hasPOSStr);
-        }
-        if (!Array.isArray(hasPOS)) {
-            throw new Error('hasPOSはArrayを入力してください');
+        if (Array.isArray(req.body.hasPOS)) {
+            hasPOS = req.body.hasPOS.filter((p) => typeof p.id === 'string' && p.id.length > 0
+                && typeof p.name === 'string' && p.name.length > 0)
+                .map((p) => {
+                return {
+                    id: String(p.id),
+                    name: String(p.name)
+                };
+            });
         }
         let hasEntranceGate = [];
-        if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
-            hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
-        }
-        if (!Array.isArray(hasEntranceGate)) {
-            throw new Error('hasEntranceGateはArrayを入力してください');
+        if (Array.isArray(req.body.hasEntranceGate)) {
+            hasEntranceGate = req.body.hasEntranceGate.filter((p) => {
+                var _a;
+                return typeof p.identifier === 'string' && p.identifier.length > 0
+                    && typeof ((_a = p.name) === null || _a === void 0 ? void 0 : _a.ja) === 'string' && p.name.ja.length > 0;
+            })
+                .map((p) => {
+                var _a;
+                return {
+                    typeOf: 'Place',
+                    identifier: String(p.identifier),
+                    name: Object.assign({ ja: String(p.name.ja) }, (typeof ((_a = p.name) === null || _a === void 0 ? void 0 : _a.en) === 'string' && p.name.en.length > 0) ? { en: String(p.name.en) } : undefined)
+                };
+            });
         }
         const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
+        const offers = {
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: chevre.factory.offerType.Offer,
+            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.C62 }, (typeof ((_b = (_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.eligibleQuantity) === null || _b === void 0 ? void 0 : _b.maxValue) === 'number')
+                ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
+                : undefined),
+            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Day }, (typeof ((_d = (_c = req.body.offers) === null || _c === void 0 ? void 0 : _c.availabilityStartsGraceTime) === null || _d === void 0 ? void 0 : _d.value) === 'number')
+                ? { value: req.body.offers.availabilityStartsGraceTime.value }
+                : undefined),
+            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Sec }, (typeof ((_f = (_e = req.body.offers) === null || _e === void 0 ? void 0 : _e.availabilityEndsGraceTime) === null || _f === void 0 ? void 0 : _f.value) === 'number')
+                ? { value: req.body.offers.availabilityEndsGraceTime.value }
+                : undefined)
+        };
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: JSON.parse(req.body.offersStr), parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
-                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: offers, parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name.length > 0)
                     .map((p) => {
                     return {
                         name: String(p.name),
@@ -325,9 +453,77 @@ function validate() {
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
-        express_validator_1.body('parentOrganization.id')
+        express_validator_1.body('parentOrganization')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '親組織'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
+        express_validator_1.body('offers.eligibleQuantity.maxValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売上限席数'))
+            .isInt()
+            .toInt(),
+        express_validator_1.body('offers.availabilityStartsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売開始設定'))
+            .isInt()
+            .toInt(),
+        express_validator_1.body('offers.availabilityEndsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売終了設定'))
+            .isInt()
+            .toInt(),
+        express_validator_1.body('hasPOS')
+            .optional()
+            .isArray()
+            .custom((value) => {
+            // POSコードの重複確認
+            const posCodes = value
+                .filter((p) => String(p.id).length > 0)
+                .map((p) => p.id);
+            const posCodesAreUnique = posCodes.length === [...new Set(posCodes)].length;
+            if (!posCodesAreUnique) {
+                throw new Error('POSコードが重複しています');
+            }
+            return true;
+        }),
+        express_validator_1.body('hasPOS.*.id')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64)),
+        express_validator_1.body('hasPOS.*.name')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+        express_validator_1.body('hasEntranceGate')
+            .optional()
+            .isArray()
+            .custom((value) => {
+            // 入場ゲートコードの重複確認
+            const identifiers = value
+                .filter((p) => String(p.identifier).length > 0)
+                .map((p) => p.identifier);
+            const identifiersAreUnique = identifiers.length === [...new Set(identifiers)].length;
+            if (!identifiersAreUnique) {
+                throw new Error('入場ゲートコードが重複しています');
+            }
+            return true;
+        }),
+        express_validator_1.body('hasEntranceGate.*.identifier')
+            .optional()
+            .if((value) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z_]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64))
     ];
 }
 exports.default = movieTheaterRouter;

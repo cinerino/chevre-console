@@ -48,9 +48,6 @@ $(function () {
     //スケジューラー初期化
     scheduler = createScheduler();
 
-    // ルーム選択肢初期化
-    // getScreens($('.search select[name="theater"]').val(), 'none');
-
     searchSchedule();
 
     // 検索
@@ -72,20 +69,8 @@ $(function () {
 
     // 施設検索条件変更イベント
     $(document).on('change', '.search select[name="theater"]', _.debounce(function () {
-        var theater = $(this).val();
-        // getScreens(theater, 'none');
         initializeLocationSelection();
     }, 500));
-
-    // $(document).on('change', '#newModal select[name="screeningEventSeriesId"]', function () {
-    //     var mvtkFlg = $(this).find('option:selected').attr('data-mvtk-flag');
-    //     if (mvtkFlg != 1) {
-    //         $('#newModal input[name=mvtkExcludeFlg]').removeAttr('checked');
-    //         $('#newModal .mvtk').hide();
-    //     } else {
-    //         $('#newModal .mvtk').show();
-    //     }
-    // });
 
     $(document).on('change', '#newModal select[name="superEvent"]', function () {
         var mvtkFlg = $(this).find('option:selected').attr('data-mvtk-flag');
@@ -97,19 +82,24 @@ $(function () {
         }
     });
 
+    // 作成モーダルの施設選択イベント
     $(document).on('change', '#newModal select[name="theater"]', _.debounce(function () {
         var theater = $(this).val();
         var sellerId = $(this).find('option:selected').attr('data-seller');
 
-        // 販売者に劇場親組織の選択肢があれば自動選択
-        $('#newModal select[name=seller] option').each(function () {
-            if ($(this).val() === sellerId) {
-                $(this).prop('selected', true);
-            }
-        });
+        // 販売者を検索して、選択肢にセットする
+        getSeller(theater);
 
-        getScreens(theater, 'add');
-        getEventSeries(theater);
+        // 販売者に劇場親組織の選択肢があれば自動選択
+        // $('#newModal select[name=seller] option').each(function () {
+        //     if ($(this).val() === sellerId) {
+        //         $(this).prop('selected', true);
+        //     }
+        // });
+
+        // getScreens(theater, 'add');
+        // getEventSeries(theater);
+        initializeScreenSelection(theater);
         initializeSuperEventSelection(theater);
     }, 500));
 
@@ -324,6 +314,27 @@ $(function () {
     });
 });
 
+function getSeller(theater) {
+    if (!theater) {
+        return;
+    }
+
+    var sellerSelection = $('#newModal select[name="seller"]');
+    sellerSelection.html('<option selected disabled>検索中...</option>')
+    $.ajax({
+        dataType: 'json',
+        url: '/places/movieTheater/' + theater + '/seller',
+        type: 'GET',
+        data: {}
+    }).done(function (seller) {
+        console.log('seller found', seller);
+        var options = ['<option selected="selected" value="' + seller.id + '">' + seller.name.ja + '</option>'];
+        sellerSelection.html(options);
+    }).fail(function (jqxhr, textStatus, error) {
+        alert('販売者を検索できませんでした。施設を再選択してください。');
+    });
+}
+
 function initializeLocationSelection() {
     locationSelection.val(null)
         .trigger('change');
@@ -382,6 +393,52 @@ function initializeSuperEventSelection(theater) {
                             'data-mvtk-flag': eventSeries.mvtkFlg,
                             'data-startDate': eventSeries.startDate,
                             'data-endDate': eventSeries.endDate
+                        }
+                    })
+                };
+            }
+        }
+    });
+}
+
+function initializeScreenSelection(theater) {
+    if (!theater) {
+        return;
+    }
+
+    var screenSelection = $('#newModal select[name="screen"]');
+    screenSelection.val(null).trigger('change');
+    screenSelection.select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/places/screeningRoom/search',
+            // url: '/places/movieTheater/' + theater + '/screeningRooms',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    containedInPlace: { id: { $eq: theater } },
+                    name: { $regex: params.term }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (screeningRoom) {
+                        return {
+                            id: screeningRoom.branchCode,
+                            // text: screeningRoom.name + ' (' + screeningRoom.numSeats + ' seats' + ')',
+                            text: screeningRoom.name.ja
                         }
                     })
                 };
@@ -652,7 +709,6 @@ function regist() {
     var maximumAttendeeCapacity = modal.find('input[name=maximumAttendeeCapacity]').val();
     var startDate = modal.find('input[name=screeningDateStart]').val();
     var toDate = modal.find('input[name=screeningDateThrough]').val();
-    // var screeningEventId = modal.find('select[name=screeningEventSeriesId]').val();
     var screeningEventId = modal.find('select[name=superEvent]').val();
     var seller = modal.find('select[name=seller]').val();
 
@@ -753,8 +809,6 @@ function regist() {
     }
 
     // 登録期間が興行期間に含まれているかどうか確認
-    // var eventSeriesStartDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-startDate');
-    // var eventSeriesEndDate = modal.find('select[name=screeningEventSeriesId]').find('option:selected').attr('data-endDate');
     var eventSeriesStartDate = modal.find('select[name=superEvent]').find('option:selected').attr('data-startDate');
     var eventSeriesEndDate = modal.find('select[name=superEvent]').find('option:selected').attr('data-endDate');
     if (moment(startDate + 'T00:00:00+09:00', 'YYYY/MM/DDTHH:mm:ssZ') < moment(eventSeriesStartDate)
@@ -812,7 +866,6 @@ function regist() {
     }).done(function (data) {
         modal.modal('hide');
         if ($('.search select[name=theater]').val() !== theater) {
-            // getScreens(theater, 'none');
             $('.search select[name=theater]').val(theater);
             initializeLocationSelection();
         }
@@ -953,8 +1006,8 @@ function update() {
  * 検索
  */
 function searchSchedule() {
-    var theater = $('.search select[name=theater]').val();
-    getScreens(theater, 'edit');
+    // var theater = $('.search select[name=theater]').val();
+    // getScreens(theater, 'edit');
 
     var format = $('.search select[name=format]').val();
 
@@ -1081,9 +1134,9 @@ function add() {
     //     modal.find('#superEvent').select2('destory');
     // } catch (error) {
     // }
-    modal.find('select[name=screeningEventSeriesId]')
-        .html('<option selected disabled>施設を選択してください</option>');
     modal.find('select[name=screen]')
+        .html('<option selected disabled>施設を選択してください</option>');
+    modal.find('select[name=seller]')
         .html('<option selected disabled>施設を選択してください</option>');
 
     modal.find('input[name=maximumAttendeeCapacity]').val('');

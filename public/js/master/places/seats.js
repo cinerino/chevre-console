@@ -120,7 +120,6 @@ $(function () {
             delay: 250, // wait 250 milliseconds before triggering the request
             // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
             processResults: function (data) {
-                console.log(data);
                 // movieOptions = data.data;
 
                 // Transforms the top-level key of the response object from 'items' to 'results'

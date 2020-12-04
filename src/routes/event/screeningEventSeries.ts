@@ -11,6 +11,8 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
+import { TranslationTypeCode, translationTypes } from '../../factory/translationType';
+
 import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:routes');
@@ -40,17 +42,6 @@ screeningEventSeriesRouter.all<any>(
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
-        });
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
-        // 上映方式タイプ検索
-        const searchVideoFormatTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
 
         let message = '';
@@ -106,11 +97,18 @@ screeningEventSeriesRouter.all<any>(
         }
 
         if (req.method === 'POST') {
-            // 施設を保管
+            // 施設を補完
             if (typeof req.body.location === 'string' && req.body.location.length > 0) {
                 forms.location = JSON.parse(req.body.location);
             } else {
                 forms.location = undefined;
+            }
+
+            // 上映方式を補完
+            if (Array.isArray(req.body.videoFormat) && req.body.videoFormat.length > 0) {
+                forms.videoFormat = (<string[]>req.body.videoFormat).map((v) => JSON.parse(v));
+            } else {
+                forms.videoFormat = [];
             }
         }
 
@@ -135,7 +133,7 @@ screeningEventSeriesRouter.all<any>(
             errors: errors,
             forms: forms,
             movie: undefined,
-            videoFormatTypes: searchVideoFormatTypesResult.data,
+            translationTypes,
             paymentServices: searchProductsResult.data
         });
     }
@@ -389,13 +387,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 auth: req.user.authClient
             });
 
-            // 上映方式タイプ検索
-            const searchVideoFormatTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
-            });
-
             let message = '';
             let errors: any = {};
             const eventId = req.params.eventId;
@@ -457,10 +448,10 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
 
             let translationType = '';
             if (event.subtitleLanguage !== undefined && event.subtitleLanguage !== null) {
-                translationType = '0';
+                translationType = TranslationTypeCode.Subtitle;
             }
             if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
-                translationType = '1';
+                translationType = TranslationTypeCode.Dubbing;
             }
 
             const forms = {
@@ -495,11 +486,18 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             }
 
             if (req.method === 'POST') {
-                // 施設を保管
+                // 施設を補完
                 if (typeof req.body.location === 'string' && req.body.location.length > 0) {
                     forms.location = JSON.parse(req.body.location);
                 } else {
                     forms.location = undefined;
+                }
+
+                // 上映方式を補完
+                if (Array.isArray(req.body.videoFormat) && req.body.videoFormat.length > 0) {
+                    forms.videoFormat = (<string[]>req.body.videoFormat).map((v) => JSON.parse(v));
+                } else {
+                    forms.videoFormat = [];
                 }
             } else {
                 if (typeof event.location.id === 'string') {
@@ -509,6 +507,18 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                     forms.location = movieTheater;
                 } else {
                     forms.location = undefined;
+                }
+
+                if (Array.isArray(event.videoFormat) && event.videoFormat.length > 0) {
+                    const searchVideoFormatsResult = await categoryCodeService.search({
+                        limit: 100,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } },
+                        codeValue: { $in: event.videoFormat.map((v) => v.typeOf) }
+                    });
+                    forms.videoFormat = searchVideoFormatsResult.data;
+                } else {
+                    forms.videoFormat = [];
                 }
             }
 
@@ -532,7 +542,7 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 movie: movie,
-                videoFormatTypes: searchVideoFormatTypesResult.data,
+                translationTypes,
                 paymentServices: searchProductsResult.data
             });
         } catch (error) {
@@ -617,9 +627,20 @@ function createEventFromBody(
     movieTheater: chevre.factory.place.movieTheater.IPlace,
     isNew: boolean
 ): chevre.factory.event.screeningEventSeries.IAttributes {
-    const videoFormat = (Array.isArray(req.body.videoFormatType)) ? req.body.videoFormatType.map((f: string) => {
-        return { typeOf: f, name: f };
-    }) : [];
+    let videoFormat: chevre.factory.event.screeningEventSeries.IVideoFormat[] = [];
+
+    if (Array.isArray(req.body.videoFormat) && req.body.videoFormat.length > 0) {
+        const selectedVideoFormats = (<any[]>req.body.videoFormat).map((v) => JSON.parse(v));
+
+        videoFormat = selectedVideoFormats.map((v) => {
+            return { typeOf: v.codeValue, name: v.codeValue };
+        });
+    }
+
+    // videoFormat = (Array.isArray(req.body.videoFormatType)) ? req.body.videoFormatType.map((f: string) => {
+    //     return { typeOf: f, name: f };
+    // }) : [];
+
     const soundFormat = (Array.isArray(req.body.soundFormatType)) ? req.body.soundFormatType.map((f: string) => {
         return { typeOf: f, name: f };
     }) : [];
@@ -637,12 +658,12 @@ function createEventFromBody(
     };
 
     let subtitleLanguage: chevre.factory.language.ILanguage | undefined;
-    if (req.body.translationType === '0') {
+    if (req.body.translationType === TranslationTypeCode.Subtitle) {
         subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
 
     let dubLanguage: chevre.factory.language.ILanguage | undefined;
-    if (req.body.translationType === '1') {
+    if (req.body.translationType === TranslationTypeCode.Dubbing) {
         dubLanguage = { typeOf: 'Language', name: 'Japanese' };
     }
 

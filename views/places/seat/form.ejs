@@ -155,13 +155,10 @@
                         <label for="seatingType" class="bmd-label-static">
                             座席区分
                         </label>
-                        <select class="form-control" name="seatingType">
-                            <option value="">---</option>
-                            <% for (const seatingType of seatingTypes) { %>
-                            <% const selected = Array.isArray(forms.seatingType) && forms.seatingType.includes(seatingType.codeValue) %>
-                            <option value="<%= seatingType.codeValue %>" <% if (selected) { %> selected<% } %>>
-                                <%= seatingType.name.ja %>
-                            </option>
+                        <select class="form-control" name="seatingType" id="seatingType" style="width: 100%;">
+                            <% if (forms.seatingType !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.seatingType) %>" selected="selected">
+                                <%= forms.seatingType.name.ja %></option>
                             <% } %>
                         </select>
                     </div>

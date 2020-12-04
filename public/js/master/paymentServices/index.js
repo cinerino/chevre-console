@@ -35,6 +35,11 @@ $(function () {
         showServiceOutput(id);
     });
 
+    $(document).on('click', '.showProvider', function (event) {
+        var id = $(this).attr('data-id');
+        showProvider(id);
+    });
+
     $('.btn-ok').click();
 
     function search(pageNumber) {
@@ -120,6 +125,33 @@ function showServiceOutput(id) {
     );
 
     modal.find('.modal-title').text('ServiceOutput');
+    modal.find('.modal-body').html(div);
+    modal.modal();
+}
+
+function showProvider(id) {
+    var product = $.CommonMasterList.getDatas().find(function (data) {
+        return data.id === id
+    });
+    if (product === undefined) {
+        alert('プロダクト' + id + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-product');
+    var div = $('<div>')
+
+    div.append($('<textarea>')
+        .val(JSON.stringify(product.provider, null, '\t'))
+        .addClass('form-control')
+        .attr({
+            rows: '25',
+            disabled: ''
+        })
+    );
+
+    modal.find('.modal-title').text('Provider');
     modal.find('.modal-body').html(div);
     modal.modal();
 }

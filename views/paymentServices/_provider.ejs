@@ -1,0 +1,69 @@
+<% providers.forEach((provider, key) => { %>
+<div class="form-row">
+    <div class="form-group bmd-form-group col-2">
+        <label for="provider[<%= key %>][seller]" class="bmd-label-static">
+            販売者
+        </label>
+        <select class="form-control providerSeller" name="provider[<%= key %>][seller]"
+            id="provider[<%= key %>][seller]" style="width: 100%;">
+            <option value="<%= (typeof provider.id === 'string') ? JSON.stringify(provider) : '' %>"
+                selected="selected">
+                <%= (typeof provider.id === 'string') ? provider.name.ja : '' %></option>
+        </select>
+
+        <% if (errors && errors[`provider[${key}].seller`]) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors[`provider[${key}].seller`].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-2">
+        <label class="bmd-label-floating">GMOショップID</label>
+        <input class="form-control" name="provider[<%= key %>][credentials][shopId]"
+            id="provider[<%= key %>][credentials][shopId]" maxlength=64
+            value="<%= (provider.credentials !== undefined) ? provider.credentials.shopId : '' %>">
+        <% if (errors && errors[`provider[${key}].credentials.shopId`]) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors[`provider[${key}].credentials.shopId`].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-2">
+        <label class="bmd-label-floating">GMOショップPASS</label>
+        <input class="form-control" name="provider[<%= key %>][credentials][shopPass]"
+            id="provider[<%= key %>][credentials][shopPass]" maxlength=64
+            value="<%= (provider.credentials !== undefined) ? provider.credentials.shopPass : '' %>">
+        <% if (errors && errors[`provider[${key}].credentials.shopPass`]) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors[`provider[${key}].credentials.shopPass`].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-2">
+        <label class="bmd-label-floating">ムビチケ興行会社コード</label>
+        <input class="form-control" name="provider[<%= key %>][credentials][kgygishCd]"
+            id="provider[<%= key %>][credentials][kgygishCd]" maxlength=64
+            value="<%= (provider.credentials !== undefined) ? provider.credentials.kgygishCd : '' %>">
+        <% if (errors && errors[`provider[${key}].credentials.kgygishCd`]) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors[`provider[${key}].credentials.kgygishCd`].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-2">
+        <label class="bmd-label-floating">ムビチケサイトコード</label>
+        <input class="form-control" name="provider[<%= key %>][credentials][stCd]"
+            id="provider[<%= key %>][credentials][stCd]" maxlength=64
+            value="<%= (provider.credentials !== undefined) ? provider.credentials.stCd : '' %>">
+        <% if (errors && errors[`provider[${key}].credentials.stCd`]) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors[`provider[${key}].credentials.stCd`].msg %>
+        </span>
+        <% } %>
+    </div>
+</div>
+<% }) %>

@@ -7,19 +7,20 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { BAD_REQUEST, NO_CONTENT } from 'http-status';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
 const debug = createDebug('chevre-console:router');
 
-const NUM_ADDITIONAL_PROPERTY = 5;
+const NUM_ADDITIONAL_PROPERTY = 10;
 
 const movieTheaterRouter = Router();
 
 movieTheaterRouter.all<any>(
     '/new',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -59,9 +60,33 @@ movieTheaterRouter.all<any>(
             }
         }
 
+        const defaultOffers: chevre.factory.place.movieTheater.IOffer = {
+            priceCurrency: chevre.factory.priceCurrency.JPY,
+            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+            typeOf: chevre.factory.offerType.Offer,
+            eligibleQuantity: {
+                typeOf: 'QuantitativeValue',
+                maxValue: 6,
+                unitCode: chevre.factory.unitCode.C62
+            },
+            availabilityStartsGraceTime: {
+                typeOf: 'QuantitativeValue',
+                value: -2,
+                unitCode: chevre.factory.unitCode.Day
+            },
+            availabilityEndsGraceTime: {
+                typeOf: 'QuantitativeValue',
+                value: 1200,
+                unitCode: chevre.factory.unitCode.Sec
+            }
+        };
+
         const forms = {
             additionalProperty: [],
+            hasEntranceGate: [],
+            hasPOS: [],
             name: {},
+            offers: defaultOffers,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -69,6 +94,27 @@ movieTheaterRouter.all<any>(
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+        if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
+                return {};
+            }));
+        }
+
+        if (req.method === 'POST') {
+            // 親組織を補完
+            if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+                forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+            } else {
+                forms.parentOrganization = undefined;
+            }
         }
 
         const sellerService = new chevre.service.Seller({
@@ -211,6 +257,7 @@ movieTheaterRouter.delete(
 movieTheaterRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -219,6 +266,11 @@ movieTheaterRouter.all<ParamsDictionary>(
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const sellerService = new chevre.service.Seller({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
         let movieTheater = await placeService.findMovieTheaterById({
             id: req.params.id
         });
@@ -246,22 +298,51 @@ movieTheaterRouter.all<ParamsDictionary>(
 
         const forms = {
             additionalProperty: [],
-            // tslint:disable-next-line:no-null-keyword
-            offersStr: (movieTheater.offers !== undefined) ? JSON.stringify(movieTheater.offers, null, '\t') : '{"typeOf":"Offer"}',
+            hasEntranceGate: [],
+            hasPOS: [],
             ...movieTheater,
             ...req.body
         };
+
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
         }
+        if (forms.hasEntranceGate.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasEntranceGate.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasEntranceGate.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.hasPOS.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.hasPOS.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.hasPOS.length)].map(() => {
+                return {};
+            }));
+        }
 
-        const sellerService = new chevre.service.Seller({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+        if (req.method === 'POST') {
+            // 親組織を補完
+            if (typeof req.body.parentOrganization === 'string' && req.body.parentOrganization.length > 0) {
+                forms.parentOrganization = JSON.parse(req.body.parentOrganization);
+            } else {
+                forms.parentOrganization = undefined;
+            }
+        } else {
+            forms.offers = movieTheater.offers;
+
+            if (typeof movieTheater.parentOrganization?.id === 'string') {
+                const seller = await sellerService.findById({
+                    id: movieTheater.parentOrganization.id
+                });
+                forms.parentOrganization = { id: seller.id, name: seller.name };
+            } else {
+                forms.parentOrganization = undefined;
+            }
+        }
+
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
         res.render('places/movieTheater/update', {
@@ -331,40 +412,105 @@ movieTheaterRouter.get(
     }
 );
 
+movieTheaterRouter.get(
+    '/:id/seller',
+    async (req, res) => {
+        try {
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const movieTheater = await placeService.findMovieTheaterById({
+                id: req.params.id
+            });
+            const seller = await sellerService.findById({ id: String(movieTheater.parentOrganization?.id) });
+
+            res.json(seller);
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: err.message
+                });
+        }
+    }
+);
+
+// tslint:disable-next-line:max-func-body-length
 async function createMovieTheaterFromBody(
     req: Request, isNew: boolean
 ): Promise<chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom> {
-    const parentOrganizationId = req.body.parentOrganization?.id;
-
+    const selectedSeller = JSON.parse(req.body.parentOrganization);
     const sellerService = new chevre.service.Seller({
         endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const seller = await sellerService.findById({ id: parentOrganizationId });
+    const seller = await sellerService.findById({ id: selectedSeller.id });
 
     const parentOrganization: chevre.factory.place.movieTheater.IParentOrganization = {
-        // project: { typeOf: seller.project.typeOf, id: seller.project.id },
         typeOf: seller.typeOf,
         id: seller.id
     };
 
     let hasPOS: chevre.factory.place.movieTheater.IPOS[] = [];
-    if (typeof req.body.hasPOSStr === 'string' && req.body.hasPOSStr.length > 0) {
-        hasPOS = JSON.parse(req.body.hasPOSStr);
-    }
-    if (!Array.isArray(hasPOS)) {
-        throw new Error('hasPOSはArrayを入力してください');
+    if (Array.isArray(req.body.hasPOS)) {
+        hasPOS = req.body.hasPOS.filter((p: any) => typeof p.id === 'string' && p.id.length > 0
+            && typeof p.name === 'string' && p.name.length > 0)
+            .map((p: any) => {
+                return {
+                    id: String(p.id),
+                    name: String(p.name)
+                };
+            });
     }
 
     let hasEntranceGate: chevre.factory.place.movieTheater.IEntranceGate[] = [];
-    if (typeof req.body.hasEntranceGateStr === 'string' && req.body.hasEntranceGateStr.length > 0) {
-        hasEntranceGate = JSON.parse(req.body.hasEntranceGateStr);
-    }
-    if (!Array.isArray(hasEntranceGate)) {
-        throw new Error('hasEntranceGateはArrayを入力してください');
+    if (Array.isArray(req.body.hasEntranceGate)) {
+        hasEntranceGate = req.body.hasEntranceGate.filter((p: any) => typeof p.identifier === 'string' && p.identifier.length > 0
+            && typeof p.name?.ja === 'string' && p.name.ja.length > 0)
+            .map((p: any) => {
+                return {
+                    typeOf: 'Place',
+                    identifier: String(p.identifier),
+                    name: {
+                        ja: String(p.name.ja),
+                        ...(typeof p.name?.en === 'string' && p.name.en.length > 0) ? { en: String(p.name.en) } : undefined
+                    }
+                };
+            });
     }
 
     const url: string | undefined = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
+
+    const offers: chevre.factory.place.movieTheater.IOffer = {
+        priceCurrency: chevre.factory.priceCurrency.JPY,
+        project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
+        typeOf: chevre.factory.offerType.Offer,
+        eligibleQuantity: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.C62,
+            ...(typeof req.body.offers?.eligibleQuantity?.maxValue === 'number')
+                ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
+                : undefined
+        },
+        availabilityStartsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.Day,
+            ...(typeof req.body.offers?.availabilityStartsGraceTime?.value === 'number')
+                ? { value: req.body.offers.availabilityStartsGraceTime.value }
+                : undefined
+        },
+        availabilityEndsGraceTime: {
+            typeOf: 'QuantitativeValue',
+            unitCode: chevre.factory.unitCode.Sec,
+            ...(typeof req.body.offers?.availabilityEndsGraceTime?.value === 'number')
+                ? { value: req.body.offers.availabilityEndsGraceTime.value }
+                : undefined
+        }
+    };
 
     // tslint:disable-next-line:no-unnecessary-local-variable
     const movieTheater: chevre.factory.place.movieTheater.IPlaceWithoutScreeningRoom = {
@@ -376,12 +522,12 @@ async function createMovieTheaterFromBody(
         kanaName: req.body.kanaName,
         hasEntranceGate: hasEntranceGate,
         hasPOS: hasPOS,
-        offers: JSON.parse(req.body.offersStr),
+        offers: offers,
         parentOrganization: parentOrganization,
         telephone: req.body.telephone,
         screenCount: 0,
         additionalProperty: (Array.isArray(req.body.additionalProperty))
-            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name.length > 0)
                 .map((p: any) => {
                     return {
                         name: String(p.name),
@@ -419,9 +565,84 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 64)),
 
-        body('parentOrganization.id')
+        body('parentOrganization')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '親組織'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '親組織')),
+
+        body('offers.eligibleQuantity.maxValue')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売上限席数'))
+            .isInt()
+            .toInt(),
+
+        body('offers.availabilityStartsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売開始設定'))
+            .isInt()
+            .toInt(),
+
+        body('offers.availabilityEndsGraceTime.value')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '販売終了設定'))
+            .isInt()
+            .toInt(),
+
+        body('hasPOS')
+            .optional()
+            .isArray()
+            .custom((value) => {
+                // POSコードの重複確認
+                const posCodes = (<any[]>value)
+                    .filter((p) => String(p.id).length > 0)
+                    .map((p) => p.id);
+                const posCodesAreUnique = posCodes.length === [...new Set(posCodes)].length;
+                if (!posCodesAreUnique) {
+                    throw new Error('POSコードが重複しています');
+                }
+
+                return true;
+            }),
+        body('hasPOS.*.id')
+            .optional()
+            .if((value: any) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64)),
+        body('hasPOS.*.name')
+            .optional()
+            .if((value: any) => String(value).length > 0)
+            .isString()
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+
+        body('hasEntranceGate')
+            .optional()
+            .isArray()
+            .custom((value) => {
+                // 入場ゲートコードの重複確認
+                const identifiers = (<any[]>value)
+                    .filter((p) => String(p.identifier).length > 0)
+                    .map((p) => p.identifier);
+                const identifiersAreUnique = identifiers.length === [...new Set(identifiers)].length;
+                if (!identifiersAreUnique) {
+                    throw new Error('入場ゲートコードが重複しています');
+                }
+
+                return true;
+            }),
+        body('hasEntranceGate.*.identifier')
+            .optional()
+            .if((value: any) => String(value).length > 0)
+            .isString()
+            .matches(/^[0-9a-zA-Z_]+$/)
+            .withMessage(() => '英数字で入力してください')
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 64))
     ];
 }
 

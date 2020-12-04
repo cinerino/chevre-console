@@ -48,12 +48,21 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {} }, req.body);
+    const forms = Object.assign({ additionalProperty: [], paymentAccepted: [], name: {}, alternateName: {} }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
             return {};
         }));
+    }
+    if (req.method === 'POST') {
+        // 対応決済方法を補完
+        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+            forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+        }
+        else {
+            forms.paymentAccepted = [];
+        }
     }
     res.render('sellers/new', {
         message: message,
@@ -81,6 +90,10 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
 sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
+    const categoryCodeService = new chevre.service.CategoryCode({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -106,12 +119,37 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
                 }
             }
         }
-        const forms = Object.assign(Object.assign({}, seller), req.body);
+        const forms = Object.assign(Object.assign({ paymentAccepted: [] }, seller), req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+        if (req.method === 'POST') {
+            // 対応決済方法を補完
+            if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+                forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+            }
+            else {
+                forms.paymentAccepted = [];
+            }
+        }
+        else {
+            if (Array.isArray(seller.paymentAccepted) && seller.paymentAccepted.length > 0) {
+                const searchPaymentMethodTypesResult = yield categoryCodeService.search({
+                    limit: 100,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                    codeValue: { $in: seller.paymentAccepted.map((v) => v.paymentMethodType) }
+                });
+                forms.paymentAccepted = searchPaymentMethodTypesResult.data.map((c) => {
+                    return { codeValue: c.codeValue, name: c.name };
+                });
+            }
+            else {
+                forms.paymentAccepted = [];
+            }
         }
         res.render('sellers/update', {
             message: message,
@@ -130,6 +168,7 @@ sellersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
     });
 }));
 sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
@@ -141,6 +180,11 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
+            branchCode: {
+                $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
+                    ? req.query.branchCode.$regex
+                    : undefined
+            },
             name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
         };
         let data;
@@ -191,28 +235,21 @@ function createFromBody(req, isNew) {
             }
         }
         let paymentAccepted;
-        if (typeof req.body.paymentAcceptedStr === 'string' && req.body.paymentAcceptedStr.length > 0) {
+        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
             try {
-                paymentAccepted = JSON.parse(req.body.paymentAcceptedStr);
+                paymentAccepted = req.body.paymentAccepted.map((p) => {
+                    const selectedPaymentMethod = JSON.parse(p);
+                    return { paymentMethodType: selectedPaymentMethod.codeValue };
+                });
             }
             catch (error) {
                 throw new Error(`対応決済方法の型が不適切です ${error.message}`);
             }
         }
-        // 親組織のデフォルトはCinerinoプロジェクトの親組織
-        let parentOrganization = req.project.parentOrganization;
-        if (typeof req.body.parentOrganizationStr === 'string' && req.body.parentOrganizationStr.length > 0) {
-            try {
-                parentOrganization = JSON.parse(req.body.parentOrganizationStr);
-            }
-            catch (error) {
-                throw new Error(`親組織の型が不適切です ${error.message}`);
-            }
-        }
         const branchCode = req.body.branchCode;
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Corporation, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -220,9 +257,9 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined, areaServed: [] }, (typeof branchCode === 'string' && branchCode.length > 0) ? { branchCode } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (parentOrganization !== undefined) ? { parentOrganization } : undefined), (!isNew)
+                : undefined, areaServed: [] }, (typeof branchCode === 'string' && branchCode.length > 0) ? { branchCode } : undefined), (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (hasMerchantReturnPolicy !== undefined) ? { hasMerchantReturnPolicy } : undefined), (paymentAccepted !== undefined) ? { paymentAccepted } : undefined), (!isNew)
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined), (parentOrganization === undefined) ? { parentOrganization: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign({ parentOrganization: 1 }, (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined), (hasMerchantReturnPolicy === undefined) ? { hasMerchantReturnPolicy: 1 } : undefined), (paymentAccepted === undefined) ? { paymentAccepted: 1 } : undefined)
             }
             : undefined);
     });
@@ -236,9 +273,6 @@ function validate() {
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('コード', 20)),
-        express_validator_1.body('typeOf')
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'タイプ')),
         express_validator_1.body(['name.ja', 'name.en'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

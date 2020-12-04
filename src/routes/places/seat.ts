@@ -29,18 +29,12 @@ seatRouter.all<any>(
             auth: req.user.authClient
         });
 
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    debug(req.body);
                     req.body.id = '';
                     const seat = createFromBody(req, true);
 
@@ -72,22 +66,25 @@ seatRouter.all<any>(
                 return {};
             }));
         }
+
+        if (req.method === 'POST') {
+            // 座席区分を補完
+            if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
+                forms.seatingType = JSON.parse(req.body.seatingType);
+            } else {
+                forms.seatingType = undefined;
+            }
+        }
+
         const searchMovieTheatersResult = await placeService.searchMovieTheaters({
             project: { ids: [req.project.id] }
-        });
-
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
 
         res.render('places/seat/new', {
             message: message,
             errors: errors,
             forms: forms,
-            movieTheaters: searchMovieTheatersResult.data,
-            seatingTypes: searchSeatingTypesResult.data
+            movieTheaters: searchMovieTheatersResult.data
         });
     }
 );
@@ -197,6 +194,7 @@ seatRouter.get(
 seatRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         try {
             let message = '';
@@ -222,12 +220,6 @@ seatRouter.all<ParamsDictionary>(
 
             const searchMovieTheatersResult = await placeService.searchMovieTheaters({
                 project: { ids: [req.project.id] }
-            });
-
-            const searchSeatingTypesResult = await categoryCodeService.search({
-                limit: 100,
-                project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
 
             const searchSeatsResult = await placeService.searchSeats({
@@ -282,12 +274,32 @@ seatRouter.all<ParamsDictionary>(
                 }));
             }
 
+            if (req.method === 'POST') {
+                // 座席区分を補完
+                if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
+                    forms.seatingType = JSON.parse(req.body.seatingType);
+                } else {
+                    forms.seatingType = undefined;
+                }
+            } else {
+                if (Array.isArray(seat.seatingType)) {
+                    const searchSeatingTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                        codeValue: { $eq: seat.seatingType[0] }
+                    });
+                    forms.seatingType = searchSeatingTypesResult.data[0];
+                } else {
+                    forms.seatingType = undefined;
+                }
+            }
+
             res.render('places/seat/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                movieTheaters: searchMovieTheatersResult.data,
-                seatingTypes: searchSeatingTypesResult.data
+                movieTheaters: searchMovieTheatersResult.data
             });
         } catch (error) {
             next(error);
@@ -332,7 +344,10 @@ seatRouter.delete<ParamsDictionary>(
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.seat.IPlace {
     let seatingType: string[] | undefined;
     if (typeof req.body.seatingType === 'string' && req.body.seatingType.length > 0) {
-        seatingType = [req.body.seatingType];
+        const selectedSeatingType = JSON.parse(req.body.seatingType);
+        if (typeof selectedSeatingType.codeValue === 'string' && selectedSeatingType.codeValue.length > 0) {
+            seatingType = [selectedSeatingType.codeValue];
+        }
     }
 
     let name: chevre.factory.multilingualString | undefined;
