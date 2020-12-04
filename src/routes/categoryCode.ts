@@ -12,6 +12,8 @@ import * as Message from '../message';
 
 import { categoryCodeSets } from '../factory/categoryCodeSet';
 
+const NUM_ADDITIONAL_PROPERTY = 10;
+
 const categoryCodesRouter = Router();
 
 categoryCodesRouter.get(
@@ -112,7 +114,7 @@ categoryCodesRouter.all<any>(
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    let categoryCode = createMovieFromBody(req);
+                    let categoryCode = createCategoryCodeFromBody(req, true);
 
                     // コード重複確認
                     const { data } = await categoryCodeService.search({
@@ -138,9 +140,16 @@ categoryCodesRouter.all<any>(
         }
 
         const forms = {
+            additionalProperty: [],
             appliesToCategoryCode: {},
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -190,7 +199,7 @@ categoryCodesRouter.all<ParamsDictionary>(
             if (validatorResult.isEmpty()) {
                 // コンテンツDB登録
                 try {
-                    categoryCode = { ...createMovieFromBody(req), ...{ id: (<any>categoryCode).id } };
+                    categoryCode = { ...createCategoryCodeFromBody(req, false), ...{ id: (<any>categoryCode).id } };
                     await categoryCodeService.update(categoryCode);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
@@ -203,9 +212,16 @@ categoryCodesRouter.all<ParamsDictionary>(
         }
 
         const forms = {
+            additionalProperty: [],
             ...categoryCode,
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
@@ -422,8 +438,16 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
     }
 }
 
-function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategoryCode {
+function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factory.categoryCode.ICategoryCode {
     const paymentMethodType = req.body.paymentMethod?.typeOf;
+
+    const image: string | undefined = (typeof req.body.image === 'string' && req.body.image.length > 0)
+        ? req.body.image
+        : undefined;
+
+    const color: string | undefined = (typeof req.body.color === 'string' && req.body.color.length > 0)
+        ? req.body.color
+        : undefined;
 
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -433,6 +457,15 @@ function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategor
             typeOf: 'CategoryCodeSet',
             identifier: req.body.inCodeSet.identifier
         },
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined,
         name: <any>{ ja: req.body.name.ja },
         ...(req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
             ? {
@@ -441,6 +474,16 @@ function createMovieFromBody(req: Request): chevre.factory.categoryCode.ICategor
                         ? paymentMethodType
                         // デフォルトはとりあえず固定でムビチケ
                         : chevre.factory.paymentMethodType.MovieTicket
+                }
+            }
+            : undefined,
+        ...(typeof image === 'string') ? { image } : undefined,
+        ...(typeof color === 'string') ? { color } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(typeof image !== 'string') ? { image: 1 } : undefined,
+                    ...(typeof color !== 'string') ? { color: 1 } : undefined
                 }
             }
             : undefined

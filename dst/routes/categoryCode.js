@@ -18,6 +18,7 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
+const NUM_ADDITIONAL_PROPERTY = 10;
 const categoryCodesRouter = express_1.Router();
 categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
@@ -99,7 +100,7 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
             try {
-                let categoryCode = createMovieFromBody(req);
+                let categoryCode = createCategoryCodeFromBody(req, true);
                 // コード重複確認
                 const { data } = yield categoryCodeService.search({
                     limit: 1,
@@ -120,7 +121,13 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             }
         }
     }
-    const forms = Object.assign({ appliesToCategoryCode: {} }, req.body);
+    const forms = Object.assign({ additionalProperty: [], appliesToCategoryCode: {} }, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -161,7 +168,7 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         if (validatorResult.isEmpty()) {
             // コンテンツDB登録
             try {
-                categoryCode = Object.assign(Object.assign({}, createMovieFromBody(req)), { id: categoryCode.id });
+                categoryCode = Object.assign(Object.assign({}, createCategoryCodeFromBody(req, false)), { id: categoryCode.id });
                 yield categoryCodeService.update(categoryCode);
                 req.flash('message', '更新しました');
                 res.redirect(req.originalUrl);
@@ -172,7 +179,13 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             }
         }
     }
-    const forms = Object.assign(Object.assign({}, categoryCode), req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [] }, categoryCode), req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -377,13 +390,27 @@ function preDelete(req, categoryCode) {
         }
     });
 }
-function createMovieFromBody(req) {
+function createCategoryCodeFromBody(req, isNew) {
     var _a;
     const paymentMethodType = (_a = req.body.paymentMethod) === null || _a === void 0 ? void 0 : _a.typeOf;
-    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'CategoryCode', codeValue: req.body.codeValue, inCodeSet: {
+    const image = (typeof req.body.image === 'string' && req.body.image.length > 0)
+        ? req.body.image
+        : undefined;
+    const color = (typeof req.body.color === 'string' && req.body.color.length > 0)
+        ? req.body.color
+        : undefined;
+    return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'CategoryCode', codeValue: req.body.codeValue, inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: req.body.inCodeSet.identifier
-        }, name: { ja: req.body.name.ja } }, (req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+        }, additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                .map((p) => {
+                return {
+                    name: String(p.name),
+                    value: String(p.value)
+                };
+            })
+            : undefined, name: { ja: req.body.name.ja } }, (req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
         ? {
             paymentMethod: {
                 typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
@@ -391,6 +418,10 @@ function createMovieFromBody(req) {
                     // デフォルトはとりあえず固定でムビチケ
                     : chevre.factory.paymentMethodType.MovieTicket
             }
+        }
+        : undefined), (typeof image === 'string') ? { image } : undefined), (typeof color === 'string') ? { color } : undefined), (!isNew)
+        ? {
+            $unset: Object.assign(Object.assign({}, (typeof image !== 'string') ? { image: 1 } : undefined), (typeof color !== 'string') ? { color: 1 } : undefined)
         }
         : undefined);
 }
