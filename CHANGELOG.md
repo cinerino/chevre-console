@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 販売者編集からtypeOfとparentOrganizationを削除
 - イベント作成時のルーム選択肢を動的に変更
 - 施設編集の親組織選択肢を動的に変更
+- イベント作成時の販売者を施設の親組織で自動設定するように調整
 
 ### Deprecated
 

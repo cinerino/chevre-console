@@ -87,12 +87,15 @@ $(function () {
         var theater = $(this).val();
         var sellerId = $(this).find('option:selected').attr('data-seller');
 
+        // 販売者を検索して、選択肢にセットする
+        getSeller(theater);
+
         // 販売者に劇場親組織の選択肢があれば自動選択
-        $('#newModal select[name=seller] option').each(function () {
-            if ($(this).val() === sellerId) {
-                $(this).prop('selected', true);
-            }
-        });
+        // $('#newModal select[name=seller] option').each(function () {
+        //     if ($(this).val() === sellerId) {
+        //         $(this).prop('selected', true);
+        //     }
+        // });
 
         // getScreens(theater, 'add');
         // getEventSeries(theater);
@@ -310,6 +313,27 @@ $(function () {
         }
     });
 });
+
+function getSeller(theater) {
+    if (!theater) {
+        return;
+    }
+
+    var sellerSelection = $('#newModal select[name="seller"]');
+    sellerSelection.html('<option selected disabled>検索中...</option>')
+    $.ajax({
+        dataType: 'json',
+        url: '/places/movieTheater/' + theater + '/seller',
+        type: 'GET',
+        data: {}
+    }).done(function (seller) {
+        console.log('seller found', seller);
+        var options = ['<option selected="selected" value="' + seller.id + '">' + seller.name.ja + '</option>'];
+        sellerSelection.html(options);
+    }).fail(function (jqxhr, textStatus, error) {
+        alert('販売者を検索できませんでした。施設を再選択してください。');
+    });
+}
 
 function initializeLocationSelection() {
     locationSelection.val(null)
@@ -1111,6 +1135,8 @@ function add() {
     // } catch (error) {
     // }
     modal.find('select[name=screen]')
+        .html('<option selected disabled>施設を選択してください</option>');
+    modal.find('select[name=seller]')
         .html('<option selected disabled>施設を選択してください</option>');
 
     modal.find('input[name=maximumAttendeeCapacity]').val('');

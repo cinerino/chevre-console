@@ -7,7 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { BAD_REQUEST, NO_CONTENT } from 'http-status';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
@@ -408,6 +408,33 @@ movieTheaterRouter.get(
                 message: err.message,
                 results: []
             });
+        }
+    }
+);
+
+movieTheaterRouter.get(
+    '/:id/seller',
+    async (req, res) => {
+        try {
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const movieTheater = await placeService.findMovieTheaterById({
+                id: req.params.id
+            });
+            const seller = await sellerService.findById({ id: String(movieTheater.parentOrganization?.id) });
+
+            res.json(seller);
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: err.message
+                });
         }
     }
 );

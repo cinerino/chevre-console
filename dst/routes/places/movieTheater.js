@@ -341,6 +341,30 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
         });
     }
 }));
+movieTheaterRouter.get('/:id/seller', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _d;
+    try {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const movieTheater = yield placeService.findMovieTheaterById({
+            id: req.params.id
+        });
+        const seller = yield sellerService.findById({ id: String((_d = movieTheater.parentOrganization) === null || _d === void 0 ? void 0 : _d.id) });
+        res.json(seller);
+    }
+    catch (err) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: err.message
+        });
+    }
+}));
 // tslint:disable-next-line:max-func-body-length
 function createMovieTheaterFromBody(req, isNew) {
     var _a, _b, _c, _d, _e, _f;
