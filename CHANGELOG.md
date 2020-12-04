@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.16.0 - 2020-12-04
+
+### Added
+
 - 決済サービスにプロバイダー編集を追加
 - 販売者編集に対応決済方法を追加
 - サイドメニューに販売者を追加
@@ -23,14 +37,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベント作成時のルーム選択肢を動的に変更
 - 施設編集の親組織選択肢を動的に変更
 - イベント作成時の販売者を施設の親組織で自動設定するように調整
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v2.15.0 - 2020-11-27
 
