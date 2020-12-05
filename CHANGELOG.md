@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 科目編集に追加特性を追加
+
 ### Changed
 
 - 区分検索結果にイメージを表示

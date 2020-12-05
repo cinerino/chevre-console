@@ -16,6 +16,11 @@
                     基本設定
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link2" role="tablist">
+                    追加特性
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -78,6 +83,9 @@
 
             </div>
             <div class="tab-pane" id="link2">
+                <%- include('../../common/part/_additionalProperty', {
+                    additionalProperty: forms.additionalProperty
+                }) %>
             </div>
         </div>
 

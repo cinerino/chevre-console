@@ -95,4 +95,57 @@ $(function () {
             }
         }
     });
+
+    // 追加特性を見る
+    $(document).on('click', '.showAdditionalProperty', function (event) {
+        var codeValue = $(this).attr('data-codeValue');
+        console.log('showing additionalProperty...codeValue:', codeValue);
+
+        showAdditionalProperty(codeValue);
+    });
 });
+
+
+/**
+ * 追加特性を見る
+ */
+function showAdditionalProperty(codeValue) {
+    var accountTitleSet = $.CommonMasterList.getDatas().find(function (data) {
+        return data.codeValue === codeValue
+    });
+    if (accountTitleSet === undefined) {
+        alert('科目' + codeValue + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-accountTitleSet');
+    var div = $('<div>')
+
+    if (Array.isArray(accountTitleSet.additionalProperty)) {
+        var thead = $('<thead>').addClass('text-primary');
+        var tbody = $('<tbody>');
+        thead.append([
+            $('<tr>').append([
+                $('<th>').text('Name'),
+                $('<th>').text('Value')
+            ])
+        ]);
+        tbody.append(accountTitleSet.additionalProperty.map(function (property) {
+            return $('<tr>').append([
+                $('<td>').text(property.name),
+                $('<td>').text(property.value)
+            ]);
+        }));
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+        div.addClass('table-responsive')
+            .append(table);
+    } else {
+        div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+    }
+
+    modal.find('.modal-title').text('追加特性');
+    modal.find('.modal-body').html(div);
+    modal.modal();
+}
