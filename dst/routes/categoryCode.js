@@ -20,6 +20,19 @@ const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const categoryCodesRouter = express_1.Router();
+categoryCodesRouter.get('/([\$])image([\$])', (__, res) => {
+    res.status(http_status_1.NO_CONTENT)
+        .end();
+});
+categoryCodesRouter.get('/image', (req, res) => {
+    if (typeof req.query.url === 'string' && req.query.url.length > 0) {
+        res.redirect(req.query.url);
+    }
+    else {
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+});
 categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
         message: '',
@@ -150,6 +163,10 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         paymentServices: searchProductsResult.data
     });
 }));
+categoryCodesRouter.get('/:id/image', (__, res) => {
+    res.status(http_status_1.NO_CONTENT)
+        .end();
+});
 // tslint:disable-next-line:use-default-type-parameter
 categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';

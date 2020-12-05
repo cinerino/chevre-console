@@ -17,6 +17,26 @@ const NUM_ADDITIONAL_PROPERTY = 10;
 const categoryCodesRouter = Router();
 
 categoryCodesRouter.get(
+    '/([\$])image([\$])',
+    (__, res) => {
+        res.status(NO_CONTENT)
+            .end();
+    }
+);
+
+categoryCodesRouter.get(
+    '/image',
+    (req, res) => {
+        if (typeof req.query.url === 'string' && req.query.url.length > 0) {
+            res.redirect(req.query.url);
+        } else {
+            res.status(NO_CONTENT)
+                .end();
+        }
+    }
+);
+
+categoryCodesRouter.get(
     '',
     async (_, res) => {
         res.render('categoryCodes/index', {
@@ -173,6 +193,14 @@ categoryCodesRouter.all<any>(
             categoryCodeSets: categoryCodeSets,
             paymentServices: searchProductsResult.data
         });
+    }
+);
+
+categoryCodesRouter.get(
+    '/:id/image',
+    (__, res) => {
+        res.status(NO_CONTENT)
+            .end();
     }
 );
 
