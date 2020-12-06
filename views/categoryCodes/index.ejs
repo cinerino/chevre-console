@@ -77,6 +77,7 @@ CC-00
                             aria-describedby="datatables_info">
                             <thead class="text-primary">
                                 <tr>
+                                    <th></th>
                                     <th>コード</th>
                                     <th>分類</th>
                                     <th>名称</th>
@@ -86,6 +87,13 @@ CC-00
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
+                                    <td name="id__image__image">
+                                        <div
+                                            style="max-width: 32px; max-height: 32px; border-radius: 50%; overflow: hidden;">
+                                            <img src="/categoryCodes/image?url=$image$" alt=""
+                                                style="width: 100%; height: auto;">
+                                        </div>
+                                    </td>
                                     <td name="id__codeValue">
                                         <a target="_blank" href="/categoryCodes/$id$/update">
                                             $codeValue$

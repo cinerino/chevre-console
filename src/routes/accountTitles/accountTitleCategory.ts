@@ -14,6 +14,7 @@ import * as Message from '../../message';
 
 const debug = createDebug('chevre-backend:routes');
 
+const NUM_ADDITIONAL_PROPERTY = 5;
 const NAME_MAX_LENGTH_CODE: number = 30;
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
@@ -91,8 +92,15 @@ accountTitleCategoryRouter.all<any>(
         }
 
         const forms = {
+            additionalProperty: [],
             ...req.body
         };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
 
         res.render('accountTitles/accountTitleCategory/add', {
             message: message,
@@ -164,9 +172,16 @@ accountTitleCategoryRouter.all<ParamsDictionary>(
             }
 
             const forms = {
+                additionalProperty: [],
                 ...accountTitleCategory,
                 ...req.body
             };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
 
             res.render('accountTitles/accountTitleCategory/edit', {
                 message: message,
@@ -251,6 +266,15 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.accountTit
         typeOf: <'AccountTitle'>'AccountTitle',
         codeValue: req.body.codeValue,
         name: req.body.name,
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined,
         // description: req.body.description,
         // inDefinedTermSet: req.body.inDefinedTermSet
         ...(isNew)

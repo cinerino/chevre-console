@@ -17,6 +17,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
+const NUM_ADDITIONAL_PROPERTY = 5;
 const NAME_MAX_LENGTH_CODE = 30;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const accountTitleSetRouter = express_1.Router();
@@ -88,7 +89,13 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
             }
         }
     }
-    const forms = Object.assign({}, req.body);
+    const forms = Object.assign({ additionalProperty: [] }, req.body);
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     if (req.method === 'POST') {
         // レイティングを保管
         if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
@@ -159,7 +166,16 @@ accountTitleSetRouter.all('/:codeValue', ...validate(),
         }
         return;
     }
-    const forms = Object.assign(Object.assign({}, accountTitleSet), req.body);
+    const forms = Object.assign(Object.assign({ additionalProperty: [] }, accountTitleSet), req.body);
+    if (!Array.isArray(forms.additionalProperty)) {
+        forms.additionalProperty = [];
+    }
+    if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
     if (req.method === 'POST') {
         // レイティングを保管
         if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
@@ -259,7 +275,15 @@ function createFromBody(req, isNew) {
         if (accountTitleCategory === undefined) {
             throw new Error('科目分類が見つかりません');
         }
-        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name, hasCategoryCode: [], inCodeSet: accountTitleCategory }, (isNew)
+        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'AccountTitle', codeValue: req.body.codeValue, name: req.body.name, hasCategoryCode: [], inCodeSet: accountTitleCategory, additionalProperty: (Array.isArray(req.body.additionalProperty))
+                ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
+                    .map((p) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+                : undefined }, (isNew)
             ? { hasCategoryCode: [] }
             : undefined);
     });
