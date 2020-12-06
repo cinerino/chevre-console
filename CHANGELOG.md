@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 科目分類編集に追加特性を追加
 - 科目編集に追加特性を追加
 
 ### Changed
