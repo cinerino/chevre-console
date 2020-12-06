@@ -33,13 +33,8 @@ SR-01
                                     <label for="containedInPlace[branchCode][$eq]" class="bmd-label-static">
                                         施設
                                     </label>
-                                    <select class="form-control" name="containedInPlace[branchCode][$eq]">
-                                        <option value="">選択してください</option>
-                                        <% for (const movieTheater of movieTheaters) { %>
-                                        <option value="<%= movieTheater.branchCode %>">
-                                            <%= movieTheater.name.ja %>
-                                        </option>
-                                        <% } %>
+                                    <select class="form-control" name="containedInPlace[branchCode][$eq]"
+                                        id="containedInPlace[branchCode][$eq]" style="width: 100%;">
                                     </select>
                                 </div>
 

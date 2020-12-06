@@ -68,33 +68,28 @@ screeningRoomRouter.all<any>(
             }));
         }
 
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
+        if (req.method === 'POST') {
+            // 施設を補完
+            if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+                forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+            } else {
+                forms.containedInPlace = undefined;
+            }
+        }
 
         res.render('places/screeningRoom/new', {
             message: message,
             errors: errors,
-            forms: forms,
-            movieTheaters: searchMovieTheatersResult.data
+            forms: forms
         });
     }
 );
 
 screeningRoomRouter.get(
     '',
-    async (req, res) => {
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
-
+    async (__, res) => {
         res.render('places/screeningRoom/index', {
-            message: '',
-            movieTheaters: searchMovieTheatersResult.data
+            message: ''
         });
     }
 );
@@ -186,10 +181,6 @@ screeningRoomRouter.all<ParamsDictionary>(
             auth: req.user.authClient
         });
 
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
-
         const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
             limit: 1,
             project: { id: { $eq: req.project.id } },
@@ -236,11 +227,19 @@ screeningRoomRouter.all<ParamsDictionary>(
             }));
         }
 
+        if (req.method === 'POST') {
+            // 施設を補完
+            if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+                forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+            } else {
+                forms.containedInPlace = undefined;
+            }
+        }
+
         res.render('places/screeningRoom/update', {
             message: message,
             errors: errors,
-            forms: forms,
-            movieTheaters: searchMovieTheatersResult.data
+            forms: forms
         });
     }
 );
@@ -275,6 +274,8 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
         openSeatingAllowed = true;
     }
 
+    const selectedContainedInPlace = JSON.parse(req.body.containedInPlace);
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.ScreeningRoom,
@@ -284,7 +285,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
         containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.MovieTheater,
-            branchCode: req.body.containedInPlace.branchCode
+            branchCode: selectedContainedInPlace.branchCode
         },
         containsPlace: [], // 更新しないため空でよし
         additionalProperty: (Array.isArray(req.body.additionalProperty))
@@ -312,6 +313,10 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.place.scre
 
 function validate() {
     return [
+        body('containedInPlace')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
+
         body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))

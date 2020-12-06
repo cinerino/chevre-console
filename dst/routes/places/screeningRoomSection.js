@@ -23,14 +23,10 @@ const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const screeningRoomSectionRouter = express_1.Router();
 screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     let message = '';
     let errors = {};
     const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
@@ -65,39 +61,30 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
             return {};
         }));
     }
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
-    const searchSeatingTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-    });
+    if (req.method === 'POST') {
+        // 施設を補完
+        if (typeof ((_d = req.body.containedInPlace) === null || _d === void 0 ? void 0 : _d.containedInPlace) === 'string'
+            && req.body.containedInPlace.containedInPlace.length > 0) {
+            forms.containedInPlace.containedInPlace = JSON.parse(req.body.containedInPlace.containedInPlace);
+            // } else {
+            //     forms.containedInPlace = undefined;
+        }
+    }
     res.render('places/screeningRoomSection/new', {
         message: message,
         errors: errors,
-        forms: forms,
-        movieTheaters: searchMovieTheatersResult.data,
-        seatingTypes: searchSeatingTypesResult.data
+        forms: forms
     });
 }));
-screeningRoomSectionRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
+screeningRoomSectionRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('places/screeningRoomSection/index', {
-        message: '',
-        movieTheaters: searchMovieTheatersResult.data
+        message: ''
     });
 }));
 screeningRoomSectionRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11;
+    var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12;
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
@@ -110,28 +97,28 @@ screeningRoomSectionRouter.get('/search',
             page: page,
             project: { id: { $eq: req.project.id } },
             branchCode: {
-                $regex: (typeof ((_e = (_d = req.query) === null || _d === void 0 ? void 0 : _d.branchCode) === null || _e === void 0 ? void 0 : _e.$eq) === 'string'
-                    && ((_g = (_f = req.query) === null || _f === void 0 ? void 0 : _f.branchCode) === null || _g === void 0 ? void 0 : _g.$eq.length) > 0)
-                    ? (_j = (_h = req.query) === null || _h === void 0 ? void 0 : _h.branchCode) === null || _j === void 0 ? void 0 : _j.$eq : undefined
+                $regex: (typeof ((_f = (_e = req.query) === null || _e === void 0 ? void 0 : _e.branchCode) === null || _f === void 0 ? void 0 : _f.$eq) === 'string'
+                    && ((_h = (_g = req.query) === null || _g === void 0 ? void 0 : _g.branchCode) === null || _h === void 0 ? void 0 : _h.$eq.length) > 0)
+                    ? (_k = (_j = req.query) === null || _j === void 0 ? void 0 : _j.branchCode) === null || _k === void 0 ? void 0 : _k.$eq : undefined
             },
             containedInPlace: {
                 branchCode: {
-                    $eq: (typeof ((_m = (_l = (_k = req.query) === null || _k === void 0 ? void 0 : _k.containedInPlace) === null || _l === void 0 ? void 0 : _l.branchCode) === null || _m === void 0 ? void 0 : _m.$eq) === 'string'
-                        && ((_q = (_p = (_o = req.query) === null || _o === void 0 ? void 0 : _o.containedInPlace) === null || _p === void 0 ? void 0 : _p.branchCode) === null || _q === void 0 ? void 0 : _q.$eq.length) > 0)
-                        ? (_t = (_s = (_r = req.query) === null || _r === void 0 ? void 0 : _r.containedInPlace) === null || _s === void 0 ? void 0 : _s.branchCode) === null || _t === void 0 ? void 0 : _t.$eq : undefined
+                    $eq: (typeof ((_o = (_m = (_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace) === null || _m === void 0 ? void 0 : _m.branchCode) === null || _o === void 0 ? void 0 : _o.$eq) === 'string'
+                        && ((_r = (_q = (_p = req.query) === null || _p === void 0 ? void 0 : _p.containedInPlace) === null || _q === void 0 ? void 0 : _q.branchCode) === null || _r === void 0 ? void 0 : _r.$eq.length) > 0)
+                        ? (_u = (_t = (_s = req.query) === null || _s === void 0 ? void 0 : _s.containedInPlace) === null || _t === void 0 ? void 0 : _t.branchCode) === null || _u === void 0 ? void 0 : _u.$eq : undefined
                 },
                 containedInPlace: {
                     branchCode: {
-                        $eq: (typeof ((_x = (_w = (_v = (_u = req.query) === null || _u === void 0 ? void 0 : _u.containedInPlace) === null || _v === void 0 ? void 0 : _v.containedInPlace) === null || _w === void 0 ? void 0 : _w.branchCode) === null || _x === void 0 ? void 0 : _x.$eq) === 'string'
-                            && ((_1 = (_0 = (_z = (_y = req.query) === null || _y === void 0 ? void 0 : _y.containedInPlace) === null || _z === void 0 ? void 0 : _z.containedInPlace) === null || _0 === void 0 ? void 0 : _0.branchCode) === null || _1 === void 0 ? void 0 : _1.$eq.length) > 0)
-                            ? (_5 = (_4 = (_3 = (_2 = req.query) === null || _2 === void 0 ? void 0 : _2.containedInPlace) === null || _3 === void 0 ? void 0 : _3.containedInPlace) === null || _4 === void 0 ? void 0 : _4.branchCode) === null || _5 === void 0 ? void 0 : _5.$eq : undefined
+                        $eq: (typeof ((_y = (_x = (_w = (_v = req.query) === null || _v === void 0 ? void 0 : _v.containedInPlace) === null || _w === void 0 ? void 0 : _w.containedInPlace) === null || _x === void 0 ? void 0 : _x.branchCode) === null || _y === void 0 ? void 0 : _y.$eq) === 'string'
+                            && ((_2 = (_1 = (_0 = (_z = req.query) === null || _z === void 0 ? void 0 : _z.containedInPlace) === null || _0 === void 0 ? void 0 : _0.containedInPlace) === null || _1 === void 0 ? void 0 : _1.branchCode) === null || _2 === void 0 ? void 0 : _2.$eq.length) > 0)
+                            ? (_6 = (_5 = (_4 = (_3 = req.query) === null || _3 === void 0 ? void 0 : _3.containedInPlace) === null || _4 === void 0 ? void 0 : _4.containedInPlace) === null || _5 === void 0 ? void 0 : _5.branchCode) === null || _6 === void 0 ? void 0 : _6.$eq : undefined
                     }
                 }
             },
             name: {
-                $regex: (typeof ((_7 = (_6 = req.query) === null || _6 === void 0 ? void 0 : _6.name) === null || _7 === void 0 ? void 0 : _7.$regex) === 'string'
-                    && ((_9 = (_8 = req.query) === null || _8 === void 0 ? void 0 : _8.name) === null || _9 === void 0 ? void 0 : _9.$regex.length) > 0)
-                    ? (_11 = (_10 = req.query) === null || _10 === void 0 ? void 0 : _10.name) === null || _11 === void 0 ? void 0 : _11.$regex : undefined
+                $regex: (typeof ((_8 = (_7 = req.query) === null || _7 === void 0 ? void 0 : _7.name) === null || _8 === void 0 ? void 0 : _8.$regex) === 'string'
+                    && ((_10 = (_9 = req.query) === null || _9 === void 0 ? void 0 : _9.name) === null || _10 === void 0 ? void 0 : _10.$regex.length) > 0)
+                    ? (_12 = (_11 = req.query) === null || _11 === void 0 ? void 0 : _11.name) === null || _12 === void 0 ? void 0 : _12.$regex : undefined
             }
         });
         const results = data.map((seat, index) => {
@@ -155,6 +142,7 @@ screeningRoomSectionRouter.get('/search',
 }));
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _13;
     try {
         let message = '';
         let errors = {};
@@ -166,9 +154,6 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
-        });
-        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
         });
         const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections({
             limit: 1,
@@ -209,11 +194,19 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
                 return {};
             }));
         }
+        if (req.method === 'POST') {
+            // 施設を補完
+            if (typeof ((_13 = req.body.containedInPlace) === null || _13 === void 0 ? void 0 : _13.containedInPlace) === 'string'
+                && req.body.containedInPlace.containedInPlace.length > 0) {
+                forms.containedInPlace.containedInPlace = JSON.parse(req.body.containedInPlace.containedInPlace);
+                // } else {
+                //     forms.containedInPlace = undefined;
+            }
+        }
         res.render('places/screeningRoomSection/update', {
             message: message,
             errors: errors,
-            forms: forms,
-            movieTheaters: searchMovieTheatersResult.data
+            forms: forms
         });
     }
     catch (error) {
@@ -290,6 +283,7 @@ function createFromBody(req, isNew) {
                 });
             }
         }
+        const selecetedTheater = JSON.parse(req.body.containedInPlace.containedInPlace);
         return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.placeType.ScreeningRoom,
@@ -297,7 +291,7 @@ function createFromBody(req, isNew) {
                 containedInPlace: {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: chevre.factory.placeType.MovieTheater,
-                    branchCode: req.body.containedInPlace.containedInPlace.branchCode
+                    branchCode: selecetedTheater.branchCode
                 }
             }, containsPlace: containsPlace, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
@@ -328,7 +322,7 @@ function validate() {
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('コード', 20)),
-        express_validator_1.body('containedInPlace.containedInPlace.branchCode')
+        express_validator_1.body('containedInPlace.containedInPlace')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         express_validator_1.body('containedInPlace.branchCode')

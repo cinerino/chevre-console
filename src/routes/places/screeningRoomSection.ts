@@ -30,11 +30,6 @@ screeningRoomSectionRouter.all<any>(
             auth: req.user.authClient
         });
 
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-
         if (req.method === 'POST') {
             // バリデーション
             const validatorResult = validationResult(req);
@@ -73,40 +68,30 @@ screeningRoomSectionRouter.all<any>(
                 return {};
             }));
         }
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
 
-        const searchSeatingTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
-        });
+        if (req.method === 'POST') {
+            // 施設を補完
+            if (typeof req.body.containedInPlace?.containedInPlace === 'string'
+                && req.body.containedInPlace.containedInPlace.length > 0) {
+                forms.containedInPlace.containedInPlace = JSON.parse(req.body.containedInPlace.containedInPlace);
+                // } else {
+                //     forms.containedInPlace = undefined;
+            }
+        }
 
         res.render('places/screeningRoomSection/new', {
             message: message,
             errors: errors,
-            forms: forms,
-            movieTheaters: searchMovieTheatersResult.data,
-            seatingTypes: searchSeatingTypesResult.data
+            forms: forms
         });
     }
 );
 
 screeningRoomSectionRouter.get(
     '',
-    async (req, res) => {
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            project: { ids: [req.project.id] }
-        });
-
+    async (__, res) => {
         res.render('places/screeningRoomSection/index', {
-            message: '',
-            movieTheaters: searchMovieTheatersResult.data
+            message: ''
         });
     }
 );
@@ -201,10 +186,6 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
                 auth: req.user.authClient
             });
 
-            const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-                project: { ids: [req.project.id] }
-            });
-
             const searchScreeningRoomSectionsResult = await placeService.searchScreeningRoomSections({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
@@ -254,11 +235,20 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
                 }));
             }
 
+            if (req.method === 'POST') {
+                // 施設を補完
+                if (typeof req.body.containedInPlace?.containedInPlace === 'string'
+                    && req.body.containedInPlace.containedInPlace.length > 0) {
+                    forms.containedInPlace.containedInPlace = JSON.parse(req.body.containedInPlace.containedInPlace);
+                    // } else {
+                    //     forms.containedInPlace = undefined;
+                }
+            }
+
             res.render('places/screeningRoomSection/update', {
                 message: message,
                 errors: errors,
-                forms: forms,
-                movieTheaters: searchMovieTheatersResult.data
+                forms: forms
             });
         } catch (error) {
             next(error);
@@ -356,6 +346,8 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         }
     }
 
+    const selecetedTheater = JSON.parse(req.body.containedInPlace.containedInPlace);
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.placeType.ScreeningRoomSection,
@@ -368,7 +360,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             containedInPlace: {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: chevre.factory.placeType.MovieTheater,
-                branchCode: req.body.containedInPlace.containedInPlace.branchCode
+                branchCode: selecetedTheater.branchCode
             }
         },
         containsPlace: containsPlace,
@@ -403,7 +395,7 @@ function validate() {
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('コード', 20)),
-        body('containedInPlace.containedInPlace.branchCode')
+        body('containedInPlace.containedInPlace')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         body('containedInPlace.branchCode')

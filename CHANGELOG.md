@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- ルーム編集の施設を動的選択肢に変更
+- セクション編集の施設を動的選択肢に変更
+- 座席編集の施設を動的選択肢に変更
+
 ### Deprecated
 
 ### Removed

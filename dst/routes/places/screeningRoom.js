@@ -60,27 +60,24 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             return {};
         }));
     }
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
+    if (req.method === 'POST') {
+        // 施設を補完
+        if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+            forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+        }
+        else {
+            forms.containedInPlace = undefined;
+        }
+    }
     res.render('places/screeningRoom/new', {
         message: message,
         errors: errors,
-        forms: forms,
-        movieTheaters: searchMovieTheatersResult.data
+        forms: forms
     });
 }));
-screeningRoomRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
+screeningRoomRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('places/screeningRoom/index', {
-        message: '',
-        movieTheaters: searchMovieTheatersResult.data
+        message: ''
     });
 }));
 screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -151,9 +148,6 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
     const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
         limit: 1,
         project: { id: { $eq: req.project.id } },
@@ -191,11 +185,19 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             return {};
         }));
     }
+    if (req.method === 'POST') {
+        // 施設を補完
+        if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+            forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+        }
+        else {
+            forms.containedInPlace = undefined;
+        }
+    }
     res.render('places/screeningRoom/update', {
         message: message,
         errors: errors,
-        forms: forms,
-        movieTheaters: searchMovieTheatersResult.data
+        forms: forms
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
@@ -220,10 +222,11 @@ function createFromBody(req, isNew) {
     if (req.body.openSeatingAllowed === '1') {
         openSeatingAllowed = true;
     }
+    const selectedContainedInPlace = JSON.parse(req.body.containedInPlace);
     return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.MovieTheater,
-            branchCode: req.body.containedInPlace.branchCode
+            branchCode: selectedContainedInPlace.branchCode
         }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
@@ -242,6 +245,9 @@ function createFromBody(req, isNew) {
 }
 function validate() {
     return [
+        express_validator_1.body('containedInPlace')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         express_validator_1.body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
