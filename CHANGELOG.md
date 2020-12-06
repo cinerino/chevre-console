@@ -8,12 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
-- 科目分類編集に追加特性を追加
-- 科目編集に追加特性を追加
-
 ### Changed
-
-- 区分検索結果にイメージを表示
 
 ### Deprecated
 
@@ -22,6 +17,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.18.0 - 2020-12-06
+
+### Added
+
+- 科目分類編集に追加特性を追加
+- 科目編集に追加特性を追加
+
+### Changed
+
+- 区分検索結果にイメージを表示
 
 ## v2.17.0 - 2020-12-04
 
