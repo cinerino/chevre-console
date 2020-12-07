@@ -90,23 +90,14 @@ $(function () {
         // 販売者を検索して、選択肢にセットする
         getSeller(theater);
 
-        // 販売者に劇場親組織の選択肢があれば自動選択
-        // $('#newModal select[name=seller] option').each(function () {
-        //     if ($(this).val() === sellerId) {
-        //         $(this).prop('selected', true);
-        //     }
-        // });
-
-        // getScreens(theater, 'add');
-        // getEventSeries(theater);
         initializeScreenSelection(theater);
         initializeSuperEventSelection(theater);
     }, 500));
 
     $(document).on('change', '.search input[name="date"]', _.debounce(function () {
-        var theater = $('.search select[name=theater]').val();
-        var date = $(this).val();
-        getEventSeries(theater, date);
+        // var theater = $('.search select[name=theater]').val();
+        // var date = $(this).val();
+        // getEventSeries(theater, date);
     }, 500));
 
     var target = [
@@ -178,11 +169,6 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            // url: function () {
-            //     var movieTheater = $('.search select[name="theater"]').val();
-
-            //     return '/places/movieTheater/' + movieTheater + '/screeningRooms';
-            // },
             url: '/places/screeningRoom/search',
             dataType: 'json',
             data: function (params) {
@@ -381,12 +367,6 @@ function initializeSuperEventSelection(theater) {
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
                     results: data.results.map(function (eventSeries) {
-
-                        // return '<option value="' + e.id + '"'
-                        //     + ' data-mvtk-flag="' + e.mvtkFlg + '"'
-                        //     + ' data-startDate="' + e.startDate + '"'
-                        //     + ' data-endDate="' + e.endDate + '"'
-                        //     + '>' + e.filmNameJa + '</option>';
                         return {
                             id: eventSeries.id,
                             text: eventSeries.filmNameJa,
@@ -453,37 +433,37 @@ function initializeScreenSelection(theater) {
  * @param {date}
  * @returns {void}
  */
-function getEventSeries(theater) {
-    if (!theater) {
-        return;
-    }
-    var screeningEventSeriesSelect = $('#newModal select[name="screeningEventSeriesId"]');
-    screeningEventSeriesSelect.html('<option selected disabled>-----</option>')
-    $.ajax({
-        dataType: 'json',
-        url: '/events/screeningEventSeries/search',
-        type: 'GET',
-        data: {
-            locationId: theater
-        }
-    }).done(function (data) {
-        if (data && data.success) {
-            // console.log(data);
-            var screeningEventSeries = data.results;
-            var options = screeningEventSeries.map(function (e) {
-                return '<option value="' + e.id + '"'
-                    + ' data-mvtk-flag="' + e.mvtkFlg + '"'
-                    + ' data-startDate="' + e.startDate + '"'
-                    + ' data-endDate="' + e.endDate + '"'
-                    + '>' + e.filmNameJa + '</option>';
-            });
-            options.unshift('<option value="" disabled selected>選択してください</option>')
-            screeningEventSeriesSelect.html(options);
-        }
-    }).fail(function (jqxhr, textStatus, error) {
-        alert('施設コンテンツを検索できませんでした');
-    });
-}
+// function getEventSeries(theater) {
+//     if (!theater) {
+//         return;
+//     }
+//     var screeningEventSeriesSelect = $('#newModal select[name="screeningEventSeriesId"]');
+//     screeningEventSeriesSelect.html('<option selected disabled>-----</option>')
+//     $.ajax({
+//         dataType: 'json',
+//         url: '/events/screeningEventSeries/search',
+//         type: 'GET',
+//         data: {
+//             locationId: theater
+//         }
+//     }).done(function (data) {
+//         if (data && data.success) {
+//             // console.log(data);
+//             var screeningEventSeries = data.results;
+//             var options = screeningEventSeries.map(function (e) {
+//                 return '<option value="' + e.id + '"'
+//                     + ' data-mvtk-flag="' + e.mvtkFlg + '"'
+//                     + ' data-startDate="' + e.startDate + '"'
+//                     + ' data-endDate="' + e.endDate + '"'
+//                     + '>' + e.filmNameJa + '</option>';
+//             });
+//             options.unshift('<option value="" disabled selected>選択してください</option>')
+//             screeningEventSeriesSelect.html(options);
+//         }
+//     }).fail(function (jqxhr, textStatus, error) {
+//         alert('施設コンテンツを検索できませんでした');
+//     });
+// }
 
 /**
  * ルーム取得
@@ -618,15 +598,6 @@ function getTableData() {
             ) {
                 isValidRow = false;
             }
-
-            // var o = {
-            //     doorTime: $(row).find('input[name="doorTime"]').val(),
-            //     startTime: $(row).find('input[name="startTime"]').val(),
-            //     endTime: $(row).find('input[name="endTime"]').val(),
-            //     endDayRelative: Number($(row).find('select[name="endDayRelative"]').val()),
-            //     ticketTypeGroup: $(row).find('select[name="ticketTypeGroup"]').val(),
-            //     mvtkExcludeFlg: mvtkExcludeFlg
-            // };
 
             if (isValidRow) {
                 var endDate = moment('2020-05-16T' + repeatFrom + ':00+09:00');
@@ -904,7 +875,6 @@ function update() {
     var doorTime = modal.find('input[name=doorTime]').val().replace(':', '');
     var startTime = modal.find('input[name=startTime]').val().replace(':', '');
     var endTime = modal.find('input[name=endTime]').val().replace(':', '');
-    // var ticketTypeGroup = modal.find('select[name=ticketTypeGroup]').val();
     var ticketTypeGroup = modal.find('select[name="hasOfferCatalog"]').val();
     var seller = modal.find('select[name=seller]').val();
     var saleStartDate = modal.find('input[name=saleStartDate]').val();
@@ -1006,9 +976,6 @@ function update() {
  * 検索
  */
 function searchSchedule() {
-    // var theater = $('.search select[name=theater]').val();
-    // getScreens(theater, 'edit');
-
     var format = $('.search select[name=format]').val();
 
     switch (format) {
@@ -1098,25 +1065,15 @@ function deletePerformance() {
  * モーダル初期化
  */
 function modalInit(theater, date) {
-    // function modalInit(theater, date, ticketGroups) {
-    // var ticketGroupDom = [];
-    // ticketGroupDom.push('<option value="">カタログ選択</option>');
-    // for (var i = 0; i < ticketGroups.length; i++) {
-    //     var ticketGroup = ticketGroups[i];
-    //     ticketGroupDom.push('<option value="' + ticketGroup._id + '">' + ticketGroup.name.ja + '</option>')
-    // }
-
     var newModal = $('#newModal');
     newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     newModal.find('.day span').text(moment(date, 'YYYY/MM/DD').format('YYYY年MM月DD日(ddd)'));
     newModal.find('input[name=theater]').val(theater);
     newModal.find('input[name=day]').val(date);
-    // newModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 
     var editModal = $('#editModal');
     editModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
     editModal.find('.theater input').val($('.search select[name=theater] option[value=' + theater + ']').text());
-    // editModal.find('select[name=ticketTypeGroup]').html(ticketGroupDom.join('\n'));
 }
 
 /**
@@ -1143,13 +1100,11 @@ function add() {
     modal.find('input[name=doorTime]').val('');
     modal.find('input[name=startTime]').val('');
     modal.find('input[name=endTime]').val('');
-    // modal.find('select[name=endDayRelative]').val('0');
     modal.find('select[name=endDayRelative]').select2('val', '0');
     modal.find('input[name=mvtkExcludeFlg]').removeAttr('checked');
     modal.find('select[name="hasOfferCatalog"]')
         .val(null)
         .trigger('change');
-    // modal.find('select[name=ticketTypeGroup]').val('');
     modal.find('input[name=saleStartDateAbsolute]').datepicker('update', '');
     modal.find('input[name=saleStartTime]').val('');
     modal.find('input[name=onlineDisplayStartDateRelative]').val('');
@@ -1486,13 +1441,24 @@ function createScheduler() {
                     details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
                         target: '_blank',
                         'href': '/offerCatalogs/' + performance.hasOfferCatalog.id + '/update'
-                    }).text(performance.hasOfferCatalog.id)));
+                    }).html(
+                        performance.hasOfferCatalog.id
+                        + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>'
+                    )));
                 } else {
                     details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));
                 }
 
                 details.append($('<dt>').addClass('col-md-3').append('販売者'))
-                    .append($('<dd>').addClass('col-md-9').append(seller.id))
+                    .append($('<dd>').addClass('col-md-9').append(
+                        $('<a>').attr({
+                            target: '_blank',
+                            'href': '/sellers/' + seller.id + '/update'
+                        }).html(
+                            seller.id
+                            + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>'
+                        )
+                    ))
                     .append($('<dt>').addClass('col-md-3').append('座席'))
                     .append($('<dd>').addClass('col-md-9').append(seatsAvailable))
                     .append($('<dt>').addClass('col-md-3').append('公開期間'))
@@ -1561,8 +1527,8 @@ function createScheduler() {
                 }
 
                 modal.find('input[name=maximumAttendeeCapacity]').val(performance.location.maximumAttendeeCapacity);
-                modal.find('.film span').text(performance.name.ja);
-                modal.find('.film input').val(performance.name.ja);
+                modal.find('.film span').text(performance.superEvent.name.ja);
+                modal.find('.film input').val(performance.superEvent.name.ja);
                 modal.find('.theater input').val(performance.superEvent.location.name.ja);
                 modal.find('.screen input').val(performance.location.name.ja);
 
