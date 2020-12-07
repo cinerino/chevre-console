@@ -49,20 +49,16 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             auth: req.user.authClient
         });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+            limit: 1,
             project: { ids: [req.project.id] }
         });
         if (searchMovieTheatersResult.data.length === 0) {
             throw new Error('施設が見つかりません');
         }
-        // const searchTicketTypeGroupsResult = await offerCatalogService.search({
-        //     project: { id: { $eq: req.project.id } },
-        //     itemOffered: { typeOf: { $eq: ProductType.EventService } }
-        // });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('events/screeningEvent/index', {
-            movieTheaters: searchMovieTheatersResult.data,
+            defaultMovieTheater: searchMovieTheatersResult.data[0],
             moment: moment,
-            // ticketGroups: searchTicketTypeGroupsResult.data,
             sellers: searchSellersResult.data,
             useAdvancedScheduling: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.useAdvancedScheduling
         });

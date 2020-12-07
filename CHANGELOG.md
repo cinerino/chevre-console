@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - セクション編集の施設を動的選択肢に変更
 - 座席編集の施設を動的選択肢に変更
 - 文言調整
+- イベント編集の施設を動的選択肢に変更
 
 ### Deprecated
 

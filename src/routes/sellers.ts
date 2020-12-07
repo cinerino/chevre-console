@@ -6,7 +6,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { BAD_REQUEST, NO_CONTENT } from 'http-status';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as _ from 'underscore';
 
 import * as Message from '../message';
@@ -81,6 +81,26 @@ sellersRouter.all<any>(
             forms: forms,
             OrganizationType: chevre.factory.organizationType
         });
+    }
+);
+
+sellersRouter.get(
+    '/:id',
+    async (req, res) => {
+        try {
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const seller = await sellerService.findById({ id: String(req.params.id) });
+
+            res.json(seller);
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: err.message
+                });
+        }
     }
 );
 

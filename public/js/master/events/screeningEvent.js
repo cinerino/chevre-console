@@ -88,7 +88,7 @@ $(function () {
         var sellerId = $(this).find('option:selected').attr('data-seller');
 
         // 販売者を検索して、選択肢にセットする
-        getSeller(theater);
+        getSeller(sellerId);
 
         initializeScreenSelection(theater);
         initializeSuperEventSelection(theater);
@@ -162,6 +162,39 @@ $(function () {
         console.log('showing event...id:', id);
 
         showPerformance(id);
+    });
+
+    $('.search select[name="theater"]').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/places/movieTheater/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (movieTheater) {
+                        return {
+                            id: movieTheater.id,
+                            text: movieTheater.name.ja
+                        }
+                    })
+                };
+            }
+        }
     });
 
     locationSelection.select2({
@@ -298,10 +331,61 @@ $(function () {
             }
         }
     });
+
+    $('#newModal select[name="theater"]').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        templateSelection: function (data, container) {
+            // Add custom attributes to the <option> tag for the selected option
+            $(data.element).attr({
+                'data-max-seat-number': data['data-max-seat-number'],
+                'data-sale-start-days': data['data-sale-start-days'],
+                'data-end-sale-time': data['data-end-sale-time'],
+                'data-name': data['data-name'],
+                'data-seller': data['data-seller'],
+            });
+
+            return data.text;
+        },
+        ajax: {
+            url: '/places/movieTheater/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (movieTheater) {
+                        return {
+                            id: movieTheater.id,
+                            text: movieTheater.name.ja,
+                            'data-max-seat-number': movieTheater.offers.eligibleQuantity.maxValue,
+                            'data-sale-start-days': -Number(movieTheater.offers.availabilityStartsGraceTime.value),
+                            'data-end-sale-time': Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60),
+                            'data-name': movieTheater.name.ja,
+                            'data-seller': movieTheater.parentOrganization.id
+                        }
+                    })
+                };
+            }
+        }
+    });
+
 });
 
-function getSeller(theater) {
-    if (!theater) {
+function getSeller(sellerId) {
+    if (!sellerId) {
         return;
     }
 
@@ -309,7 +393,7 @@ function getSeller(theater) {
     sellerSelection.html('<option selected disabled>検索中...</option>')
     $.ajax({
         dataType: 'json',
-        url: '/places/movieTheater/' + theater + '/seller',
+        url: '/sellers/' + sellerId,
         type: 'GET',
         data: {}
     }).done(function (seller) {
@@ -1083,7 +1167,9 @@ function modalInit(theater, date) {
  */
 function add() {
     var modal = $('#newModal');
-    modal.find('select[name=theater]').val('');
+    modal.find('select[name=theater]')
+        .val(null)
+        .trigger('change');
     modal.find('input[name=weekDay]').prop('checked', true);
     modal.find('select[name=superEvent]')
         .html('<option selected disabled>施設を選択してください</option>');

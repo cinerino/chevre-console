@@ -71,6 +71,22 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
         OrganizationType: chevre.factory.organizationType
     });
 }));
+sellersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const seller = yield sellerService.findById({ id: String(req.params.id) });
+        res.json(seller);
+    }
+    catch (err) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: err.message
+        });
+    }
+}));
 sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sellerService = new chevre.service.Seller({

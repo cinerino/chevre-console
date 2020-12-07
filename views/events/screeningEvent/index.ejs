@@ -39,16 +39,9 @@ Aa-4
                                     <label class="bmd-label-static">施設 <span class="text-danger">＊</span></label>
 
                                     <div class="input-group">
-                                        <select class="form-control" name="theater">
-                                            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                                            <% movieTheaters.forEach(function (movieTheater, index) { %>
-                                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% }) %>
-                                            <% } else { %>
-                                            <% user.cognitoGroups.movieTheaters.forEach(function (movieTheater, index) { %>
-                                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% }) %>
-                                            <% } %>
+                                        <select class="form-control" name="theater" style="width: 100%;">
+                                            <option value="<%= defaultMovieTheater.id %>">
+                                                <%= defaultMovieTheater.name.ja %></option>
                                         </select>
                                     </div>
                                 </div>
