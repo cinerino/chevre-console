@@ -71,6 +71,52 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
         OrganizationType: chevre.factory.organizationType
     });
 }));
+sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const sellerService = new chevre.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const limit = Number(req.query.limit);
+        const page = Number(req.query.page);
+        const searchConditions = {
+            limit: limit,
+            page: page,
+            project: { id: { $eq: req.project.id } },
+            branchCode: {
+                $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
+                    ? req.query.branchCode.$regex
+                    : undefined
+            },
+            name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+        };
+        let data;
+        const searchResult = yield sellerService.search(searchConditions);
+        data = searchResult.data;
+        res.json({
+            success: true,
+            count: (data.length === Number(limit))
+                ? (Number(page) * Number(limit)) + 1
+                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+            results: data.map((t) => {
+                return Object.assign(Object.assign({}, t), { paymentAcceptedCount: (Array.isArray(t.paymentAccepted))
+                        ? t.paymentAccepted.length
+                        : 0, hasMerchantReturnPolicyCount: (Array.isArray(t.hasMerchantReturnPolicy))
+                        ? t.hasMerchantReturnPolicy.length
+                        : 0 });
+            })
+        });
+    }
+    catch (err) {
+        res.json({
+            success: false,
+            message: err.message,
+            count: 0,
+            results: []
+        });
+    }
+}));
 sellersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const sellerService = new chevre.service.Seller({
@@ -182,52 +228,6 @@ sellersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
     res.render('sellers/index', {
         message: ''
     });
-}));
-sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    try {
-        const sellerService = new chevre.service.Seller({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const limit = Number(req.query.limit);
-        const page = Number(req.query.page);
-        const searchConditions = {
-            limit: limit,
-            page: page,
-            project: { id: { $eq: req.project.id } },
-            branchCode: {
-                $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
-                    ? req.query.branchCode.$regex
-                    : undefined
-            },
-            name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
-        };
-        let data;
-        const searchResult = yield sellerService.search(searchConditions);
-        data = searchResult.data;
-        res.json({
-            success: true,
-            count: (data.length === Number(limit))
-                ? (Number(page) * Number(limit)) + 1
-                : ((Number(page) - 1) * Number(limit)) + Number(data.length),
-            results: data.map((t) => {
-                return Object.assign(Object.assign({}, t), { paymentAcceptedCount: (Array.isArray(t.paymentAccepted))
-                        ? t.paymentAccepted.length
-                        : 0, hasMerchantReturnPolicyCount: (Array.isArray(t.hasMerchantReturnPolicy))
-                        ? t.hasMerchantReturnPolicy.length
-                        : 0 });
-            })
-        });
-    }
-    catch (err) {
-        res.json({
-            success: false,
-            message: err.message,
-            count: 0,
-            results: []
-        });
-    }
 }));
 // tslint:disable-next-line:cyclomatic-complexity
 function createFromBody(req, isNew) {

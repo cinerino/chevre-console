@@ -97,7 +97,6 @@ $(function () {
     $(document).on('change', '.search input[name="date"]', _.debounce(function () {
         // var theater = $('.search select[name=theater]').val();
         // var date = $(this).val();
-        // getEventSeries(theater, date);
     }, 500));
 
     var target = [
@@ -508,102 +507,6 @@ function initializeScreenSelection(theater) {
                 };
             }
         }
-    });
-}
-
-/**
- * イベントシリーズ取得
- * @function getEventSeries
- * @param {date}
- * @returns {void}
- */
-// function getEventSeries(theater) {
-//     if (!theater) {
-//         return;
-//     }
-//     var screeningEventSeriesSelect = $('#newModal select[name="screeningEventSeriesId"]');
-//     screeningEventSeriesSelect.html('<option selected disabled>-----</option>')
-//     $.ajax({
-//         dataType: 'json',
-//         url: '/events/screeningEventSeries/search',
-//         type: 'GET',
-//         data: {
-//             locationId: theater
-//         }
-//     }).done(function (data) {
-//         if (data && data.success) {
-//             // console.log(data);
-//             var screeningEventSeries = data.results;
-//             var options = screeningEventSeries.map(function (e) {
-//                 return '<option value="' + e.id + '"'
-//                     + ' data-mvtk-flag="' + e.mvtkFlg + '"'
-//                     + ' data-startDate="' + e.startDate + '"'
-//                     + ' data-endDate="' + e.endDate + '"'
-//                     + '>' + e.filmNameJa + '</option>';
-//             });
-//             options.unshift('<option value="" disabled selected>選択してください</option>')
-//             screeningEventSeriesSelect.html(options);
-//         }
-//     }).fail(function (jqxhr, textStatus, error) {
-//         alert('施設コンテンツを検索できませんでした');
-//     });
-// }
-
-/**
- * ルーム取得
- * @function getScreens
- * @param {theater}
- * @param {addModal}
- * @returns {void}
- */
-function getScreens(theaterId, modal = 'none') {
-    console.log('searching screens...');
-    var selectScreen = $('select[name="screen"]');
-    if (modal.indexOf('none') >= 0) {
-        selectScreen = $('.search select[name="screen"]');
-    }
-    if (modal.indexOf('edit') >= 0) {
-        selectScreen = $('#editModal select[name="screen"]');
-    }
-    if (modal.indexOf('add') >= 0) {
-        selectScreen = $('#newModal select[name="screen"]');
-    }
-    function resetScreenList() {
-        var o = $('<option></option>');
-        o.html('施設を選択してください');
-        o.val('');
-        selectScreen.html(o);
-    }
-    if (!theaterId) {
-        resetScreenList();
-        return;
-    } else {
-        selectScreen.html('<option selected disabled>-----</option>');
-    }
-    $.ajax({
-        dataType: 'json',
-        url: '/places/movieTheater/' + theaterId + '/screeningRooms',
-        type: 'GET',
-        data: {}
-    }).done(function (data) {
-        console.log('screens found.', data);
-        if (data && data.success) {
-            if (modal.indexOf('none') >= 0) {
-                selectScreen.html('<option value="">-----</option>');
-            } else {
-                selectScreen.html('<option value="" disabled selected>選択してください</option>');
-            }
-            $.each(data.results, function (_, screen) {
-                var o = $('<option></option>');
-                o.html(screen.branchCode + ' ' + screen.name + ' (' + screen.numSeats + ' seats' + ')');
-                o.val(screen.branchCode);
-                o.appendTo(selectScreen);
-            });
-        } else {
-            resetScreenList();
-        }
-    }).fail(function (jqxhr, textStatus, error) {
-        alert('ルームを検索できませんでした');
     });
 }
 
@@ -1122,7 +1025,6 @@ function search(pageNumber) {
  */
 function deletePerformance() {
     var modal = $('#editModal');
-    var theater = $('.search select[name="theater"]').val();
     var performance = modal.find('input[name=performance]').val();
     if (performance === '') {
         alert('情報が足りません');
@@ -1150,14 +1052,10 @@ function deletePerformance() {
  */
 function modalInit(theater, date) {
     var newModal = $('#newModal');
-    newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
-    newModal.find('.day span').text(moment(date, 'YYYY/MM/DD').format('YYYY年MM月DD日(ddd)'));
-    newModal.find('input[name=theater]').val(theater);
-    newModal.find('input[name=day]').val(date);
-
-    var editModal = $('#editModal');
-    editModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
-    editModal.find('.theater input').val($('.search select[name=theater] option[value=' + theater + ']').text());
+    // newModal.find('.theater span').text($('.search select[name=theater] option[value=' + theater + ']').text());
+    // newModal.find('.day span').text(moment(date, 'YYYY/MM/DD').format('YYYY年MM月DD日(ddd)'));
+    // newModal.find('input[name=theater]').val(theater);
+    // newModal.find('input[name=day]').val(date);
 }
 
 /**
@@ -1281,7 +1179,6 @@ function createScheduler() {
                 this.searchScreeningEvent()
                     .then(function (data) {
                         modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date);
-                        // modalInit(_this.getSearchCondition().theater, _this.getSearchCondition().date, data.ticketGroups);
                         _this.createScheduleData(data);
                     })
                     .catch(function (error) {
