@@ -1452,6 +1452,26 @@ function createScheduler() {
             },
 
             /**
+             * イベントの販売者を取得する
+             */
+            findSellerByPerformance: function (performance) {
+                var options = {
+                    dataType: 'json',
+                    url: '/sellers/' + performance.offers.seller.id,
+                    type: 'GET',
+                    data: {},
+                    beforeSend: function () {
+                        $('#loadingModal').modal({ backdrop: 'static' });
+                    }
+                };
+
+                return $.ajax(options)
+                    .always(function () {
+                        $('#loadingModal').modal('hide');
+                    });
+            },
+
+            /**
              * パフォーマンス表示
              */
             showPerformance: function (performance) {
@@ -1466,7 +1486,15 @@ function createScheduler() {
                         _this.findCatalogByPerformance(performance)
                             .then(function (catalog) {
                                 console.log('catalog found.', catalog);
-                                _this.editPerformance(performance, catalog);
+                                _this.findSellerByPerformance(performance)
+                                    .then(function (seller) {
+                                        console.log('seller found.', seller);
+
+                                        _this.editPerformance(performance, catalog, seller);
+                                    })
+                                    .catch(function (error) {
+                                        alert('販売者を検索できませんでした');
+                                    });
                             })
                             .catch(function (error) {
                                 alert('カタログを検索できませんでした');
@@ -1573,7 +1601,7 @@ function createScheduler() {
             /**
              * パフォーマンス編集
              */
-            editPerformance: function (performance, offerCatalog) {
+            editPerformance: function (performance, offerCatalog, seller) {
                 this.editingPerforamce = performance;
                 console.log('editing...', this.editingPerforamce);
 
@@ -1634,12 +1662,12 @@ function createScheduler() {
                     modal.find('select[name="hasOfferCatalog"]')
                         .append(hasOfferCatalogNewOption)
                         .trigger('change');
-                    // modal.find('select[name="ticketTypeGroup"]').val(performance.hasOfferCatalog.id);
                 }
 
-                var seller = performance.offers.seller;
                 if (seller !== undefined && seller !== null) {
-                    modal.find('select[name=seller]').val(seller.id);
+                    // 販売者をセット
+                    var options = ['<option selected="selected" value="' + seller.id + '">' + seller.name.ja + '</option>'];
+                    modal.find('select[name=seller]').html(options);
                 }
 
                 // 販売開始日時

@@ -40,10 +40,6 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const sellerService = new chevre.service.Seller({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             limit: 1,
             project: { ids: [req.project.id] }
@@ -51,11 +47,9 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
         if (searchMovieTheatersResult.data.length === 0) {
             throw new Error('施設が見つかりません');
         }
-        const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('events/screeningEvent/index', {
             defaultMovieTheater: searchMovieTheatersResult.data[0],
             moment: moment,
-            sellers: searchSellersResult.data,
             useAdvancedScheduling: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.useAdvancedScheduling
         });
     }
