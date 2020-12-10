@@ -484,7 +484,11 @@ function initializeScreenSelection(theater) {
                     limit: 100,
                     page: 1,
                     containedInPlace: { id: { $eq: theater } },
-                    name: { $regex: params.term }
+                    name: { $regex: params.term },
+                    $projection: {
+                        sectionCount: 1,
+                        seatCount: 1
+                    }
                 }
 
                 // Query parameters will be ?search=[term]&type=public
@@ -498,10 +502,13 @@ function initializeScreenSelection(theater) {
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
                     results: data.results.map(function (screeningRoom) {
+                        var text = screeningRoom.name.ja;
+                        if (typeof screeningRoom.seatCount === 'number') {
+                            text += ' (' + screeningRoom.seatCount + '席)'
+                        }
                         return {
                             id: screeningRoom.branchCode,
-                            // text: screeningRoom.name + ' (' + screeningRoom.numSeats + ' seats' + ')',
-                            text: screeningRoom.name.ja
+                            text: text
                         }
                     })
                 };

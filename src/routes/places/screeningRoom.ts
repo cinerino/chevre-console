@@ -136,7 +136,12 @@ screeningRoomRouter.get(
                         ? req.query?.name?.$regex
                         : undefined
                 },
-                openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined
+                openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined,
+                ...(req.query.$projection !== undefined && req.query.$projection !== null)
+                    ? {
+                        $projection: req.query.$projection
+                    }
+                    : undefined
             });
 
             const results = data.map((screeningRoom) => {
