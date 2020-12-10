@@ -47,7 +47,10 @@ router.use((req, res, next) => {
     if (typeof (<any>req.session).project?.id === 'string') {
         req.project = (<any>req.session).project;
 
-        const subscriptionIdentifier = (<any>req.session).subscriptionIdentifier;
+        let subscriptionIdentifier = (<any>req.session).subscriptionIdentifier;
+        if (typeof subscriptionIdentifier !== 'string') {
+            subscriptionIdentifier = 'Free';
+        }
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         req.subscription = subscription;
     } else {

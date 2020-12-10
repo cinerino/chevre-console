@@ -41,7 +41,10 @@ router.use((req, res, next) => {
     // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
     if (typeof ((_a = req.session.project) === null || _a === void 0 ? void 0 : _a.id) === 'string') {
         req.project = req.session.project;
-        const subscriptionIdentifier = req.session.subscriptionIdentifier;
+        let subscriptionIdentifier = req.session.subscriptionIdentifier;
+        if (typeof subscriptionIdentifier !== 'string') {
+            subscriptionIdentifier = 'Free';
+        }
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         req.subscription = subscription;
     }
