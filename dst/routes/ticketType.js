@@ -21,6 +21,8 @@ const moment = require("moment-timezone");
 const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
+const SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
+const SMART_THEATER_CLIENT_NEW = process.env.SMART_THEATER_CLIENT_NEW;
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 30;
@@ -44,11 +46,6 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
-    });
-    const iamService = new cinerino.service.IAM({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -138,15 +135,13 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
         limit: 100
     }));
-    const searchApplicationsResult = yield iamService.searchMembers({
-        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-    });
+    const applications = yield searchApplications(req);
     res.render('ticketType/add', {
         message: message,
         errors: errors,
         forms: forms,
         addOns: searchAddOnsResult.data,
-        applications: searchApplicationsResult.data.map((d) => d.member)
+        applications: applications.map((d) => d.member)
             .sort((a, b) => {
             if (String(a.name) < String(b.name)) {
                 return -1;
@@ -177,11 +172,6 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
-    });
-    const iamService = new cinerino.service.IAM({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
     });
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
@@ -381,15 +371,13 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
             limit: 100
         }));
-        const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-        });
+        const applications = yield searchApplications(req);
         res.render('ticketType/update', {
             message: message,
             errors: errors,
             forms: forms,
             addOns: searchAddOnsResult.data,
-            applications: searchApplicationsResult.data.map((d) => d.member)
+            applications: applications.map((d) => d.member)
                 .sort((a, b) => {
                 if (String(a.name) < String(b.name)) {
                     return -1;
@@ -405,6 +393,30 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         next(error);
     }
 }));
+function searchApplications(req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const iamService = new cinerino.service.IAM({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchApplicationsResult = yield iamService.searchMembers({
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
+        });
+        let applications = searchApplicationsResult.data;
+        // 新旧クライアントが両方存在すれば、新クライアントを隠す
+        const memberIds = applications.map((a) => a.member.id);
+        if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
+            && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0) {
+            const oldClientExists = memberIds.includes(SMART_THEATER_CLIENT_OLD);
+            const newClientExists = memberIds.includes(SMART_THEATER_CLIENT_NEW);
+            if (oldClientExists && newClientExists) {
+                applications = applications.filter((a) => a.member.id !== SMART_THEATER_CLIENT_NEW);
+            }
+        }
+        return applications;
+    });
+}
 /**
  * COA券種インポート
  */
@@ -530,6 +542,16 @@ function createFromBody(req, isNew) {
         }
         else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
             availableAtOrFrom.push({ id: availableAtOrFromParams });
+        }
+        // スマシの新旧クライアント対応
+        const availableClientIds = availableAtOrFrom.map((a) => a.id);
+        if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
+            && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0) {
+            const oldClientAvailable = availableClientIds.includes(SMART_THEATER_CLIENT_OLD);
+            const newClientAvailable = availableClientIds.includes(SMART_THEATER_CLIENT_NEW);
+            if (oldClientAvailable && !newClientAvailable) {
+                availableAtOrFrom.push({ id: SMART_THEATER_CLIENT_NEW });
+            }
         }
         const referenceQuantityValue = Number(req.body.seatReservationUnit);
         const referenceQuantity = {

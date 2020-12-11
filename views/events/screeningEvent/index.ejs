@@ -39,16 +39,9 @@ Aa-4
                                     <label class="bmd-label-static">施設 <span class="text-danger">＊</span></label>
 
                                     <div class="input-group">
-                                        <select class="form-control" name="theater">
-                                            <% if (user.cognitoGroups.movieTheaters === undefined || user.cognitoGroups.movieTheaters.length === 0) { %>
-                                            <% movieTheaters.forEach(function (movieTheater, index) { %>
-                                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% }) %>
-                                            <% } else { %>
-                                            <% user.cognitoGroups.movieTheaters.forEach(function (movieTheater, index) { %>
-                                            <option value="<%= movieTheater.id %>"><%= movieTheater.name.ja %></option>
-                                            <% }) %>
-                                            <% } %>
+                                        <select class="form-control" name="theater" style="width: 100%;">
+                                            <option value="<%= defaultMovieTheater.id %>">
+                                                <%= defaultMovieTheater.name.ja %></option>
                                         </select>
                                     </div>
                                 </div>
@@ -173,8 +166,8 @@ Aa-4
                                             href="/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
-                                    <td name="superEvent.location.branchCode">
-                                        $superEvent.location.branchCode$
+                                    <td name="superEvent.location.name.ja|slice">
+                                        $superEvent.location.name.ja$
                                     </td>
                                     <td name="location.name.ja|slice">
                                         $location.name.ja$

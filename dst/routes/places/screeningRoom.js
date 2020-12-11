@@ -60,27 +60,24 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             return {};
         }));
     }
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
+    if (req.method === 'POST') {
+        // 施設を補完
+        if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+            forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+        }
+        else {
+            forms.containedInPlace = undefined;
+        }
+    }
     res.render('places/screeningRoom/new', {
         message: message,
         errors: errors,
-        forms: forms,
-        movieTheaters: searchMovieTheatersResult.data
+        forms: forms
     });
 }));
-screeningRoomRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
-    });
+screeningRoomRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('places/screeningRoom/index', {
-        message: '',
-        movieTheaters: searchMovieTheatersResult.data
+        message: ''
     });
 }));
 screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -92,16 +89,11 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield placeService.searchScreeningRooms({
-            limit: limit,
-            page: page,
-            project: { id: { $eq: req.project.id } },
-            branchCode: {
+        const { data } = yield placeService.searchScreeningRooms(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } }, branchCode: {
                 $regex: (typeof ((_c = (_b = req.query) === null || _b === void 0 ? void 0 : _b.branchCode) === null || _c === void 0 ? void 0 : _c.$regex) === 'string'
                     && ((_e = (_d = req.query) === null || _d === void 0 ? void 0 : _d.branchCode) === null || _e === void 0 ? void 0 : _e.$regex.length) > 0)
                     ? (_g = (_f = req.query) === null || _f === void 0 ? void 0 : _f.branchCode) === null || _g === void 0 ? void 0 : _g.$regex : undefined
-            },
-            containedInPlace: {
+            }, containedInPlace: {
                 id: {
                     $eq: (typeof ((_k = (_j = (_h = req.query) === null || _h === void 0 ? void 0 : _h.containedInPlace) === null || _j === void 0 ? void 0 : _j.id) === null || _k === void 0 ? void 0 : _k.$eq) === 'string'
                         && ((_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace.id.$eq.length) > 0)
@@ -112,14 +104,15 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
                         && ((_t = (_s = (_r = req.query) === null || _r === void 0 ? void 0 : _r.containedInPlace) === null || _s === void 0 ? void 0 : _s.branchCode) === null || _t === void 0 ? void 0 : _t.$eq.length) > 0)
                         ? (_w = (_v = (_u = req.query) === null || _u === void 0 ? void 0 : _u.containedInPlace) === null || _v === void 0 ? void 0 : _v.branchCode) === null || _w === void 0 ? void 0 : _w.$eq : undefined
                 }
-            },
-            name: {
+            }, name: {
                 $regex: (typeof ((_y = (_x = req.query) === null || _x === void 0 ? void 0 : _x.name) === null || _y === void 0 ? void 0 : _y.$regex) === 'string'
                     && ((_0 = (_z = req.query) === null || _z === void 0 ? void 0 : _z.name) === null || _0 === void 0 ? void 0 : _0.$regex.length) > 0)
                     ? (_2 = (_1 = req.query) === null || _1 === void 0 ? void 0 : _1.name) === null || _2 === void 0 ? void 0 : _2.$regex : undefined
-            },
-            openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined
-        });
+            }, openSeatingAllowed: (req.query.openSeatingAllowed === '1') ? true : undefined }, (req.query.$projection !== undefined && req.query.$projection !== null)
+            ? {
+                $projection: req.query.$projection
+            }
+            : undefined));
         const results = data.map((screeningRoom) => {
             return Object.assign(Object.assign({}, screeningRoom), { openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined });
         });
@@ -150,9 +143,6 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        project: { ids: [req.project.id] }
     });
     const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
         limit: 1,
@@ -191,11 +181,19 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             return {};
         }));
     }
+    if (req.method === 'POST') {
+        // 施設を補完
+        if (typeof req.body.containedInPlace === 'string' && req.body.containedInPlace.length > 0) {
+            forms.containedInPlace = JSON.parse(req.body.containedInPlace);
+        }
+        else {
+            forms.containedInPlace = undefined;
+        }
+    }
     res.render('places/screeningRoom/update', {
         message: message,
         errors: errors,
-        forms: forms,
-        movieTheaters: searchMovieTheatersResult.data
+        forms: forms
     });
 }));
 // tslint:disable-next-line:use-default-type-parameter
@@ -220,10 +218,11 @@ function createFromBody(req, isNew) {
     if (req.body.openSeatingAllowed === '1') {
         openSeatingAllowed = true;
     }
+    const selectedContainedInPlace = JSON.parse(req.body.containedInPlace);
     return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             typeOf: chevre.factory.placeType.MovieTheater,
-            branchCode: req.body.containedInPlace.branchCode
+            branchCode: selectedContainedInPlace.branchCode
         }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
@@ -242,6 +241,9 @@ function createFromBody(req, isNew) {
 }
 function validate() {
     return [
+        express_validator_1.body('containedInPlace')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
         express_validator_1.body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))

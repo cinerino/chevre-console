@@ -14,19 +14,9 @@
                         <form>
                             <div class="form-row">
                                 <div class="form-group bmd-form-group col-md-3">
-                                    <label class="bmd-label-static" for="theater">施設<font color="red">＊</font>
+                                    <label class="bmd-label-static" for="theater">施設 <span class="text-danger">＊</span>
                                     </label>
-                                    <select class="form-control" name="theater">
-                                        <option value="0" disabled selected> 選択してください</option>
-                                        <% for (const movieTheater of movieTheaters) { %>
-                                        <option value="<%= movieTheater.id %>"
-                                            data-max-seat-number="<%= movieTheater.offers.eligibleQuantity.maxValue %>"
-                                            data-sale-start-days="<%= -movieTheater.offers.availabilityStartsGraceTime.value %>"
-                                            data-end-sale-time="<%= Math.floor(movieTheater.offers.availabilityEndsGraceTime.value / 60) %>"
-                                            data-name="<%= movieTheater.name.ja %>"
-                                            data-seller="<%= (movieTheater.parentOrganization !== undefined) ? movieTheater.parentOrganization.id : '' %>">
-                                            <%= movieTheater.name.ja %></option>
-                                        <% } %>
+                                    <select class="form-control" name="theater" style="width: 100%;">
                                     </select>
                                 </div>
 

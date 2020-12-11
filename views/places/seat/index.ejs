@@ -35,13 +35,9 @@ ST-01
                                         施設
                                     </label>
                                     <select class="form-control"
-                                        name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]">
-                                        <option value="">選択してください</option>
-                                        <% for (const movieTheater of movieTheaters) { %>
-                                        <option value="<%= movieTheater.branchCode %>">
-                                            <%= movieTheater.name.ja %>
-                                        </option>
-                                        <% } %>
+                                        name="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]"
+                                        id="containedInPlace[containedInPlace][containedInPlace][branchCode][$eq]"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
 

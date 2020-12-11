@@ -32,34 +32,26 @@
             <div class="tab-pane active show" id="link1">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-3">
-                        <label for="containedInPlace[containedInPlace][branchCode]" class="bmd-label-static">
+                        <label for="containedInPlace[containedInPlace]" class="bmd-label-static">
                             施設
                         </label>
-                        <% if (isNew) { %>
-                        <select class="form-control" name="containedInPlace[containedInPlace][branchCode]">
-                            <option value="">選択してください</option>
-                            <% for (const movieTheater of movieTheaters) { %>
-                            <option value="<%= movieTheater.branchCode %>">
-                                <%= movieTheater.name.ja %>
-                            </option>
+                        <select class="form-control" name="containedInPlace[containedInPlace]"
+                            id="containedInPlace[containedInPlace]" style="width: 100%;" <% if (!isNew) { %>
+                            disabled="disabled" <% } %>>
+                            <% if (forms.containedInPlace !== undefined && forms.containedInPlace.containedInPlace !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.containedInPlace.containedInPlace) %>"
+                                selected="selected">
+                                <%= forms.containedInPlace.containedInPlace.name.ja %></option>
                             <% } %>
                         </select>
-                        <% } else { %>
-                        <select class="form-control" disabled>
-                            <% for (const movieTheater of movieTheaters) { %>
-                            <option value="<%= movieTheater.branchCode %>"
-                                <% if (movieTheater.branchCode === forms.containedInPlace.containedInPlace.branchCode) { %>
-                                selected<% } %>>
-                                <%= movieTheater.name.ja %>
-                            </option>
-                            <% } %>
-                        </select>
-                        <input type="hidden" name="containedInPlace[containedInPlace][branchCode]"
-                            value="<%= forms.containedInPlace.containedInPlace.branchCode %>">
+                        <% if (!isNew) { %>
+                        <input type="hidden" name="containedInPlace[containedInPlace]"
+                            value="<%= JSON.stringify(forms.containedInPlace.containedInPlace) %>">
                         <% } %>
-                        <% if (errors && errors['containedInPlace.containedInPlace.branchCode']) { %>
+
+                        <% if (errors && errors['containedInPlace.containedInPlace']) { %>
                         <span class="bmd-help text-danger d-block">
-                            <%- errors['containedInPlace.containedInPlace.branchCode'].msg %>
+                            <%- errors['containedInPlace.containedInPlace'].msg %>
                         </span>
                         <% } %>
                     </div>
