@@ -10,13 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- ルーム編集の施設を動的選択肢に変更
-- セクション編集の施設を動的選択肢に変更
-- 座席編集の施設を動的選択肢に変更
-- 文言調整
-- イベント編集の施設を動的選択肢に変更
-- スマートシアター新旧クライアントに対する動作保証対応
-
 ### Deprecated
 
 ### Removed
@@ -24,6 +17,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.19.0 - 2020-12-11
+
+### Changed
+
+- ルーム編集の施設を動的選択肢に変更
+- セクション編集の施設を動的選択肢に変更
+- 座席編集の施設を動的選択肢に変更
+- 文言調整
+- イベント編集の施設を動的選択肢に変更
+- スマートシアター新旧クライアントに対する動作保証対応
 
 ## v2.18.0 - 2020-12-06
 
