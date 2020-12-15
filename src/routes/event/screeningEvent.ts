@@ -1062,7 +1062,7 @@ function addValidation() {
             .notEmpty(),
         body('timeData', '時間情報が未選択です')
             .notEmpty(),
-        body('ticketData', '券種グループが未選択です')
+        body('ticketData', 'カタログが未選択です')
             .notEmpty(),
         body('seller', '販売者が未選択です')
             .notEmpty()
@@ -1085,7 +1085,7 @@ function updateValidation() {
             .notEmpty(),
         body('screen', 'ルームが未選択です')
             .notEmpty(),
-        body('ticketTypeGroup', '券種グループが未選択です')
+        body('ticketTypeGroup', 'カタログが未選択です')
             .notEmpty(),
         body('seller', '販売者が未選択です')
             .notEmpty()

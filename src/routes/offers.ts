@@ -510,9 +510,6 @@ offersRouter.get(
                         categoryName: (typeof categoryCode === 'string')
                             ? (<chevre.factory.multilingualString>offerCategoryTypes.find((c) => c.codeValue === categoryCode)?.name)?.ja
                             : '',
-                        validRateLimitStr: ((<any>t).validRateLimit !== undefined && (<any>t).validRateLimit !== null)
-                            ? `1 ${(<any>t).validRateLimit.scope} / ${(<any>t).validRateLimit.unitInSeconds} s`
-                            : '',
                         addOnCount: (Array.isArray(t.addOn))
                             ? t.addOn.length
                             : 0,

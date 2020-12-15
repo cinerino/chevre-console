@@ -487,27 +487,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="form-group bmd-form-group">
-                    <label for="availableAddOn" class="bmd-label-static">
-                        レート制限
-                    </label>
-
-                    <div class="input-group">
-                        <input type="text" disabled class="form-control" name="validRateLimit[scope]"
-                            id="validRateLimit[scope]" placeholder="" maxlength=10
-                            value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.scope : '' %>">
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="basic-addon2">のスコープで</span>
-                        </div>
-                        <input type="text" disabled class="form-control" name="validRateLimit[unitInSeconds]"
-                            id="validRateLimit[unitInSeconds]" placeholder="" maxlength=10
-                            value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.unitInSeconds : '' %>">
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="basic-addon2">秒に1席</span>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <div class="tab-pane" id="link4">
@@ -517,10 +496,6 @@
             </div>
 
             <div class="tab-pane" id="link5">
-
-                <div class="form-row">
-                </div>
-
                 <% if (!isNew) { %>
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
@@ -539,6 +514,29 @@
                     </div>
                 </div>
                 <% } %>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group">
+                        <label for="validRateLimit[scope]" class="bmd-label-static">
+                            レート制限
+                        </label>
+    
+                        <div class="input-group">
+                            <input type="text" disabled class="form-control" name="validRateLimit[scope]"
+                                id="validRateLimit[scope]" placeholder="" maxlength=10
+                                value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.scope : '' %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">のスコープで</span>
+                            </div>
+                            <input type="text" disabled class="form-control" name="validRateLimit[unitInSeconds]"
+                                id="validRateLimit[unitInSeconds]" placeholder="" maxlength=10
+                                value="<%= (forms.validRateLimit !== undefined && forms.validRateLimit !== null) ? forms.validRateLimit.unitInSeconds : '' %>">
+                            <div class="input-group-append">
+                                <span class="input-group-text" id="basic-addon2">秒に1席</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>
