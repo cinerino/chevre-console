@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 施設削除前にバリデーションを追加
-- 販売者削除前にバリデーションを追加
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.19.1 - 2020-12-16
+
+### Changed
+
+- 施設削除前にバリデーションを追加
+- 販売者削除前にバリデーションを追加
 
 ## v2.19.0 - 2020-12-11
 
