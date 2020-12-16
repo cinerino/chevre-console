@@ -440,9 +440,7 @@ offersRouter.get('/getlist',
                 return Object.assign(Object.assign({}, t), { itemOfferedName: productType === null || productType === void 0 ? void 0 : productType.name, availabilityName: itemAvailability === null || itemAvailability === void 0 ? void 0 : itemAvailability.name, availableAtOrFromCount: (Array.isArray(t.availableAtOrFrom))
                         ? t.availableAtOrFrom.length
                         : 0, categoryName: (typeof categoryCode === 'string')
-                        ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', validRateLimitStr: (t.validRateLimit !== undefined && t.validRateLimit !== null)
-                        ? `1 ${t.validRateLimit.scope} / ${t.validRateLimit.unitInSeconds} s`
-                        : '', addOnCount: (Array.isArray(t.addOn))
+                        ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', addOnCount: (Array.isArray(t.addOn))
                         ? t.addOn.length
                         : 0, priceStr });
             })

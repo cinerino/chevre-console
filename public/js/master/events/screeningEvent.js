@@ -745,7 +745,7 @@ function regist() {
     if (tableData.ticketData.length === 0
         || tableData.timeData.length === 0) {
         creatingSchedules = false;
-        alert('時刻、券種グループを入力してください');
+        alert('時刻、カタログを入力してください');
         return;
     }
 

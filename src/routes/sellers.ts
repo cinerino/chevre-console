@@ -169,6 +169,9 @@ sellersRouter.delete(
                 auth: req.user.authClient
             });
 
+            const seller = await sellerService.findById({ id: req.params.id });
+            await preDelete(req, seller);
+
             await sellerService.deleteById({ id: req.params.id });
 
             res.status(NO_CONTENT)
@@ -179,6 +182,23 @@ sellersRouter.delete(
         }
     }
 );
+
+async function preDelete(req: Request, seller: chevre.factory.seller.ISeller) {
+    // 施設が存在するかどうか
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        parentOrganization: { id: { $eq: seller.id } }
+    });
+    if (searchMovieTheatersResult.data.length > 0) {
+        throw new Error('関連する施設が存在します');
+    }
+}
 
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.all<ParamsDictionary>(

@@ -872,7 +872,7 @@ function addValidation() {
             .notEmpty(),
         express_validator_1.body('timeData', '時間情報が未選択です')
             .notEmpty(),
-        express_validator_1.body('ticketData', '券種グループが未選択です')
+        express_validator_1.body('ticketData', 'カタログが未選択です')
             .notEmpty(),
         express_validator_1.body('seller', '販売者が未選択です')
             .notEmpty()
@@ -895,7 +895,7 @@ function updateValidation() {
             .notEmpty(),
         express_validator_1.body('screen', 'ルームが未選択です')
             .notEmpty(),
-        express_validator_1.body('ticketTypeGroup', '券種グループが未選択です')
+        express_validator_1.body('ticketTypeGroup', 'カタログが未選択です')
             .notEmpty(),
         express_validator_1.body('seller', '販売者が未選択です')
             .notEmpty()

@@ -427,7 +427,7 @@ $(function () {
             return data.id === id
         });
         if (offer === undefined) {
-            alert('券種' + id + 'が見つかりません');
+            alert('オファー' + id + 'が見つかりません');
 
             return;
         }
