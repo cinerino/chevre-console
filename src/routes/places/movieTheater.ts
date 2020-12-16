@@ -115,6 +115,8 @@ movieTheaterRouter.all<any>(
             } else {
                 forms.parentOrganization = undefined;
             }
+        } else {
+            forms.offers = defaultOffers;
         }
 
         const sellerService = new chevre.service.Seller({
@@ -242,6 +244,9 @@ movieTheaterRouter.delete(
                 auth: req.user.authClient
             });
 
+            const movieTheater = await placeService.findMovieTheaterById({ id: req.params.id });
+            await preDelete(req, movieTheater);
+
             await placeService.deleteMovieTheater({ id: req.params.id });
 
             res.status(NO_CONTENT)
@@ -252,6 +257,24 @@ movieTheaterRouter.delete(
         }
     }
 );
+
+async function preDelete(req: Request, movieTheater: chevre.factory.place.movieTheater.IPlace) {
+    // 施設コンテンツが存在するかどうか
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEventSeries,
+        location: { branchCode: { $eq: movieTheater.branchCode } }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連する施設コンテンツが存在します');
+    }
+}
 
 // tslint:disable-next-line:use-default-type-parameter
 movieTheaterRouter.all<ParamsDictionary>(

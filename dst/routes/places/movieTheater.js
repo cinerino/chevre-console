@@ -106,6 +106,9 @@ movieTheaterRouter.all('/new', ...validate(),
             forms.parentOrganization = undefined;
         }
     }
+    else {
+        forms.offers = defaultOffers;
+    }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
@@ -203,6 +206,8 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const movieTheater = yield placeService.findMovieTheaterById({ id: req.params.id });
+        yield preDelete(req, movieTheater);
         yield placeService.deleteMovieTheater({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -212,6 +217,24 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(req, movieTheater) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // 施設コンテンツが存在するかどうか
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            location: { branchCode: { $eq: movieTheater.branchCode } }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連する施設コンテンツが存在します');
+        }
+    });
+}
 // tslint:disable-next-line:use-default-type-parameter
 movieTheaterRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length

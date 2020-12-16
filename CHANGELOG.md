@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 施設削除前にバリデーションを追加
+- 販売者削除前にバリデーションを追加
+
 ### Deprecated
 
 ### Removed

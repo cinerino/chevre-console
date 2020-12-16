@@ -139,6 +139,8 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const seller = yield sellerService.findById({ id: req.params.id });
+        yield preDelete(req, seller);
         yield sellerService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -148,6 +150,23 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(req, seller) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // 施設が存在するかどうか
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            parentOrganization: { id: { $eq: seller.id } }
+        });
+        if (searchMovieTheatersResult.data.length > 0) {
+            throw new Error('関連する施設が存在します');
+        }
+    });
+}
 // tslint:disable-next-line:use-default-type-parameter
 sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
