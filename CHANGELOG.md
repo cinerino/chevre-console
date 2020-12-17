@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 予約レポート作成ボタンを追加
+
 ### Changed
 
 ### Deprecated
