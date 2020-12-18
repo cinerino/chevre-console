@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.20.0 - 2020-12-18
+
+### Added
+
+- 予約レポート作成ボタンを追加
+
 ## v2.19.1 - 2020-12-16
 
 ### Changed
