@@ -9,6 +9,8 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import * as moment from 'moment-timezone';
 import * as _ from 'underscore';
 
+const DEFAULT_EMAIL_SENDER = process.env.DEFAULT_EMAIL_SENDER;
+
 const projectsRouter = Router();
 
 /**
@@ -191,7 +193,9 @@ projectsRouter.post(
                                     about: `レポートが使用可能です [${req.project.id}]`,
                                     sender: {
                                         name: `Chevre Report [${req.project.id}]`,
-                                        email: 'noreply@example.com'
+                                        email: (typeof DEFAULT_EMAIL_SENDER === 'string' && DEFAULT_EMAIL_SENDER.length > 0)
+                                            ? DEFAULT_EMAIL_SENDER
+                                            : 'noreply@example.com'
                                     },
                                     toRecipient: { email: recipientEmail }
                                 }

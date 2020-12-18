@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const cinerinoapi = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment-timezone");
+const DEFAULT_EMAIL_SENDER = process.env.DEFAULT_EMAIL_SENDER;
 const projectsRouter = express_1.Router();
 /**
  * プロジェクト初期化
@@ -169,7 +170,9 @@ projectsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
                                 about: `レポートが使用可能です [${req.project.id}]`,
                                 sender: {
                                     name: `Chevre Report [${req.project.id}]`,
-                                    email: 'noreply@example.com'
+                                    email: (typeof DEFAULT_EMAIL_SENDER === 'string' && DEFAULT_EMAIL_SENDER.length > 0)
+                                        ? DEFAULT_EMAIL_SENDER
+                                        : 'noreply@example.com'
                                 },
                                 toRecipient: { email: recipientEmail }
                             }
