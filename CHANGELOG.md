@@ -10,11 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- update @chevre/api-nodejs-client
-- update @cinerino/sdk
-- uninstall underscore
-- アクション検索条件拡張
-
 ### Deprecated
 
 ### Removed
@@ -22,6 +17,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.20.1 - 2020-12-24
+
+### Changed
+
+- update @chevre/api-nodejs-client
+- update @cinerino/sdk
+- uninstall underscore
+- アクション検索条件拡張
 
 ## v2.20.0 - 2020-12-18
 
