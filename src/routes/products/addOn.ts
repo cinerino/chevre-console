@@ -7,7 +7,6 @@ import { Request, Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
-import * as _ from 'underscore';
 
 import * as Message from '../../message';
 
@@ -65,7 +64,6 @@ addOnRouter.all<any>(
                 accounting: {}
             },
             itemOffered: { name: {} },
-            seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {

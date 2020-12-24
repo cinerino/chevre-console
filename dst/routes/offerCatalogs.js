@@ -16,7 +16,6 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -74,15 +73,13 @@ offerCatalogsRouter.all('/add', ...validate(),
         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     let ticketTypeIds = [];
-    if (!_.isEmpty(req.body.ticketTypes)) {
-        if (_.isString(req.body.ticketTypes)) {
-            ticketTypeIds = [req.body.ticketTypes];
-        }
-        else {
-            ticketTypeIds = req.body.ticketTypes;
-        }
+    if (typeof req.body.ticketTypes === 'string') {
+        ticketTypeIds = [req.body.ticketTypes];
     }
-    const forms = Object.assign({ additionalProperty: [], id: (_.isEmpty(req.body.id)) ? '' : req.body.id, name: (_.isEmpty(req.body.name)) ? {} : req.body.name, ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? [] : ticketTypeIds, description: (_.isEmpty(req.body.description)) ? {} : req.body.description, alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName }, req.body);
+    else if (Array.isArray(req.body.ticketTypes)) {
+        ticketTypeIds = req.body.ticketTypes;
+    }
+    const forms = Object.assign({ additionalProperty: [], id: (typeof req.body.id !== 'string' || req.body.id.length === 0) ? '' : req.body.id, name: (req.body.name === undefined || req.body.name === null) ? {} : req.body.name, ticketTypes: (req.body.ticketTypes === undefined || req.body.ticketTypes === null) ? [] : ticketTypeIds, description: (req.body.description === undefined || req.body.description === null) ? {} : req.body.description, alternateName: (req.body.alternateName === undefined || req.body.alternateName === null) ? {} : req.body.alternateName }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {

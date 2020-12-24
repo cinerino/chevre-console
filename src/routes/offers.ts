@@ -9,7 +9,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
-import * as _ from 'underscore';
 
 import * as Message from '../message';
 
@@ -103,9 +102,13 @@ offersRouter.all<any>(
                 },
                 accounting: {}
             },
-            isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket,
-            isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket,
-            seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit,
+            // isBoxTicket: (typeof req.body.isBoxTicket !== 'string' || req.body.isBoxTicket.length === 0) ? '' : req.body.isBoxTicket,
+            // isOnlineTicket: (typeof req.body.isOnlineTicket !== 'string' || req.body.isOnlineTicket.length === 0)
+            //     ? ''
+            //     : req.body.isOnlineTicket,
+            // seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
+            //     ? '1'
+            //     : req.body.seatReservationUnit,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
