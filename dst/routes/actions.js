@@ -18,11 +18,12 @@ const actionsRouter = express_1.Router();
 actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('actions/index', {
         message: '',
-        ActionType: chevre.factory.actionType
+        ActionType: chevre.factory.actionType,
+        ActionStatusType: chevre.factory.actionStatusType
     });
 }));
 actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
@@ -38,6 +39,11 @@ actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, fun
             typeOf: {
                 $eq: (typeof ((_k = req.query.typeOf) === null || _k === void 0 ? void 0 : _k.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
                     ? req.query.typeOf.$eq
+                    : undefined
+            },
+            actionStatus: {
+                $in: (typeof ((_l = req.query.actionStatus) === null || _l === void 0 ? void 0 : _l.$eq) === 'string' && req.query.actionStatus.$eq.length > 0)
+                    ? [req.query.actionStatus.$eq]
                     : undefined
             },
             object: {

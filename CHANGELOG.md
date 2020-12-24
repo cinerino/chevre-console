@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - update @chevre/api-nodejs-client
 - update @cinerino/sdk
 - uninstall underscore
+- アクション検索条件拡張
 
 ### Deprecated
 

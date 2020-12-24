@@ -11,7 +11,8 @@ actionsRouter.get(
     async (__, res) => {
         res.render('actions/index', {
             message: '',
-            ActionType: chevre.factory.actionType
+            ActionType: chevre.factory.actionType,
+            ActionStatusType: chevre.factory.actionStatusType
         });
     }
 );
@@ -36,6 +37,11 @@ actionsRouter.get(
                 typeOf: {
                     $eq: (typeof req.query.typeOf?.$eq === 'string' && req.query.typeOf.$eq.length > 0)
                         ? req.query.typeOf.$eq
+                        : undefined
+                },
+                actionStatus: {
+                    $in: (typeof req.query.actionStatus?.$eq === 'string' && req.query.actionStatus.$eq.length > 0)
+                        ? [req.query.actionStatus.$eq]
                         : undefined
                 },
                 object: {
