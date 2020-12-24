@@ -18,7 +18,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
-const _ = require("underscore");
 const translationType_1 = require("../../factory/translationType");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
@@ -401,17 +400,22 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         if (event.dubLanguage !== undefined && event.dubLanguage !== null) {
             translationType = translationType_1.TranslationTypeCode.Dubbing;
         }
-        const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [], headline: {} }, event), req.body), { nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa, nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn, duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
-                .asMinutes() : req.body.duration, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (_.isEmpty(req.body.startDate)) ?
-                (event.startDate !== null) ? moment(event.startDate)
-                    .tz('Asia/Tokyo')
-                    .format('YYYY/MM/DD') : '' :
-                req.body.startDate, endDate: (_.isEmpty(req.body.endDate)) ?
-                (event.endDate !== null) ? moment(event.endDate)
+        const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [], headline: {} }, event), req.body), { nameJa: (typeof req.body.nameJa !== 'string' || req.body.nameJa.length === 0) ? event.name.ja : req.body.nameJa, nameEn: (typeof req.body.nameEn !== 'string' || req.body.nameEn.length === 0) ? event.name.en : req.body.nameEn, duration: (typeof req.body.duration !== 'string' || req.body.duration.length === 0)
+                ? moment.duration(event.duration)
+                    .asMinutes()
+                : req.body.duration, translationType: translationType, videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [], startDate: (typeof req.body.startDate !== 'string' || req.body.startDate.length === 0)
+                ? (event.startDate !== null)
+                    ? moment(event.startDate)
+                        .tz('Asia/Tokyo')
+                        .format('YYYY/MM/DD')
+                    : ''
+                : req.body.startDate, endDate: (typeof req.body.endDate !== 'string' || req.body.endDate.length === 0)
+                ? (event.endDate !== null) ? moment(event.endDate)
                     .tz('Asia/Tokyo')
                     .add(-1, 'day')
-                    .format('YYYY/MM/DD') : '' :
-                req.body.endDate, mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg });
+                    .format('YYYY/MM/DD')
+                    : ''
+                : req.body.endDate, mvtkFlg: (typeof req.body.mvtkFlg !== 'string' || req.body.mvtkFlg.length === 0) ? mvtkFlg : req.body.mvtkFlg });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {

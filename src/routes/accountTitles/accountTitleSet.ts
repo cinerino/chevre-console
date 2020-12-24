@@ -7,7 +7,6 @@ import { Request, Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
-import * as _ from 'underscore';
 
 import * as Message from '../../message';
 

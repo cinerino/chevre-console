@@ -9,7 +9,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
-import * as _ from 'underscore';
 
 import { TranslationTypeCode, translationTypes } from '../../factory/translationType';
 
@@ -459,24 +458,29 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 headline: {},
                 ...event,
                 ...req.body,
-                nameJa: (_.isEmpty(req.body.nameJa)) ? event.name.ja : req.body.nameJa,
-                nameEn: (_.isEmpty(req.body.nameEn)) ? event.name.en : req.body.nameEn,
-                duration: (_.isEmpty(req.body.duration)) ? moment.duration(event.duration)
-                    .asMinutes() : req.body.duration,
+                nameJa: (typeof req.body.nameJa !== 'string' || req.body.nameJa.length === 0) ? event.name.ja : req.body.nameJa,
+                nameEn: (typeof req.body.nameEn !== 'string' || req.body.nameEn.length === 0) ? event.name.en : req.body.nameEn,
+                duration: (typeof req.body.duration !== 'string' || req.body.duration.length === 0)
+                    ? moment.duration(event.duration)
+                        .asMinutes()
+                    : req.body.duration,
                 translationType: translationType,
                 videoFormatType: (Array.isArray(event.videoFormat)) ? event.videoFormat.map((f) => f.typeOf) : [],
-                startDate: (_.isEmpty(req.body.startDate)) ?
-                    (event.startDate !== null) ? moment(event.startDate)
-                        .tz('Asia/Tokyo')
-                        .format('YYYY/MM/DD') : '' :
-                    req.body.startDate,
-                endDate: (_.isEmpty(req.body.endDate)) ?
-                    (event.endDate !== null) ? moment(event.endDate)
+                startDate: (typeof req.body.startDate !== 'string' || req.body.startDate.length === 0)
+                    ? (event.startDate !== null)
+                        ? moment(event.startDate)
+                            .tz('Asia/Tokyo')
+                            .format('YYYY/MM/DD')
+                        : ''
+                    : req.body.startDate,
+                endDate: (typeof req.body.endDate !== 'string' || req.body.endDate.length === 0)
+                    ? (event.endDate !== null) ? moment(event.endDate)
                         .tz('Asia/Tokyo')
                         .add(-1, 'day')
-                        .format('YYYY/MM/DD') : '' :
-                    req.body.endDate,
-                mvtkFlg: (_.isEmpty(req.body.mvtkFlg)) ? mvtkFlg : req.body.mvtkFlg
+                        .format('YYYY/MM/DD')
+                        : ''
+                    : req.body.endDate,
+                mvtkFlg: (typeof req.body.mvtkFlg !== 'string' || req.body.mvtkFlg.length === 0) ? mvtkFlg : req.body.mvtkFlg
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
                 // tslint:disable-next-line:prefer-array-literal

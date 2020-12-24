@@ -9,7 +9,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
-import * as _ from 'underscore';
 
 import * as Message from '../../message';
 
@@ -171,21 +170,23 @@ movieRouter.get(
                 },
                 identifier: req.query.identifier,
                 name: req.query.name,
-                datePublishedFrom: (!_.isEmpty(req.query.datePublishedFrom))
+                datePublishedFrom: (typeof req.query.datePublishedFrom === 'string' && req.query.datePublishedFrom.length > 0)
                     ? moment(`${req.query.datePublishedFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                        .toDate() : undefined,
-                datePublishedThrough: (!_.isEmpty(req.query.datePublishedThrough))
+                        .toDate()
+                    : undefined,
+                datePublishedThrough: (typeof req.query.datePublishedThrough === 'string' && req.query.datePublishedThrough.length > 0)
                     ? moment(`${req.query.datePublishedThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                         .toDate()
                     : undefined,
                 offers: {
-                    availableFrom: (!_.isEmpty(req.query.availableFrom))
+                    availableFrom: (typeof req.query.availableFrom === 'string' && req.query.availableFrom.length > 0)
                         ? moment(`${req.query.availableFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                             .toDate()
                         : undefined,
-                    availableThrough: (!_.isEmpty(req.query.availableThrough)) ?
+                    availableThrough: (typeof req.query.availableThrough === 'string' && req.query.availableThrough.length > 0) ?
                         moment(`${req.query.availableThrough}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
-                            .toDate() : undefined
+                            .toDate()
+                        : undefined
                 }
             });
 

@@ -16,7 +16,6 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
-const _ = require("underscore");
 const Message = require("../message");
 const paymentServiceType_1 = require("../factory/paymentServiceType");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -63,7 +62,7 @@ paymentServicesRouter.all('/new', ...validate(),
                 value: 1
             },
             accounting: {}
-        }, itemOffered: { name: {} }, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
+        }, itemOffered: { name: {} } }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {

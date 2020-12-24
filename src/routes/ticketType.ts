@@ -9,7 +9,6 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { CREATED } from 'http-status';
 import * as moment from 'moment-timezone';
-import * as _ from 'underscore';
 
 import * as Message from '../message';
 
@@ -91,9 +90,11 @@ ticketTypeMasterRouter.all<any>(
                 },
                 accounting: {}
             },
-            isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket,
-            isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket,
-            seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit,
+            // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket,
+            // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket,
+            seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
+                ? 1
+                : req.body.seatReservationUnit,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -233,21 +234,21 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 throw new Error('ticketType.priceSpecification undefined');
             }
 
-            let isBoxTicket = false;
-            let isOnlineTicket = false;
-            switch (ticketType.availability) {
-                case chevre.factory.itemAvailability.InStock:
-                    isBoxTicket = true;
-                    isOnlineTicket = true;
-                    break;
-                case chevre.factory.itemAvailability.InStoreOnly:
-                    isBoxTicket = true;
-                    break;
-                case chevre.factory.itemAvailability.OnlineOnly:
-                    isOnlineTicket = true;
-                    break;
-                default:
-            }
+            // let isBoxTicket = false;
+            // let isOnlineTicket = false;
+            // switch (ticketType.availability) {
+            //     case chevre.factory.itemAvailability.InStock:
+            //         isBoxTicket = true;
+            //         isOnlineTicket = true;
+            //         break;
+            //     case chevre.factory.itemAvailability.InStoreOnly:
+            //         isBoxTicket = true;
+            //         break;
+            //     case chevre.factory.itemAvailability.OnlineOnly:
+            //         isOnlineTicket = true;
+            //         break;
+            //     default:
+            // }
 
             let seatReservationUnit = 1;
             if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
@@ -279,13 +280,13 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                         .format('YYYY/MM/DD')
                     : '',
                 ...req.body,
-                isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
-                isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
-                seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit,
-                accountTitle: (_.isEmpty(req.body.accountTitle))
-                    ? (ticketType.priceSpecification.accounting !== undefined
-                        && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
-                        ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
+                // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
+                // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
+                seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
+                    ? seatReservationUnit
+                    : req.body.seatReservationUnit,
+                accountTitle: (typeof req.body.accountTitle !== 'string' || req.body.accountTitle.length === 0)
+                    ? ticketType.priceSpecification?.accounting?.operatingRevenue?.codeValue
                     : req.body.accountTitle
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {

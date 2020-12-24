@@ -18,7 +18,6 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
-const _ = require("underscore");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
 const SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
@@ -80,7 +79,12 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
                 value: 1
             },
             accounting: {}
-        }, isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? 1 : req.body.seatReservationUnit }, req.body);
+        }, 
+        // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? '' : req.body.isBoxTicket,
+        // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? '' : req.body.isOnlineTicket,
+        seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
+            ? 1
+            : req.body.seatReservationUnit }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -158,7 +162,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
 ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -202,21 +206,21 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         if (ticketType.priceSpecification === undefined) {
             throw new Error('ticketType.priceSpecification undefined');
         }
-        let isBoxTicket = false;
-        let isOnlineTicket = false;
-        switch (ticketType.availability) {
-            case chevre.factory.itemAvailability.InStock:
-                isBoxTicket = true;
-                isOnlineTicket = true;
-                break;
-            case chevre.factory.itemAvailability.InStoreOnly:
-                isBoxTicket = true;
-                break;
-            case chevre.factory.itemAvailability.OnlineOnly:
-                isOnlineTicket = true;
-                break;
-            default:
-        }
+        // let isBoxTicket = false;
+        // let isOnlineTicket = false;
+        // switch (ticketType.availability) {
+        //     case chevre.factory.itemAvailability.InStock:
+        //         isBoxTicket = true;
+        //         isOnlineTicket = true;
+        //         break;
+        //     case chevre.factory.itemAvailability.InStoreOnly:
+        //         isBoxTicket = true;
+        //         break;
+        //     case chevre.factory.itemAvailability.OnlineOnly:
+        //         isOnlineTicket = true;
+        //         break;
+        //     default:
+        // }
         let seatReservationUnit = 1;
         if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
             seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
@@ -236,11 +240,13 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 ? moment(ticketType.validThrough)
                     .tz('Asia/Tokyo')
                     .format('YYYY/MM/DD')
-                : '' }), req.body), { isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket, isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket, seatReservationUnit: (_.isEmpty(req.body.seatReservationUnit)) ? seatReservationUnit : req.body.seatReservationUnit, accountTitle: (_.isEmpty(req.body.accountTitle))
-                ? (ticketType.priceSpecification.accounting !== undefined
-                    && ticketType.priceSpecification.accounting.operatingRevenue !== undefined)
-                    ? ticketType.priceSpecification.accounting.operatingRevenue.codeValue : undefined
-                : req.body.accountTitle });
+                : '' }), req.body), { 
+            // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
+            // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
+            seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
+                ? seatReservationUnit
+                : req.body.seatReservationUnit, accountTitle: (typeof req.body.accountTitle !== 'string' || req.body.accountTitle.length === 0)
+                ? (_c = (_b = (_a = ticketType.priceSpecification) === null || _a === void 0 ? void 0 : _a.accounting) === null || _b === void 0 ? void 0 : _b.operatingRevenue) === null || _c === void 0 ? void 0 : _c.codeValue : req.body.accountTitle });
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -293,7 +299,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         }
         else {
             // カテゴリーを検索
-            if (typeof ((_a = ticketType.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string') {
+            if (typeof ((_d = ticketType.category) === null || _d === void 0 ? void 0 : _d.codeValue) === 'string') {
                 const searchOfferCategoriesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -303,35 +309,35 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 forms.category = searchOfferCategoriesResult.data[0];
             }
             // 細目を検索
-            if (typeof ((_d = (_c = (_b = ticketType.priceSpecification) === null || _b === void 0 ? void 0 : _b.accounting) === null || _c === void 0 ? void 0 : _c.operatingRevenue) === null || _d === void 0 ? void 0 : _d.codeValue) === 'string') {
+            if (typeof ((_g = (_f = (_e = ticketType.priceSpecification) === null || _e === void 0 ? void 0 : _e.accounting) === null || _f === void 0 ? void 0 : _f.operatingRevenue) === null || _g === void 0 ? void 0 : _g.codeValue) === 'string') {
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
                     project: { ids: [req.project.id] },
-                    codeValue: { $eq: (_e = ticketType.priceSpecification.accounting.operatingRevenue) === null || _e === void 0 ? void 0 : _e.codeValue }
+                    codeValue: { $eq: (_h = ticketType.priceSpecification.accounting.operatingRevenue) === null || _h === void 0 ? void 0 : _h.codeValue }
                 });
                 forms.accounting = searchAccountTitlesResult.data[0];
             }
             // 適用決済カードを検索
-            if (typeof ((_g = (_f = ticketType.priceSpecification) === null || _f === void 0 ? void 0 : _f.appliesToMovieTicket) === null || _g === void 0 ? void 0 : _g.serviceType) === 'string') {
+            if (typeof ((_k = (_j = ticketType.priceSpecification) === null || _j === void 0 ? void 0 : _j.appliesToMovieTicket) === null || _k === void 0 ? void 0 : _k.serviceType) === 'string') {
                 const searchAppliesToMovieTicketsResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
                     inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
-                    codeValue: { $eq: (_j = (_h = ticketType.priceSpecification) === null || _h === void 0 ? void 0 : _h.appliesToMovieTicket) === null || _j === void 0 ? void 0 : _j.serviceType }
+                    codeValue: { $eq: (_m = (_l = ticketType.priceSpecification) === null || _l === void 0 ? void 0 : _l.appliesToMovieTicket) === null || _m === void 0 ? void 0 : _m.serviceType }
                 });
                 forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
             }
             // 適用通貨区分を検索
             if (Array.isArray(ticketType.eligibleMonetaryAmount)
-                && typeof ((_k = ticketType.eligibleMonetaryAmount[0]) === null || _k === void 0 ? void 0 : _k.currency) === 'string') {
+                && typeof ((_o = ticketType.eligibleMonetaryAmount[0]) === null || _o === void 0 ? void 0 : _o.currency) === 'string') {
                 const searchEligibleAccountTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
                     inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
-                    codeValue: { $eq: (_l = ticketType.eligibleMonetaryAmount[0]) === null || _l === void 0 ? void 0 : _l.currency }
+                    codeValue: { $eq: (_p = ticketType.eligibleMonetaryAmount[0]) === null || _p === void 0 ? void 0 : _p.currency }
                 });
                 forms.eligibleMonetaryAmount = searchEligibleAccountTypesResult.data[0];
-                forms.eligibleMonetaryAmountValue = (_m = ticketType.eligibleMonetaryAmount[0]) === null || _m === void 0 ? void 0 : _m.value;
+                forms.eligibleMonetaryAmountValue = (_q = ticketType.eligibleMonetaryAmount[0]) === null || _q === void 0 ? void 0 : _q.value;
             }
             else {
                 forms.eligibleMonetaryAmount = undefined;
@@ -339,12 +345,12 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             }
             // 適用座席区分を検索
             if (Array.isArray(ticketType.eligibleSeatingType)
-                && typeof ((_o = ticketType.eligibleSeatingType[0]) === null || _o === void 0 ? void 0 : _o.codeValue) === 'string') {
+                && typeof ((_r = ticketType.eligibleSeatingType[0]) === null || _r === void 0 ? void 0 : _r.codeValue) === 'string') {
                 const searcheEligibleSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
                     inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
-                    codeValue: { $eq: (_p = ticketType.eligibleSeatingType[0]) === null || _p === void 0 ? void 0 : _p.codeValue }
+                    codeValue: { $eq: (_s = ticketType.eligibleSeatingType[0]) === null || _s === void 0 ? void 0 : _s.codeValue }
                 });
                 forms.eligibleSeatingType = searcheEligibleSeatingTypesResult.data[0];
             }
@@ -353,7 +359,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             }
             // 適用サブ予約を検索
             if (Array.isArray(ticketType.eligibleSubReservation)
-                && typeof ((_r = (_q = ticketType.eligibleSubReservation[0]) === null || _q === void 0 ? void 0 : _q.typeOfGood) === null || _r === void 0 ? void 0 : _r.seatingType) === 'string') {
+                && typeof ((_u = (_t = ticketType.eligibleSubReservation[0]) === null || _t === void 0 ? void 0 : _t.typeOfGood) === null || _u === void 0 ? void 0 : _u.seatingType) === 'string') {
                 const searcheEligibleSubReservationSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },

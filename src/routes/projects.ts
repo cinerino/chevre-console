@@ -7,7 +7,6 @@ import { Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import * as moment from 'moment-timezone';
-import * as _ from 'underscore';
 
 const DEFAULT_EMAIL_SENDER = process.env.DEFAULT_EMAIL_SENDER;
 

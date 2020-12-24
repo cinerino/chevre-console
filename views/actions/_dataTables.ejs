@@ -11,10 +11,23 @@
                                 タイプ
                             </label>
                             <select class="form-control" name="typeOf[$eq]">
-                                <option value="">タイプ選択</option>
+                                <option value="">全て</option>
                                 <% Object.keys(ActionType).forEach(function(key) { %>
                                 <option value="<%= ActionType[key] %>">
                                     <%= ActionType[key] %>
+                                </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="actionStatus[$eq]" class="bmd-label-static">
+                                ステータス
+                            </label>
+                            <select class="form-control" name="actionStatus[$eq]">
+                                <option value="">全て</option>
+                                <% Object.keys(ActionStatusType).forEach(function(key) { %>
+                                <option value="<%= ActionStatusType[key] %>">
+                                    <%= ActionStatusType[key] %>
                                 </option>
                                 <% }) %>
                             </select>

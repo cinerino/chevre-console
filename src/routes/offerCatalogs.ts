@@ -7,7 +7,6 @@ import { Request, Router } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
-import * as _ from 'underscore';
 
 import * as Message from '../message';
 
@@ -79,20 +78,18 @@ offerCatalogsRouter.all<any>(
         });
 
         let ticketTypeIds: string[] = [];
-        if (!_.isEmpty(req.body.ticketTypes)) {
-            if (_.isString(req.body.ticketTypes)) {
-                ticketTypeIds = [req.body.ticketTypes];
-            } else {
-                ticketTypeIds = req.body.ticketTypes;
-            }
+        if (typeof req.body.ticketTypes === 'string') {
+            ticketTypeIds = [req.body.ticketTypes];
+        } else if (Array.isArray(req.body.ticketTypes)) {
+            ticketTypeIds = req.body.ticketTypes;
         }
         const forms = {
             additionalProperty: [],
-            id: (_.isEmpty(req.body.id)) ? '' : req.body.id,
-            name: (_.isEmpty(req.body.name)) ? {} : req.body.name,
-            ticketTypes: (_.isEmpty(req.body.ticketTypes)) ? [] : ticketTypeIds,
-            description: (_.isEmpty(req.body.description)) ? {} : req.body.description,
-            alternateName: (_.isEmpty(req.body.alternateName)) ? {} : req.body.alternateName,
+            id: (typeof req.body.id !== 'string' || req.body.id.length === 0) ? '' : req.body.id,
+            name: (req.body.name === undefined || req.body.name === null) ? {} : req.body.name,
+            ticketTypes: (req.body.ticketTypes === undefined || req.body.ticketTypes === null) ? [] : ticketTypeIds,
+            description: (req.body.description === undefined || req.body.description === null) ? {} : req.body.description,
+            alternateName: (req.body.alternateName === undefined || req.body.alternateName === null) ? {} : req.body.alternateName,
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
