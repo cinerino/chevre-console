@@ -44,7 +44,22 @@ actionsRouter.get(
                         ? [req.query.actionStatus.$eq]
                         : undefined
                 },
+                location: {
+                    identifier: {
+                        $eq: (typeof req.query.location?.identifier?.$eq === 'string' && req.query.location.identifier.$eq.length > 0)
+                            ? req.query.location.identifier.$eq
+                            : undefined
+                    }
+                },
                 object: {
+                    reservationFor: {
+                        id: {
+                            $eq: (typeof req.query.object?.reservationFor?.id?.$eq === 'string'
+                                && req.query.object.reservationFor.id.$eq.length > 0)
+                                ? req.query.object.reservationFor.id.$eq
+                                : undefined
+                        }
+                    },
                     paymentMethod: {
                         accountId: {
                             $eq: (typeof paymentMethodAccountIdEq === 'string' && paymentMethodAccountIdEq.length > 0)
