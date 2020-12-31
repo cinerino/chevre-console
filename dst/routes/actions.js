@@ -23,7 +23,7 @@ actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
     });
 }));
 actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
@@ -46,7 +46,22 @@ actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, fun
                     ? [req.query.actionStatus.$eq]
                     : undefined
             },
+            location: {
+                identifier: {
+                    $eq: (typeof ((_o = (_m = req.query.location) === null || _m === void 0 ? void 0 : _m.identifier) === null || _o === void 0 ? void 0 : _o.$eq) === 'string' && req.query.location.identifier.$eq.length > 0)
+                        ? req.query.location.identifier.$eq
+                        : undefined
+                }
+            },
             object: {
+                reservationFor: {
+                    id: {
+                        $eq: (typeof ((_r = (_q = (_p = req.query.object) === null || _p === void 0 ? void 0 : _p.reservationFor) === null || _q === void 0 ? void 0 : _q.id) === null || _r === void 0 ? void 0 : _r.$eq) === 'string'
+                            && req.query.object.reservationFor.id.$eq.length > 0)
+                            ? req.query.object.reservationFor.id.$eq
+                            : undefined
+                    }
+                },
                 paymentMethod: {
                     accountId: {
                         $eq: (typeof paymentMethodAccountIdEq === 'string' && paymentMethodAccountIdEq.length > 0)

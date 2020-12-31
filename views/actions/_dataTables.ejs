@@ -34,7 +34,7 @@
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="object[paymentMethod][accountId][$eq]" class="bmd-label-static">
-                                決済アカウント
+                                object.paymentMethod.accountId
                             </label>
                             <input class="form-control" placeholder="決済アカウント"
                                 name="object[paymentMethod][accountId][$eq]"
@@ -42,14 +42,14 @@
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="object[paymentMethod][typeOf][$eq]" class="bmd-label-static">
-                                決済方法タイプ
+                                object.paymentMethod.typeOf
                             </label>
                             <input class="form-control" placeholder="決済方法タイプ" name="object[paymentMethod][typeOf][$eq]"
                                 id="object[paymentMethod][typeOf][$eq]" />
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="object[paymentMethod][paymentMethodId][$eq]" class="bmd-label-static">
-                                決済ID
+                                object.paymentMethod.paymentMethodId
                             </label>
                             <input class="form-control" placeholder="決済ID"
                                 name="object[paymentMethod][paymentMethodId][$eq]"
@@ -57,16 +57,24 @@
                         </div>
                     </div>
 
-                    <div class="advanced collapse">
-                        <div class="form-row">
-                            <!-- <div class="form-group bmd-form-group col-md-2">
-                                <label for="reservationFor[id]" class="bmd-label-static">
-                                    イベントID
-                                </label>
-                                <input type="text" class="form-control" name="reservationFor[id]"
-                                    id="reservationFor[id]" placeholder="イベントID" />
-                            </div> -->
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="object[reservationFor][id][$eq]" class="bmd-label-static">
+                                object.reservationFor.id
+                            </label>
+                            <input type="text" class="form-control" name="object[reservationFor][id][$eq]"
+                                id="object[reservationFor][id][$eq]" placeholder="object.reservationFor.id" />
                         </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="location[identifier][$eq]" class="bmd-label-static">
+                                location.identifier
+                            </label>
+                            <input type="text" class="form-control" name="location[identifier][$eq]"
+                                id="location[identifier][$eq]" placeholder="location.identifier" />
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
                     </div>
                 </form>
             </div>
