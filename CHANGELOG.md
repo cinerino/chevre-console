@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.21.1 - 2021-01-05
+
+### Changed
+
+- ルームの動的選択肢をルーム数に対して拡張
+
 ## v2.21.0 - 2020-12-31
 
 ### Changed
