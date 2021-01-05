@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- ルームの動的選択肢をルーム数に対して拡張
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.21.1 - 2021-01-05
+
+### Changed
+
+- ルームの動的選択肢をルーム数に対して拡張
 
 ## v2.21.0 - 2020-12-31
 
