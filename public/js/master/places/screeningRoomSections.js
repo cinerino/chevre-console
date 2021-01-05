@@ -70,7 +70,7 @@ $(function () {
             dataType: 'json',
             data: function (params) {
                 var query = {
-                    limit: 20,
+                    limit: 100,
                     page: 1,
                     name: { $regex: params.term }
                 }
