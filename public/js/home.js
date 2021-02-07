@@ -55,7 +55,7 @@ function updateCharts() {
 
 function updateReservationCount(cb) {
     $.getJSON(
-        '/home/projectAggregation',
+        '/projects/' + PROJECT_ID + '/home/projectAggregation',
         {}
     ).done(function (data) {
         console.log('projectAggregation:', data);
@@ -78,7 +78,7 @@ function updateReservationCount(cb) {
 
 function updateHealth(cb) {
     $.getJSON(
-        '/home/health',
+        '/projects/' + PROJECT_ID + '/home/health',
         {}
     ).done(function (data) {
         console.log('health:', data);
@@ -95,7 +95,7 @@ function updateHealth(cb) {
 function updateDbStats(cb) {
     var GB = 1000000000;
     $.getJSON(
-        '/home/dbStats',
+        '/projects/' + PROJECT_ID + '/home/dbStats',
         {}
     ).done(function (data) {
         console.log('stats:', data);
@@ -116,7 +116,7 @@ function updateDbStats(cb) {
 
 function updateQueueCount(cb) {
     // $.getJSON(
-    //     '/home/queueCount',
+    //     '/projects/' + PROJECT_ID +'/home/queueCount',
     //     {}
     // ).done(function (data) {
     //     console.log('QueueCount:', data);
@@ -131,7 +131,7 @@ function updateQueueCount(cb) {
 
 function updateLatestReservations(cb) {
     $.getJSON(
-        '/home/latestReservations',
+        '/projects/' + PROJECT_ID + '/home/latestReservations',
         {
             limit: 10,
             page: 1,
@@ -164,7 +164,7 @@ function updateLatestReservations(cb) {
 
 function updateEventsWithAggregation(cb) {
     $.getJSON(
-        '/home/eventsWithAggregations',
+        '/projects/' + PROJECT_ID + '/home/eventsWithAggregations',
         {
             limit: 10,
             page: 1,
@@ -217,7 +217,7 @@ function updateEventsWithAggregation(cb) {
 
 function updateErrorReporting(cb) {
     $.getJSON(
-        '/home/errorReporting',
+        '/projects/' + PROJECT_ID + '/home/errorReporting',
         {
             limit: 10,
             page: 1,
