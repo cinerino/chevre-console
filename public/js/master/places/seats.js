@@ -32,7 +32,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -66,7 +66,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/screeningRoom/search',
+            url: '/projects/' + PROJECT_ID + '/places/screeningRoom/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -102,7 +102,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/screeningRoomSection/search',
+            url: '/projects/' + PROJECT_ID + '/places/screeningRoomSection/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -138,7 +138,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -176,7 +176,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/places/seat/search';
+        var url = '/projects/' + PROJECT_ID + '/places/seat/search';
         $.ajax({
             dataType: 'json',
             url: url,

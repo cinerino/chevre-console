@@ -49,7 +49,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/offers/' + offerId,
+            url: '/projects/' + PROJECT_ID + '/offers/' + offerId,
             type: 'DELETE'
         })
             .done(function () {

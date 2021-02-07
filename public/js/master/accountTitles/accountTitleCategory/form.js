@@ -24,7 +24,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/accountTitles/accountTitleCategory/' + codeValue,
+            url: '/projects/' + PROJECT_ID + '/accountTitles/accountTitleCategory/' + codeValue,
             type: 'DELETE'
         })
             .done(function () {

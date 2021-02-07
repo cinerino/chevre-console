@@ -45,7 +45,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/products/search';
+        var url = '/projects/' + PROJECT_ID + '/products/search';
 
         $.ajax({
             dataType: 'json',

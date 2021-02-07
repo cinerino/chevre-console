@@ -31,7 +31,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/accountTitles/accountTitleCategory';
+        var url = '/projects/' + PROJECT_ID + '/accountTitles/accountTitleCategory';
         //alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',

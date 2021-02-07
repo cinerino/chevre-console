@@ -50,7 +50,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/offerCatalogs/' + offerCatalogId,
+            url: '/projects/' + PROJECT_ID + '/offerCatalogs/' + offerCatalogId,
             type: 'DELETE'
         })
             .done(function () {
@@ -112,7 +112,7 @@ function submit() {
 function searchOffersByPrice(price, itemOfferedType) {
     var options = {
         dataType: 'json',
-        url: '/offerCatalogs/searchOffersByPrice',
+        url: '/projects/' + PROJECT_ID + '/offerCatalogs/searchOffersByPrice',
         cache: false,
         type: 'GET',
         data: {

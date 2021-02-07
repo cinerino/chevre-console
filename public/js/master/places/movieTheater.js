@@ -27,7 +27,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/sellers/getlist',
+            url: '/projects/' + PROJECT_ID + '/sellers/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -64,7 +64,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/places/movieTheater/' + placeId,
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/' + placeId,
             type: 'DELETE'
         })
             .done(function () {

@@ -34,7 +34,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/accountTitles/accountTitleCategory',
+            url: '/projects/' + PROJECT_ID + '/accountTitles/accountTitleCategory',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -70,7 +70,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/accountTitles/accountTitleSet',
+            url: '/projects/' + PROJECT_ID + '/accountTitles/accountTitleSet',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -103,7 +103,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/accountTitles/getlist';
+        var url = '/projects/' + PROJECT_ID + '/accountTitles/getlist';
         //alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',

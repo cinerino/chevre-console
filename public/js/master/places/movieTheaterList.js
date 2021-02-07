@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/places/movieTheater/search';
+        var url = '/projects/' + PROJECT_ID + '/places/movieTheater/search';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -66,7 +66,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/sellers/getlist',
+            url: '/projects/' + PROJECT_ID + '/sellers/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -175,7 +175,7 @@ $(function () {
 
         $.ajax({
             dataType: 'json',
-            url: '/places/movieTheater/' + id + '/screeningRooms',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/' + id + '/screeningRooms',
             cache: false,
             type: 'GET',
             data: conditions,

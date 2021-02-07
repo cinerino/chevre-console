@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - update @chevre/api-nodejs-client
 - プロジェクト指定ルーティング配下では、リクエストプロジェクトをURLから決定するように調整
+- 全リソースについて、リクエスト指定ルーティングを使用するように変更
 
 ### Deprecated
 

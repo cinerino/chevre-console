@@ -30,7 +30,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/categoryCodes/search';
+        var url = '/projects/' + PROJECT_ID + '/categoryCodes/search';
 
         $.ajax({
             dataType: 'json',
@@ -65,7 +65,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/paymentServices/search',
+            url: '/projects/' + PROJECT_ID + '/paymentServices/search',
             dataType: 'json',
             data: function (params) {
                 var query = {

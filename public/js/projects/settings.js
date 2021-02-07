@@ -5,7 +5,7 @@ $(function () {
         if (window.confirm('元には戻せません。本当に集計しますか？')) {
             $.ajax({
                 dataType: 'json',
-                url: '/projects/aggregate',
+                url: '/projects/' + PROJECT_ID + '/settings/aggregate',
                 type: 'POST'
             }).done(function () {
                 alert('集計を開始しました');
@@ -27,7 +27,7 @@ $(function () {
         if (window.confirm('先月の予約レポートを作成してよろしいですか？')) {
             $.ajax({
                 dataType: 'json',
-                url: '/projects/createReservationReport',
+                url: '/projects/' + PROJECT_ID + '/settings/createReservationReport',
                 type: 'POST'
             }).done(function (data) {
                 alert('レポート作成を開始しました:' + data.id);

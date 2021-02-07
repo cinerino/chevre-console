@@ -33,7 +33,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/categoryCodes/' + categoryCodeId,
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/' + categoryCodeId,
             type: 'DELETE'
         })
             .done(function () {

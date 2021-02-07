@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/sellers/getlist';
+        var url = '/projects/' + PROJECT_ID + '/sellers/getlist';
         // alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',
@@ -85,7 +85,7 @@ $(function () {
         placeholder: 'アプリ選択',
         allowClear: true,
         ajax: {
-            url: '/applications/search',
+            url: '/projects/' + PROJECT_ID + '/applications/search',
             dataType: 'json',
             data: function (params) {
                 var query = {

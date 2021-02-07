@@ -14,7 +14,7 @@ $(function () {
         if (window.confirm('元には戻せません。本当に削除しますか？')) {
             $.ajax({
                 dataType: 'json',
-                url: '/products/' + productId,
+                url: '/projects/' + PROJECT_ID + '/products/' + productId,
                 type: 'DELETE'
             }).done(function () {
                 alert('削除しました');

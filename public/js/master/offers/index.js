@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/offers/getlist';
+        var url = '/projects/' + PROJECT_ID + '/offers/getlist';
         // alert(JSON.stringify(conditions));
         $.ajax({
             dataType: 'json',
@@ -108,7 +108,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/applications/search',
+            url: '/projects/' + PROJECT_ID + '/applications/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -141,7 +141,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -177,7 +177,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -213,7 +213,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -250,7 +250,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/accountTitles/getlist',
+            url: '/projects/' + PROJECT_ID + '/accountTitles/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -327,7 +327,7 @@ $(function () {
     function showCatalogs(id) {
         $.ajax({
             dataType: 'json',
-            url: '/offers/' + id + '/catalogs',
+            url: '/projects/' + PROJECT_ID + '/offers/' + id + '/catalogs',
             cache: false,
             type: 'GET',
             // data: conditions,
@@ -377,7 +377,7 @@ $(function () {
     function showAvailableAtOrFrom(id) {
         $.ajax({
             dataType: 'json',
-            url: '/offers/' + id + '/availableApplications',
+            url: '/projects/' + PROJECT_ID + '/offers/' + id + '/availableApplications',
             cache: false,
             type: 'GET',
             // data: conditions,
@@ -469,7 +469,7 @@ $(function () {
 
         if (window.confirm(message)) {
             $.ajax({
-                url: '/ticketTypes/importFromCOA',
+                url: '/projects/' + PROJECT_ID + '/ticketTypes/importFromCOA',
                 type: 'POST',
                 dataType: 'json',
                 data: $('form').serialize()

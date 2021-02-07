@@ -97,7 +97,7 @@ $(function () {
         placeholder: 'コンテンツ選択',
         allowClear: true,
         ajax: {
-            url: '/creativeWorks/movie/getlist',
+            url: '/projects/' + PROJECT_ID + '/creativeWorks/movie/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -130,7 +130,7 @@ $(function () {
         placeholder: 'アプリ選択',
         allowClear: true,
         ajax: {
-            url: '/applications/search',
+            url: '/projects/' + PROJECT_ID + '/applications/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -163,7 +163,7 @@ $(function () {
         placeholder: '管理ユーザー選択',
         allowClear: true,
         ajax: {
-            url: '/reservations/searchAdmins',
+            url: '/projects/' + PROJECT_ID + '/reservations/searchAdmins',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -382,7 +382,7 @@ function search(pageNumber) {
     initializeView();
 
     conditions['page'] = pageNumber;
-    var url = '/reservations/search';
+    var url = '/projects/' + PROJECT_ID + '/reservations/search';
     $.ajax({
         dataType: 'json',
         url: url,
@@ -457,7 +457,7 @@ function cancelReservations() {
     }
 
     if (confirmed) {
-        var url = '/reservations/cancel';
+        var url = '/projects/' + PROJECT_ID + '/reservations/cancel';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -540,7 +540,7 @@ function update() {
 
     console.log('updating...', id, $('form.edit').serialize());
 
-    var url = '/reservations/' + id;
+    var url = '/projects/' + PROJECT_ID + '/reservations/' + id;
     $.ajax({
         dataType: 'json',
         url: url,

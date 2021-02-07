@@ -24,7 +24,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -61,7 +61,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -100,7 +100,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/creativeWorks/movie/' + creativeWorkId,
+            url: '/projects/' + PROJECT_ID + '/creativeWorks/movie/' + creativeWorkId,
             type: 'DELETE'
         })
             .done(function () {

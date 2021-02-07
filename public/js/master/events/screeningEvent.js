@@ -6,7 +6,7 @@ var creatingSchedules = false;
 var scheduler;
 var ITEMS_ON_PAGE;
 var conditions = {};
-var SEARCH_URL = '/events/screeningEvent/search';
+var SEARCH_URL = '/projects/' + PROJECT_ID + '/events/screeningEvent/search';
 
 var locationSelection;
 
@@ -128,7 +128,7 @@ $(function () {
 
         if (window.confirm(message)) {
             $.ajax({
-                url: '/events/screeningEvent/importFromCOA',
+                url: '/projects/' + PROJECT_ID + '/events/screeningEvent/importFromCOA',
                 type: 'POST',
                 dataType: 'json',
                 data: $('.search form').serialize()
@@ -168,7 +168,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -201,7 +201,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/screeningRoom/search',
+            url: '/projects/' + PROJECT_ID + '/places/screeningRoom/search',
             dataType: 'json',
             data: function (params) {
                 var movieTheaterId = $('.search select[name="theater"]').val();
@@ -241,7 +241,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/creativeWorks/movie/getlist',
+            url: '/projects/' + PROJECT_ID + '/creativeWorks/movie/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -298,7 +298,7 @@ $(function () {
         placeholder: 'カタログ選択',
         allowClear: true,
         ajax: {
-            url: '/offerCatalogs/getlist',
+            url: '/projects/' + PROJECT_ID + '/offerCatalogs/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -348,7 +348,7 @@ $(function () {
             return data.text;
         },
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -392,7 +392,7 @@ function getSeller(sellerId) {
     sellerSelection.html('<option selected disabled>検索中...</option>')
     $.ajax({
         dataType: 'json',
-        url: '/sellers/' + sellerId,
+        url: '/projects/' + PROJECT_ID + '/sellers/' + sellerId,
         type: 'GET',
         data: {}
     }).done(function (seller) {
@@ -431,7 +431,7 @@ function initializeSuperEventSelection(theater) {
             return data.text;
         },
         ajax: {
-            url: '/events/screeningEventSeries/search',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEventSeries/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -476,7 +476,7 @@ function initializeScreenSelection(theater) {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/screeningRoom/search',
+            url: '/projects/' + PROJECT_ID + '/places/screeningRoom/search',
             // url: '/places/movieTheater/' + theater + '/screeningRooms',
             dataType: 'json',
             data: function (params) {
@@ -796,7 +796,7 @@ function regist() {
     var originalButtonText = $('.regist-button').text();
     $.ajax({
         dataType: 'json',
-        url: '/events/screeningEvent/regist',
+        url: '/projects/' + PROJECT_ID + '/events/screeningEvent/regist',
         type: 'POST',
         data: {
             theater: theater,
@@ -925,7 +925,7 @@ function update() {
     if (confirmed) {
         $.ajax({
             dataType: 'json',
-            url: '/events/screeningEvent/' + performance + '/update',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + performance + '/update',
             type: 'POST',
             data: {
                 theater: theater,
@@ -1039,7 +1039,7 @@ function deletePerformance() {
     }
     $.ajax({
         dataType: 'json',
-        url: '/events/screeningEvent/' + performance + '/cancel',
+        url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + performance + '/cancel',
         type: 'PUT',
     }).done(function (data) {
         if (!data.error) {
@@ -1341,7 +1341,7 @@ function createScheduler() {
             findCatalogByPerformance: function (performance) {
                 var options = {
                     dataType: 'json',
-                    url: '/events/screeningEvent/' + performance.id + '/hasOfferCatalog',
+                    url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + performance.id + '/hasOfferCatalog',
                     type: 'GET',
                     data: {},
                     beforeSend: function () {
@@ -1361,7 +1361,7 @@ function createScheduler() {
             findSellerByPerformance: function (performance) {
                 var options = {
                     dataType: 'json',
-                    url: '/sellers/' + performance.offers.seller.id,
+                    url: '/projects/' + PROJECT_ID + '/sellers/' + performance.offers.seller.id,
                     type: 'GET',
                     data: {},
                     beforeSend: function () {
@@ -1632,7 +1632,7 @@ function createScheduler() {
 
                 $.ajax({
                     dataType: 'json',
-                    url: '/events/screeningEvent/' + event.id + '/aggregateReservation',
+                    url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + event.id + '/aggregateReservation',
                     type: 'POST',
                 }).done(function (data) {
                     alert('集計を開始しました');
@@ -1668,7 +1668,7 @@ function showOffersById(id) {
     if (event.hasOfferCatalog !== undefined && typeof event.hasOfferCatalog.id === 'string' && event.hasOfferCatalog.id.length > 0) {
         $.ajax({
             dataType: 'json',
-            url: '/events/screeningEvent/' + id + '/offers',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + id + '/offers',
             cache: false,
             type: 'GET',
             data: {},

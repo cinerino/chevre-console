@@ -29,7 +29,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -68,7 +68,7 @@ function deleteById() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/sellers/' + sellerId,
+            url: '/projects/' + PROJECT_ID + '/sellers/' + sellerId,
             type: 'DELETE'
         })
             .done(function () {

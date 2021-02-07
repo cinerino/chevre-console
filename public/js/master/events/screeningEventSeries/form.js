@@ -42,7 +42,7 @@ $(function () {
         // 登録済スケジュールの存在を確認        
         $.ajax({
             dataType: 'json',
-            url: '/events/screeningEventSeries/' + eventId + '/screeningEvents',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEventSeries/' + eventId + '/screeningEvents',
             cache: false,
             type: 'GET',
             data: {
@@ -97,7 +97,7 @@ $(function () {
         // containerCssClass: 'form-control',
         // theme: 'default form-control',
         ajax: {
-            url: '/events/screeningEventSeries/searchMovies',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEventSeries/searchMovies',
             dataType: 'json',
             delay: 250, // wait 250 milliseconds before triggering the request
             // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
@@ -159,7 +159,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -193,7 +193,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -240,7 +240,7 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/events/screeningEventSeries/' + eventId,
+            url: '/projects/' + PROJECT_ID + '/events/screeningEventSeries/' + eventId,
             type: 'DELETE'
         })
             .done(function () {
