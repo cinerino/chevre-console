@@ -16,7 +16,7 @@ AT-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/accountTitles/new">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/accountTitles/new">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -82,19 +82,19 @@ AT-01
                             <tbody>
                                 <tr id="templateRow" codeValue="$codeValue$">
                                     <td name="codeValue__codeValue">
-                                        <a target="_blank" href="/accountTitles/$codeValue$">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/accountTitles/$codeValue$">
                                             $codeValue$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     <td name="inCodeSet.inCodeSet.codeValue__inCodeSet.inCodeSet.name|slice">
                                         <a target="_blank"
-                                            href="/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
+                                            href="/projects/<%= req.project.id %>/accountTitles/accountTitleCategory/$inCodeSet.inCodeSet.codeValue$">
                                             $inCodeSet.inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
                                     <td name="inCodeSet.codeValue__inCodeSet.name|slice">
-                                        <a target="_blank" href="/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/accountTitles/accountTitleSet/$inCodeSet.codeValue$">
                                             $inCodeSet.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

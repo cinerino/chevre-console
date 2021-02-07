@@ -16,7 +16,7 @@ PR-00
     <div class="card-body search searchProducts">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/paymentServices/new?typeOf=<%= req.query.typeOf %>">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/paymentServices/new?typeOf=<%= req.query.typeOf %>">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -63,7 +63,7 @@ PR-00
                             <tbody>
                                 <tr id="templateRow">
                                     <td name="id__productID">
-                                        <a target="_blank" href="/paymentServices/$id$">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/paymentServices/$id$">
                                             $productID$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

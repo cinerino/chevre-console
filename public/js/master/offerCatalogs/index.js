@@ -100,9 +100,9 @@ $(function () {
                         ]);
                     var tbody = $('<tbody>')
                         .append(data.results.map(function (result) {
-                            var url = '/offers/' + result.id + '/update';
+                            var url = '/projects/' + PROJECT_ID + '/offers/' + result.id + '/update';
                             if (offerCatalog.itemOffered.typeOf === 'EventService') {
-                                url = '/ticketTypes/' + result.id + '/update';
+                                url = '/projects/' + PROJECT_ID + '/ticketTypes/' + result.id + '/update';
                             }
 
                             return $('<tr>').append([

@@ -297,7 +297,7 @@
                             </td>
                             <td name="reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice:10">
                                 <a target="_blank"
-                                    href="/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$
+                                    href="/projects/<%= req.project.id %>/events/screeningEventSeries/$reservationFor.superEvent.id$/update">$reservationFor.superEvent.name.ja$
                                     <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                             </td>
                             <td
@@ -308,7 +308,7 @@
                             <td
                                 name="reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja|slice:10__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency">
                                 <span class="font-weight-bold"><a target="_blank"
-                                        href="/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
+                                        href="/projects/<%= req.project.id %>/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
                                         <i class="material-icons"
                                             style="font-size: 1.2em;">open_in_new</i></a></span><br>
                                 $unitPriceSpec.price$ $unitPriceSpec.priceCurrency$ /

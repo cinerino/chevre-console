@@ -16,7 +16,7 @@ SR-01
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/places/screeningRoom/new">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/places/screeningRoom/new">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -88,7 +88,7 @@ SR-01
                             <tbody>
                                 <tr id="templateRow" identifier="">
                                     <td name="containedInPlace.branchCode__branchCode__branchCode"><a target="_blank"
-                                            href="/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">
+                                            href="/projects/<%= req.project.id %>/places/screeningRoom/$containedInPlace.branchCode$:$branchCode$/update">
                                             $branchCode$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

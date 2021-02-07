@@ -1458,7 +1458,7 @@ function createScheduler() {
                 if (performance.hasOfferCatalog !== undefined) {
                     details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
                         target: '_blank',
-                        'href': '/offerCatalogs/' + performance.hasOfferCatalog.id + '/update'
+                        'href': '/projects/' + PROJECT_ID + '/offerCatalogs/' + performance.hasOfferCatalog.id + '/update'
                     }).html(
                         performance.hasOfferCatalog.id
                         + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>'
@@ -1471,7 +1471,7 @@ function createScheduler() {
                     .append($('<dd>').addClass('col-md-9').append(
                         $('<a>').attr({
                             target: '_blank',
-                            'href': '/sellers/' + seller.id + '/update'
+                            'href': '/projects/' + PROJECT_ID + '/sellers/' + seller.id + '/update'
                         }).html(
                             seller.id
                             + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>'
@@ -1699,7 +1699,7 @@ function showOffers(event, offers) {
         ]);
     var tbody = $('<tbody>')
         .append(offers.map(function (result) {
-            var url = '/offers/' + result.id + '/update';
+            var url = '/projects/' + PROJECT_ID + '/offers/' + result.id + '/update';
 
             return $('<tr>').append([
                 $('<td>').html('<a target="_blank" href="' + url + '">' + result.identifier + ' <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>'),

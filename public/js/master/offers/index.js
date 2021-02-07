@@ -342,7 +342,7 @@ $(function () {
                 if (data.results.length > 0) {
                     var tbody = $('<tbody>');
                     data.results.forEach(function (offerCatalog) {
-                        var href = '/offerCatalogs/' + offerCatalog.id + '/update';
+                        var href = '/projects/' + PROJECT_ID + '/offerCatalogs/' + offerCatalog.id + '/update';
                         var identifier = $('<a>').attr({ 'href': href, target: '_blank' }).text(offerCatalog.identifier);
                         tbody.append(
                             $('<tr>')
@@ -444,7 +444,7 @@ $(function () {
                 ])
             ]);
             tbody.append(offer.addOn.map(function (offer) {
-                var href = '/products/' + offer.itemOffered.id;
+                var href = '/projects/' + PROJECT_ID + '/products/' + offer.itemOffered.id;
                 return $('<tr>').append([
                     $('<td>').html($('<a>').attr({ href, href, target: '_blank' }).text(offer.itemOffered.name.ja))
                 ]);

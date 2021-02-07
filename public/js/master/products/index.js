@@ -119,7 +119,7 @@ function showProduct(id) {
     if (product.hasOfferCatalog !== undefined) {
         details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
             target: '_blank',
-            'href': '/offerCatalogs/' + product.hasOfferCatalog.id + '/update'
+            'href': '/projects/' + PROJECT_ID + '/offerCatalogs/' + product.hasOfferCatalog.id + '/update'
         }).text(product.hasOfferCatalog.id)));
     } else {
         details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));

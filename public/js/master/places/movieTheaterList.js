@@ -200,7 +200,7 @@ $(function () {
                 var tbody = $('<tbody>')
                     .append(data.results.map(function (result) {
                         var screeningRoomId = movieTheater.branchCode + ':' + result.branchCode;
-                        var editScreenUrl = '/places/screeningRoom/' + screeningRoomId + '/update';
+                        var editScreenUrl = '/projects/' + PROJECT_ID + '/places/screeningRoom/' + screeningRoomId + '/update';
                         var numSections = 0;
                         if (Array.isArray(result.containsPlace)) {
                             numSections = result.containsPlace.length;

@@ -16,7 +16,7 @@ PS-02
     <div class="card-body search searchPriceSpecification">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/priceSpecifications/new">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/priceSpecifications/new">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -91,7 +91,7 @@ PS-02
                                     <td name="appliesToVideoFormatName|slice">$appliesToVideoFormatName$</td>
                                     <td name="price__priceCurrency">$price$ $priceCurrency$</td>
                                     <td name="id">
-                                        <a target="_blank" href="/priceSpecifications/$id$/update">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/priceSpecifications/$id$/update">
                                             <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
