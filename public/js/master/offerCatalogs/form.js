@@ -55,7 +55,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/offerCatalogs';
+                location.href = '/projects/' + PROJECT_ID + '/offerCatalogs';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

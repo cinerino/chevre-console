@@ -73,7 +73,7 @@ function deleteById() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/sellers';
+                location.href = '/projects/' + PROJECT_ID + '/sellers';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

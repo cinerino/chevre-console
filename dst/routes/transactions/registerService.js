@@ -115,7 +115,7 @@ registerServiceTransactionsRouter.all('/start',
                 // 確認画面へ情報を引き継ぐ
                 // セッションに取引追加
                 req.session[`transaction:${transaction.transactionNumber}`] = transaction;
-                res.redirect(`/transactions/${transaction.typeOf}/${transaction.transactionNumber}/confirm`);
+                res.redirect(`/projects/${req.project.id}/transactions/${transaction.typeOf}/${transaction.transactionNumber}/confirm`);
                 return;
             }
             catch (error) {
@@ -183,7 +183,7 @@ registerServiceTransactionsRouter.all('/:transactionNumber/confirm', (req, res, 
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.transactionNumber}`];
             req.flash('message', message);
-            res.redirect(`/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
             return;
         }
         else {
@@ -227,7 +227,7 @@ registerServiceTransactionsRouter.all('/:transactionNumber/cancel', (req, res, n
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.transactionNumber}`];
             req.flash('message', message);
-            res.redirect(`/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
             return;
         }
         throw new Error('not implemented');

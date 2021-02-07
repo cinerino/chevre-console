@@ -169,7 +169,7 @@ function remove(id) {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/seat';
+                location.href = '/projects/' + PROJECT_ID + '/places/seat';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

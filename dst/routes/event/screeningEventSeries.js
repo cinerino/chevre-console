@@ -67,7 +67,7 @@ screeningEventSeriesRouter.all('/add', ...validate(),
                 const events = yield eventService.create(attributes);
                 debug('event created', events[0]);
                 req.flash('message', '登録しました');
-                const redirect = `/events/screeningEventSeries/${events[0].id}/update`;
+                const redirect = `/projects/${req.project.id}/events/screeningEventSeries/${events[0].id}/update`;
                 debug('redirecting...', redirect);
                 res.redirect(redirect);
                 return;

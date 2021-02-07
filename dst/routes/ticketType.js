@@ -66,7 +66,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
                 }
                 ticketType = yield offerService.create(ticketType);
                 req.flash('message', '登録しました');
-                res.redirect(`/ticketTypes/${ticketType.id}/update`);
+                res.redirect(`/projects/${req.project.id}/ticketTypes/${ticketType.id}/update`);
                 return;
             }
             catch (error) {

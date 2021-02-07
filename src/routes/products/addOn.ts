@@ -43,7 +43,7 @@ addOnRouter.all<any>(
                     let product = createFromBody(req, true);
                     product = await productService.create(product);
                     req.flash('message', '登録しました');
-                    res.redirect(`/products/${product.id}`);
+                    res.redirect(`/projects/${req.project.id}/products/${product.id}`);
 
                     return;
                 } catch (error) {

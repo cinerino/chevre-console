@@ -188,7 +188,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/priceSpecifications';
+                location.href = '/projects/' + PROJECT_ID + '/priceSpecifications';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

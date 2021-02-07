@@ -81,7 +81,7 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
                 const accountTitleSet = yield createFromBody(req, true);
                 yield accountTitleService.createAccounTitleSet(accountTitleSet);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles/accountTitleSet/${accountTitleSet.codeValue}`);
+                res.redirect(`/projects/${req.project.id}/accountTitles/accountTitleSet/${accountTitleSet.codeValue}`);
                 return;
             }
             catch (error) {

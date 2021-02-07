@@ -200,7 +200,7 @@ transactionsRouter.all(
                     // セッションに取引追加
                     (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`] = transaction;
 
-                    res.redirect(`/transactions/reserve/${transaction.transactionNumber}/confirm`);
+                    res.redirect(`/projects/${req.project.id}/transactions/reserve/${transaction.transactionNumber}/confirm`);
 
                     return;
                 } catch (error) {
@@ -259,7 +259,7 @@ transactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/transactions/reserve/start?event=${eventId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/reserve/start?event=${eventId}`);
 
                 return;
             } else {
@@ -311,7 +311,7 @@ transactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/transactions/reserve/start?event=${eventId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/reserve/start?event=${eventId}`);
 
                 return;
             }

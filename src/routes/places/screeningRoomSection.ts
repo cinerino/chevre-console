@@ -48,7 +48,7 @@ screeningRoomSectionRouter.all<any>(
 
                     await placeService.createScreeningRoomSection(screeningRoomSection);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/screeningRoomSection/${screeningRoomSection.containedInPlace?.containedInPlace?.branchCode}:${screeningRoomSection.containedInPlace?.branchCode}:${screeningRoomSection.branchCode}/update`);
+                    res.redirect(`/projects/${req.project.id}/places/screeningRoomSection/${screeningRoomSection.containedInPlace?.containedInPlace?.branchCode}:${screeningRoomSection.containedInPlace?.branchCode}:${screeningRoomSection.branchCode}/update`);
 
                     return;
                 } catch (error) {

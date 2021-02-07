@@ -62,7 +62,7 @@ offerCatalogsRouter.all<any>(
 
                     offerCatalog = await offerCatalogService.create(offerCatalog);
                     req.flash('message', '登録しました');
-                    res.redirect(`/offerCatalogs/${offerCatalog.id}/update`);
+                    res.redirect(`/projects/${req.project.id}/offerCatalogs/${offerCatalog.id}/update`);
 
                     return;
                 } catch (error) {

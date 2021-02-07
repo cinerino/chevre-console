@@ -51,7 +51,7 @@ movieTheaterRouter.all<any>(
 
                     movieTheater = await placeService.createMovieTheater(<any>movieTheater);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/movieTheater/${movieTheater.id}/update`);
+                    res.redirect(`/projects/${req.project.id}/places/movieTheater/${movieTheater.id}/update`);
 
                     return;
                 } catch (error) {

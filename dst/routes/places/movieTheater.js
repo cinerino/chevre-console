@@ -50,7 +50,7 @@ movieTheaterRouter.all('/new', ...validate(),
                 debug('existingMovieTheater:', existingMovieTheater);
                 movieTheater = yield placeService.createMovieTheater(movieTheater);
                 req.flash('message', '登録しました');
-                res.redirect(`/places/movieTheater/${movieTheater.id}/update`);
+                res.redirect(`/projects/${req.project.id}/places/movieTheater/${movieTheater.id}/update`);
                 return;
             }
             catch (error) {

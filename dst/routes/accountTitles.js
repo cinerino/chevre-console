@@ -104,7 +104,7 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
                 }
                 yield accountTitleService.create(accountTitle);
                 req.flash('message', '登録しました');
-                res.redirect(`/accountTitles/${accountTitle.codeValue}`);
+                res.redirect(`/projects/${req.project.id}/accountTitles/${accountTitle.codeValue}`);
                 return;
             }
             catch (error) {

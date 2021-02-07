@@ -95,7 +95,7 @@ function remove(id) {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/screeningRoomSection';
+                location.href = '/projects/' + PROJECT_ID + '/places/screeningRoomSection';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

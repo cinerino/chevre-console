@@ -1408,7 +1408,7 @@ function createScheduler() {
                 modal.find('a.reserve')
                     .off('click')
                     .on('click', function () {
-                        var url = '/transactions/reserve/start?event=' + performance.id;
+                        var url = '/projects/' + PROJECT_ID + '/transactions/reserve/start?event=' + performance.id;
                         window.open(url, '_blank');
                     });
 

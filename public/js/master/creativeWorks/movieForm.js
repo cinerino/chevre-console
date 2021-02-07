@@ -105,7 +105,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/creativeWorks/movie';
+                location.href = '/projects/' + PROJECT_ID + '/creativeWorks/movie';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

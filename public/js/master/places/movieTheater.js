@@ -69,7 +69,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/movieTheater';
+                location.href = '/projects/' + PROJECT_ID + '/places/movieTheater';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

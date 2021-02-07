@@ -18,7 +18,7 @@ $(function () {
                 type: 'DELETE'
             }).done(function () {
                 alert('削除しました');
-                location.href = '/paymentServices';
+                location.href = '/projects/' + PROJECT_ID + '/paymentServices';
             }).fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {

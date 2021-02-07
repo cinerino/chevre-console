@@ -126,7 +126,7 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
                 }
                 categoryCode = yield categoryCodeService.create(categoryCode);
                 req.flash('message', '登録しました');
-                res.redirect(`/categoryCodes/${categoryCode.id}/update`);
+                res.redirect(`/projects/${req.project.id}/categoryCodes/${categoryCode.id}/update`);
                 return;
             }
             catch (error) {

@@ -245,7 +245,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/events/screeningEventSeries';
+                location.href = '/projects/' + PROJECT_ID + '/events/screeningEventSeries';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

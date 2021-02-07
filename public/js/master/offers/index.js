@@ -71,7 +71,7 @@ $(function () {
             return;
         }
 
-        location.href = '/offers/add?itemOffered[typeOf]=' + itemOfferedTypeOf;
+        location.href = '/projects/' + PROJECT_ID + '/offers/add?itemOffered[typeOf]=' + itemOfferedTypeOf;
     });
 
     // 追加特性を見る

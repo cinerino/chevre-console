@@ -90,7 +90,7 @@ function showProduct(id) {
     modal.find('a.edit')
         .off('click')
         .on('click', function () {
-            var url = '/products/' + product.id;
+            var url = '/projects/' + PROJECT_ID + '/products/' + product.id;
             window.open(url, '_blank');
         });
 
@@ -104,7 +104,7 @@ function showProduct(id) {
             .attr('aria-disabled', false)
             .off('click')
             .on('click', function () {
-                var url = '/transactions/registerService/start?product=' + product.id;
+                var url = '/projects/' + PROJECT_ID + '/transactions/registerService/start?product=' + product.id;
                 window.open(url, '_blank');
             });
     }

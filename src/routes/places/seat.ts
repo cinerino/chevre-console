@@ -46,7 +46,7 @@ seatRouter.all<any>(
 
                     await placeService.createSeat(seat);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/seat/${seat.containedInPlace?.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.branchCode}:${seat.branchCode}/update`);
+                    res.redirect(`/projects/${req.project.id}/places/seat/${seat.containedInPlace?.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.containedInPlace?.branchCode}:${seat.containedInPlace?.branchCode}:${seat.branchCode}/update`);
 
                     return;
                 } catch (error) {

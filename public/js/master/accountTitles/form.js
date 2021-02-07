@@ -65,7 +65,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/accountTitles';
+                location.href = '/projects/' + PROJECT_ID + '/accountTitles';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

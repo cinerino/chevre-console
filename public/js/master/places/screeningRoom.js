@@ -60,7 +60,7 @@ function remove(id) {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/screeningRoom';
+                location.href = '/projects/' + PROJECT_ID + '/places/screeningRoom';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

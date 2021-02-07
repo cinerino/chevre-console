@@ -38,7 +38,7 @@ function remove() {
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/categoryCodes';
+                location.href = '/projects/' + PROJECT_ID + '/categoryCodes';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

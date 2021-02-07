@@ -44,7 +44,7 @@ seatRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, vo
                 // }
                 yield placeService.createSeat(seat);
                 req.flash('message', '登録しました');
-                res.redirect(`/places/seat/${(_c = (_b = (_a = seat.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode}:${(_e = (_d = seat.containedInPlace) === null || _d === void 0 ? void 0 : _d.containedInPlace) === null || _e === void 0 ? void 0 : _e.branchCode}:${(_f = seat.containedInPlace) === null || _f === void 0 ? void 0 : _f.branchCode}:${seat.branchCode}/update`);
+                res.redirect(`/projects/${req.project.id}/places/seat/${(_c = (_b = (_a = seat.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode}:${(_e = (_d = seat.containedInPlace) === null || _d === void 0 ? void 0 : _d.containedInPlace) === null || _e === void 0 ? void 0 : _e.branchCode}:${(_f = seat.containedInPlace) === null || _f === void 0 ? void 0 : _f.branchCode}:${seat.branchCode}/update`);
                 return;
             }
             catch (error) {

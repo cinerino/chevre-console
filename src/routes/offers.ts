@@ -36,7 +36,7 @@ offersRouter.all<any>(
 
         const itemOfferedTypeOf = req.query.itemOffered?.typeOf;
         if (itemOfferedTypeOf === ProductType.EventService) {
-            res.redirect(`/ticketTypes/add`);
+            res.redirect(`/projects/${req.project.id}/ticketTypes/add`);
 
             return;
         }
@@ -82,7 +82,7 @@ offersRouter.all<any>(
 
                     offer = await offerService.create(offer);
                     req.flash('message', '登録しました');
-                    res.redirect(`/offers/${offer.id}/update`);
+                    res.redirect(`/projects/${req.project.id}/offers/${offer.id}/update`);
 
                     return;
                 } catch (error) {
@@ -165,7 +165,7 @@ offersRouter.all<ParamsDictionary>(
 
         const itemOfferedTypeOf = req.query.itemOffered?.typeOf;
         if (itemOfferedTypeOf === ProductType.EventService) {
-            res.redirect(`/ticketTypes/${req.params.id}/update`);
+            res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
 
             return;
         }
@@ -195,7 +195,7 @@ offersRouter.all<ParamsDictionary>(
             let offer = await offerService.findById({ id: req.params.id });
 
             if (offer.itemOffered?.typeOf === ProductType.EventService) {
-                res.redirect(`/ticketTypes/${req.params.id}/update`);
+                res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
 
                 return;
             }

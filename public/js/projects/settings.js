@@ -9,7 +9,7 @@ $(function () {
                 type: 'POST'
             }).done(function () {
                 alert('集計を開始しました');
-                // location.href = '/products';
+                // location.href = '/projects/' + PROJECT_ID + '/products';
             }).fail(function (jqxhr, textStatus, error) {
                 var message = '集計を開始できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
@@ -31,7 +31,7 @@ $(function () {
                 type: 'POST'
             }).done(function (data) {
                 alert('レポート作成を開始しました:' + data.id);
-                // location.href = '/products';
+                // location.href = '/projects/' + PROJECT_ID + '/products';
             }).fail(function (jqxhr, textStatus, error) {
                 var message = 'レポート作成を開始できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {

@@ -86,7 +86,7 @@ accountTitleSetRouter.all<any>(
                     const accountTitleSet = await createFromBody(req, true);
                     await accountTitleService.createAccounTitleSet(accountTitleSet);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles/accountTitleSet/${accountTitleSet.codeValue}`);
+                    res.redirect(`/projects/${req.project.id}/accountTitles/accountTitleSet/${accountTitleSet.codeValue}`);
 
                     return;
                 } catch (error) {
