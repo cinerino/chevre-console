@@ -23,6 +23,10 @@
 
             <div class="content">
                 <div class="container-fluid">
+                    <script>
+                        var PROJECT_ID = '<%= req.project.id %>';
+                    </script>
+                    <input type="hidden" name="PROJECT_ID" value="<%= req.project.id %>">
                     <%- body %>
                 </div>
             </div>

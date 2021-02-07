@@ -39,7 +39,7 @@ projectsRouter.get<ParamsDictionary>(
                 name: (typeof project.name === 'string') ? project.name : project.name?.ja
             });
 
-            res.redirect('/home');
+            res.redirect(`/projects/${project.id}/home`);
         } catch (err) {
             next(err);
         }

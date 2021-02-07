@@ -41,7 +41,7 @@ projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, 
             logo: project.logo,
             name: (typeof project.name === 'string') ? project.name : (_a = project.name) === null || _a === void 0 ? void 0 : _a.ja
         });
-        res.redirect('/home');
+        res.redirect(`/projects/${project.id}/home`);
     }
     catch (err) {
         next(err);

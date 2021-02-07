@@ -107,7 +107,7 @@ dashboardRouter.get(
                 throw error;
             }
 
-            res.redirect('/home');
+            res.redirect(`/projects/${project.id}/home`);
         } catch (error) {
             next(error);
         }
