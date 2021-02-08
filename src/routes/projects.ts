@@ -14,7 +14,7 @@ const projectsRouter = Router();
  */
 // tslint:disable-next-line:use-default-type-parameter
 projectsRouter.get<ParamsDictionary>(
-    '/initialize',
+    '/:id/initialize',
     async (req, res, next) => {
         try {
             // プロジェクト作成
@@ -22,7 +22,7 @@ projectsRouter.get<ParamsDictionary>(
                 endpoint: <string>process.env.CINERINO_API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const project = await projectService.findById({ id: req.project.id });
+            const project = await projectService.findById({ id: req.params.id });
 
             const chevreProjectService = new chevre.service.Project({
                 endpoint: <string>process.env.API_ENDPOINT,

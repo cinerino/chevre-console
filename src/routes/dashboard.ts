@@ -99,7 +99,7 @@ dashboardRouter.get(
             } catch (error) {
                 // プロジェクト未作成であれば初期化プロセスへ
                 if (error.code === NOT_FOUND) {
-                    res.redirect('/projects/initialize');
+                    res.redirect(`/projects/${project.id}/initialize`);
 
                     return;
                 }

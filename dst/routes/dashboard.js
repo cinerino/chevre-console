@@ -84,7 +84,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
         catch (error) {
             // プロジェクト未作成であれば初期化プロセスへ
             if (error.code === http_status_1.NOT_FOUND) {
-                res.redirect('/projects/initialize');
+                res.redirect(`/projects/${project.id}/initialize`);
                 return;
             }
             throw error;

@@ -20,7 +20,7 @@ const projectsRouter = express_1.Router();
  * プロジェクト初期化
  */
 // tslint:disable-next-line:use-default-type-parameter
-projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+projectsRouter.get('/:id/initialize', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         // プロジェクト作成
@@ -28,7 +28,7 @@ projectsRouter.get('/initialize', (req, res, next) => __awaiter(void 0, void 0, 
             endpoint: process.env.CINERINO_API_ENDPOINT,
             auth: req.user.authClient
         });
-        const project = yield projectService.findById({ id: req.project.id });
+        const project = yield projectService.findById({ id: req.params.id });
         const chevreProjectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
