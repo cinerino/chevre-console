@@ -6,11 +6,12 @@ var creatingSchedules = false;
 var scheduler;
 var ITEMS_ON_PAGE;
 var conditions = {};
-var SEARCH_URL = '/projects/' + PROJECT_ID + '/events/screeningEvent/search';
+var SEARCH_URL;
 
 var locationSelection;
 
 $(function () {
+    SEARCH_URL = '/projects/' + PROJECT_ID + '/events/screeningEvent/search';
     locationSelection = $('#screen');
     ITEMS_ON_PAGE = Number($('input[name="limit"]').val());
 
