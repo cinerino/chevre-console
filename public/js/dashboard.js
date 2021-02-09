@@ -16,16 +16,16 @@ $(function () {
         // line.redraw()
     })
 
-    updateCharts();
+    updateBodies();
     setInterval(
         function () {
-            updateCharts();
+            updateBodies();
         },
         60000
     );
 });
 
-function updateCharts() {
+function updateBodies() {
     searchProjects(function () {
     });
 }
