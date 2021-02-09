@@ -21,38 +21,49 @@ const dashboardRouter = express_1.Router();
  * ダッシュボード
  */
 dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (req.query.next !== undefined) {
-        next(new Error(req.param('next')));
-        return;
+    try {
+        if (req.query.next !== undefined) {
+            next(new Error(req.param('next')));
+            return;
+        }
+        if (typeof process.env.PROJECT_ID === 'string') {
+            res.redirect(`/dashboard/projects/${process.env.PROJECT_ID}/select`);
+            return;
+        }
+        // 管理プロジェクト検索
+        const projectService = new cinerinoapi.service.Project({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const { data } = yield projectService.search({});
+        // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
+        if (data.length === 1) {
+            res.redirect(`/dashboard/projects/${data[0].id}/select`);
+            return;
+        }
+        res.render('dashboard', { layout: 'layouts/dashboard' });
     }
-    if (typeof process.env.PROJECT_ID === 'string') {
-        res.redirect(`/dashboard/projects/${process.env.PROJECT_ID}/select`);
-        return;
+    catch (error) {
+        next(error);
     }
-    // 管理プロジェクト検索
-    const projectService = new cinerinoapi.service.Project({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const { data } = yield projectService.search({});
-    // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
-    if (data.length === 1) {
-        res.redirect(`/dashboard/projects/${data[0].id}/select`);
-        return;
-    }
-    res.render('dashboard', { layout: 'layouts/dashboard' });
 }));
 /**
  * プロジェクト検索
  */
 dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    // 管理プロジェクト検索
-    const projectService = new cinerinoapi.service.Project({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    const searchProjectsResult = yield projectService.search({});
-    res.json(searchProjectsResult);
+    try {
+        // 管理プロジェクト検索
+        const projectService = new cinerinoapi.service.Project({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchProjectsResult = yield projectService.search({});
+        res.json(searchProjectsResult);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .send(error.message);
+    }
 }));
 /**
  * プロジェクト選択

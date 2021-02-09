@@ -38,7 +38,7 @@ function searchProjects(cb) {
             page: 1,
         }
     ).done(function (data) {
-        console.log(data);
+        console.log('プロジェクトが見つかりました', data);
         $('.projects tbody').empty();
 
         $.each(data.data, function (_, project) {
@@ -49,9 +49,11 @@ function searchProjects(cb) {
 
         cb();
     }).fail(function (jqXHR, textStatus, error) {
-        console.error('プロジェクトを検索できませんでした', jqXHR);
+        console.error('プロジェクトを検索できませんでした', jqXHR, textStatus);
+        $('.projects tbody').empty();
+
         $('<p>').addClass('display-4 text-danger')
-            .text(textStatus)
+            .text(jqXHR.responseText)
             .appendTo('.projects tbody');
     });
 }
