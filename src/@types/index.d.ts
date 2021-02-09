@@ -1,10 +1,9 @@
 /**
- * middlewares/authenticationにて、expressのrequestオブジェクトにAPIユーザー情報を追加している。
- * ユーザーの型をここで定義しています。
+ * アプリケーション特有の型
  */
 import * as cinerino from '@cinerino/sdk';
 // import * as express from 'express';
-import { ISubscription } from '../factory/subscription';
+// import { ISubscription } from '../factory/subscription';
 
 import User from '../user';
 declare global {
@@ -13,7 +12,7 @@ declare global {
         export interface Request {
             user: User;
             project: cinerino.factory.project.IProject;
-            subscription?: ISubscription;
+            // subscription?: ISubscription;
         }
     }
 }

@@ -14,27 +14,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const cinerino = require("@cinerino/sdk");
 const express = require("express");
+// import { ISubscription } from '../factory/subscription';
 // tslint:disable-next-line:no-require-imports no-var-requires
-const subscriptions = require('../../subscriptions.json');
+// const subscriptions: ISubscription[] = require('../../subscriptions.json');
 const setProject = express.Router();
-setProject.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
-    if (typeof ((_a = req.session.project) === null || _a === void 0 ? void 0 : _a.id) === 'string') {
-        req.project = req.session.project;
-        let subscriptionIdentifier = req.session.subscriptionIdentifier;
-        if (typeof subscriptionIdentifier !== 'string') {
-            subscriptionIdentifier = 'Free';
-        }
-        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
-        req.subscription = subscription;
-    }
-    else {
-        res.redirect('/');
-        return;
-    }
-    next();
-}));
+// setProject.use(async (req, res, next) => {
+//     // セッションにプロジェクトIDがあればリクエストプロジェクトに設定
+//     if (typeof (<any>req.session).project?.id === 'string') {
+//         req.project = (<any>req.session).project;
+//         let subscriptionIdentifier = (<any>req.session).subscriptionIdentifier;
+//         if (typeof subscriptionIdentifier !== 'string') {
+//             subscriptionIdentifier = 'Free';
+//         }
+//         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+//         req.subscription = subscription;
+//     } else {
+//         res.redirect('/');
+//         return;
+//     }
+//     next();
+// });
 // プロジェクト指定ルーティング配下については、すべてreq.projectを上書き
 setProject.use('/projects/:id', (req, _, next) => __awaiter(void 0, void 0, void 0, function* () {
     req.project = { typeOf: cinerino.factory.chevre.organizationType.Project, id: req.params.id };

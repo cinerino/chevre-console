@@ -69,10 +69,9 @@ dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 
  * プロジェクト選択
  */
 dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
     try {
         const projectId = req.params.id;
-        req.session.projectId = projectId;
+        // (<any>req.session).projectId = projectId;
         // サブスクリプション決定
         const projectService = new cinerinoapi.service.Project({
             endpoint: process.env.CINERINO_API_ENDPOINT,
@@ -85,12 +84,12 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient
             });
-            const chevreProject = yield chevreProjectService.findById({ id: project.id });
-            let subscriptionIdentifier = (_a = chevreProject.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
-            if (subscriptionIdentifier === undefined) {
-                subscriptionIdentifier = 'Free';
-            }
-            req.session.subscriptionIdentifier = subscriptionIdentifier;
+            yield chevreProjectService.findById({ id: project.id });
+            // let subscriptionIdentifier = chevreProject.subscription?.identifier;
+            // if (subscriptionIdentifier === undefined) {
+            //     subscriptionIdentifier = 'Free';
+            // }
+            // (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
         }
         catch (error) {
             // プロジェクト未作成であれば初期化プロセスへ

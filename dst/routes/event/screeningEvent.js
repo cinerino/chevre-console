@@ -19,6 +19,8 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const productType_1 = require("../../factory/productType");
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions = require('../../../subscriptions.json');
 const DEFAULT_OFFERS_VALID_AFTER_START_IN_MINUTES = -20;
 var DateTimeSettingType;
 (function (DateTimeSettingType) {
@@ -40,6 +42,17 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // サブスクリプション決定
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_a = chevreProject.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             limit: 1,
             project: { ids: [req.project.id] }
@@ -50,7 +63,8 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
         res.render('events/screeningEvent/index', {
             defaultMovieTheater: searchMovieTheatersResult.data[0],
             moment: moment,
-            useAdvancedScheduling: (_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.useAdvancedScheduling
+            subscription,
+            useAdvancedScheduling: subscription === null || subscription === void 0 ? void 0 : subscription.settings.useAdvancedScheduling
         });
     }
     catch (err) {
@@ -446,7 +460,7 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
  */
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createEventFromBody(req) {
-    var _a, _b, _c;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const user = req.user;
         const eventService = new chevre.service.Event({
@@ -469,6 +483,17 @@ function createEventFromBody(req) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // サブスクリプション決定
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_a = chevreProject.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
         });
@@ -486,7 +511,7 @@ function createEventFromBody(req) {
             throw new Error('Offer Catalog ID undefined');
         }
         let serviceType;
-        const offerCatagoryServiceTypeCode = (_a = catalog.itemOffered.serviceType) === null || _a === void 0 ? void 0 : _a.codeValue;
+        const offerCatagoryServiceTypeCode = (_b = catalog.itemOffered.serviceType) === null || _b === void 0 ? void 0 : _b.codeValue;
         if (typeof offerCatagoryServiceTypeCode === 'string') {
             const searchServiceTypesResult = yield categoryCodeService.search({
                 limit: 1,
@@ -595,7 +620,7 @@ function createEventFromBody(req) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
-        if (((_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.allowNoCapacity) !== true) {
+        if ((subscription === null || subscription === void 0 ? void 0 : subscription.settings.allowNoCapacity) !== true) {
             if (typeof maximumAttendeeCapacity !== 'number') {
                 throw new Error('キャパシティを入力してください');
             }
@@ -604,7 +629,7 @@ function createEventFromBody(req) {
             if (maximumAttendeeCapacity < 0) {
                 throw new Error('キャパシティには正の値を入力してください');
             }
-            const maximumAttendeeCapacitySetting = (_c = req.subscription) === null || _c === void 0 ? void 0 : _c.settings.maximumAttendeeCapacity;
+            const maximumAttendeeCapacitySetting = subscription === null || subscription === void 0 ? void 0 : subscription.settings.maximumAttendeeCapacity;
             if (typeof maximumAttendeeCapacitySetting === 'number') {
                 if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
                     throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
@@ -632,7 +657,7 @@ function createEventFromBody(req) {
  */
 // tslint:disable-next-line:max-func-body-length
 function createMultipleEventFromBody(req, user) {
-    var _a, _b;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
@@ -654,6 +679,17 @@ function createMultipleEventFromBody(req, user) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        // サブスクリプション決定
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_a = chevreProject.subscription) === null || _a === void 0 ? void 0 : _a.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         const screeningEventSeries = yield eventService.findById({
             id: req.body.screeningEventId
         });
@@ -669,7 +705,7 @@ function createMultipleEventFromBody(req, user) {
         const maximumAttendeeCapacity = (typeof req.body.maximumAttendeeCapacity === 'string' && req.body.maximumAttendeeCapacity.length > 0)
             ? Number(req.body.maximumAttendeeCapacity)
             : undefined;
-        if (((_a = req.subscription) === null || _a === void 0 ? void 0 : _a.settings.allowNoCapacity) !== true) {
+        if ((subscription === null || subscription === void 0 ? void 0 : subscription.settings.allowNoCapacity) !== true) {
             if (typeof maximumAttendeeCapacity !== 'number') {
                 throw new Error('キャパシティを入力してください');
             }
@@ -678,7 +714,7 @@ function createMultipleEventFromBody(req, user) {
             if (maximumAttendeeCapacity < 0) {
                 throw new Error('キャパシティには正の値を入力してください');
             }
-            const maximumAttendeeCapacitySetting = (_b = req.subscription) === null || _b === void 0 ? void 0 : _b.settings.maximumAttendeeCapacity;
+            const maximumAttendeeCapacitySetting = subscription === null || subscription === void 0 ? void 0 : subscription.settings.maximumAttendeeCapacity;
             if (typeof maximumAttendeeCapacitySetting === 'number') {
                 if (maximumAttendeeCapacity > maximumAttendeeCapacitySetting) {
                     throw new Error(`キャパシティの最大値は${maximumAttendeeCapacitySetting}です`);
