@@ -49,7 +49,7 @@ function searchProjects(cb) {
 
         cb();
     }).fail(function (jqXHR, textStatus, error) {
-        console.error('プロジェクトを検索できませんでした', jqXHR, textStatus);
+        console.error('プロジェクトを検索できませんでした', jqXHR);
         $('.projects tbody').empty();
 
         $('<p>').addClass('display-4 text-danger')
