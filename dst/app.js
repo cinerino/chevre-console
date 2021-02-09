@@ -28,6 +28,7 @@ app.use(helmet());
 app.use(session_1.default); // セッション
 app.use(flash());
 app.use(locals_1.default); // テンプレート変数
+app.set('etag', 'strong');
 // view engine setup
 app.set('views', `${__dirname}/../views`);
 app.set('view engine', 'ejs');
