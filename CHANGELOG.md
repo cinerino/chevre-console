@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - プロジェクト指定ルーティング配下では、リクエストプロジェクトをURLから決定するように調整
 - 全リソースについて、リクエスト指定ルーティングを使用するように変更
 - enables strong ETag
+- PROJECT_ID設定を削除
 
 ### Deprecated
 

@@ -226,7 +226,7 @@ function updateErrorReporting(cb) {
             orderDateThrough: moment().toISOString()
         }
     ).done(function (data) {
-        $('.errorReporting .table,.card-category').empty();
+        $('.errorReporting .table, errorReporting .card-category').empty();
 
         if (data.data.length === 0) {
             $('.errorReporting .card-category').text('過去24時間以内に発生したエラーはありません');

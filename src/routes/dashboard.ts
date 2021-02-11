@@ -15,17 +15,11 @@ dashboardRouter.get(
     '',
     async (req, res, next) => {
         try {
-            if (req.query.next !== undefined) {
-                next(new Error(req.param('next')));
+            // if (req.query.next !== undefined) {
+            //     next(new Error(req.param('next')));
 
-                return;
-            }
-
-            if (typeof process.env.PROJECT_ID === 'string') {
-                res.redirect(`/dashboard/projects/${process.env.PROJECT_ID}/select`);
-
-                return;
-            }
+            //     return;
+            // }
 
             // 管理プロジェクト検索
             const projectService = new cinerinoapi.service.Project({
@@ -33,7 +27,7 @@ dashboardRouter.get(
                 auth: req.user.authClient
             });
 
-            const { data } = await projectService.search({});
+            const { data } = await projectService.search({ limit: 2 });
 
             // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
             if (data.length === 1) {
@@ -83,32 +77,17 @@ dashboardRouter.get(
     async (req, res, next) => {
         try {
             const projectId = req.params.id;
-            // (<any>req.session).projectId = projectId;
-
-            // サブスクリプション決定
-            const projectService = new cinerinoapi.service.Project({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient
-            });
-            const project = await projectService.findById({ id: projectId });
-            (<any>req.session).project = project;
 
             try {
                 const chevreProjectService = new chevre.service.Project({
                     endpoint: <string>process.env.API_ENDPOINT,
                     auth: req.user.authClient
                 });
-                await chevreProjectService.findById({ id: project.id });
-
-                // let subscriptionIdentifier = chevreProject.subscription?.identifier;
-                // if (subscriptionIdentifier === undefined) {
-                //     subscriptionIdentifier = 'Free';
-                // }
-                // (<any>req.session).subscriptionIdentifier = subscriptionIdentifier;
+                await chevreProjectService.findById({ id: projectId });
             } catch (error) {
                 // プロジェクト未作成であれば初期化プロセスへ
                 if (error.code === NOT_FOUND) {
-                    res.redirect(`/projects/${project.id}/initialize`);
+                    res.redirect(`/projects/${projectId}/initialize`);
 
                     return;
                 }
@@ -116,7 +95,7 @@ dashboardRouter.get(
                 throw error;
             }
 
-            res.redirect(`/projects/${project.id}/home`);
+            res.redirect(`/projects/${projectId}/home`);
         } catch (error) {
             next(error);
         }
