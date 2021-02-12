@@ -33,7 +33,7 @@ $(function () {
     //--------------------------------
     function search(pageNumber) {
         conditions['page'] = pageNumber;
-        var url = '/offerCatalogs/getlist';
+        var url = '/projects/' + PROJECT_ID + '/offerCatalogs/getlist';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -73,7 +73,7 @@ $(function () {
     function list(id) {
         $.ajax({
             dataType: 'json',
-            url: '/offerCatalogs/' + id + '/offers',
+            url: '/projects/' + PROJECT_ID + '/offerCatalogs/' + id + '/offers',
             cache: false,
             type: 'GET',
             // data: conditions,
@@ -100,9 +100,9 @@ $(function () {
                         ]);
                     var tbody = $('<tbody>')
                         .append(data.results.map(function (result) {
-                            var url = '/offers/' + result.id + '/update';
+                            var url = '/projects/' + PROJECT_ID + '/offers/' + result.id + '/update';
                             if (offerCatalog.itemOffered.typeOf === 'EventService') {
-                                url = '/ticketTypes/' + result.id + '/update';
+                                url = '/projects/' + PROJECT_ID + '/ticketTypes/' + result.id + '/update';
                             }
 
                             return $('<tr>').append([
@@ -188,7 +188,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {

@@ -34,7 +34,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -68,7 +68,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/creativeWorks/movie/getlist',
+            url: '/projects/' + PROJECT_ID + '/creativeWorks/movie/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -102,7 +102,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/events/screeningEventSeries/getlist';
+        var url = '/projects/' + PROJECT_ID + '/events/screeningEventSeries/getlist';
         $.ajax({
             dataType: 'json',
             url: url,
@@ -188,7 +188,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {

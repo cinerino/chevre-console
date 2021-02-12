@@ -6,7 +6,7 @@ $(function () {
         placeholder: '座席選択',
         allowClear: true,
         ajax: {
-            url: '/events/screeningEvent/' + eventId + '/availableSeatOffers',
+            url: '/projects/' + PROJECT_ID + '/events/screeningEvent/' + eventId + '/availableSeatOffers',
             dataType: 'json',
             data: function (params) {
                 var seatSection = $('select[name=seatSection]').val();

@@ -150,7 +150,7 @@ categoryCodesRouter.all<any>(
                     categoryCode = await categoryCodeService.create(categoryCode);
 
                     req.flash('message', '登録しました');
-                    res.redirect(`/categoryCodes/${(<any>categoryCode).id}/update`);
+                    res.redirect(`/projects/${req.project.id}/categoryCodes/${(<any>categoryCode).id}/update`);
 
                     return;
                 } catch (error) {

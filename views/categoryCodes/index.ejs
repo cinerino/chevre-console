@@ -16,7 +16,7 @@ CC-00
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/categoryCodes/new">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/categoryCodes/new">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -95,7 +95,7 @@ CC-00
                                         </div>
                                     </td>
                                     <td name="id__codeValue">
-                                        <a target="_blank" href="/categoryCodes/$id$/update">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/categoryCodes/$id$/update">
                                             $codeValue$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

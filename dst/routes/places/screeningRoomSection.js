@@ -46,7 +46,7 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
                 // }
                 yield placeService.createScreeningRoomSection(screeningRoomSection);
                 req.flash('message', '登録しました');
-                res.redirect(`/places/screeningRoomSection/${(_b = (_a = screeningRoomSection.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.branchCode}:${(_c = screeningRoomSection.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode}:${screeningRoomSection.branchCode}/update`);
+                res.redirect(`/projects/${req.project.id}/places/screeningRoomSection/${(_b = (_a = screeningRoomSection.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.branchCode}:${(_c = screeningRoomSection.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode}:${screeningRoomSection.branchCode}/update`);
                 return;
             }
             catch (error) {

@@ -118,7 +118,7 @@ accountTitlesRouter.all<any>(
 
                     await accountTitleService.create(accountTitle);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles/${accountTitle.codeValue}`);
+                    res.redirect(`/projects/${req.project.id}/accountTitles/${accountTitle.codeValue}`);
 
                     return;
                 } catch (error) {

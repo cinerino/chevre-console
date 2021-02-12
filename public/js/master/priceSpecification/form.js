@@ -35,7 +35,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -80,7 +80,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -128,7 +128,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -183,12 +183,12 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/priceSpecifications/' + priceSpecificationId,
+            url: '/projects/' + PROJECT_ID + '/priceSpecifications/' + priceSpecificationId,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/priceSpecifications';
+                location.href = '/projects/' + PROJECT_ID + '/priceSpecifications';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

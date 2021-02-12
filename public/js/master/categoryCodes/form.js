@@ -33,12 +33,12 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/categoryCodes/' + categoryCodeId,
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/' + categoryCodeId,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/categoryCodes';
+                location.href = '/projects/' + PROJECT_ID + '/categoryCodes';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

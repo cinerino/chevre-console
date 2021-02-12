@@ -8,7 +8,6 @@ export interface ISubscription {
         maximumAttendeeCapacity: number;
         useAdvancedScheduling: boolean;
         useSeats: boolean;
-        useCategoryCodes: boolean;
         useProducts: boolean;
         usePriceSpecifications: boolean;
         useAccountTitles: boolean;

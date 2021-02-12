@@ -47,7 +47,7 @@ screeningRoomRouter.all<any>(
 
                     await placeService.createScreeningRoom(screeningRoom);
                     req.flash('message', '登録しました');
-                    res.redirect(`/places/screeningRoom/${screeningRoom.containedInPlace?.branchCode}:${screeningRoom.branchCode}/update`);
+                    res.redirect(`/projects/${req.project.id}/places/screeningRoom/${screeningRoom.containedInPlace?.branchCode}:${screeningRoom.branchCode}/update`);
 
                     return;
                 } catch (error) {

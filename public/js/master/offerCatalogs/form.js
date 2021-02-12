@@ -50,12 +50,12 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/offerCatalogs/' + offerCatalogId,
+            url: '/projects/' + PROJECT_ID + '/offerCatalogs/' + offerCatalogId,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/offerCatalogs';
+                location.href = '/projects/' + PROJECT_ID + '/offerCatalogs';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';
@@ -112,7 +112,7 @@ function submit() {
 function searchOffersByPrice(price, itemOfferedType) {
     var options = {
         dataType: 'json',
-        url: '/offerCatalogs/searchOffersByPrice',
+        url: '/projects/' + PROJECT_ID + '/offerCatalogs/searchOffersByPrice',
         cache: false,
         type: 'GET',
         data: {

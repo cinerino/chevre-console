@@ -45,7 +45,7 @@ $(function () {
     function search(pageNumber) {
         conditions['limit'] = ITEMS_ON_PAGE;
         conditions['page'] = pageNumber;
-        var url = '/products/search';
+        var url = '/projects/' + PROJECT_ID + '/products/search';
 
         $.ajax({
             dataType: 'json',
@@ -90,7 +90,7 @@ function showProduct(id) {
     modal.find('a.edit')
         .off('click')
         .on('click', function () {
-            var url = '/products/' + product.id;
+            var url = '/projects/' + PROJECT_ID + '/products/' + product.id;
             window.open(url, '_blank');
         });
 
@@ -104,7 +104,7 @@ function showProduct(id) {
             .attr('aria-disabled', false)
             .off('click')
             .on('click', function () {
-                var url = '/transactions/registerService/start?product=' + product.id;
+                var url = '/projects/' + PROJECT_ID + '/transactions/registerService/start?product=' + product.id;
                 window.open(url, '_blank');
             });
     }
@@ -119,7 +119,7 @@ function showProduct(id) {
     if (product.hasOfferCatalog !== undefined) {
         details.append($('<dd>').addClass('col-md-9').append($('<a>').attr({
             target: '_blank',
-            'href': '/offerCatalogs/' + product.hasOfferCatalog.id + '/update'
+            'href': '/projects/' + PROJECT_ID + '/offerCatalogs/' + product.hasOfferCatalog.id + '/update'
         }).text(product.hasOfferCatalog.id)));
     } else {
         details.append($('<dd>').addClass('col-md-9').append($('<span>').text('')));

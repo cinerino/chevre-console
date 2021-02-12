@@ -77,7 +77,7 @@ function search(pageNumber) {
     initializeView();
 
     conditions['page'] = pageNumber;
-    var url = '/actions/search';
+    var url = '/projects/' + PROJECT_ID + '/actions/search';
     $.ajax({
         dataType: 'json',
         url: url,

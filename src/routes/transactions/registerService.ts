@@ -118,7 +118,7 @@ registerServiceTransactionsRouter.all(
                     // セッションに取引追加
                     (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`] = transaction;
 
-                    res.redirect(`/transactions/${transaction.typeOf}/${transaction.transactionNumber}/confirm`);
+                    res.redirect(`/projects/${req.project.id}/transactions/${transaction.typeOf}/${transaction.transactionNumber}/confirm`);
 
                     return;
                 } catch (error) {
@@ -214,7 +214,7 @@ registerServiceTransactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
 
                 return;
             } else {
@@ -266,7 +266,7 @@ registerServiceTransactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
 
                 return;
             }

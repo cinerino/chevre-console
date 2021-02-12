@@ -18,7 +18,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/places/movieTheater/search',
+            url: '/projects/' + PROJECT_ID + '/places/movieTheater/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -55,12 +55,12 @@ function remove(id) {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/places/screeningRoom/' + id,
+            url: '/projects/' + PROJECT_ID + '/places/screeningRoom/' + id,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/places/screeningRoom';
+                location.href = '/projects/' + PROJECT_ID + '/places/screeningRoom';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

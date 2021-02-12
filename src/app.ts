@@ -32,6 +32,8 @@ app.use(session); // セッション
 app.use(flash());
 app.use(locals); // テンプレート変数
 
+app.set('etag', 'strong');
+
 // view engine setup
 app.set('views', `${__dirname}/../views`);
 app.set('view engine', 'ejs');

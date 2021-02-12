@@ -1,7 +1,7 @@
 <div class="sidebar-wrapper">
     <ul class="nav">
         <li class="nav-item <%= (displayId === 'HO-01') ? 'active': ''; %>">
-            <a class="nav-link" href="/home">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/home">
                 <i class="material-icons">home</i>
                 <p>Home</p>
             </a>
@@ -23,37 +23,35 @@
             <div class="collapse<% if (placesShow) { %> show<% } %>" id="places">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'MT-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/places/movieTheater">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/places/movieTheater">
                             <span class="sidebar-mini"><i class="material-icons">business</i></span>
                             <span class="sidebar-normal">施設</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'SR-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/places/screeningRoom">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/places/screeningRoom">
                             <span class="sidebar-mini"><i class="material-icons">theaters</i></span>
                             <span class="sidebar-normal">ルーム</span>
                         </a>
                     </li>
 
-                    <% if (req.subscription.settings.useSeats) { %>
                     <li class="nav-item <%= (displayId === 'SRS-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/places/screeningRoomSection">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/places/screeningRoomSection">
                             <span class="sidebar-mini"><i class="material-icons">view_compact</i></span>
                             <span class="sidebar-normal">セクション</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'ST-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/places/seat">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/places/seat">
                             <span class="sidebar-mini"><i class="material-icons">event_seat</i></span>
                             <span class="sidebar-normal">座席</span>
                         </a>
                     </li>
-                    <% } %>
                 </ul>
             </div>
         </li>
         <li class="nav-item <%= (displayId === 'Aa-10') ? 'active': ''; %>">
-            <a class="nav-link" href="/creativeWorks/movie">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/creativeWorks/movie">
                 <i class="material-icons">movie</i>
                 <p>コンテンツ(作品)</p>
             </a>
@@ -75,13 +73,13 @@
             <div class="collapse<% if (eventsShow) { %> show<% } %>" id="events">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'Aa-3') ? 'active': ''; %>">
-                        <a class="nav-link" href="/events/screeningEventSeries">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/events/screeningEventSeries">
                             <span class="sidebar-mini"><i class="icon far fa-calendar"></i></span>
                             <span class="sidebar-normal">施設コンテンツ</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'Aa-4') ? 'active': ''; %>">
-                        <a class="nav-link" href="/events/screeningEvent">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/events/screeningEvent">
                             <span class="sidebar-mini"><i class="icon far fa-calendar-alt"></i></span>
                             <span class="sidebar-normal">スケジュール</span>
                         </a>
@@ -90,7 +88,6 @@
             </div>
         </li>
 
-        <% if (req.subscription.settings.useProducts) { %>
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#services">
                 <i class="material-icons">payment</i>
@@ -101,7 +98,7 @@
             <div class="collapse" id="services">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
-                        <a class="nav-link" href="/products?typeOf=Product">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/products?typeOf=Product">
                             <span class="sidebar-mini"><i class="icon fas fa-glasses"></i></span>
                             <span class="sidebar-normal">アドオン</span>
                         </a>
@@ -109,7 +106,6 @@
                 </ul>
             </div>
         </li>
-        <% } %>
 
         <%
         let offersShow = false;
@@ -127,13 +123,13 @@
             <div class="collapse<% if (offersShow) { %> show<% } %>" id="offers">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'OF-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/offers">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/offers">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
                             <span class="sidebar-normal">単価オファー</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'OC-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/offerCatalogs">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/offerCatalogs">
                             <span class="sidebar-mini"><i class="material-icons">local_offer</i></span>
                             <span class="sidebar-normal">カタログ(券種グループ)</span>
                         </a>
@@ -142,14 +138,12 @@
             </div>
         </li>
 
-        <% if (req.subscription.settings.usePriceSpecifications) { %>
         <li class="nav-item <%= (displayId === 'PS-02') ? 'active': ''; %>">
-            <a class="nav-link" href="/priceSpecifications">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/priceSpecifications">
                 <i class="material-icons">attach_money</i>
                 <p>価格仕様<span class="badge badge-secondary ml-2">Preview</span></p>
             </a>
         </li>
-        <% } %>
 
         <%
         let offersCategoryCodes = false;
@@ -157,15 +151,13 @@
             offersCategoryCodes = true;
         }
         %>
-        <% if (req.subscription.settings.useCategoryCodes) { %>
         <li class="nav-item <%= (offersCategoryCodes) ? 'active': ''; %>">
-            <a class="nav-link" href="/categoryCodes">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/categoryCodes">
                 <i class="material-icons">category</i>
                 <p>区分</b>
                 </p>
             </a>
         </li>
-        <% } %>
 
         <%
         let offersAccountTitles = false;
@@ -173,7 +165,6 @@
             offersAccountTitles = true;
         }
         %>
-        <% if (req.subscription.settings.useAccountTitles) { %>
         <li class="nav-item <% if (offersAccountTitles) { %>active<% } %>">
             <a class="nav-link" data-toggle="collapse" href="#accountTitles">
                 <i class="material-icons">account_balance</i>
@@ -184,19 +175,19 @@
             <div class="collapse <% if (offersAccountTitles) { %>show<% } %>" id="accountTitles">
                 <ul class="nav">
                     <li class="nav-item <%= (displayId === 'AT-07') ? 'active': ''; %>">
-                        <a class="nav-link" href="/accountTitles/accountTitleCategory">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/accountTitles/accountTitleCategory">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">科目分類</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'AT-04') ? 'active': ''; %>">
-                        <a class="nav-link" href="/accountTitles/accountTitleSet">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/accountTitles/accountTitleSet">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">科目</span>
                         </a>
                     </li>
                     <li class="nav-item <%= (displayId === 'AT-01') ? 'active': ''; %>">
-                        <a class="nav-link" href="/accountTitles">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/accountTitles">
                             <span class="sidebar-mini"><i class="material-icons">account_balance</i></span>
                             <span class="sidebar-normal">細目</span>
                         </a>
@@ -204,7 +195,6 @@
                 </ul>
             </div>
         </li>
-        <% } %>
 
         <%
         let sellersActive = false;
@@ -213,7 +203,7 @@
         }
         %>
         <li class="nav-item <%= (sellersActive) ? 'active': ''; %>">
-            <a class="nav-link" href="/sellers">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/sellers">
                 <i class="material-icons">business</i>
                 <p>販売者</b>
                 </p>
@@ -221,7 +211,7 @@
         </li>
 
         <li class="nav-item <%= (displayId === 'Aa-11') ? 'active': ''; %>">
-            <a class="nav-link" href="/reservations">
+            <a class="nav-link" href="/projects/<%= req.project.id %>/reservations">
                 <i class="material-icons">event_seat</i>
                 <p>予約</p>
             </a>

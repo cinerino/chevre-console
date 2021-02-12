@@ -16,7 +16,7 @@ Aa-3
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
-            <a class="btn btn-primary" href="/events/screeningEventSeries/add">
+            <a class="btn btn-primary" href="/projects/<%= req.project.id %>/events/screeningEventSeries/add">
                 <i class="material-icons">add</i> 登録</a>
             <a class="btn btn-primary search btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
@@ -103,19 +103,19 @@ Aa-3
                             <tbody>
                                 <tr id="templateRow" eventId="$id$">
                                     <td name="id__id">
-                                        <a target="_blank" href="/events/screeningEventSeries/$id$/update">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/events/screeningEventSeries/$id$/update">
                                             $id$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>
                                     </td>
                                     <td name="location.id__location.name.ja|slice">
                                         <a target="_blank"
-                                            href="/places/movieTheater/$location.id$/update">$location.name.ja$
+                                            href="/projects/<%= req.project.id %>/places/movieTheater/$location.id$/update">$location.name.ja$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
                                     <td name="workPerformed.id__workPerformed.identifier__workPerformed.name|slice">
                                         <a target="_blank"
-                                            href="/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
+                                            href="/projects/<%= req.project.id %>/creativeWorks/movie/$workPerformed.id$/update">$workPerformed.name$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
                                     <td name="name.ja|slice">
@@ -133,7 +133,7 @@ Aa-3
                                         </a>
                                     </td>
                                     <td name="id">
-                                        <a target="_blank" href="/events/screeningEventSeries/$id$/update">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/events/screeningEventSeries/$id$/update">
                                             <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>

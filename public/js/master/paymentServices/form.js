@@ -14,11 +14,11 @@ $(function () {
         if (window.confirm('元には戻せません。本当に削除しますか？')) {
             $.ajax({
                 dataType: 'json',
-                url: '/paymentServices/' + productId,
+                url: '/projects/' + PROJECT_ID + '/paymentServices/' + productId,
                 type: 'DELETE'
             }).done(function () {
                 alert('削除しました');
-                location.href = '/paymentServices';
+                location.href = '/projects/' + PROJECT_ID + '/paymentServices';
             }).fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {
@@ -48,7 +48,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/sellers/getlist',
+            url: '/projects/' + PROJECT_ID + '/sellers/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {

@@ -49,7 +49,7 @@ paymentServicesRouter.all('/new', ...validate(),
                 }
                 product = (yield productService.create(product));
                 req.flash('message', '登録しました');
-                res.redirect(`/paymentServices/${product.id}`);
+                res.redirect(`/projects/${req.project.id}/paymentServices/${product.id}`);
                 return;
             }
             catch (error) {

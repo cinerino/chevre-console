@@ -155,7 +155,7 @@ priceSpecificationsRouter.all('/new', ...validate(),
                 });
                 priceSpecification = yield priceSpecificationService.create(priceSpecification);
                 req.flash('message', '登録しました');
-                res.redirect(`/priceSpecifications/${priceSpecification.id}/update`);
+                res.redirect(`/projects/${req.project.id}/priceSpecifications/${priceSpecification.id}/update`);
                 return;
             }
             catch (error) {

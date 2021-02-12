@@ -67,7 +67,7 @@ movieRouter.all<any>(
                     debug('saving an movie...', movie);
                     movie = await creativeWorkService.createMovie(movie);
                     req.flash('message', '登録しました');
-                    res.redirect(`/creativeWorks/movie/${movie.id}/update`);
+                    res.redirect(`/projects/${req.project.id}/creativeWorks/movie/${movie.id}/update`);
 
                     return;
                 } catch (error) {

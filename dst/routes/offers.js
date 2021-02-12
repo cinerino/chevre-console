@@ -37,7 +37,7 @@ offersRouter.all('/add', ...validate(),
     let errors = {};
     const itemOfferedTypeOf = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
     if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
-        res.redirect(`/ticketTypes/add`);
+        res.redirect(`/projects/${req.project.id}/ticketTypes/add`);
         return;
     }
     const offerService = new chevre.service.Offer({
@@ -78,7 +78,7 @@ offersRouter.all('/add', ...validate(),
                 }
                 offer = yield offerService.create(offer);
                 req.flash('message', '登録しました');
-                res.redirect(`/offers/${offer.id}/update`);
+                res.redirect(`/projects/${req.project.id}/offers/${offer.id}/update`);
                 return;
             }
             catch (error) {
@@ -137,7 +137,7 @@ offersRouter.all('/:id/update', ...validate(),
     let errors = {};
     const itemOfferedTypeOf = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf;
     if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
-        res.redirect(`/ticketTypes/${req.params.id}/update`);
+        res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
         return;
     }
     const offerService = new chevre.service.Offer({
@@ -163,7 +163,7 @@ offersRouter.all('/:id/update', ...validate(),
     try {
         let offer = yield offerService.findById({ id: req.params.id });
         if (((_c = offer.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
-            res.redirect(`/ticketTypes/${req.params.id}/update`);
+            res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
             return;
         }
         if (req.method === 'POST') {

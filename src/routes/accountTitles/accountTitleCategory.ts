@@ -81,7 +81,7 @@ accountTitleCategoryRouter.all<any>(
                     });
                     await accountTitleService.createAccounTitleCategory(accountTitleCategory);
                     req.flash('message', '登録しました');
-                    res.redirect(`/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
+                    res.redirect(`/projects/${req.project.id}/accountTitles/accountTitleCategory/${accountTitleCategory.codeValue}`);
 
                     return;
                 } catch (error) {

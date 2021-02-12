@@ -163,7 +163,7 @@ Aa-4
                                     <td name="eventStatus">$eventStatus$</td>
                                     <td name="superEvent.id__superEvent.name.ja|slice">
                                         <a target="_blank"
-                                            href="/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$
+                                            href="/projects/<%= req.project.id %>/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i></a>
                                     </td>
                                     <td name="superEvent.location.name.ja|slice">
@@ -192,7 +192,7 @@ Aa-4
                                             title="集計日時:$aggregateReservation.aggregateDate$">$aggregateReservation.attendeeCount$</a>
                                     </td>
                                     <td name="hasOfferCatalog.id__hasOfferCatalog.id">
-                                        <a href="/offerCatalogs/$hasOfferCatalog.id$/update" target="_blank">
+                                        <a href="/projects/<%= req.project.id %>/offerCatalogs/$hasOfferCatalog.id$/update" target="_blank">
                                             $hasOfferCatalog.id$
                                             <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
                                         </a>

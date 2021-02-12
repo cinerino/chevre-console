@@ -42,7 +42,7 @@ sellersRouter.all<any>(
 
                     seller = await sellerService.create(seller);
                     req.flash('message', '登録しました');
-                    res.redirect(`/sellers/${seller.id}/update`);
+                    res.redirect(`/projects/${req.project.id}/sellers/${seller.id}/update`);
 
                     return;
                 } catch (error) {

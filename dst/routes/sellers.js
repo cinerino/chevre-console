@@ -40,7 +40,7 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
                 let seller = yield createFromBody(req, true);
                 seller = yield sellerService.create(seller);
                 req.flash('message', '登録しました');
-                res.redirect(`/sellers/${seller.id}/update`);
+                res.redirect(`/projects/${req.project.id}/sellers/${seller.id}/update`);
                 return;
             }
             catch (error) {

@@ -22,7 +22,7 @@ $(function () {
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/accountTitles/accountTitleCategory',
+            url: '/projects/' + PROJECT_ID + '/accountTitles/accountTitleCategory',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -60,12 +60,12 @@ function remove() {
     if (window.confirm('元には戻せません。本当に削除しますか？')) {
         $.ajax({
             dataType: 'json',
-            url: '/accountTitles/accountTitleSet/' + codeValue,
+            url: '/projects/' + PROJECT_ID + '/accountTitles/accountTitleSet/' + codeValue,
             type: 'DELETE'
         })
             .done(function () {
                 alert('削除しました');
-                location.href = '/accountTitles/accountTitleSet';
+                location.href = '/projects/' + PROJECT_ID + '/accountTitles/accountTitleSet';
             })
             .fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';

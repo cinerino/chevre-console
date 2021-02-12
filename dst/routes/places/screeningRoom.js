@@ -45,7 +45,7 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
                 // }
                 yield placeService.createScreeningRoom(screeningRoom);
                 req.flash('message', '登録しました');
-                res.redirect(`/places/screeningRoom/${(_a = screeningRoom.containedInPlace) === null || _a === void 0 ? void 0 : _a.branchCode}:${screeningRoom.branchCode}/update`);
+                res.redirect(`/projects/${req.project.id}/places/screeningRoom/${(_a = screeningRoom.containedInPlace) === null || _a === void 0 ? void 0 : _a.branchCode}:${screeningRoom.branchCode}/update`);
                 return;
             }
             catch (error) {
