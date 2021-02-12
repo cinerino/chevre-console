@@ -10,12 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- update @chevre/api-nodejs-client
-- プロジェクト指定ルーティング配下では、リクエストプロジェクトをURLから決定するように調整
-- 全リソースについて、リクエスト指定ルーティングを使用するように変更
-- enables strong ETag
-- PROJECT_ID設定を削除
-
 ### Deprecated
 
 ### Removed
@@ -23,6 +17,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.22.0 - 2021-02-12
+
+### Changed
+
+- update @chevre/api-nodejs-client
+- プロジェクト指定ルーティング配下では、リクエストプロジェクトをURLから決定するように調整
+- 全リソースについて、リクエスト指定ルーティングを使用するように変更
+- enables strong ETag
+- PROJECT_ID設定を削除
 
 ## v2.21.1 - 2021-01-05
 
