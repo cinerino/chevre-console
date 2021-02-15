@@ -46,7 +46,7 @@ app.set('layout', 'layouts/layout');
 // tslint:disable-next-line:no-require-imports no-var-requires
 const packageInfo = require('../package.json');
 app.use((__, res, next) => {
-    // res.setHeader('X-API-Version', <string>packageInfo.version);
+    res.setHeader('x-api-version', <string>packageInfo.version);
     res.locals.version = <string>packageInfo.version;
     next();
 });

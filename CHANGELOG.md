@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.22.1 - 2021-02-15
+
+### Added
+
+- ヘルスチェックルーターを追加
+
 ## v2.22.0 - 2021-02-12
 
 ### Changed
