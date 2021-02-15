@@ -8,10 +8,12 @@ const authentication_1 = require("../middlewares/authentication");
 const setProject_1 = require("../middlewares/setProject");
 const auth_1 = require("./auth");
 const dashboard_1 = require("./dashboard");
+const health_1 = require("./health");
 const projects_1 = require("./projects");
 const detail_1 = require("./projects/detail");
 const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
 const router = express.Router();
+router.use('/health', health_1.default);
 router.use(auth_1.default);
 router.use(authentication_1.default);
 // ダッシュボード

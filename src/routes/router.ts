@@ -8,12 +8,15 @@ import setProject from '../middlewares/setProject';
 
 import authRouter from './auth';
 import dashboardRouter from './dashboard';
+import healthRouter from './health';
 import projectsRouter from './projects';
 import projectDetailRouter from './projects/detail';
 
 const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
 
 const router = express.Router();
+
+router.use('/health', healthRouter);
 
 router.use(authRouter);
 router.use(authentication);
