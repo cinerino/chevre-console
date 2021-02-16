@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.22.2 - 2021-02-16
+
+### Changed
+
+- jsファイル構成変更
+
 ## v2.22.1 - 2021-02-15
 
 ### Added
