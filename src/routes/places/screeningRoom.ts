@@ -7,7 +7,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { NO_CONTENT } from 'http-status';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
@@ -253,25 +253,70 @@ screeningRoomRouter.all<ParamsDictionary>(
 screeningRoomRouter.delete<ParamsDictionary>(
     '/:id',
     async (req, res) => {
-        const splittedId = req.params.id.split(':');
-        const movieTheaterBranchCode = splittedId[0];
-        const screeningRoomBranchCode = splittedId[1];
+        try {
+            const splittedId = req.params.id.split(':');
+            const movieTheaterBranchCode = splittedId[0];
+            const screeningRoomBranchCode = splittedId[1];
 
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
+            const placeService = new chevre.service.Place({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
 
-        await placeService.deleteScreeningRoom({
-            project: { id: req.project.id },
-            branchCode: screeningRoomBranchCode,
-            containedInPlace: { branchCode: movieTheaterBranchCode }
-        });
+            const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                branchCode: { $eq: screeningRoomBranchCode },
+                containedInPlace: {
+                    branchCode: { $eq: movieTheaterBranchCode }
+                }
+            });
+            const screeningRoom = searchScreeningRoomsResult.data[0];
+            if (screeningRoom === undefined) {
+                throw new Error('Screening Room Not Found');
+            }
+            await preDelete(req, screeningRoom);
 
-        res.status(NO_CONTENT)
-            .end();
+            await placeService.deleteScreeningRoom({
+                project: { id: req.project.id },
+                branchCode: screeningRoomBranchCode,
+                containedInPlace: { branchCode: movieTheaterBranchCode }
+            });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
     }
 );
+
+async function preDelete(req: Request, screeningRoom: chevre.factory.place.screeningRoom.IPlace) {
+    // スケジュールが存在するかどうか
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        eventStatuses: [
+            chevre.factory.eventStatusType.EventPostponed,
+            chevre.factory.eventStatusType.EventRescheduled,
+            chevre.factory.eventStatusType.EventScheduled
+        ],
+        location: { branchCode: { $eq: screeningRoom.branchCode } },
+        superEvent: {
+            location: { id: { $eq: screeningRoom.containedInPlace?.id } }
+        }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連するスケジュールが存在します');
+    }
+}
 
 function createFromBody(req: Request, isNew: boolean): chevre.factory.place.screeningRoom.IPlace {
     let openSeatingAllowed: boolean | undefined;

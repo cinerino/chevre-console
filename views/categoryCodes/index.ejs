@@ -33,12 +33,8 @@ CC-00
                                     <label for="inCodeSet[identifier]" class="bmd-label-static">
                                         分類
                                     </label>
-                                    <select class="form-control" name="inCodeSet[identifier]">
-                                        <option value="">---</option>
-                                        <% categoryCodeSets.forEach((categoryCodeSet) => { %>
-                                        <option value="<%= categoryCodeSet.identifier %>"><%= categoryCodeSet.name %>
-                                        </option>
-                                        <% }) %>
+                                    <select class="form-control" name="inCodeSet[identifier]" id="inCodeSet[identifier]"
+                                        style="width: 100%;">
                                     </select>
                                 </div>
 

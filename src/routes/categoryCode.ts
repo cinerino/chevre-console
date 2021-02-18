@@ -185,6 +185,15 @@ categoryCodesRouter.all<any>(
             }
         });
 
+        if (req.method === 'POST') {
+            // レイティングを保管
+            if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+                forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+            } else {
+                forms.inCodeSet = undefined;
+            }
+        }
+
         res.render('categoryCodes/new', {
             message: message,
             errors: errors,
@@ -242,6 +251,9 @@ categoryCodesRouter.all<ParamsDictionary>(
         const forms = {
             additionalProperty: [],
             ...categoryCode,
+            ...{
+                inCodeSet: categoryCodeSets.find((s) => s.identifier === categoryCode.inCodeSet.identifier)
+            },
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -264,6 +276,15 @@ categoryCodesRouter.all<ParamsDictionary>(
                 ]
             }
         });
+
+        if (req.method === 'POST') {
+            // レイティングを保管
+            if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+                forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+            } else {
+                forms.inCodeSet = undefined;
+            }
+        }
 
         res.render('categoryCodes/update', {
             message: message,
@@ -477,13 +498,15 @@ function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factor
         ? req.body.color
         : undefined;
 
+    const inCodeSet = JSON.parse(req.body.inCodeSet);
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'CategoryCode',
         codeValue: req.body.codeValue,
         inCodeSet: {
             typeOf: 'CategoryCodeSet',
-            identifier: req.body.inCodeSet.identifier
+            identifier: inCodeSet.identifier
         },
         additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
@@ -520,7 +543,7 @@ function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factor
 
 function validate() {
     return [
-        body('inCodeSet.identifier')
+        body('inCodeSet')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '区分分類')),
 

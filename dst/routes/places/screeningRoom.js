@@ -198,21 +198,67 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
 }));
 // tslint:disable-next-line:use-default-type-parameter
 screeningRoomRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const splittedId = req.params.id.split(':');
-    const movieTheaterBranchCode = splittedId[0];
-    const screeningRoomBranchCode = splittedId[1];
-    const placeService = new chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
-    });
-    yield placeService.deleteScreeningRoom({
-        project: { id: req.project.id },
-        branchCode: screeningRoomBranchCode,
-        containedInPlace: { branchCode: movieTheaterBranchCode }
-    });
-    res.status(http_status_1.NO_CONTENT)
-        .end();
+    try {
+        const splittedId = req.params.id.split(':');
+        const movieTheaterBranchCode = splittedId[0];
+        const screeningRoomBranchCode = splittedId[1];
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            branchCode: { $eq: screeningRoomBranchCode },
+            containedInPlace: {
+                branchCode: { $eq: movieTheaterBranchCode }
+            }
+        });
+        const screeningRoom = searchScreeningRoomsResult.data[0];
+        if (screeningRoom === undefined) {
+            throw new Error('Screening Room Not Found');
+        }
+        yield preDelete(req, screeningRoom);
+        yield placeService.deleteScreeningRoom({
+            project: { id: req.project.id },
+            branchCode: screeningRoomBranchCode,
+            containedInPlace: { branchCode: movieTheaterBranchCode }
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
+    }
 }));
+function preDelete(req, screeningRoom) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        // スケジュールが存在するかどうか
+        const eventService = new chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            eventStatuses: [
+                chevre.factory.eventStatusType.EventPostponed,
+                chevre.factory.eventStatusType.EventRescheduled,
+                chevre.factory.eventStatusType.EventScheduled
+            ],
+            location: { branchCode: { $eq: screeningRoom.branchCode } },
+            superEvent: {
+                location: { id: { $eq: (_a = screeningRoom.containedInPlace) === null || _a === void 0 ? void 0 : _a.id } }
+            }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連するスケジュールが存在します');
+        }
+    });
+}
 function createFromBody(req, isNew) {
     let openSeatingAllowed;
     if (req.body.openSeatingAllowed === '1') {

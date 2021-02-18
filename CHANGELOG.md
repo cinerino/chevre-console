@@ -18,6 +18,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.23.0 - 2021-02-18
+
+### Changed
+
+- 区分分類選択肢を動的に変更
+- ルーム削除前のバリデーションを追加
+- USE_PROJECTLESS_ROUTER設定を廃止
+
 ## v2.22.2 - 2021-02-16
 
 ### Changed

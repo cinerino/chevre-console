@@ -11,7 +11,6 @@ const dashboard_1 = require("./dashboard");
 const health_1 = require("./health");
 const projects_1 = require("./projects");
 const detail_1 = require("./projects/detail");
-const USE_PROJECTLESS_ROUTER = process.env.USE_PROJECTLESS_ROUTER === '1';
 const router = express.Router();
 router.use('/health', health_1.default);
 router.use(auth_1.default);
@@ -23,8 +22,5 @@ router.use(setProject_1.default);
 // プロジェクトルーター
 router.use('/projects', projects_1.default);
 // 以下、プロジェクト指定済の状態でルーティング
-if (USE_PROJECTLESS_ROUTER) {
-    router.use('', detail_1.default);
-}
 router.use('/projects/:id', detail_1.default);
 exports.default = router;

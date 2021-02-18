@@ -154,6 +154,15 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             ]
         }
     });
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+            forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+        }
+        else {
+            forms.inCodeSet = undefined;
+        }
+    }
     res.render('categoryCodes/new', {
         message: message,
         errors: errors,
@@ -196,7 +205,9 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             }
         }
     }
-    const forms = Object.assign(Object.assign({ additionalProperty: [] }, categoryCode), req.body);
+    const forms = Object.assign(Object.assign(Object.assign({ additionalProperty: [] }, categoryCode), {
+        inCodeSet: categoryCodeSet_1.categoryCodeSets.find((s) => s.identifier === categoryCode.inCodeSet.identifier)
+    }), req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -216,6 +227,15 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             ]
         }
     });
+    if (req.method === 'POST') {
+        // レイティングを保管
+        if (typeof req.body.inCodeSet === 'string' && req.body.inCodeSet.length > 0) {
+            forms.inCodeSet = JSON.parse(req.body.inCodeSet);
+        }
+        else {
+            forms.inCodeSet = undefined;
+        }
+    }
     res.render('categoryCodes/update', {
         message: message,
         errors: errors,
@@ -416,9 +436,10 @@ function createCategoryCodeFromBody(req, isNew) {
     const color = (typeof req.body.color === 'string' && req.body.color.length > 0)
         ? req.body.color
         : undefined;
+    const inCodeSet = JSON.parse(req.body.inCodeSet);
     return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'CategoryCode', codeValue: req.body.codeValue, inCodeSet: {
             typeOf: 'CategoryCodeSet',
-            identifier: req.body.inCodeSet.identifier
+            identifier: inCodeSet.identifier
         }, additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
@@ -444,7 +465,7 @@ function createCategoryCodeFromBody(req, isNew) {
 }
 function validate() {
     return [
-        express_validator_1.body('inCodeSet.identifier')
+        express_validator_1.body('inCodeSet')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '区分分類')),
         express_validator_1.body('codeValue')
