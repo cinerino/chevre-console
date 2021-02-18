@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 区分分類選択肢を動的に変更
 - ルーム削除前のバリデーションを追加
+- USE_PROJECTLESS_ROUTER設定を廃止
 
 ### Deprecated
 
