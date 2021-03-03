@@ -302,24 +302,29 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
             .map((p: any) => {
                 const selectedSeller = JSON.parse(p.seller);
 
+                const credentials: chevre.factory.service.paymentService.IProviderCredentials = {
+                    ...(typeof p.credentials?.shopId === 'string' && p.credentials.shopId.length > 0)
+                        ? { shopId: <string>p.credentials.shopId }
+                        : undefined,
+                    ...(typeof p.credentials?.shopPass === 'string' && p.credentials.shopPass.length > 0)
+                        ? { shopPass: <string>p.credentials.shopPass }
+                        : undefined,
+                    ...(typeof p.credentials?.tokenizationCode === 'string' && p.credentials.tokenizationCode.length > 0)
+                        ? { tokenizationCode: <string>p.credentials.tokenizationCode }
+                        : undefined,
+                    ...(typeof p.credentials?.kgygishCd === 'string' && p.credentials.kgygishCd.length > 0)
+                        ? { kgygishCd: <string>p.credentials.kgygishCd }
+                        : undefined,
+                    ...(typeof p.credentials?.stCd === 'string' && p.credentials.stCd.length > 0)
+                        ? { stCd: <string>p.credentials.stCd }
+                        : undefined
+                };
+
                 return {
                     typeOf: selectedSeller.typeOf,
                     id: String(selectedSeller.id),
                     name: selectedSeller.name,
-                    credentials: {
-                        ...(typeof p.credentials?.shopId === 'string' && p.credentials.shopId.length > 0)
-                            ? { shopId: p.credentials.shopId }
-                            : undefined,
-                        ...(typeof p.credentials?.shopPass === 'string' && p.credentials.shopPass.length > 0)
-                            ? { shopPass: p.credentials.shopPass }
-                            : undefined,
-                        ...(typeof p.credentials?.kgygishCd === 'string' && p.credentials.kgygishCd.length > 0)
-                            ? { kgygishCd: p.credentials.kgygishCd }
-                            : undefined,
-                        ...(typeof p.credentials?.stCd === 'string' && p.credentials.stCd.length > 0)
-                            ? { stCd: p.credentials.stCd }
-                            : undefined
-                    }
+                    credentials
                 };
             });
     }

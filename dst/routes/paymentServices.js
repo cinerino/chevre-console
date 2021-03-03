@@ -253,21 +253,24 @@ function createFromBody(req, isNew) {
     if (Array.isArray(req.body.provider)) {
         provider = req.body.provider.filter((p) => typeof p.seller === 'string' && p.seller.length > 0)
             .map((p) => {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             const selectedSeller = JSON.parse(p.seller);
+            const credentials = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof ((_a = p.credentials) === null || _a === void 0 ? void 0 : _a.shopId) === 'string' && p.credentials.shopId.length > 0)
+                ? { shopId: p.credentials.shopId }
+                : undefined), (typeof ((_b = p.credentials) === null || _b === void 0 ? void 0 : _b.shopPass) === 'string' && p.credentials.shopPass.length > 0)
+                ? { shopPass: p.credentials.shopPass }
+                : undefined), (typeof ((_c = p.credentials) === null || _c === void 0 ? void 0 : _c.tokenizationCode) === 'string' && p.credentials.tokenizationCode.length > 0)
+                ? { tokenizationCode: p.credentials.tokenizationCode }
+                : undefined), (typeof ((_d = p.credentials) === null || _d === void 0 ? void 0 : _d.kgygishCd) === 'string' && p.credentials.kgygishCd.length > 0)
+                ? { kgygishCd: p.credentials.kgygishCd }
+                : undefined), (typeof ((_e = p.credentials) === null || _e === void 0 ? void 0 : _e.stCd) === 'string' && p.credentials.stCd.length > 0)
+                ? { stCd: p.credentials.stCd }
+                : undefined);
             return {
                 typeOf: selectedSeller.typeOf,
                 id: String(selectedSeller.id),
                 name: selectedSeller.name,
-                credentials: Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof ((_a = p.credentials) === null || _a === void 0 ? void 0 : _a.shopId) === 'string' && p.credentials.shopId.length > 0)
-                    ? { shopId: p.credentials.shopId }
-                    : undefined), (typeof ((_b = p.credentials) === null || _b === void 0 ? void 0 : _b.shopPass) === 'string' && p.credentials.shopPass.length > 0)
-                    ? { shopPass: p.credentials.shopPass }
-                    : undefined), (typeof ((_c = p.credentials) === null || _c === void 0 ? void 0 : _c.kgygishCd) === 'string' && p.credentials.kgygishCd.length > 0)
-                    ? { kgygishCd: p.credentials.kgygishCd }
-                    : undefined), (typeof ((_d = p.credentials) === null || _d === void 0 ? void 0 : _d.stCd) === 'string' && p.credentials.stCd.length > 0)
-                    ? { stCd: p.credentials.stCd }
-                    : undefined)
+                credentials
             };
         });
     }
