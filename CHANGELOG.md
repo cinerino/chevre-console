@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- ペイメントサービスのプロバイダー認証情報にトークン認証コードを追加
+
 ### Changed
 
 ### Deprecated
