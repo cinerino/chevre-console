@@ -77,8 +77,10 @@ reservationsRouter.get(
             if (typeof req.query.underName?.id === 'string' && req.query.underName?.id.length > 0) {
                 underNameIdEq = req.query.underName?.id;
             }
+
+            let brokerIdEq: string | undefined;
             if (typeof req.query.admin?.id === 'string' && req.query.admin?.id.length > 0) {
-                underNameIdEq = req.query.admin?.id;
+                brokerIdEq = req.query.admin?.id;
             }
 
             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
@@ -205,7 +207,14 @@ reservationsRouter.get(
                     }
                 },
                 attended: (req.query.attended === '1') ? true : undefined,
-                checkedIn: (req.query.checkedIn === '1') ? true : undefined
+                checkedIn: (req.query.checkedIn === '1') ? true : undefined,
+                ...{
+                    broker: {
+                        id: (typeof brokerIdEq === 'string')
+                            ? brokerIdEq
+                            : undefined
+                    }
+                }
             };
             const { data } = await reservationService.search(searchConditions);
 
