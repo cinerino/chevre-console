@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- 予約検索の管理ユーザー条件をreservation.brokerに割り当てるように調整
+
 ### Deprecated
 
 ### Removed
