@@ -500,6 +500,8 @@ function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factor
 
     const inCodeSet = JSON.parse(req.body.inCodeSet);
 
+    const nameEn = req.body.name?.en;
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: 'CategoryCode',
@@ -517,7 +519,10 @@ function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factor
                     };
                 })
             : undefined,
-        name: <any>{ ja: req.body.name.ja },
+        name: {
+            ja: req.body.name.ja,
+            ...(typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined
+        },
         ...(req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
             ? {
                 paymentMethod: {
@@ -559,8 +564,15 @@ function validate() {
         body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30)),
+
+        body('name.en')
+            .optional()
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('英語名称', 30)),
 
         body('paymentMethod.typeOf')
             .if((_: any, { req }: Meta) => {
