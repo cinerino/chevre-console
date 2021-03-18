@@ -60,7 +60,7 @@ $(function () {
         });
     }
 
-    // 関連券種グループ button
+    // 関連カタログ button
     $(document).on('click', '.popupListTicketType', function (event) {
         event.preventDefault();
         var id = $(this).attr('data-id');
@@ -68,7 +68,7 @@ $(function () {
     });
 
     /**
-     * 関連券種グループのpopupを表示
+     * 関連カタログのpopupを表示
      */
     function list(id) {
         $.ajax({

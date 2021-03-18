@@ -22,9 +22,9 @@ const translationType_1 = require("../../factory/translationType");
 const Message = require("../../message");
 const debug = createDebug('chevre-backend:routes');
 const NUM_ADDITIONAL_PROPERTY = 10;
-// 作品コード 半角64
+// コード 半角64
 const NAME_MAX_LENGTH_CODE = 64;
-// 作品名・日本語 全角64
+// 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const screeningEventSeriesRouter = express_1.Router();
 screeningEventSeriesRouter.all('/add', ...validate(), 
@@ -50,7 +50,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         const validatorResult = express_validator_1.validationResult(req);
         errors = validatorResult.mapped();
         if (validatorResult.isEmpty()) {
-            // 作品DB登録
             try {
                 const searchMovieResult = yield creativeWorkService.searchMovies({
                     project: { ids: [req.project.id] },
@@ -116,7 +115,6 @@ screeningEventSeriesRouter.all('/add', ...validate(),
             ]
         }
     });
-    // 作品マスタ画面遷移
     debug('errors:', errors);
     res.render('events/screeningEventSeries/add', {
         message: message,
@@ -215,7 +213,7 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
     }
 }));
 /**
- * 名前から作品候補を検索する
+ * 名前からコンテンツ候補を検索する
  */
 screeningEventSeriesRouter.get('/searchMovies', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -261,7 +259,7 @@ screeningEventSeriesRouter.get('/search',
         if (branchCode === undefined) {
             throw new Error();
         }
-        // 上映終了して「いない」施設作品を検索
+        // 上映終了して「いない」施設コンテンツを検索
         const limit = 100;
         const page = 1;
         const { data } = yield eventService.search({
@@ -357,7 +355,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             const validatorResult = express_validator_1.validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
                 try {
                     searchMovieResult = yield creativeWorkService.searchMovies({
                         project: { ids: [req.project.id] },
@@ -474,7 +471,6 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                 ]
             }
         });
-        // 作品マスタ画面遷移
         res.render('events/screeningEventSeries/edit', {
             message: message,
             errors: errors,
