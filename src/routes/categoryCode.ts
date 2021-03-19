@@ -523,7 +523,7 @@ function createCategoryCodeFromBody(req: Request, isNew: boolean): chevre.factor
             ja: req.body.name.ja,
             ...(typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined
         },
-        ...(req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+        ...(inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
             ? {
                 paymentMethod: {
                     typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
@@ -576,7 +576,14 @@ function validate() {
 
         body('paymentMethod.typeOf')
             .if((_: any, { req }: Meta) => {
-                return req.body.inCodeSet?.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+                let inCodeSet: any;
+                try {
+                    inCodeSet = JSON.parse(String(req.body.inCodeSet));
+                } catch (error) {
+                    // no op
+                }
+
+                return inCodeSet?.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
             })
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))

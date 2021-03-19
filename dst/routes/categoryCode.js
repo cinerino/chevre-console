@@ -449,7 +449,7 @@ function createCategoryCodeFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined, name: Object.assign({ ja: req.body.name.ja }, (typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined) }, (req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+            : undefined, name: Object.assign({ ja: req.body.name.ja }, (typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined) }, (inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
         ? {
             paymentMethod: {
                 typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
@@ -490,8 +490,14 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('英語名称', 30)),
         express_validator_1.body('paymentMethod.typeOf')
             .if((_, { req }) => {
-            var _a;
-            return ((_a = req.body.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+            let inCodeSet;
+            try {
+                inCodeSet = JSON.parse(String(req.body.inCodeSet));
+            }
+            catch (error) {
+                // no op
+            }
+            return (inCodeSet === null || inCodeSet === void 0 ? void 0 : inCodeSet.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
         })
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))

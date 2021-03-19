@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- 区分の適用決済方法が登録できないバグ対応
+
 ### Security
 
 ## v2.24.1 - 2021-03-07

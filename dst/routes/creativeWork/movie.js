@@ -101,7 +101,9 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
 movieRouter.get('', (__, res) => {
     res.render('creativeWorks/movie/index', {});
 });
-movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+movieRouter.get('/getlist', 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
@@ -170,11 +172,14 @@ movieRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, func
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((d) => {
-                var _a;
+                var _a, _b;
                 const distributorType = distributorTypes.find((category) => { var _a; return category.codeValue === ((_a = d.distributor) === null || _a === void 0 ? void 0 : _a.codeValue); });
                 const contentRatingName = (_a = contentRatingTypes.find((category) => category.codeValue === d.contentRating)) === null || _a === void 0 ? void 0 : _a.name;
                 const thumbnailUrl = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
-                return Object.assign(Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined), { contentRatingName: (typeof contentRatingName === 'string') ? contentRatingName : contentRatingName === null || contentRatingName === void 0 ? void 0 : contentRatingName.ja, thumbnailUrl });
+                const name = (typeof d.name === 'string')
+                    ? d.name
+                    : (typeof ((_b = d.name) === null || _b === void 0 ? void 0 : _b.ja) === 'string') ? d.name.ja : '';
+                return Object.assign(Object.assign(Object.assign({}, d), (distributorType !== undefined) ? { distributorName: distributorType.name.ja } : undefined), { name, contentRatingName: (typeof contentRatingName === 'string') ? contentRatingName : contentRatingName === null || contentRatingName === void 0 ? void 0 : contentRatingName.ja, thumbnailUrl });
             })
         });
     }
