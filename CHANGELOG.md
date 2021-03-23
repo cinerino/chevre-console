@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 区分編集に英語名称を追加
 - update @chevre/api-nodejs-client
+- 文言統一調整
 
 ### Deprecated
 

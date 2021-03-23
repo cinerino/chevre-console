@@ -531,10 +531,10 @@ function validate() {
         body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
 
-        body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+        body('name.en', Message.Common.required.replace('$fieldName$', '英語名称'))
             .notEmpty(),
         // tslint:disable-next-line:no-magic-numbers
-        body('name.en', Message.Common.getMaxLength('名称(英)', 128))
+        body('name.en', Message.Common.getMaxLength('英語名称', 128))
             .isLength({ max: 128 }),
 
         body('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', 'アイテム'))
