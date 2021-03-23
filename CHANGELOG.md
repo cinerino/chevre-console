@@ -10,19 +10,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- 区分編集に英語名称を追加
-- update @chevre/api-nodejs-client
-- 文言統一調整
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- 区分の適用決済方法が登録できないバグ対応
-
 ### Security
+
+## v2.25.0 - 2021-03-23
+
+### Changed
+
+- 区分編集に英語名称を追加
+- update @chevre/api-nodejs-client
+- 文言統一調整
+
+### Fixed
+
+- 区分の適用決済方法が登録できないバグ対応
 
 ## v2.24.1 - 2021-03-07
 
