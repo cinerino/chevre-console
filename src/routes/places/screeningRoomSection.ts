@@ -409,10 +409,10 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('名称', 64)),
         body('name.en')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '英語名称'))
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称(English)', 64))
+            .withMessage(Message.Common.getMaxLength('英語名称', 64))
     ];
 }
 

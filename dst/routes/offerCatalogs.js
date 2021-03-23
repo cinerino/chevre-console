@@ -447,10 +447,10 @@ function validate() {
             .notEmpty(),
         express_validator_1.body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME_JA))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
-        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '英語名称'))
             .notEmpty(),
         // tslint:disable-next-line:no-magic-numbers
-        express_validator_1.body('name.en', Message.Common.getMaxLength('名称(英)', 128))
+        express_validator_1.body('name.en', Message.Common.getMaxLength('英語名称', 128))
             .isLength({ max: 128 }),
         express_validator_1.body('itemOffered.typeOf', Message.Common.required.replace('$fieldName$', 'アイテム'))
             .notEmpty(),

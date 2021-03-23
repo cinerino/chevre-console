@@ -955,10 +955,10 @@ function validateFormAdd() {
             .notEmpty(),
         body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
-        // 名称(英)
-        body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+        // 英語名称
+        body('name.en', Message.Common.required.replace('$fieldName$', '英語名称'))
             .notEmpty(),
-        body('name.en', Message.Common.getMaxLength('名称(英)', NAME_MAX_LENGTH_NAME_EN))
+        body('name.en', Message.Common.getMaxLength('英語名称', NAME_MAX_LENGTH_NAME_EN))
             .isLength({ max: NAME_MAX_LENGTH_NAME_EN }),
         body('alternateName.ja', Message.Common.required.replace('$fieldName$', '代替名称'))
             .notEmpty(),

@@ -18,9 +18,9 @@ const debug = createDebug('chevre-backend:routes');
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
-// 作品コード 半角64
+// コード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
-// 作品名・日本語 全角64
+// 名称・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const screeningEventSeriesRouter = Router();
@@ -50,7 +50,6 @@ screeningEventSeriesRouter.all<any>(
             const validatorResult = validationResult(req);
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
                 try {
                     const searchMovieResult = await creativeWorkService.searchMovies({
                         project: { ids: [req.project.id] },
@@ -125,7 +124,6 @@ screeningEventSeriesRouter.all<any>(
             }
         });
 
-        // 作品マスタ画面遷移
         debug('errors:', errors);
         res.render('events/screeningEventSeries/add', {
             message: message,
@@ -241,7 +239,7 @@ screeningEventSeriesRouter.get(
 );
 
 /**
- * 名前から作品候補を検索する
+ * 名前からコンテンツ候補を検索する
  */
 screeningEventSeriesRouter.get(
     '/searchMovies',
@@ -294,7 +292,7 @@ screeningEventSeriesRouter.get(
             if (branchCode === undefined) {
                 throw new Error();
             }
-            // 上映終了して「いない」施設作品を検索
+            // 上映終了して「いない」施設コンテンツを検索
             const limit = 100;
             const page = 1;
             const { data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
@@ -407,7 +405,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 const validatorResult = validationResult(req);
                 errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
-                    // 作品DB登録
                     try {
                         searchMovieResult = await creativeWorkService.searchMovies({
                             project: { ids: [req.project.id] },
@@ -540,7 +537,6 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 }
             });
 
-            // 作品マスタ画面遷移
             res.render('events/screeningEventSeries/edit', {
                 message: message,
                 errors: errors,

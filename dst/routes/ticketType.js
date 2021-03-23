@@ -815,10 +815,10 @@ function validateFormAdd() {
             .notEmpty(),
         express_validator_1.body('name.ja', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
             .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
-        // 名称(英)
-        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '名称(英)'))
+        // 英語名称
+        express_validator_1.body('name.en', Message.Common.required.replace('$fieldName$', '英語名称'))
             .notEmpty(),
-        express_validator_1.body('name.en', Message.Common.getMaxLength('名称(英)', NAME_MAX_LENGTH_NAME_EN))
+        express_validator_1.body('name.en', Message.Common.getMaxLength('英語名称', NAME_MAX_LENGTH_NAME_EN))
             .isLength({ max: NAME_MAX_LENGTH_NAME_EN }),
         express_validator_1.body('alternateName.ja', Message.Common.required.replace('$fieldName$', '代替名称'))
             .notEmpty(),

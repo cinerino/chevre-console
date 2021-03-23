@@ -428,7 +428,7 @@ function preDelete(req, categoryCode) {
     });
 }
 function createCategoryCodeFromBody(req, isNew) {
-    var _a;
+    var _a, _b;
     const paymentMethodType = (_a = req.body.paymentMethod) === null || _a === void 0 ? void 0 : _a.typeOf;
     const image = (typeof req.body.image === 'string' && req.body.image.length > 0)
         ? req.body.image
@@ -437,6 +437,7 @@ function createCategoryCodeFromBody(req, isNew) {
         ? req.body.color
         : undefined;
     const inCodeSet = JSON.parse(req.body.inCodeSet);
+    const nameEn = (_b = req.body.name) === null || _b === void 0 ? void 0 : _b.en;
     return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'CategoryCode', codeValue: req.body.codeValue, inCodeSet: {
             typeOf: 'CategoryCodeSet',
             identifier: inCodeSet.identifier
@@ -448,7 +449,7 @@ function createCategoryCodeFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined, name: { ja: req.body.name.ja } }, (req.body.inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+            : undefined, name: Object.assign({ ja: req.body.name.ja }, (typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined) }, (inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
         ? {
             paymentMethod: {
                 typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
@@ -479,12 +480,24 @@ function validate() {
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('name.en')
+            .optional()
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('英語名称', 30)),
         express_validator_1.body('paymentMethod.typeOf')
             .if((_, { req }) => {
-            var _a;
-            return ((_a = req.body.inCodeSet) === null || _a === void 0 ? void 0 : _a.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+            let inCodeSet;
+            try {
+                inCodeSet = JSON.parse(String(req.body.inCodeSet));
+            }
+            catch (error) {
+                // no op
+            }
+            return (inCodeSet === null || inCodeSet === void 0 ? void 0 : inCodeSet.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
         })
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))

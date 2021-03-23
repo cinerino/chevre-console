@@ -1,5 +1,5 @@
 /**
- * 作品コントローラー
+ * コンテンツコントローラー
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import * as createDebug from 'debug';
@@ -23,11 +23,11 @@ const ADDITIONAL_PROPERTY_VALUE_MAX_LENGTH = (process.env.ADDITIONAL_PROPERTY_VA
 
 const NUM_ADDITIONAL_PROPERTY = 5;
 
-// 作品コード 半角64
+// コンテンツコード 半角64
 const NAME_MAX_LENGTH_CODE: number = 64;
-// 作品名・日本語 全角64
+// コンテンツ名・日本語 全角64
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
-// 作品名・英語 半角128
+// コンテンツ名・英語 半角128
 // const NAME_MAX_LENGTH_NAME_EN: number = 128;
 // 上映時間・数字10
 const NAME_MAX_LENGTH_NAME_MINUTES: number = 10;
@@ -123,6 +123,7 @@ movieRouter.get(
 
 movieRouter.get(
     '/getlist',
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
@@ -203,10 +204,14 @@ movieRouter.get(
                     const contentRatingName = contentRatingTypes.find((category) => category.codeValue === d.contentRating)?.name;
 
                     const thumbnailUrl: string = (typeof d.thumbnailUrl === 'string') ? d.thumbnailUrl : '$thumbnailUrl$';
+                    const name: string = (typeof d.name === 'string')
+                        ? d.name
+                        : (typeof d.name?.ja === 'string') ? d.name.ja : '';
 
                     return {
                         ...d,
                         ...(distributorType !== undefined) ? { distributorName: (<any>distributorType.name).ja } : undefined,
+                        name,
                         contentRatingName: (typeof contentRatingName === 'string') ? contentRatingName : contentRatingName?.ja,
                         thumbnailUrl
                     };
@@ -249,7 +254,6 @@ movieRouter.all<ParamsDictionary>(
             errors = validatorResult.mapped();
             console.error(errors);
             if (validatorResult.isEmpty()) {
-                // 作品DB登録
                 try {
                     req.body.id = req.params.id;
                     movie = await createFromBody(req, false);
@@ -518,18 +522,21 @@ function validate() {
             .isLength({ max: NAME_MAX_LENGTH_CODE })
             .withMessage(Message.Common.getMaxLength('コード', NAME_MAX_LENGTH_CODE)),
 
-        body('name', Message.Common.required.replace('$fieldName$', '名称'))
-            .notEmpty(),
-        body('name', Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        body('name')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_CODE)),
 
-        body('duration', Message.Common.getMaxLengthHalfByte('上映時間', NAME_MAX_LENGTH_NAME_MINUTES))
+        body('duration')
             .optional()
             .isNumeric()
-            .isLength({ max: NAME_MAX_LENGTH_NAME_MINUTES }),
+            .isLength({ max: NAME_MAX_LENGTH_NAME_MINUTES })
+            .withMessage(Message.Common.getMaxLengthHalfByte('上映時間', NAME_MAX_LENGTH_NAME_MINUTES)),
 
-        body('headline', Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE))
-            .isLength({ max: NAME_MAX_LENGTH_NAME_JA }),
+        body('headline')
+            .isLength({ max: NAME_MAX_LENGTH_NAME_JA })
+            .withMessage(Message.Common.getMaxLength('サブタイトル', NAME_MAX_LENGTH_CODE)),
 
         body('thumbnailUrl')
             .optional()
