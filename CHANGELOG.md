@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 座席作成前にルーム座席数確認処理を追加
+- ルーム検索結果に座席数を追加
+- セクション検索結果に座席数を追加
 
 ### Deprecated
 

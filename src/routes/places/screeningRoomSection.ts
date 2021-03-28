@@ -139,6 +139,9 @@ screeningRoomSectionRouter.get(
                         && req.query?.name?.$regex.length > 0)
                         ? req.query?.name?.$regex
                         : undefined
+                },
+                ...{
+                    $projection: { seatCount: 1 }
                 }
             });
 

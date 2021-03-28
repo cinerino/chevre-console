@@ -112,7 +112,7 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
             ? {
                 $projection: req.query.$projection
             }
-            : undefined));
+            : { $projection: { seatCount: 1 } }));
         const results = data.map((screeningRoom) => {
             return Object.assign(Object.assign({}, screeningRoom), { openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined });
         });

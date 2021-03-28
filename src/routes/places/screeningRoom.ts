@@ -141,7 +141,7 @@ screeningRoomRouter.get(
                     ? {
                         $projection: req.query.$projection
                     }
-                    : undefined
+                    : { $projection: { seatCount: 1 } }
             });
 
             const results = data.map((screeningRoom) => {

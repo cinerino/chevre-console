@@ -77,18 +77,14 @@ SRS-01
                                     <th>施設</th>
                                     <th>ルーム</th>
                                     <th>名称</th>
+                                    <th>座席数</th>
                                     <th>追加特性</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow" identifier="">
-                                    <td
-                                        name="containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
-                                        <a target="_blank"
-                                            href="/projects/<%= req.project.id %>/places/screeningRoomSection/$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
-                                            $branchCode$
-                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                        </a>
+                                    <td name="branchCode">$branchCode$</a>
                                     </td>
                                     <td
                                         name="containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.name.ja|slice">
@@ -98,9 +94,15 @@ SRS-01
                                         $containedInPlace.name.ja$
                                     </td>
                                     <td name="name.ja|slice">$name.ja$</td>
+                                    <td name="seatCount">$seatCount$</td>
                                     <td name="id" class="">
                                         <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                             <span>表示</span>
+                                        </a>
+                                    </td>
+                                    <td name="containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/places/screeningRoomSection/$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
+                                            <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
                                 </tr>

@@ -102,17 +102,12 @@ ST-01
                                     <th>名称</th>
                                     <th>座席区分</th>
                                     <th>追加特性</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow" identifier="">
-                                    <td
-                                        name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode__branchCode">
-                                        <a target="_blank"
-                                            href="/projects/<%= req.project.id %>/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
-                                            $branchCode$
-                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                        </a>
+                                    <td name="branchCode">$branchCode$</a>
                                     </td>
                                     <td
                                         name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.containedInPlace.name.ja|slice">
@@ -134,6 +129,11 @@ ST-01
                                     <td name="id" class="">
                                         <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">
                                             <span>表示</span>
+                                        </a>
+                                    </td>
+                                    <td name="containedInPlace.containedInPlace.containedInPlace.branchCode__containedInPlace.containedInPlace.branchCode__containedInPlace.branchCode__branchCode">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/places/seat/$containedInPlace.containedInPlace.containedInPlace.branchCode$:$containedInPlace.containedInPlace.branchCode$:$containedInPlace.branchCode$:$branchCode$/update">
+                                            <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
                                 </tr>
