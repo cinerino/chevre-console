@@ -9,7 +9,11 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 
+import { ISubscription } from '../../factory/subscription';
 import * as Message from '../../message';
+
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions: ISubscription[] = require('../../../subscriptions.json');
 
 const debug = createDebug('chevre-backend:router');
 
@@ -43,6 +47,7 @@ seatRouter.all<any>(
                     // if (existingMovieTheater !== undefined) {
                     //     throw new Error('コードが重複しています');
                     // }
+                    await preCreate(req, seat);
 
                     await placeService.createSeat(seat);
                     req.flash('message', '登録しました');
@@ -430,6 +435,52 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
+}
+
+async function preCreate(req: Request, seat: chevre.factory.place.seat.IPlace) {
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+    const projectService = new chevre.service.Project({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient
+    });
+
+    const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        branchCode: { $eq: seat.containedInPlace?.containedInPlace?.branchCode },
+        containedInPlace: {
+            branchCode: { $eq: seat.containedInPlace?.containedInPlace?.containedInPlace?.branchCode }
+        },
+        $projection: { seatCount: 1 }
+    });
+    const screeningRoom = searchScreeningRoomsResult.data.shift();
+    if (screeningRoom === undefined) {
+        throw new Error('ルームが存在しません');
+    }
+
+    const seatCount = screeningRoom.seatCount;
+    if (typeof seatCount !== 'number') {
+        throw new Error('座席数が不明です');
+    }
+
+    // サブスクリプションからmaximumAttendeeCapacityを取得
+    const chevreProject = await projectService.findById({ id: req.project.id });
+    let subscriptionIdentifier = chevreProject.subscription?.identifier;
+    if (subscriptionIdentifier === undefined) {
+        subscriptionIdentifier = 'Free';
+    }
+    const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+    const maximumAttendeeCapacitySetting = subscription?.settings.maximumAttendeeCapacity;
+
+    // 座席数がmax以内かどうか
+    if (typeof maximumAttendeeCapacitySetting === 'number') {
+        if (seatCount + 1 > maximumAttendeeCapacitySetting) {
+            throw new Error(`ルーム座席数の最大値は${maximumAttendeeCapacitySetting}です`);
+        }
+    }
 }
 
 export default seatRouter;
