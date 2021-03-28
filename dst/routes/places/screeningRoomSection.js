@@ -19,6 +19,8 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions = require('../../../subscriptions.json');
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const screeningRoomSectionRouter = express_1.Router();
@@ -150,18 +152,15 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections({
-            limit: 1,
-            project: { id: { $eq: req.project.id } },
-            branchCode: { $eq: screeningRoomSectionBranchCode },
-            containedInPlace: {
+        const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections(Object.assign({ limit: 1, project: { id: { $eq: req.project.id } }, branchCode: { $eq: screeningRoomSectionBranchCode }, containedInPlace: {
                 branchCode: { $eq: screeningRoomBranchCode },
                 containedInPlace: {
                     branchCode: { $eq: movieTheaterBranchCode }
                 }
-            }
-        });
-        let screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
+            } }, {
+            $projection: { seatCount: 1 }
+        }));
+        const screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
         if (screeningRoomSection === undefined) {
             throw new Error('Screening Room Section Not Found');
         }
@@ -171,8 +170,10 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    screeningRoomSection = yield createFromBody(req, false);
-                    yield placeService.updateScreeningRoomSection(screeningRoomSection);
+                    const originalSeatCount = screeningRoomSection.seatCount;
+                    const newScreeningRoomSection = yield createFromBody(req, false);
+                    yield preUpdate(req, newScreeningRoomSection, originalSeatCount);
+                    yield placeService.updateScreeningRoomSection(newScreeningRoomSection);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
@@ -336,5 +337,54 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('英語名称', 64))
     ];
+}
+function preUpdate(req, section, originalSeatCount) {
+    var _a, _b, _c, _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+        const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            branchCode: { $eq: (_a = section.containedInPlace) === null || _a === void 0 ? void 0 : _a.branchCode },
+            containedInPlace: {
+                branchCode: { $eq: (_c = (_b = section.containedInPlace) === null || _b === void 0 ? void 0 : _b.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode }
+            },
+            $projection: { seatCount: 1 }
+        });
+        const screeningRoom = searchScreeningRoomsResult.data.shift();
+        if (screeningRoom === undefined) {
+            throw new Error('ルームが存在しません');
+        }
+        const seatCount = screeningRoom.seatCount;
+        if (typeof seatCount !== 'number') {
+            throw new Error('ルーム座席数が不明です');
+        }
+        if (typeof originalSeatCount !== 'number') {
+            throw new Error('セクション座席数が不明です');
+        }
+        // サブスクリプションからmaximumAttendeeCapacityを取得
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_d = chevreProject.subscription) === null || _d === void 0 ? void 0 : _d.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+        const maximumAttendeeCapacitySetting = subscription === null || subscription === void 0 ? void 0 : subscription.settings.maximumAttendeeCapacity;
+        // 座席の更新がある場合、座席数がmax以内かどうか
+        if (Array.isArray(section.containsPlace) && section.containsPlace.length > 0) {
+            if (typeof maximumAttendeeCapacitySetting === 'number') {
+                if (seatCount - originalSeatCount + section.containsPlace.length > maximumAttendeeCapacitySetting) {
+                    throw new Error(`ルーム座席数の最大値は${maximumAttendeeCapacitySetting}です`);
+                }
+            }
+        }
+    });
 }
 exports.default = screeningRoomSectionRouter;
