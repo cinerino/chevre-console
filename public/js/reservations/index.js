@@ -160,7 +160,7 @@ $(function () {
 
     $('#admin\\[id\\]').select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '管理ユーザー選択',
+        placeholder: 'ユーザー選択',
         allowClear: true,
         ajax: {
             url: '/projects/' + PROJECT_ID + '/reservations/searchAdmins',

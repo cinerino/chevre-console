@@ -208,12 +208,10 @@ reservationsRouter.get(
                 },
                 attended: (req.query.attended === '1') ? true : undefined,
                 checkedIn: (req.query.checkedIn === '1') ? true : undefined,
-                ...{
-                    broker: {
-                        id: (typeof brokerIdEq === 'string')
-                            ? brokerIdEq
-                            : undefined
-                    }
+                broker: {
+                    id: (typeof brokerIdEq === 'string')
+                        ? brokerIdEq
+                        : undefined
                 }
             };
             const { data } = await reservationService.search(searchConditions);

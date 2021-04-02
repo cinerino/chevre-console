@@ -160,6 +160,11 @@ transactionsRouter.all('/reserve/start',
                     acceptedOffer: acceptedOffer,
                     event: {
                         id: event.id
+                    },
+                    broker: {
+                        typeOf: 'Person',
+                        id: req.user.profile.sub,
+                        name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                     }
                     // onReservationStatusChanged?: IOnReservationStatusChanged;
                 };
@@ -173,8 +178,8 @@ transactionsRouter.all('/reserve/start',
                     transactionNumber: transactionNumber,
                     expires: expires,
                     agent: {
-                        typeOf: 'Person',
-                        id: req.user.profile.sub,
+                        typeOf: chevre.factory.creativeWorkType.WebApplication,
+                        id: req.user.authClient.options.clientId,
                         name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                     },
                     object: object

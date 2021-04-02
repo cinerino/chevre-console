@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - セクションの座席更新前にルーム座席数確認処理を追加
 - ルーム検索結果に座席数を追加
 - セクション検索結果に座席数を追加
+- 予約取引を仲介者として実行するように調整
 
 ### Deprecated
 

@@ -76,14 +76,22 @@ reservationsRouter.get('/search',
         if (typeof ((_d = req.query.admin) === null || _d === void 0 ? void 0 : _d.id) === 'string' && ((_e = req.query.admin) === null || _e === void 0 ? void 0 : _e.id.length) > 0) {
             brokerIdEq = (_f = req.query.admin) === null || _f === void 0 ? void 0 : _f.id;
         }
-        const searchConditions = Object.assign({ limit: req.query.limit, page: req.query.page, project: { ids: [req.project.id] }, typeOf: chevre.factory.reservationType.EventReservation, additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
+        const searchConditions = {
+            limit: req.query.limit,
+            page: req.query.page,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.reservationType.EventReservation,
+            additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
                 ? req.query.additionalTicketText
-                : undefined, reservationNumbers: (req.query.reservationNumber !== undefined
+                : undefined,
+            reservationNumbers: (req.query.reservationNumber !== undefined
                 && req.query.reservationNumber !== '')
                 ? [String(req.query.reservationNumber)]
-                : undefined, reservationStatuses: (req.query.reservationStatus !== undefined && req.query.reservationStatus !== '')
+                : undefined,
+            reservationStatuses: (req.query.reservationStatus !== undefined && req.query.reservationStatus !== '')
                 ? [req.query.reservationStatus]
-                : undefined, reservationFor: {
+                : undefined,
+            reservationFor: {
                 ids: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.id !== undefined
                     && req.query.reservationFor.id !== '')
@@ -122,21 +130,26 @@ reservationsRouter.get('/search',
                         .add(1, 'day')
                         .toDate()
                     : undefined
-            }, modifiedFrom: (req.query.modifiedFrom !== '')
+            },
+            modifiedFrom: (req.query.modifiedFrom !== '')
                 ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .toDate()
-                : undefined, modifiedThrough: (req.query.modifiedThrough !== '')
+                : undefined,
+            modifiedThrough: (req.query.modifiedThrough !== '')
                 ? moment(`${String(req.query.modifiedThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate()
-                : undefined, bookingFrom: (req.query.bookingFrom !== '')
+                : undefined,
+            bookingFrom: (req.query.bookingFrom !== '')
                 ? moment(`${String(req.query.bookingFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .toDate()
-                : undefined, bookingThrough: (req.query.bookingThrough !== '')
+                : undefined,
+            bookingThrough: (req.query.bookingThrough !== '')
                 ? moment(`${String(req.query.bookingThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate()
-                : undefined, reservedTicket: {
+                : undefined,
+            reservedTicket: {
                 ticketType: {
                     ids: (req.query.reservedTicket !== undefined
                         && req.query.reservedTicket.ticketType !== undefined
@@ -162,7 +175,8 @@ reservationsRouter.get('/search',
                         ? [req.query.reservedTicket.ticketedSeat.seatNumber]
                         : undefined
                 }
-            }, underName: {
+            },
+            underName: {
                 id: (typeof underNameIdEq === 'string')
                     ? underNameIdEq
                     : undefined,
@@ -184,13 +198,15 @@ reservationsRouter.get('/search',
                 identifier: {
                     $in: (underNameIdentifierIn.length > 0) ? underNameIdentifierIn : undefined
                 }
-            }, attended: (req.query.attended === '1') ? true : undefined, checkedIn: (req.query.checkedIn === '1') ? true : undefined }, {
+            },
+            attended: (req.query.attended === '1') ? true : undefined,
+            checkedIn: (req.query.checkedIn === '1') ? true : undefined,
             broker: {
                 id: (typeof brokerIdEq === 'string')
                     ? brokerIdEq
                     : undefined
             }
-        });
+        };
         const { data } = yield reservationService.search(searchConditions);
         // const offerService = new chevre.service.Offer({
         //     endpoint: <string>process.env.API_ENDPOINT,
