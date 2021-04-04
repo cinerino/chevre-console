@@ -9,8 +9,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.searchApplications = exports.SMART_THEATER_CLIENT_NEW = exports.SMART_THEATER_CLIENT_OLD = void 0;
 /**
- * オファー管理ルーター
+ * 単価オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
 const cinerino = require("@cinerino/sdk");
@@ -21,6 +22,8 @@ const moment = require("moment-timezone");
 const Message = require("../message");
 const itemAvailability_1 = require("../factory/itemAvailability");
 const productType_1 = require("../factory/productType");
+exports.SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
+exports.SMART_THEATER_CLIENT_NEW = process.env.SMART_THEATER_CLIENT_NEW;
 const NUM_ADDITIONAL_PROPERTY = 10;
 // コード 半角64
 const NAME_MAX_LENGTH_CODE = 30;
@@ -51,11 +54,6 @@ offersRouter.all('/add', ...validate(),
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
-    });
-    const iamService = new cinerino.service.IAM({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -106,9 +104,7 @@ offersRouter.all('/add', ...validate(),
     const searchAccountTitlesResult = yield accountTitleService.search({
         project: { ids: [req.project.id] }
     });
-    const searchApplicationsResult = yield iamService.searchMembers({
-        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-    });
+    const applications = yield searchApplications(req);
     res.render('offers/add', {
         message: message,
         errors: errors,
@@ -116,7 +112,7 @@ offersRouter.all('/add', ...validate(),
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         accountTitles: searchAccountTitlesResult.data,
         productTypes: productType_1.productTypes,
-        applications: searchApplicationsResult.data.map((d) => d.member)
+        applications: applications.map((d) => d.member)
             .sort((a, b) => {
             if (String(a.name) < String(b.name)) {
                 return -1;
@@ -155,11 +151,6 @@ offersRouter.all('/:id/update', ...validate(),
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient
     });
-    const iamService = new cinerino.service.IAM({
-        endpoint: process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
     try {
         let offer = yield offerService.findById({ id: req.params.id });
         if (((_c = offer.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
@@ -197,9 +188,7 @@ offersRouter.all('/:id/update', ...validate(),
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
-        const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-        });
+        const applications = yield searchApplications(req);
         res.render('offers/update', {
             message: message,
             errors: errors,
@@ -207,7 +196,7 @@ offersRouter.all('/:id/update', ...validate(),
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
             accountTitles: searchAccountTitlesResult.data,
             productTypes: productType_1.productTypes,
-            applications: searchApplicationsResult.data.map((d) => d.member)
+            applications: applications.map((d) => d.member)
                 .sort((a, b) => {
                 if (String(a.name) < String(b.name)) {
                     return -1;
@@ -472,6 +461,37 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
             .json({ error: { message: error.message } });
     }
 }));
+const AVAILABLE_ROLE_NAMES = ['customer', 'pos'];
+function searchApplications(req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const iamService = new cinerino.service.IAM({
+            endpoint: process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchApplicationsResult = yield iamService.searchMembers({
+            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
+        });
+        let applications = searchApplicationsResult.data;
+        // 新旧クライアントが両方存在すれば、新クライアントを隠す
+        const memberIds = applications.map((a) => a.member.id);
+        if (typeof exports.SMART_THEATER_CLIENT_OLD === 'string' && exports.SMART_THEATER_CLIENT_OLD.length > 0
+            && typeof exports.SMART_THEATER_CLIENT_NEW === 'string' && exports.SMART_THEATER_CLIENT_NEW.length > 0) {
+            const oldClientExists = memberIds.includes(exports.SMART_THEATER_CLIENT_OLD);
+            const newClientExists = memberIds.includes(exports.SMART_THEATER_CLIENT_NEW);
+            if (oldClientExists && newClientExists) {
+                applications = applications.filter((a) => a.member.id !== exports.SMART_THEATER_CLIENT_NEW);
+            }
+        }
+        // ロールで絞る(customer or pos)
+        applications = applications
+            .filter((m) => {
+            return Array.isArray(m.member.hasRole) && m.member.hasRole.some((r) => AVAILABLE_ROLE_NAMES.includes(r.roleName));
+        });
+        return applications;
+    });
+}
+exports.searchApplications = searchApplications;
 function preDelete(req, offer) {
     return __awaiter(this, void 0, void 0, function* () {
         // validation

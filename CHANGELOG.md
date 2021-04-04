@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - ルーム検索結果に座席数を追加
 - セクション検索結果に座席数を追加
 - 予約取引を仲介者として実行するように調整
+- オファーの利用可能なアプリケーション候補をロールで限定
 
 ### Deprecated
 

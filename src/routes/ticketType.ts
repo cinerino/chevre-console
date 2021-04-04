@@ -1,8 +1,7 @@
 /**
- * 券種管理ルーター
+ * 単価オファー管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -14,8 +13,7 @@ import * as Message from '../message';
 
 import { ProductType } from '../factory/productType';
 
-const SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
-const SMART_THEATER_CLIENT_NEW = process.env.SMART_THEATER_CLIENT_NEW;
+import { searchApplications, SMART_THEATER_CLIENT_NEW, SMART_THEATER_CLIENT_OLD } from './offers';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -450,34 +448,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
         }
     }
 );
-
-async function searchApplications(req: Request) {
-    const iamService = new cinerino.service.IAM({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
-
-    const searchApplicationsResult = await iamService.searchMembers({
-        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-    });
-
-    let applications = searchApplicationsResult.data;
-
-    // 新旧クライアントが両方存在すれば、新クライアントを隠す
-    const memberIds = applications.map((a) => a.member.id);
-    if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
-        && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0
-    ) {
-        const oldClientExists = memberIds.includes(SMART_THEATER_CLIENT_OLD);
-        const newClientExists = memberIds.includes(SMART_THEATER_CLIENT_NEW);
-        if (oldClientExists && newClientExists) {
-            applications = applications.filter((a) => a.member.id !== SMART_THEATER_CLIENT_NEW);
-        }
-    }
-
-    return applications;
-}
 
 /**
  * COA券種インポート
