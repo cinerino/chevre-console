@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 注文検索を実装
+
 ### Changed
 
 - 座席作成前にルーム座席数確認処理を追加
