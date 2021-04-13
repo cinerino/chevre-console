@@ -41,20 +41,22 @@ accountingReportsRouter.get('',
                             : undefined,
                         $lte: (typeof req.query.orderThrough === 'string' && req.query.orderThrough.length > 0)
                             ? moment(`${String(req.query.orderThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                .add(1, 'day')
                                 .toDate()
                             : undefined
                     }, acceptedOffers: {
                         itemOffered: {
                             reservationFor: {
                                 startDate: {
-                                    $gte: (typeof req.query.reservationForStartRange === 'string'
-                                        && req.query.reservationForStartRange.length > 0)
-                                        ? moment(req.query.reservationForStartRange.split(' - ')[0])
+                                    $gte: (typeof req.query.reservationForStartFrom === 'string'
+                                        && req.query.reservationForStartFrom.length > 0)
+                                        ? moment(`${String(req.query.reservationForStartFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                                             .toDate()
                                         : undefined,
-                                    $lte: (typeof req.query.reservationForStartRange === 'string'
-                                        && req.query.reservationForStartRange.length > 0)
-                                        ? moment(req.query.reservationForStartRange.split(' - ')[1])
+                                    $lte: (typeof req.query.reservationForStartThrough === 'string'
+                                        && req.query.reservationForStartThrough.length > 0)
+                                        ? moment(`${String(req.query.reservationForStartThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                            .add(1, 'day')
                                             .toDate()
                                         : undefined
                                 }

@@ -77,6 +77,7 @@ ordersRouter.get(
                         : undefined,
                     $lte: (typeof req.query.orderThrough === 'string' && req.query.orderThrough.length > 0)
                         ? moment(`${String(req.query.orderThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                            .add(1, 'day')
                             .toDate()
                         : undefined
                 },

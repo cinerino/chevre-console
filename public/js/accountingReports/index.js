@@ -37,14 +37,14 @@ $(function () {
     });
 
     $(document).on('click', '.btn-downloadCSV', async function () {
-        conditions = $.fn.getDataFromForm('form.search');
+        var conditions4csv = $.fn.getDataFromForm('form.search');
 
         console.log('downloaing...');
         // this.utilService.loadStart({ process: 'load' });
         var notify = $.notify({
+            // icon: 'fa fa-spinner',
             message: 'レポートダウンロードを開始します...',
         }, {
-            icon: 'fa fa-spinner',
             type: 'primary',
             delay: 500
         });
@@ -57,15 +57,14 @@ $(function () {
         // });
 
         const reports = [];
-        const limit = 10;
         let page = 0;
         while (true) {
             page += 1;
-            console.log('searching reports...', limit, page);
+            conditions4csv.page = page;
+            console.log('searching reports...', conditions4csv.limit, page);
             $.notify({
                 message: page + 'ページ目を検索しています...',
             }, {
-                icon_type: 'fa fa-spinner',
                 type: 'primary',
                 delay: 500
             });
@@ -77,39 +76,31 @@ $(function () {
             //     delay: 2000,
             //     close: false
             // });
+            // 全ページ検索する
             const searchResult = await new Promise((resolve, reject) => {
-                // var url = '/projects/' + PROJECT_ID + '/accountingReports?format=datatable';
-                // $.ajax({
-                //     dataType: 'json',
-                //     url: url,
-                //     cache: false,
-                //     type: 'GET',
-                //     data: conditions,
-                //     beforeSend: function () {
-                //         $('#loadingModal').modal({ backdrop: 'static' });
-                //     }
-                // 全ページ検索する
-                conditions.page = page;
-
                 $.ajax({
                     url: '/projects/' + PROJECT_ID + '/accountingReports?format=datatable',
+                    cache: false,
                     type: 'GET',
                     dataType: 'json',
-                    data: conditions,
+                    data: conditions4csv,
                     // data: {
                     //     // limit,
                     //     page,
                     //     format: 'datatable'
                     // }
+                    beforeSend: function () {
+                        $('#loadingModal').modal({ backdrop: 'static' });
+                    }
                 }).done(function (result) {
                     console.log('searched.', result);
                     resolve(result);
                 }).fail(function (xhr) {
-                    reject();
-                    // var res = $.parseJSON(xhr.responseText);
-                    // alert(res.error.message);
+                    var res = $.parseJSON(xhr.responseText);
+                    console.error(res.error);
+                    reject(new Error(res.error.message));
                 }).always(function () {
-                    // this.utilService.loadEnd();
+                    $('#loadingModal').modal('hide');
                 });
             });
 
@@ -117,7 +108,7 @@ $(function () {
                 reports.push(...searchResult.results);
             }
 
-            if (searchResult.results.length < limit) {
+            if (searchResult.results.length < conditions4csv.limit) {
                 break;
             }
         }
