@@ -37,6 +37,8 @@ $(function () {
     });
 
     $(document).on('click', '.btn-downloadCSV', async function () {
+        conditions = $.fn.getDataFromForm('form.search');
+
         console.log('downloaing...');
         // this.utilService.loadStart({ process: 'load' });
         var notify = $.notify({
@@ -87,15 +89,18 @@ $(function () {
                 //         $('#loadingModal').modal({ backdrop: 'static' });
                 //     }
                 // 全ページ検索する
+                conditions.page = page;
+
                 $.ajax({
-                    url: '?' + $('form').serialize(),
+                    url: '/projects/' + PROJECT_ID + '/accountingReports?format=datatable',
                     type: 'GET',
                     dataType: 'json',
-                    data: {
-                        // limit,
-                        page,
-                        format: 'datatable'
-                    }
+                    data: conditions,
+                    // data: {
+                    //     // limit,
+                    //     page,
+                    //     format: 'datatable'
+                    // }
                 }).done(function (result) {
                     console.log('searched.', result);
                     resolve(result);

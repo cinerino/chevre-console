@@ -35,12 +35,12 @@ accountingReportsRouter.get('',
                     : undefined), { paymentMethods: Object.assign({}, (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
                         ? { paymentMethodId: { $eq: req.query.paymentMethodId } }
                         : undefined), orderDate: {
-                        $gte: (typeof req.query.orderDateRange === 'string' && req.query.orderDateRange.length > 0)
-                            ? moment(req.query.orderDateRange.split(' - ')[0])
+                        $gte: (typeof req.query.orderFrom === 'string' && req.query.orderFrom.length > 0)
+                            ? moment(`${String(req.query.orderFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                                 .toDate()
                             : undefined,
-                        $lte: (typeof req.query.orderDateRange === 'string' && req.query.orderDateRange.length > 0)
-                            ? moment(req.query.orderDateRange.split(' - ')[1])
+                        $lte: (typeof req.query.orderThrough === 'string' && req.query.orderThrough.length > 0)
+                            ? moment(`${String(req.query.orderThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                                 .toDate()
                             : undefined
                     }, acceptedOffers: {
