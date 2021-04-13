@@ -57,7 +57,7 @@ $(function () {
         // });
 
         const reports = [];
-        const limit = 100;
+        const limit = 10;
         let page = 0;
         while (true) {
             page += 1;
