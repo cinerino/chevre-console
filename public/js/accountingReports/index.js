@@ -36,129 +36,8 @@ $(function () {
         showCustomerIdentifier(orderNumber);
     });
 
-    $(document).on('click', '.btn-downloadCSV', async function () {
-        var conditions4csv = $.fn.getDataFromForm('form.search');
-
-        console.log('downloaing...');
-        // this.utilService.loadStart({ process: 'load' });
-        var notify = $.notify({
-            // icon: 'fa fa-spinner',
-            message: 'レポートダウンロードを開始します...',
-        }, {
-            type: 'primary',
-            delay: 500
-        });
-        // $(document).Toasts('create', {
-        //     title: 'レポートダウンロードを開始します...',
-        //     // body: 'Downloading reports...',
-        //     autohide: true,
-        //     delay: 2000,
-        //     close: false
-        // });
-
-        const reports = [];
-        let page = 0;
-        while (true) {
-            page += 1;
-            conditions4csv.page = page;
-            console.log('searching reports...', conditions4csv.limit, page);
-            $.notify({
-                message: page + 'ページ目を検索しています...',
-            }, {
-                type: 'primary',
-                delay: 500
-            });
-            // $(document).Toasts('create', {
-            //     icon: 'fa fa-spinner',
-            //     title: page + 'ページ目を検索しています...',
-            //     // body: 'searching reports...page:' + page,
-            //     autohide: true,
-            //     delay: 2000,
-            //     close: false
-            // });
-            // 全ページ検索する
-            const searchResult = await new Promise((resolve, reject) => {
-                $.ajax({
-                    url: '/projects/' + PROJECT_ID + '/accountingReports?format=datatable',
-                    cache: false,
-                    type: 'GET',
-                    dataType: 'json',
-                    data: conditions4csv,
-                    // data: {
-                    //     // limit,
-                    //     page,
-                    //     format: 'datatable'
-                    // }
-                    beforeSend: function () {
-                        $('#loadingModal').modal({ backdrop: 'static' });
-                    }
-                }).done(function (result) {
-                    console.log('searched.', result);
-                    resolve(result);
-                }).fail(function (xhr) {
-                    var res = $.parseJSON(xhr.responseText);
-                    console.error(res.error);
-                    reject(new Error(res.error.message));
-                }).always(function () {
-                    $('#loadingModal').modal('hide');
-                });
-            });
-
-            if (Array.isArray(searchResult.results)) {
-                reports.push(...searchResult.results);
-            }
-
-            if (searchResult.results.length < conditions4csv.limit) {
-                break;
-            }
-        }
-
-        console.log(reports.length, 'reports found');
-        $.notify({
-            message: reports.length + '件のレポートが見つかりました',
-        }, {
-            type: 'primary',
-            delay: 2000
-        });
-        // $(document).Toasts('create', {
-        //     title: reports.length + '件のレポートが見つかりました',
-        //     // body: 'Downloading reports...',
-        //     autohide: true,
-        //     delay: 2000,
-        //     close: false
-        // });
-
-        const fields = [
-            { label: 'アクションタイプ', default: '', value: 'mainEntity.typeOf' },
-            { label: '金額', default: '', value: 'mainEntity.object.0.paymentMethod.totalPaymentDue.value' },
-            { label: '通貨', default: '', value: 'mainEntity.object.0.paymentMethod.totalPaymentDue.currency' },
-            { label: '決済方法ID', default: '', value: 'mainEntity.object.0.paymentMethod.paymentMethodId' },
-            { label: '決済方法区分', default: '', value: 'mainEntity.object.0.paymentMethod.typeOf' },
-            { label: '処理日時', default: '', value: 'mainEntity.startDate' },
-            { label: 'アイテム', default: '', value: 'itemType' },
-            { label: '注文番号', default: '', value: 'isPartOf.mainEntity.orderNumber' },
-            { label: '注文日時', default: '', value: 'isPartOf.mainEntity.orderDate' },
-            { label: 'アイテム数', default: '', value: 'isPartOf.mainEntity.numItems' },
-            { label: '予約イベント日時', default: '', value: 'eventStartDates' },
-            { label: 'アプリケーションクライアント', default: '', value: 'clientId' },
-            { label: 'カスタマー識別子', default: '', value: 'isPartOf.mainEntity.customer.identifier' },
-        ];
-        const opts = {
-            fields: fields,
-            delimiter: ',',
-            eol: '\n',
-            // flatten: true,
-            // preserveNewLinesInValues: true,
-            // unwind: 'acceptedOffers'
-        };
-
-        const parser = new json2csv.Parser(opts);
-        var csv = parser.parse(reports);
-        const blob = string2blob(csv, { type: 'text/csv' });
-        const fileName = 'accountingReports.csv';
-        download(blob, fileName);
-
-        return false;
+    $(document).on('click', '.btn-downloadCSV', function () {
+        onClickDownload();
     });
 });
 
@@ -257,6 +136,110 @@ function search(pageNumber) {
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
+}
+
+async function onClickDownload() {
+    var conditions4csv = $.fn.getDataFromForm('form.search');
+
+    console.log('downloaing...');
+    // this.utilService.loadStart({ process: 'load' });
+    var notify = $.notify({
+        // icon: 'fa fa-spinner',
+        message: 'レポートダウンロードを開始します...',
+    }, {
+        type: 'primary',
+        delay: 300
+    });
+
+    const reports = [];
+    let page = 0;
+    while (true) {
+        page += 1;
+        conditions4csv.page = page;
+        console.log('searching reports...', conditions4csv.limit, page);
+        $.notify({
+            message: page + 'ページ目を検索しています...',
+        }, {
+            type: 'primary',
+            delay: 300
+        });
+
+        // 全ページ検索する
+        const searchResult = await new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/projects/' + PROJECT_ID + '/accountingReports?format=datatable',
+                cache: false,
+                type: 'GET',
+                dataType: 'json',
+                data: conditions4csv,
+                // data: {
+                //     // limit,
+                //     page,
+                //     format: 'datatable'
+                // }
+                beforeSend: function () {
+                    $('#loadingModal').modal({ backdrop: 'static' });
+                }
+            }).done(function (result) {
+                console.log('searched.', result);
+                resolve(result);
+            }).fail(function (xhr) {
+                var res = $.parseJSON(xhr.responseText);
+                console.error(res.error);
+                reject(new Error(res.error.message));
+            }).always(function () {
+                $('#loadingModal').modal('hide');
+            });
+        });
+
+        if (Array.isArray(searchResult.results)) {
+            reports.push(...searchResult.results);
+        }
+
+        if (searchResult.results.length < conditions4csv.limit) {
+            break;
+        }
+    }
+
+    console.log(reports.length, 'reports found');
+    $.notify({
+        message: reports.length + '件のレポートが見つかりました',
+    }, {
+        type: 'primary',
+        delay: 2000
+    });
+
+    const fields = [
+        { label: 'アクションタイプ', default: '', value: 'mainEntity.typeOf' },
+        { label: '金額', default: '', value: 'mainEntity.object.0.paymentMethod.totalPaymentDue.value' },
+        { label: '通貨', default: '', value: 'mainEntity.object.0.paymentMethod.totalPaymentDue.currency' },
+        { label: '決済方法ID', default: '', value: 'mainEntity.object.0.paymentMethod.paymentMethodId' },
+        { label: '決済方法区分', default: '', value: 'mainEntity.object.0.paymentMethod.typeOf' },
+        { label: '処理日時', default: '', value: 'mainEntity.startDate' },
+        { label: 'アイテム', default: '', value: 'itemType' },
+        { label: '注文番号', default: '', value: 'isPartOf.mainEntity.orderNumber' },
+        { label: '注文日時', default: '', value: 'isPartOf.mainEntity.orderDate' },
+        { label: 'アイテム数', default: '', value: 'isPartOf.mainEntity.numItems' },
+        { label: '予約イベント日時', default: '', value: 'eventStartDates' },
+        { label: 'アプリケーションクライアント', default: '', value: 'clientId' },
+        { label: 'カスタマー識別子', default: '', value: 'isPartOf.mainEntity.customer.identifier' },
+    ];
+    const opts = {
+        fields: fields,
+        delimiter: ',',
+        eol: '\n',
+        // flatten: true,
+        // preserveNewLinesInValues: true,
+        // unwind: 'acceptedOffers'
+    };
+
+    const parser = new json2csv.Parser(opts);
+    var csv = parser.parse(reports);
+    const blob = string2blob(csv, { type: 'text/csv' });
+    const fileName = 'accountingReports.csv';
+    download(blob, fileName);
+
+    return false;
 }
 
 /**

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - 注文検索を実装
 - 経理レポート検索を実装
+- 予約CSVダウンロードを実装
 
 ### Changed
 
