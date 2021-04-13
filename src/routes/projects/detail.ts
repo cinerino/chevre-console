@@ -3,6 +3,7 @@
  */
 import * as express from 'express';
 
+import accountingReportsRouter from '../accountingReports';
 import accountTitlesRouter from '../accountTitles';
 import actionsRouter from '../actions';
 import applicationsRouter from '../applications';
@@ -31,6 +32,7 @@ import transactionsRouter from '../transactions';
 const projectDetailRouter = express.Router();
 
 projectDetailRouter.use('/home', homeRouter);
+projectDetailRouter.use('/accountingReports', accountingReportsRouter);
 projectDetailRouter.use('/accountTitles', accountTitlesRouter);
 projectDetailRouter.use('/actions', actionsRouter);
 projectDetailRouter.use('/applications', applicationsRouter);

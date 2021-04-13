@@ -1,0 +1,112 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="orderNumber" class="bmd-label-static">
+                                注文番号
+                            </label>
+                            <input type="text" class="form-control" name="orderNumber" id="orderNumber"
+                                placeholder="注文番号" />
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label class="bmd-label-static"></label>
+
+                            <div class="form-check form-check-inline">
+                                <label class="form-check-label" for="unwindAcceptedOffers">
+                                    <input class="form-check-input" type="checkbox"
+                                        name="unwindAcceptedOffers" id="unwindAcceptedOffers"
+                                        value="1">
+                                        注文アイテムを展開
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>タイプ</th>
+                            <th>金額</th>
+                            <th>決済方法ID</th>
+                            <th>決済方法区分</th>
+                            <th>処理日時</th>
+                            <th>アイテム</th>
+                            <th>注文番号</th>
+                            <th>注文日時</th>
+                            <th>アイテム数</th>
+                            <th>予約イベント日時</th>
+                            <th>識別子</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="mainEntity.typeOf">
+                                $mainEntity.typeOf$
+                            </td>
+                            <td name="mainEntity.object.0.paymentMethod.totalPaymentDue.value__mainEntity.object.0.paymentMethod.totalPaymentDue.currency">
+                                $mainEntity.object.0.paymentMethod.totalPaymentDue.value$<br>$mainEntity.object.0.paymentMethod.totalPaymentDue.currency$
+                            </td>
+                            <td name="mainEntity.object.0.paymentMethod.paymentMethodId">
+                                $mainEntity.object.0.paymentMethod.paymentMethodId$
+                            </td>
+                            <td name="mainEntity.object.0.paymentMethod.typeOf">
+                                $mainEntity.object.0.paymentMethod.typeOf$
+                            </td>
+                            <td name="mainEntity.startDate|date:YY-MM-DD HH:mm:ssZ">
+                                $mainEntity.startDate$
+                            </td>
+                            <td name="itemTypeStr">
+                                $itemTypeStr$
+                            </td>
+                            <td name="isPartOf.mainEntity.orderNumber">
+                                $isPartOf.mainEntity.orderNumber$
+                            </td>
+                            <td name="isPartOf.mainEntity.orderDate|date:YY-MM-DD HH:mm:ssZ">
+                                $isPartOf.mainEntity.orderDate$
+                            </td>
+                            <td name="isPartOf.mainEntity.numItems">
+                                $isPartOf.mainEntity.numItems$
+                            </td>
+                            <td name="eventStartDatesStr|slice:40">
+                                $eventStartDatesStr$
+                            </td>
+                            <td name="isPartOf.mainEntity.orderNumber__isPartOf.mainEntity.customer.identifier">
+                                <a href="javascript:void(0)" class="showCustomerIdentifier" data-orderNumber="$isPartOf.mainEntity.orderNumber$">
+                                    表示
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

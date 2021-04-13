@@ -1,14 +1,14 @@
 <%- contentFor('title') %>
-注文検索
+経理レポート検索
 <%- contentFor('displayId') %>
-OR-00
+AR-00
 <%- contentFor('styles') %>
 <link href="/css/simplePagination.css" rel="stylesheet">
 <%- contentFor('scripts') %>
 <script src="/js/jquery.simplePagination.js"></script>
 <script src="/js/commonMaster.js"></script>
 <script src="/js/commonMasterList.js"></script>
-<script src="/js/orders/index.js"></script>
+<script src="/js/accountingReports/index.js"></script>
 
 <%- contentFor('body') %>
 
@@ -18,17 +18,12 @@ OR-00
             <!--        Here you can write extra buttons/actions for the toolbar              -->
             <a class="btn btn-primary btn-ok" href="#">
                 <i class="material-icons">refresh</i> 更新</a>
-            <a class="btn btn-primary btn-link" data-toggle="collapse" href=".advanced" role="button"
-                aria-expanded="false">
-                <i class="material-icons">filter_list</i> 高度な検索</a>
         </div>
 
         <%- include('./_dataTables', {  }) %>
     </div>
 
-    <%- include('show') %>
-
-    <div class="modal fade" id="modal-order" tabindex="-1">
+    <div class="modal fade" id="modal-report" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
