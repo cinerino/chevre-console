@@ -35,6 +35,7 @@ accountingReportsRouter.get(
                 const conditions: any = {
                     limit: Number(searchConditions.limit),
                     page: Number(searchConditions.page),
+                    project: { id: { $eq: req.project.id } },
                     order: {
                         ...(typeof req.query.orderNumber === 'string' && req.query.orderNumber.length > 0)
                             ? { orderNumber: { $eq: req.query.orderNumber } }

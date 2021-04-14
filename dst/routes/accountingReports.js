@@ -30,7 +30,7 @@ accountingReportsRouter.get('',
             page: req.query.page
         };
         if (req.query.format === 'datatable') {
-            const conditions = Object.assign({ limit: Number(searchConditions.limit), page: Number(searchConditions.page), order: Object.assign(Object.assign({}, (typeof req.query.orderNumber === 'string' && req.query.orderNumber.length > 0)
+            const conditions = Object.assign({ limit: Number(searchConditions.limit), page: Number(searchConditions.page), project: { id: { $eq: req.project.id } }, order: Object.assign(Object.assign({}, (typeof req.query.orderNumber === 'string' && req.query.orderNumber.length > 0)
                     ? { orderNumber: { $eq: req.query.orderNumber } }
                     : undefined), { paymentMethods: Object.assign({}, (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
                         ? { paymentMethodId: { $eq: req.query.paymentMethodId } }
