@@ -217,7 +217,9 @@
             </a>
         </li>
 
-        <% if (process.env.USE_ACCOUNTING_REPORTS === '1') { %>
+        <% if (process.env.USE_ACCOUNTING_REPORTS === '1' 
+            && typeof user.profile['cognito:username'] === 'string'
+            && user.profile['cognito:username'].slice(0, 6) === 'Google') { %>
         <li class="nav-item <%= (displayId === 'AR-00') ? 'active': ''; %>">
             <a class="nav-link" href="/projects/<%= req.project.id %>/accountingReports">
                 <i class="material-icons">summarize</i>
