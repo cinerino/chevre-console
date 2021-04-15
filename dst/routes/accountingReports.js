@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 経理レポートルーター
  */
-const alvercaapi = require("@alverca/sdk");
+const chevreapi = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const accountingReportsRouter = express_1.Router();
@@ -20,10 +20,10 @@ accountingReportsRouter.get('',
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountingReportService = new alvercaapi.service.AccountingReport({
-            endpoint: process.env.ALVERCA_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: req.project
+        const accountingReportService = new chevreapi.service.AccountingReport({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient
+            // project: req.project
         });
         const searchConditions = {
             limit: req.query.limit,
@@ -85,7 +85,7 @@ accountingReportsRouter.get('',
                     itemType = [order.acceptedOffers.itemOffered.typeOf];
                     itemTypeStr = order.acceptedOffers.itemOffered.typeOf;
                 }
-                if (a.typeOf === 'PayAction' && a.purpose.typeOf === 'ReturnAction') {
+                if (a.mainEntity.typeOf === 'PayAction' && a.mainEntity.purpose.typeOf === 'ReturnAction') {
                     itemType = ['ReturnFee'];
                     itemTypeStr = 'ReturnFee';
                 }
@@ -96,11 +96,11 @@ accountingReportsRouter.get('',
                 let eventStartDates = [];
                 if (Array.isArray(order.acceptedOffers)) {
                     eventStartDates = order.acceptedOffers
-                        .filter((o) => o.itemOffered.typeOf === alvercaapi.factory.chevre.reservationType.EventReservation)
+                        .filter((o) => o.itemOffered.typeOf === chevreapi.factory.reservationType.EventReservation)
                         .map((o) => o.itemOffered.reservationFor.startDate);
                     eventStartDates = [...new Set(eventStartDates)];
                 }
-                else if (((_f = (_e = order.acceptedOffers) === null || _e === void 0 ? void 0 : _e.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === alvercaapi.factory.chevre.reservationType.EventReservation) {
+                else if (((_f = (_e = order.acceptedOffers) === null || _e === void 0 ? void 0 : _e.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === chevreapi.factory.reservationType.EventReservation) {
                     eventStartDates = [order.acceptedOffers.itemOffered.reservationFor.startDate];
                 }
                 return Object.assign(Object.assign({}, a), { amount,

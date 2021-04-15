@@ -1,17 +1,18 @@
 /**
  * 経理レポートルーター
  */
-import * as alvercaapi from '@alverca/sdk';
+import * as chevreapi from '@chevre/api-nodejs-client';
 import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment-timezone';
 
 export type IAction = cinerinoapi.factory.chevre.action.trade.pay.IAction | cinerinoapi.factory.chevre.action.trade.refund.IAction;
-export type IPaymentReport = IAction & {
+export interface IAccountingReoprt {
+    mainEntity: IAction;
     isPartOf: {
         mainEntity: cinerinoapi.factory.order.IOrder;
     };
-};
+}
 
 const accountingReportsRouter = Router();
 
@@ -20,10 +21,10 @@ accountingReportsRouter.get(
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
-            const accountingReportService = new alvercaapi.service.AccountingReport({
-                endpoint: <string>process.env.ALVERCA_API_ENDPOINT,
-                auth: req.user.authClient,
-                project: req.project
+            const accountingReportService = new chevreapi.service.AccountingReport({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+                // project: req.project
             });
 
             const searchConditions: any = {
@@ -80,7 +81,7 @@ accountingReportsRouter.get(
                 };
                 const searchResult = await accountingReportService.search(conditions);
 
-                searchResult.data = (<IPaymentReport[]>searchResult.data).map((a) => {
+                searchResult.data = (<IAccountingReoprt[]>searchResult.data).map((a) => {
                     const order = a.isPartOf.mainEntity;
 
                     let clientId = '';
@@ -101,7 +102,7 @@ accountingReportsRouter.get(
                         itemType = [(<any>order.acceptedOffers).itemOffered.typeOf];
                         itemTypeStr = (<any>order.acceptedOffers).itemOffered.typeOf;
                     }
-                    if (a.typeOf === 'PayAction' && a.purpose.typeOf === 'ReturnAction') {
+                    if (a.mainEntity.typeOf === 'PayAction' && a.mainEntity.purpose.typeOf === 'ReturnAction') {
                         itemType = ['ReturnFee'];
                         itemTypeStr = 'ReturnFee';
                     }
@@ -114,11 +115,11 @@ accountingReportsRouter.get(
                     let eventStartDates: any[] = [];
                     if (Array.isArray(order.acceptedOffers)) {
                         eventStartDates = order.acceptedOffers
-                            .filter((o) => o.itemOffered.typeOf === alvercaapi.factory.chevre.reservationType.EventReservation)
+                            .filter((o) => o.itemOffered.typeOf === chevreapi.factory.reservationType.EventReservation)
                             .map((o) => (<cinerinoapi.factory.order.IReservation>o.itemOffered).reservationFor.startDate);
                         eventStartDates = [...new Set(eventStartDates)];
                     } else if ((<any>order.acceptedOffers)?.itemOffered?.typeOf
-                        === alvercaapi.factory.chevre.reservationType.EventReservation) {
+                        === chevreapi.factory.reservationType.EventReservation) {
                         eventStartDates = [(<any>order.acceptedOffers).itemOffered.reservationFor.startDate];
                     }
 
