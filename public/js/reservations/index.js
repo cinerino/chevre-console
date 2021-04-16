@@ -588,7 +588,7 @@ async function onClickDownload() {
     // this.utilService.loadStart({ process: 'load' });
     var notify = $.notify({
         // icon: 'fa fa-spinner',
-        message: '予約ダウンロードを開始します...',
+        message: 'ダウンロードを開始します...',
     }, {
         type: 'primary',
         delay: 200,
@@ -601,7 +601,7 @@ async function onClickDownload() {
         page += 1;
         conditions4csv.page = page;
         console.log('searching reports...', conditions4csv.limit, page);
-        $.notify({
+        var notifyOnSearching = $.notify({
             message: page + 'ページ目を検索しています...',
         }, {
             type: 'primary',
@@ -634,6 +634,7 @@ async function onClickDownload() {
                 reject(new Error(res.error.message));
             }).always(function () {
                 $('#loadingModal').modal('hide');
+                notifyOnSearching.close();
             });
         });
 
