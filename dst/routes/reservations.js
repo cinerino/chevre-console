@@ -249,11 +249,12 @@ reservationsRouter.get('/search',
         });
     }
     catch (err) {
-        console.error(err);
-        res.json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             success: false,
             count: 0,
-            results: []
+            results: [],
+            error: { message: err.message }
         });
     }
 }));

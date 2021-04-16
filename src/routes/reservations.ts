@@ -275,12 +275,13 @@ reservationsRouter.get(
                 })
             });
         } catch (err) {
-            console.error(err);
-            res.json({
-                success: false,
-                count: 0,
-                results: []
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    success: false,
+                    count: 0,
+                    results: [],
+                    error: { message: err.message }
+                });
         }
     }
 );
