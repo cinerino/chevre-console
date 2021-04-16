@@ -148,7 +148,8 @@ async function onClickDownload() {
         message: 'レポートダウンロードを開始します...',
     }, {
         type: 'primary',
-        delay: 300
+        delay: 200,
+        newest_on_top: true
     });
 
     const reports = [];
@@ -161,7 +162,9 @@ async function onClickDownload() {
             message: page + 'ページ目を検索しています...',
         }, {
             type: 'primary',
-            delay: 300
+            delay: 200,
+            newest_on_top: true
+            // position: 'fixed' 
         });
 
         // 全ページ検索する
@@ -206,7 +209,8 @@ async function onClickDownload() {
         message: reports.length + '件のレポートが見つかりました',
     }, {
         type: 'primary',
-        delay: 2000
+        delay: 2000,
+        newest_on_top: true
     });
 
     const fields = [

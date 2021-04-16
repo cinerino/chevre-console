@@ -591,7 +591,8 @@ async function onClickDownload() {
         message: '予約ダウンロードを開始します...',
     }, {
         type: 'primary',
-        delay: 300
+        delay: 200,
+        newest_on_top: true
     });
 
     const datas = [];
@@ -604,7 +605,8 @@ async function onClickDownload() {
             message: page + 'ページ目を検索しています...',
         }, {
             type: 'primary',
-            delay: 300
+            delay: 200,
+            newest_on_top: true
         });
 
         // 全ページ検索する
@@ -651,7 +653,8 @@ async function onClickDownload() {
         message: datas.length + '件の予約が見つかりました',
     }, {
         type: 'primary',
-        delay: 2000
+        delay: 2000,
+        newest_on_top: true
     });
 
     const fields = [
