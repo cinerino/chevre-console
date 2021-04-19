@@ -28,6 +28,7 @@ ordersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 ordersRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     try {
         const orderService = new chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
@@ -79,21 +80,15 @@ ordersRouter.get('/search',
                     : undefined
             },
             customer: {
-                // name: (req.query.underName !== undefined
-                //     && req.query.underName.name !== undefined
-                //     && req.query.underName.name !== '')
-                //     ? req.query.underName.name
-                //     : undefined,
-                // email: (req.query.underName !== undefined
-                //     && req.query.underName.email !== undefined
-                //     && req.query.underName.email !== '')
-                //     ? req.query.underName.email
-                //     : undefined,
-                // telephone: (req.query.underName !== undefined
-                //     && req.query.underName.telephone !== undefined
-                //     && req.query.underName.telephone !== '')
-                //     ? req.query.underName.telephone
-                //     : undefined,
+                ids: (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
+                    ? [req.query.customerId]
+                    : undefined,
+                email: (typeof ((_a = req.query.customer) === null || _a === void 0 ? void 0 : _a.email) === 'string' && req.query.customer.email.length > 0)
+                    ? { $regex: req.query.customer.email }
+                    : undefined,
+                telephone: (typeof ((_b = req.query.customer) === null || _b === void 0 ? void 0 : _b.telephone) === 'string' && req.query.customer.telephone.length > 0)
+                    ? { $regex: req.query.customer.telephone }
+                    : undefined,
                 identifier: {
                     $in: (customerIdentifierIn.length > 0) ? customerIdentifierIn : undefined
                 }

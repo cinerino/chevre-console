@@ -79,13 +79,12 @@ $(function () {
         }
     });
 
-    var movieSelection = $('#reservationFor\\[superEvent\\]\\[workPerformed\\]\\[identifier\\]');
-    movieSelection.select2({
+    $('#customerId').select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: 'コンテンツ選択',
+        placeholder: '顧客選択',
         allowClear: true,
         ajax: {
-            url: '/projects/' + PROJECT_ID + '/creativeWorks/movie/getlist',
+            url: '/projects/' + PROJECT_ID + '/customers/getlist',
             dataType: 'json',
             data: function (params) {
                 var query = {
@@ -102,10 +101,10 @@ $(function () {
 
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
-                    results: data.results.map(function (movie) {
+                    results: data.results.map(function (customer) {
                         return {
-                            id: movie.identifier,
-                            text: movie.name
+                            id: customer.id,
+                            text: customer.name.ja
                         }
                     })
                 };

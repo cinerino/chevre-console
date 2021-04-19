@@ -82,21 +82,15 @@ ordersRouter.get(
                         : undefined
                 },
                 customer: {
-                    // name: (req.query.underName !== undefined
-                    //     && req.query.underName.name !== undefined
-                    //     && req.query.underName.name !== '')
-                    //     ? req.query.underName.name
-                    //     : undefined,
-                    // email: (req.query.underName !== undefined
-                    //     && req.query.underName.email !== undefined
-                    //     && req.query.underName.email !== '')
-                    //     ? req.query.underName.email
-                    //     : undefined,
-                    // telephone: (req.query.underName !== undefined
-                    //     && req.query.underName.telephone !== undefined
-                    //     && req.query.underName.telephone !== '')
-                    //     ? req.query.underName.telephone
-                    //     : undefined,
+                    ids: (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
+                        ? [req.query.customerId]
+                        : undefined,
+                    email: (typeof req.query.customer?.email === 'string' && req.query.customer.email.length > 0)
+                        ? { $regex: req.query.customer.email }
+                        : undefined,
+                    telephone: (typeof req.query.customer?.telephone === 'string' && req.query.customer.telephone.length > 0)
+                        ? { $regex: req.query.customer.telephone }
+                        : undefined,
                     identifier: {
                         $in: (customerIdentifierIn.length > 0) ? customerIdentifierIn : undefined
                     }
