@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 経理レポート検索を実装
 - 予約CSVダウンロードを実装
 - 旧売上レポート検索を実装
+- 顧客管理を追加
 
 ### Changed
 

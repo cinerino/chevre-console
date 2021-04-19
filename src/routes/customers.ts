@@ -1,0 +1,322 @@
+/**
+ * 顧客ルーター
+ */
+import * as chevre from '@chevre/api-nodejs-client';
+import { Request, Router } from 'express';
+// tslint:disable-next-line:no-implicit-dependencies
+import { ParamsDictionary } from 'express-serve-static-core';
+import { body, validationResult } from 'express-validator';
+import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
+
+import * as Message from '../message';
+
+export interface ICustomer extends chevre.factory.organization.IOrganization {
+    id: string;
+    name: chevre.factory.multilingualString;
+    project: { id: string; typeOf: chevre.factory.organizationType.Project };
+}
+
+export interface ISearchConditions {
+    limit?: number;
+    page?: number;
+    project?: { id?: { $eq?: string } };
+    name?: { $regex?: string };
+}
+
+const NUM_ADDITIONAL_PROPERTY = 10;
+
+const customersRouter = Router();
+
+customersRouter.get(
+    '',
+    async (__, res) => {
+        res.render('customers/index', {
+            message: ''
+        });
+    }
+);
+
+// tslint:disable-next-line:use-default-type-parameter
+customersRouter.all<ParamsDictionary>(
+    '/new',
+    ...validate(),
+    async (req, res) => {
+        let message = '';
+        let errors: any = {};
+
+        const customerService = new chevre.service.Customer({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        if (req.method === 'POST') {
+            // 検証
+            const validatorResult = validationResult(req);
+            errors = validatorResult.mapped();
+            // 検証
+            if (validatorResult.isEmpty()) {
+                // 登録プロセス
+                try {
+                    req.body.id = '';
+                    let customer = await createFromBody(req, true);
+
+                    customer = await customerService.create(customer);
+                    req.flash('message', '登録しました');
+                    res.redirect(`/projects/${req.project.id}/customers/${customer.id}/update`);
+
+                    return;
+                } catch (error) {
+                    message = error.message;
+                }
+            }
+        }
+
+        const forms = {
+            additionalProperty: [],
+            name: {},
+            ...req.body
+        };
+        if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+
+        res.render('customers/new', {
+            message: message,
+            errors: errors,
+            forms: forms
+        });
+    }
+);
+
+customersRouter.get(
+    '/getlist',
+    async (req, res) => {
+        try {
+            const customerService = new chevre.service.Customer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const limit = Number(req.query.limit);
+            const page = Number(req.query.page);
+
+            const searchConditions: ISearchConditions = {
+                limit: limit,
+                page: page,
+                project: { id: { $eq: req.project.id } },
+                name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? { $regex: req.query.name } : undefined
+            };
+
+            let data: ICustomer[];
+            const searchResult = await customerService.search(searchConditions);
+            data = searchResult.data;
+
+            res.json({
+                success: true,
+                count: (data.length === Number(limit))
+                    ? (Number(page) * Number(limit)) + 1
+                    : ((Number(page) - 1) * Number(limit)) + Number(data.length),
+                results: data.map((t) => {
+                    return {
+                        ...t
+                    };
+                })
+            });
+        } catch (err) {
+            res.json({
+                success: false,
+                message: err.message,
+                count: 0,
+                results: []
+            });
+        }
+    }
+);
+
+customersRouter.get(
+    '/:id',
+    async (req, res) => {
+        try {
+            const customerService = new chevre.service.Customer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+            const customer = await customerService.findById({ id: String(req.params.id) });
+
+            res.json(customer);
+        } catch (err) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: err.message
+                });
+        }
+    }
+);
+
+customersRouter.delete(
+    '/:id',
+    async (req, res) => {
+        try {
+            const customerService = new chevre.service.Customer({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient
+            });
+
+            const customer = await customerService.findById({ id: req.params.id });
+            await preDelete(req, customer);
+
+            await customerService.deleteById({ id: req.params.id });
+
+            res.status(NO_CONTENT)
+                .end();
+        } catch (error) {
+            res.status(BAD_REQUEST)
+                .json({ error: { message: error.message } });
+        }
+    }
+);
+
+async function preDelete(__: Request, ___: ICustomer) {
+    // 施設が存在するかどうか
+    // const placeService = new chevre.service.Place({
+    //     endpoint: <string>process.env.API_ENDPOINT,
+    //     auth: req.user.authClient
+    // });
+
+    // const searchMovieTheatersResult = await placeService.searchMovieTheaters({
+    //     limit: 1,
+    //     project: { ids: [req.project.id] },
+    //     parentOrganization: { id: { $eq: seller.id } }
+    // });
+    // if (searchMovieTheatersResult.data.length > 0) {
+    //     throw new Error('関連する施設が存在します');
+    // }
+}
+
+// tslint:disable-next-line:use-default-type-parameter
+customersRouter.all<ParamsDictionary>(
+    '/:id/update',
+    ...validate(),
+    async (req, res, next) => {
+        let message = '';
+        let errors: any = {};
+
+        const customerService = new chevre.service.Customer({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient
+        });
+
+        try {
+            let customer = await customerService.findById({ id: req.params.id });
+
+            if (req.method === 'POST') {
+                // 検証
+                const validatorResult = validationResult(req);
+                errors = validatorResult.mapped();
+
+                // 検証
+                if (validatorResult.isEmpty()) {
+                    try {
+                        req.body.id = req.params.id;
+                        customer = await createFromBody(req, false);
+                        await customerService.update({ id: String(customer.id), attributes: customer });
+                        req.flash('message', '更新しました');
+                        res.redirect(req.originalUrl);
+
+                        return;
+                    } catch (error) {
+                        message = error.message;
+                    }
+                }
+            }
+
+            const forms = {
+                ...customer,
+                ...req.body
+            };
+            if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                    return {};
+                }));
+            }
+
+            if (req.method === 'POST') {
+                // no op
+            } else {
+                // no op
+            }
+
+            res.render('customers/update', {
+                message: message,
+                errors: errors,
+                forms: forms
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// tslint:disable-next-line:cyclomatic-complexity
+async function createFromBody(
+    req: Request, isNew: boolean
+): Promise<ICustomer> {
+    let nameFromJson: any = {};
+    if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
+        try {
+            nameFromJson = JSON.parse(req.body.nameStr);
+        } catch (error) {
+            throw new Error(`高度な名称の型が不適切です ${error.message}`);
+        }
+    }
+
+    const telephone: string | undefined = req.body.telephone;
+    const url: string | undefined = req.body.url;
+
+    return {
+        project: { typeOf: req.project.typeOf, id: req.project.id },
+        typeOf: 'Organization',
+        id: req.body.id,
+        name: {
+            ...nameFromJson,
+            ja: req.body.name.ja,
+            ...(typeof req.body.name?.en === 'string') ? { en: req.body.name.en } : undefined
+        },
+        additionalProperty: (Array.isArray(req.body.additionalProperty))
+            ? req.body.additionalProperty.filter((p: any) => typeof p.name === 'string' && p.name !== '')
+                .map((p: any) => {
+                    return {
+                        name: String(p.name),
+                        value: String(p.value)
+                    };
+                })
+            : undefined,
+        ...(typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined,
+        ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
+        ...(!isNew)
+            ? {
+                $unset: {
+                    ...(typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined,
+                    ...(typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined
+                }
+            }
+            : undefined
+    };
+}
+
+function validate() {
+    return [
+        body(['name.ja'])
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
+            .isLength({ max: 64 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('名称', 64))
+    ];
+}
+
+export default customersRouter;
