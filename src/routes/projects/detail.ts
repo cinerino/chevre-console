@@ -18,6 +18,7 @@ import homeRouter from '../home';
 import offerCatalogsRouter from '../offerCatalogs';
 import offersRouter from '../offers';
 import ordersRouter from '../orders';
+import ownershipInfosRouter from '../ownershipInfos';
 import paymentServicesRouter from '../paymentServices';
 import movieTheaterRouter from '../places/movieTheater';
 import screeningRoomRouter from '../places/screeningRoom';
@@ -49,6 +50,7 @@ projectDetailRouter.use('/events/screeningEventSeries', screeningEventSeriesRout
 projectDetailRouter.use('/offerCatalogs', offerCatalogsRouter);
 projectDetailRouter.use('/offers', offersRouter);
 projectDetailRouter.use('/orders', ordersRouter);
+projectDetailRouter.use('/ownershipInfos', ownershipInfosRouter);
 projectDetailRouter.use('/paymentServices', paymentServicesRouter);
 projectDetailRouter.use('/places/movieTheater', movieTheaterRouter);
 projectDetailRouter.use('/places/screeningRoom', screeningRoomRouter);

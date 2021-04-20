@@ -19,6 +19,7 @@ const home_1 = require("../home");
 const offerCatalogs_1 = require("../offerCatalogs");
 const offers_1 = require("../offers");
 const orders_1 = require("../orders");
+const ownershipInfos_1 = require("../ownershipInfos");
 const paymentServices_1 = require("../paymentServices");
 const movieTheater_1 = require("../places/movieTheater");
 const screeningRoom_1 = require("../places/screeningRoom");
@@ -48,6 +49,7 @@ projectDetailRouter.use('/events/screeningEventSeries', screeningEventSeries_1.d
 projectDetailRouter.use('/offerCatalogs', offerCatalogs_1.default);
 projectDetailRouter.use('/offers', offers_1.default);
 projectDetailRouter.use('/orders', orders_1.default);
+projectDetailRouter.use('/ownershipInfos', ownershipInfos_1.default);
 projectDetailRouter.use('/paymentServices', paymentServices_1.default);
 projectDetailRouter.use('/places/movieTheater', movieTheater_1.default);
 projectDetailRouter.use('/places/screeningRoom', screeningRoom_1.default);
