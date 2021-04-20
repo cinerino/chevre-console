@@ -53,6 +53,12 @@ ownershipInfosRouter.get(
                 typeOfGood: {
                     typeOf: (typeof req.query.typeOfGood?.typeOf === 'string' && req.query.typeOfGood.typeOf.length > 0)
                         ? { $eq: req.query.typeOfGood.typeOf }
+                        : undefined,
+                    id: (typeof req.query.typeOfGood?.id === 'string' && req.query.typeOfGood.id.length > 0)
+                        ? { $eq: req.query.typeOfGood.id }
+                        : undefined,
+                    identifier: (typeof req.query.typeOfGood?.identifier === 'string' && req.query.typeOfGood.identifier.length > 0)
+                        ? { $eq: req.query.typeOfGood.identifier }
                         : undefined
                 }
             };

@@ -38,12 +38,29 @@
                             <input class="form-control" placeholder="所有権ID" name="ownedBy[id]"
                                 id="ownedBy[id]" />
                         </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="typeOfGood[typeOf]" class="bmd-label-static">
                                 所有物タイプ
                             </label>
-                            <input class="form-control" placeholder="対象タイプ" name="typeOfGood[typeOf]"
+                            <input class="form-control" placeholder="所有物タイプ" name="typeOfGood[typeOf]"
                                 id="typeOfGood[typeOf]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[id]" class="bmd-label-static">
+                                所有物ID
+                            </label>
+                            <input class="form-control" placeholder="所有物ID" name="typeOfGood[id]"
+                                id="typeOfGood[id]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[identifier]" class="bmd-label-static">
+                                所有物識別子
+                            </label>
+                            <input class="form-control" placeholder="所有物識別子" name="typeOfGood[identifier]"
+                                id="typeOfGood[identifier]" />
                         </div>
                     </div>
 
@@ -76,14 +93,16 @@
                             <td name="ownedThrough|date:YY-MM-DD HH:mm:ssZ">
                                 $ownedThrough$
                             </td>
-                            <td name="id__ownedBy.typeOf">
+                            <td name="id__ownedBy.typeOf__ownedBy.name|slice:10">
                                 <a href="javascript:void(0)" class="showOwnedBy" data-id="$id$">
                                     $ownedBy.typeOf$
+                                    <br>$ownedBy.name$
                                 </a>
                             </td>
-                            <td name="id__typeOfGood.typeOf">
+                            <td name="id__typeOfGood.typeOf__typeOfGood.id__typeOfGood.identifier">
                                 <a href="javascript:void(0)" class="showTypeOfGood" data-id="$id$">
                                     $typeOfGood.typeOf$
+                                    <br>$typeOfGood.id$ $typeOfGood.identifier$
                                 </a>
                             </td>
                         </tr>

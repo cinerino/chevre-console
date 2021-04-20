@@ -26,7 +26,7 @@ ownershipInfosRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, func
 ownershipInfosRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b, _c, _d, _e;
     try {
         const ownershipInfoService = new chevre.service.OwnershipInfo({
             endpoint: process.env.API_ENDPOINT,
@@ -56,6 +56,12 @@ ownershipInfosRouter.get('/search',
             typeOfGood: {
                 typeOf: (typeof ((_c = req.query.typeOfGood) === null || _c === void 0 ? void 0 : _c.typeOf) === 'string' && req.query.typeOfGood.typeOf.length > 0)
                     ? { $eq: req.query.typeOfGood.typeOf }
+                    : undefined,
+                id: (typeof ((_d = req.query.typeOfGood) === null || _d === void 0 ? void 0 : _d.id) === 'string' && req.query.typeOfGood.id.length > 0)
+                    ? { $eq: req.query.typeOfGood.id }
+                    : undefined,
+                identifier: (typeof ((_e = req.query.typeOfGood) === null || _e === void 0 ? void 0 : _e.identifier) === 'string' && req.query.typeOfGood.identifier.length > 0)
+                    ? { $eq: req.query.typeOfGood.identifier }
                     : undefined
             }
         };
