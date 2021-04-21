@@ -17,6 +17,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../message");
+const NUM_CONTACT_POINT = 5;
 const NUM_ADDITIONAL_PROPERTY = 10;
 const customersRouter = express_1.Router();
 customersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,10 +53,16 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {} }, req.body);
+    const forms = Object.assign({ additionalProperty: [], contactPoint: [], name: {} }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+            return {};
+        }));
+    }
+    if (forms.contactPoint.length < NUM_CONTACT_POINT) {
+        // tslint:disable-next-line:prefer-array-literal
+        forms.contactPoint.push(...[...Array(NUM_CONTACT_POINT - forms.contactPoint.length)].map(() => {
             return {};
         }));
     }
@@ -88,7 +95,7 @@ customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, 
                 ? (Number(page) * Number(limit)) + 1
                 : ((Number(page) - 1) * Number(limit)) + Number(data.length),
             results: data.map((t) => {
-                return Object.assign({}, t);
+                return Object.assign(Object.assign({}, t), { numContactPoint: (Array.isArray(t.contactPoint)) ? t.contactPoint.length : 0 });
             })
         });
     }
@@ -187,6 +194,12 @@ customersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(
                 return {};
             }));
         }
+        if (forms.contactPoint.length < NUM_CONTACT_POINT) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.contactPoint.push(...[...Array(NUM_CONTACT_POINT - forms.contactPoint.length)].map(() => {
+                return {};
+            }));
+        }
         if (req.method === 'POST') {
             // no op
         }
@@ -226,7 +239,14 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (!isNew)
+                : undefined, contactPoint: (Array.isArray(req.body.contactPoint))
+                ? req.body.contactPoint.filter((p) => (typeof p.name === 'string' && p.name.length > 0)
+                    || (typeof p.email === 'string' && p.email.length > 0)
+                    || (typeof p.telephone === 'string' && p.telephone.length > 0))
+                    .map((p) => {
+                    return Object.assign(Object.assign(Object.assign({ typeOf: 'ContactPoint' }, (typeof p.name === 'string' && p.name.length > 0) ? { name: p.name } : undefined), (typeof p.email === 'string' && p.email.length > 0) ? { email: p.email } : undefined), (typeof p.telephone === 'string' && p.telephone.length > 0) ? { telephone: p.telephone } : undefined);
+                })
+                : [] }, (typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined), (typeof url === 'string' && url.length > 0) ? { url } : undefined), (!isNew)
             ? {
                 $unset: Object.assign(Object.assign({}, (typeof telephone !== 'string' || telephone.length === 0) ? { telephone: 1 } : undefined), (typeof url !== 'string' || url.length === 0) ? { url: 1 } : undefined)
             }

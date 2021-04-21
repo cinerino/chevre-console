@@ -1,0 +1,34 @@
+<% contactPoint.forEach((_, key) => { %>
+    <div class="form-row">
+        <div class="form-group bmd-form-group col-4">
+            <label class="bmd-label-floating">name</label>
+            <input class="form-control" name="contactPoint[<%= key %>][name]"
+                id="contactPoint[<%= key %>][name]" maxlength=128 value="<%= contactPoint[key].name %>">
+            <% if (errors && errors[`contactPoint[${key}].name`]) { %>
+            <span class="bmd-help text-danger d-block">
+                <%- errors[`contactPoint[${key}].name`].msg %>
+            </span>
+            <% } %>
+        </div>
+        <div class="form-group bmd-form-group col-4">
+            <label class="bmd-label-floating">email</label>
+            <input class="form-control" name="contactPoint[<%= key %>][email]"
+                id="contactPoint[<%= key %>][email]" maxlength=128 value="<%= contactPoint[key].email %>">
+            <% if (errors && errors[`contactPoint[${key}].email`]) { %>
+            <span class="bmd-help text-danger d-block">
+                <%- errors[`contactPoint[${key}].email`].msg %>
+            </span>
+            <% } %>
+        </div>
+        <div class="form-group bmd-form-group col-4">
+            <label class="bmd-label-floating">telephone</label>
+            <input class="form-control" name="contactPoint[<%= key %>][telephone]"
+                id="contactPoint[<%= key %>][telephone]" maxlength=128 value="<%= contactPoint[key].telephone %>">
+            <% if (errors && errors[`contactPoint[${key}].telephone`]) { %>
+            <span class="bmd-help text-danger d-block">
+                <%- errors[`contactPoint[${key}].telephone`].msg %>
+            </span>
+            <% } %>
+        </div>
+    </div>
+    <% }) %>

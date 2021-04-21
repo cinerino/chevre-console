@@ -68,10 +68,10 @@ $(function () {
         showAdditionalProperty(id);
     });
 
-    $(document).on('click', '.showPaymentAccepted', function (event) {
+    $(document).on('click', '.showContactPoint', function (event) {
         var id = $(this).attr('data-id');
 
-        showPaymentAccepted(id);
+        showContactPoint(id);
     });
 
     $(document).on('click', '.showHasMerchantReturnPolicy', function (event) {
@@ -142,6 +142,49 @@ $(function () {
                 return $('<tr>').append([
                     $('<td>').text(property.name),
                     $('<td>').text(property.value)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            div.addClass('table-responsive')
+                .append(table);
+        } else {
+            div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
+        }
+
+        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }
+
+    function showContactPoint(id) {
+        var customer = $.CommonMasterList.getDatas().find(function (data) {
+            return data.id === id
+        });
+        if (customer === undefined) {
+            alert('顧客' + id + 'が見つかりません');
+
+            return;
+        }
+
+        var modal = $('#modal-customer');
+        var div = $('<div>')
+
+        if (Array.isArray(customer.contactPoint)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('Name'),
+                    $('<th>').text('Email'),
+                    $('<th>').text('Telephone')
+                ])
+            ]);
+            tbody.append(customer.contactPoint.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.name),
+                    $('<td>').text(property.email),
+                    $('<td>').text(property.telephone)
                 ]);
             }));
             var table = $('<table>').addClass('table table-sm')

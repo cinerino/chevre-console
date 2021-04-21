@@ -10,8 +10,15 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../message';
 
+export interface IContactPoint {
+    typeOf: 'ContactPoint';
+    email: string;
+    name: string;
+    telephone: string;
+}
 export interface ICustomer extends chevre.factory.organization.IOrganization {
     id: string;
+    contactPoint?: IContactPoint[];
     name: chevre.factory.multilingualString;
     project: { id: string; typeOf: chevre.factory.organizationType.Project };
 }
@@ -23,6 +30,7 @@ export interface ISearchConditions {
     name?: { $regex?: string };
 }
 
+const NUM_CONTACT_POINT = 5;
 const NUM_ADDITIONAL_PROPERTY = 10;
 
 const customersRouter = Router();
@@ -73,12 +81,19 @@ customersRouter.all<ParamsDictionary>(
 
         const forms = {
             additionalProperty: [],
+            contactPoint: [],
             name: {},
             ...req.body
         };
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
+                return {};
+            }));
+        }
+        if (forms.contactPoint.length < NUM_CONTACT_POINT) {
+            // tslint:disable-next-line:prefer-array-literal
+            forms.contactPoint.push(...[...Array(NUM_CONTACT_POINT - forms.contactPoint.length)].map(() => {
                 return {};
             }));
         }
@@ -121,7 +136,8 @@ customersRouter.get(
                     : ((Number(page) - 1) * Number(limit)) + Number(data.length),
                 results: data.map((t) => {
                     return {
-                        ...t
+                        ...t,
+                        numContactPoint: (Array.isArray(t.contactPoint)) ? t.contactPoint.length : 0
                     };
                 })
             });
@@ -243,6 +259,12 @@ customersRouter.all<ParamsDictionary>(
                     return {};
                 }));
             }
+            if (forms.contactPoint.length < NUM_CONTACT_POINT) {
+                // tslint:disable-next-line:prefer-array-literal
+                forms.contactPoint.push(...[...Array(NUM_CONTACT_POINT - forms.contactPoint.length)].map(() => {
+                    return {};
+                }));
+            }
 
             if (req.method === 'POST') {
                 // no op
@@ -295,6 +317,19 @@ async function createFromBody(
                     };
                 })
             : undefined,
+        contactPoint: (Array.isArray(req.body.contactPoint))
+            ? req.body.contactPoint.filter((p: any) => (typeof p.name === 'string' && p.name.length > 0)
+                || (typeof p.email === 'string' && p.email.length > 0)
+                || (typeof p.telephone === 'string' && p.telephone.length > 0))
+                .map((p: any) => {
+                    return {
+                        typeOf: 'ContactPoint',
+                        ...(typeof p.name === 'string' && p.name.length > 0) ? { name: p.name } : undefined,
+                        ...(typeof p.email === 'string' && p.email.length > 0) ? { email: p.email } : undefined,
+                        ...(typeof p.telephone === 'string' && p.telephone.length > 0) ? { telephone: p.telephone } : undefined
+                    };
+                })
+            : [],
         ...(typeof telephone === 'string' && telephone.length > 0) ? { telephone } : undefined,
         ...(typeof url === 'string' && url.length > 0) ? { url } : undefined,
         ...(!isNew)

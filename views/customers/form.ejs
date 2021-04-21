@@ -18,11 +18,16 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
-                    追加特性
+                    連絡窓口
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
+                    追加特性
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link5" role="tablist">
                     高度な設定
                 </a>
             </li>
@@ -81,12 +86,18 @@
             </div>
 
             <div class="tab-pane" id="link3">
+                <%- include('./_contactPoint', {
+                    contactPoint: forms.contactPoint
+                }) %>
+            </div>
+
+            <div class="tab-pane" id="link4">
                 <%- include('../common/part/_additionalProperty', {
                     additionalProperty: forms.additionalProperty
                 }) %>
             </div>
 
-            <div class="tab-pane" id="link4">
+            <div class="tab-pane" id="link5">
                 <% if (!isNew) { %>
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
