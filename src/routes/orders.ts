@@ -82,8 +82,24 @@ ordersRouter.get(
                         : undefined
                 },
                 customer: {
-                    ids: (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
-                        ? [req.query.customerId]
+                    memberOf: {
+                        membershipNumber: {
+                            $eq: (typeof req.query.customer?.membershipNumber === 'string'
+                                && req.query.customer.membershipNumber.length > 0)
+                                ? req.query.customer.membershipNumber
+                                : undefined
+                        }
+                    },
+                    ids: (typeof req.query.customer?.id === 'string' && req.query.customer.id.length > 0)
+                        ? [req.query.customer.id]
+                        : (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
+                            ? [req.query.customerId]
+                            : undefined,
+                    familyName: (typeof req.query.customer?.familyName === 'string' && req.query.customer.familyName.length > 0)
+                        ? { $regex: req.query.customer.familyName }
+                        : undefined,
+                    givenName: (typeof req.query.customer?.givenName === 'string' && req.query.customer.givenName.length > 0)
+                        ? { $regex: req.query.customer.givenName }
                         : undefined,
                     email: (typeof req.query.customer?.email === 'string' && req.query.customer.email.length > 0)
                         ? { $regex: req.query.customer.email }
@@ -94,6 +110,47 @@ ordersRouter.get(
                     identifier: {
                         $in: (customerIdentifierIn.length > 0) ? customerIdentifierIn : undefined
                     }
+                },
+                seller: {
+                    ids: (typeof req.query.seller === 'string' && req.query.seller.length > 0)
+                        ? [req.query.seller]
+                        : undefined
+                },
+                acceptedOffers: {
+                    itemOffered: {
+                        typeOf: {
+                            $in: (typeof req.query.itemOffered?.typeOf === 'string' && req.query.itemOffered.typeOf.length > 0)
+                                ? [req.query.itemOffered.typeOf]
+                                : undefined
+                        },
+                        identifier: {
+                            $in: (typeof req.query.itemOffered?.identifier === 'string' && req.query.itemOffered.identifier.length > 0)
+                                ? [req.query.itemOffered.identifier]
+                                : undefined
+                        },
+                        issuedThrough: {
+                            id: {
+                                $in: (typeof req.query.itemOffered?.issuedThrough?.id === 'string'
+                                    && req.query.itemOffered.issuedThrough.id.length > 0)
+                                    ? [req.query.itemOffered.issuedThrough.id]
+                                    : undefined
+                            }
+                        },
+                        ids: (typeof req.query.itemOffered?.id === 'string' && req.query.itemOffered.id.length > 0)
+                            ? [req.query.itemOffered.id]
+                            : undefined
+                    }
+                },
+                paymentMethods: {
+                    typeOfs: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
+                        ? [req.query.paymentMethodType]
+                        : undefined,
+                    accountIds: (typeof req.query.paymentMethod?.accountId === 'string' && req.query.paymentMethod.accountId.length > 0)
+                        ? [req.query.paymentMethod.accountId]
+                        : undefined,
+                    paymentMethodIds: (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
+                        ? [req.query.paymentMethodId]
+                        : undefined
                 }
                 // broker: {
                 //     id: (typeof brokerIdEq === 'string')

@@ -34,18 +34,18 @@
                             </select>
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
+                            <label for="seller" class="bmd-label-static">
+                                販売者
+                            </label>
+                            <select class="form-control" name="seller" id="seller" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
                             <label for="customerId" class="bmd-label-static">
                                 顧客
                             </label>
                             <select class="form-control" name="customerId"
                                 id="customerId" style="width: 100%;">
-                            </select>
-                        </div>
-                        <div class="form-group bmd-form-group col-md-2">
-                            <label for="admin[id]" class="bmd-label-static">
-                                仲介
-                            </label>
-                            <select class="form-control" name="admin[id]" id="admin[id]" style="width: 100%;">
                             </select>
                         </div>
                     </div>
@@ -77,9 +77,22 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="admin[id]" class="bmd-label-static">
+                                    仲介
+                                </label>
+                                <select class="form-control" name="admin[id]" id="admin[id]" style="width: 100%;">
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[membershipNumber]" class="bmd-label-static">
+                                    カスタマーusername
+                                </label>
+                                <input class="form-control" placeholder="username" name="customer[membershipNumber]" id="customer[membershipNumber]" />
+                            </div>
                             <div class="form-group bmd-form-group col-md-2">
                                 <label for="customer[id]" class="bmd-label-static">
                                     カスタマーID
@@ -87,18 +100,79 @@
                                 <input class="form-control" placeholder="ID" name="customer[id]" id="customer[id]" />
                             </div>
                             <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[familyName]" class="bmd-label-static">
+                                    Family Name
+                                </label>
+                                <input class="form-control" placeholder="^もーしょん(正規表現)" name="customer[familyName]" id="customer[familyName]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[givenName]" class="bmd-label-static">
+                                    Given Name
+                                </label>
+                                <input class="form-control" placeholder="^たろう(正規表現)" name="customer[givenName]" id="customer[givenName]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
                                 <label for="customer[email]" class="bmd-label-static">
                                     カスタマーEmail
                                 </label>
-                                <input class="form-control" placeholder="Email" name="customer[email]"
+                                <input class="form-control" placeholder="^cinerino(正規表現)" name="customer[email]"
                                     id="customer[email]" />
                             </div>
                             <div class="form-group bmd-form-group col-md-2">
                                 <label for="customer[telephone]" class="bmd-label-static">
                                     カスタマーTEL
                                 </label>
-                                <input class="form-control" placeholder="Telephone" name="customer[telephone]"
+                                <input class="form-control" placeholder="^\+81901234(正規表現)" name="customer[telephone]"
                                     id="customer[telephone]" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[typeOf]" class="bmd-label-static">
+                                    アイテムタイプ
+                                </label>
+                                <input class="form-control" placeholder="アイテムタイプ" name="itemOffered[typeOf]" id="itemOffered[typeOf]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[id]" class="bmd-label-static">
+                                    アイテムID
+                                </label>
+                                <input class="form-control" placeholder="アイテムID" name="itemOffered[id]" id="itemOffered[id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[identifier]" class="bmd-label-static">
+                                    アイテム識別子
+                                </label>
+                                <input class="form-control" placeholder="アイテム識別子" name="itemOffered[identifier]" id="itemOffered[identifier]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[issuedThrough][id]" class="bmd-label-static">
+                                    アイテム発行サービスID
+                                </label>
+                                <input class="form-control" placeholder="アイテム発行サービスID" name="itemOffered[issuedThrough][id]" id="itemOffered[issuedThrough][id]" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="paymentMethodType" class="bmd-label-static">
+                                    決済方法区分
+                                </label>
+                                <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
+                                </select>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="paymentMethod[accountId]" class="bmd-label-static">
+                                    決済アカウントID
+                                </label>
+                                <input class="form-control" placeholder="************1111、口座番号、購入管理番号" name="paymentMethod[accountId]" id="paymentMethod[accountId]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="paymentMethodId" class="bmd-label-static">
+                                    決済ID
+                                </label>
+                                <input class="form-control" placeholder="決済ID" name="paymentMethodId" id="paymentMethodId" />
                             </div>
                         </div>
                     </div>

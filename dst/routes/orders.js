@@ -28,7 +28,7 @@ ordersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 ordersRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     try {
         const orderService = new chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
@@ -80,18 +80,75 @@ ordersRouter.get('/search',
                     : undefined
             },
             customer: {
-                ids: (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
-                    ? [req.query.customerId]
+                memberOf: {
+                    membershipNumber: {
+                        $eq: (typeof ((_a = req.query.customer) === null || _a === void 0 ? void 0 : _a.membershipNumber) === 'string'
+                            && req.query.customer.membershipNumber.length > 0)
+                            ? req.query.customer.membershipNumber
+                            : undefined
+                    }
+                },
+                ids: (typeof ((_b = req.query.customer) === null || _b === void 0 ? void 0 : _b.id) === 'string' && req.query.customer.id.length > 0)
+                    ? [req.query.customer.id]
+                    : (typeof req.query.customerId === 'string' && req.query.customerId.length > 0)
+                        ? [req.query.customerId]
+                        : undefined,
+                familyName: (typeof ((_c = req.query.customer) === null || _c === void 0 ? void 0 : _c.familyName) === 'string' && req.query.customer.familyName.length > 0)
+                    ? { $regex: req.query.customer.familyName }
                     : undefined,
-                email: (typeof ((_a = req.query.customer) === null || _a === void 0 ? void 0 : _a.email) === 'string' && req.query.customer.email.length > 0)
+                givenName: (typeof ((_d = req.query.customer) === null || _d === void 0 ? void 0 : _d.givenName) === 'string' && req.query.customer.givenName.length > 0)
+                    ? { $regex: req.query.customer.givenName }
+                    : undefined,
+                email: (typeof ((_e = req.query.customer) === null || _e === void 0 ? void 0 : _e.email) === 'string' && req.query.customer.email.length > 0)
                     ? { $regex: req.query.customer.email }
                     : undefined,
-                telephone: (typeof ((_b = req.query.customer) === null || _b === void 0 ? void 0 : _b.telephone) === 'string' && req.query.customer.telephone.length > 0)
+                telephone: (typeof ((_f = req.query.customer) === null || _f === void 0 ? void 0 : _f.telephone) === 'string' && req.query.customer.telephone.length > 0)
                     ? { $regex: req.query.customer.telephone }
                     : undefined,
                 identifier: {
                     $in: (customerIdentifierIn.length > 0) ? customerIdentifierIn : undefined
                 }
+            },
+            seller: {
+                ids: (typeof req.query.seller === 'string' && req.query.seller.length > 0)
+                    ? [req.query.seller]
+                    : undefined
+            },
+            acceptedOffers: {
+                itemOffered: {
+                    typeOf: {
+                        $in: (typeof ((_g = req.query.itemOffered) === null || _g === void 0 ? void 0 : _g.typeOf) === 'string' && req.query.itemOffered.typeOf.length > 0)
+                            ? [req.query.itemOffered.typeOf]
+                            : undefined
+                    },
+                    identifier: {
+                        $in: (typeof ((_h = req.query.itemOffered) === null || _h === void 0 ? void 0 : _h.identifier) === 'string' && req.query.itemOffered.identifier.length > 0)
+                            ? [req.query.itemOffered.identifier]
+                            : undefined
+                    },
+                    issuedThrough: {
+                        id: {
+                            $in: (typeof ((_k = (_j = req.query.itemOffered) === null || _j === void 0 ? void 0 : _j.issuedThrough) === null || _k === void 0 ? void 0 : _k.id) === 'string'
+                                && req.query.itemOffered.issuedThrough.id.length > 0)
+                                ? [req.query.itemOffered.issuedThrough.id]
+                                : undefined
+                        }
+                    },
+                    ids: (typeof ((_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.id) === 'string' && req.query.itemOffered.id.length > 0)
+                        ? [req.query.itemOffered.id]
+                        : undefined
+                }
+            },
+            paymentMethods: {
+                typeOfs: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
+                    ? [req.query.paymentMethodType]
+                    : undefined,
+                accountIds: (typeof ((_m = req.query.paymentMethod) === null || _m === void 0 ? void 0 : _m.accountId) === 'string' && req.query.paymentMethod.accountId.length > 0)
+                    ? [req.query.paymentMethod.accountId]
+                    : undefined,
+                paymentMethodIds: (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
+                    ? [req.query.paymentMethodId]
+                    : undefined
             }
             // broker: {
             //     id: (typeof brokerIdEq === 'string')

@@ -145,6 +145,75 @@ $(function () {
         }
     });
 
+    $('#seller').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '販売者選択',
+        allowClear: true,
+        ajax: {
+            url: '/projects/' + PROJECT_ID + '/sellers/getlist',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    name: params.term
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (seller) {
+                        return {
+                            id: seller.id,
+                            text: seller.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
+    $('#paymentMethodType').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '決済方法選択',
+        allowClear: true,
+        ajax: {
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    inCodeSet: { identifier: 'PaymentMethodType' },
+                    name: { $regex: params.term }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data) {
+                // movieOptions = data.data;
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: data.results.map(function (paymentMethodType) {
+                        return {
+                            id: paymentMethodType.codeValue,
+                            text: paymentMethodType.name.ja
+                        }
+                    })
+                };
+            }
+        }
+    });
+
     $('#admin\\[id\\]').select2({
         // width: 'resolve', // need to override the changed default,
         placeholder: 'ユーザー選択',

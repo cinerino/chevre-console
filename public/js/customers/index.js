@@ -195,7 +195,7 @@ $(function () {
             div.append($('<p>').addClass('description text-center').text('データが見つかりませんでした'));
         }
 
-        modal.find('.modal-title').text('追加特性');
+        modal.find('.modal-title').text('連絡窓口');
         modal.find('.modal-body').html(div);
         modal.modal();
     }
