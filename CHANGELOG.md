@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 顧客管理を追加
 - 承認検索を追加
 - 所有権検索を追加
+- 注文CSVダウンロードを実装
 
 ### Changed
 
