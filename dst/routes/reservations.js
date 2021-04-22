@@ -244,7 +244,7 @@ reservationsRouter.get('/search',
                                 : ticketedSeat.seatingType.typeOf // 旧データへの互換性対応
                         : '', ticketedSeat.seatSection, ticketedSeat.seatNumber)
                     : 'なし';
-                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, unitPriceSpec: unitPriceSpec, ticketedSeat: ticketedSeatStr });
+                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, unitPriceSpec: unitPriceSpec, ticketedSeatStr: ticketedSeatStr });
             })
         });
     }

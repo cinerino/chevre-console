@@ -292,7 +292,7 @@
                                     title="$previousReservationStatus$ -> $reservationStatus$">$reservationStatusTypeName$</a>
                             </td>
                             <td name="reservationFor.id__reservationFor.startDate|date:YY-MM-DD HH:mm:ssZ">
-                                $reservationFor.id$<br>
+                                <span class="badge badge-light">$reservationFor.id$</span><br>
                                 $reservationFor.startDate$
                             </td>
                             <td name="reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice:10">
@@ -307,14 +307,14 @@
                             </td>
                             <td
                                 name="reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja|slice:10__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency">
-                                <span class="font-weight-bold"><a target="_blank"
+                                <a target="_blank"
                                         href="/projects/<%= req.project.id %>/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
                                         <i class="material-icons"
-                                            style="font-size: 1.2em;">open_in_new</i></a></span><br>
+                                            style="font-size: 1.2em;">open_in_new</i></a><br>
                                 $unitPriceSpec.price$ $unitPriceSpec.priceCurrency$ /
                                 $unitPriceSpec.referenceQuantity.value$
                             </td>
-                            <td name="ticketedSeat">$ticketedSeat$</td>
+                            <td name="ticketedSeatStr"><span class="badge badge-light">$ticketedSeatStr$</span></td>
                             <td name="id__underName.name|slice:10">
                                 <a href="javascript:void(0)" class="showUnderName" data-id="$id$">
                                     $underName.name$

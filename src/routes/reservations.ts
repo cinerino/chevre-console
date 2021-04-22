@@ -270,7 +270,7 @@ reservationsRouter.get(
                         checkedInText: (t.checkedIn === true) ? 'done' : undefined,
                         attendedText: (t.attended === true) ? 'done' : undefined,
                         unitPriceSpec: unitPriceSpec,
-                        ticketedSeat: ticketedSeatStr
+                        ticketedSeatStr: ticketedSeatStr
                     };
                 })
             });
