@@ -28,7 +28,7 @@ ordersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 ordersRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
     try {
         const orderService = new chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
@@ -136,18 +136,60 @@ ordersRouter.get('/search',
                     },
                     ids: (typeof ((_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.id) === 'string' && req.query.itemOffered.id.length > 0)
                         ? [req.query.itemOffered.id]
-                        : undefined
+                        : undefined,
+                    reservationNumbers: (typeof req.query.reservationNumber === 'string' && req.query.reservationNumber.length > 0)
+                        ? [req.query.reservationNumber]
+                        : undefined,
+                    reservationFor: {
+                        ids: (typeof ((_m = req.query.reservationFor) === null || _m === void 0 ? void 0 : _m.id) === 'string' && req.query.reservationFor.id.length > 0)
+                            ? [req.query.reservationFor.id]
+                            : undefined,
+                        name: (typeof ((_o = req.query.reservationFor) === null || _o === void 0 ? void 0 : _o.name) === 'string' && req.query.reservationFor.name.length > 0)
+                            ? req.query.reservationFor.name
+                            : undefined,
+                        startFrom: (typeof req.query.reservationForStartFrom === 'string'
+                            && req.query.reservationForStartFrom.length > 0)
+                            ? moment(`${String(req.query.reservationForStartFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                .toDate()
+                            : undefined,
+                        startThrough: (typeof req.query.reservationForStartThrough === 'string'
+                            && req.query.reservationForStartThrough.length > 0)
+                            ? moment(`${String(req.query.reservationForStartThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                .add(1, 'day')
+                                .toDate()
+                            : undefined,
+                        superEvent: {
+                            ids: (typeof ((_q = (_p = req.query.reservationFor) === null || _p === void 0 ? void 0 : _p.superEvent) === null || _q === void 0 ? void 0 : _q.id) === 'string'
+                                && req.query.reservationFor.superEvent.id.length > 0)
+                                ? [req.query.reservationFor.superEvent.id]
+                                : undefined,
+                            workPerformed: {
+                                identifiers: (typeof ((_s = (_r = req.query.reservationFor) === null || _r === void 0 ? void 0 : _r.workPerformed) === null || _s === void 0 ? void 0 : _s.identifier) === 'string'
+                                    && req.query.reservationFor.workPerformed.identifier.length > 0)
+                                    ? [req.query.reservationFor.workPerformed.identifier]
+                                    : undefined
+                            }
+                        }
+                    }
                 }
             },
             paymentMethods: {
                 typeOfs: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
                     ? [req.query.paymentMethodType]
                     : undefined,
-                accountIds: (typeof ((_m = req.query.paymentMethod) === null || _m === void 0 ? void 0 : _m.accountId) === 'string' && req.query.paymentMethod.accountId.length > 0)
+                accountIds: (typeof ((_t = req.query.paymentMethod) === null || _t === void 0 ? void 0 : _t.accountId) === 'string' && req.query.paymentMethod.accountId.length > 0)
                     ? [req.query.paymentMethod.accountId]
                     : undefined,
                 paymentMethodIds: (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
                     ? [req.query.paymentMethodId]
+                    : undefined
+            },
+            price: {
+                $gte: (typeof ((_u = req.query.price) === null || _u === void 0 ? void 0 : _u.$gte) === 'string' && req.query.price.$gte.length > 0)
+                    ? Number(req.query.price.$gte)
+                    : undefined,
+                $lte: (typeof ((_v = req.query.price) === null || _v === void 0 ? void 0 : _v.$lte) === 'string' && req.query.price.$lte.length > 0)
+                    ? Number(req.query.price.$lte)
                     : undefined
             }
             // broker: {
@@ -171,8 +213,23 @@ ordersRouter.get('/search',
                 const application = applications.find((a) => a.id === clientId);
                 const numItems = (Array.isArray(order.acceptedOffers)) ? order.acceptedOffers.length : 0;
                 const numPaymentMethods = (Array.isArray(order.paymentMethods)) ? order.paymentMethods.length : 0;
+                let itemType = [];
+                let itemTypeStr = '';
+                if (Array.isArray(order.acceptedOffers) && order.acceptedOffers.length > 0) {
+                    itemTypeStr = order.acceptedOffers[0].itemOffered.typeOf;
+                    itemTypeStr += ` x ${order.acceptedOffers.length}`;
+                    itemType = order.acceptedOffers.map((o) => o.itemOffered.typeOf);
+                }
+                let paymentMethodTypeStr = '';
+                if (Array.isArray(order.paymentMethods) && order.paymentMethods.length > 0) {
+                    paymentMethodTypeStr = order.paymentMethods.map((p) => p.typeOf)
+                        .join(',');
+                }
                 return Object.assign(Object.assign({}, order), { application: application, numItems,
-                    numPaymentMethods });
+                    numPaymentMethods,
+                    itemType,
+                    itemTypeStr,
+                    paymentMethodTypeStr });
             })
         });
     }

@@ -138,7 +138,41 @@ ordersRouter.get(
                         },
                         ids: (typeof req.query.itemOffered?.id === 'string' && req.query.itemOffered.id.length > 0)
                             ? [req.query.itemOffered.id]
-                            : undefined
+                            : undefined,
+                        reservationNumbers: (typeof req.query.reservationNumber === 'string' && req.query.reservationNumber.length > 0)
+                            ? [req.query.reservationNumber]
+                            : undefined,
+                        reservationFor: {
+                            ids: (typeof req.query.reservationFor?.id === 'string' && req.query.reservationFor.id.length > 0)
+                                ? [req.query.reservationFor.id]
+                                : undefined,
+                            name: (typeof req.query.reservationFor?.name === 'string' && req.query.reservationFor.name.length > 0)
+                                ? req.query.reservationFor.name
+                                : undefined,
+                            startFrom: (typeof req.query.reservationForStartFrom === 'string'
+                                && req.query.reservationForStartFrom.length > 0)
+                                ? moment(`${String(req.query.reservationForStartFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                    .toDate()
+                                : undefined,
+                            startThrough: (typeof req.query.reservationForStartThrough === 'string'
+                                && req.query.reservationForStartThrough.length > 0)
+                                ? moment(`${String(req.query.reservationForStartThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
+                                    .add(1, 'day')
+                                    .toDate()
+                                : undefined,
+                            superEvent: {
+                                ids: (typeof req.query.reservationFor?.superEvent?.id === 'string'
+                                    && req.query.reservationFor.superEvent.id.length > 0)
+                                    ? [req.query.reservationFor.superEvent.id]
+                                    : undefined,
+                                workPerformed: {
+                                    identifiers: (typeof req.query.reservationFor?.workPerformed?.identifier === 'string'
+                                        && req.query.reservationFor.workPerformed.identifier.length > 0)
+                                        ? [req.query.reservationFor.workPerformed.identifier]
+                                        : undefined
+                                }
+                            }
+                        }
                     }
                 },
                 paymentMethods: {
@@ -150,6 +184,14 @@ ordersRouter.get(
                         : undefined,
                     paymentMethodIds: (typeof req.query.paymentMethodId === 'string' && req.query.paymentMethodId.length > 0)
                         ? [req.query.paymentMethodId]
+                        : undefined
+                },
+                price: {
+                    $gte: (typeof req.query.price?.$gte === 'string' && req.query.price.$gte.length > 0)
+                        ? Number(req.query.price.$gte)
+                        : undefined,
+                    $lte: (typeof req.query.price?.$lte === 'string' && req.query.price.$lte.length > 0)
+                        ? Number(req.query.price.$lte)
                         : undefined
                 }
                 // broker: {
@@ -175,11 +217,28 @@ ordersRouter.get(
                     const numItems = (Array.isArray(order.acceptedOffers)) ? order.acceptedOffers.length : 0;
                     const numPaymentMethods = (Array.isArray(order.paymentMethods)) ? order.paymentMethods.length : 0;
 
+                    let itemType: string[] = [];
+                    let itemTypeStr: string = '';
+                    if (Array.isArray(order.acceptedOffers) && order.acceptedOffers.length > 0) {
+                        itemTypeStr = order.acceptedOffers[0].itemOffered.typeOf;
+                        itemTypeStr += ` x ${order.acceptedOffers.length}`;
+                        itemType = order.acceptedOffers.map((o) => o.itemOffered.typeOf);
+                    }
+
+                    let paymentMethodTypeStr: string = '';
+                    if (Array.isArray(order.paymentMethods) && order.paymentMethods.length > 0) {
+                        paymentMethodTypeStr = order.paymentMethods.map((p) => p.typeOf)
+                            .join(',');
+                    }
+
                     return {
                         ...order,
                         application: application,
                         numItems,
-                        numPaymentMethods
+                        numPaymentMethods,
+                        itemType,
+                        itemTypeStr,
+                        paymentMethodTypeStr
                     };
                 })
             });

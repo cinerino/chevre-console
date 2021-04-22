@@ -48,6 +48,13 @@
                                 id="customerId" style="width: 100%;">
                             </select>
                         </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="paymentMethodType" class="bmd-label-static">
+                                決済方法区分
+                            </label>
+                            <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
+                            </select>
+                        </div>
                     </div>
 
                     <div class="advanced collapse">
@@ -74,6 +81,24 @@
                                         name="orderThrough" id="orderThrough" valufe="" />
                                     <div class="input-group-append">
                                         <span class="input-group-text">まで</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-4">
+                                <label for="price[$gte]" class="bmd-label-static">
+                                    金額
+                                </label>
+
+                                <div class="input-group">
+                                    <input class="form-control" placeholder="" maxlength=10
+                                        name="price[$gte]" id="price[$gte]" value="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">円以上</span>
+                                    </div>
+                                    <input class="form-control" placeholder="" maxlength=10
+                                        name="price[$lte]" id="price[$lte]" valufe="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">円以下</span>
                                     </div>
                                 </div>
                             </div>
@@ -156,13 +181,6 @@
 
                         <div class="form-row">
                             <div class="form-group bmd-form-group col-md-2">
-                                <label for="paymentMethodType" class="bmd-label-static">
-                                    決済方法区分
-                                </label>
-                                <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
-                                </select>
-                            </div>
-                            <div class="form-group bmd-form-group col-md-2">
                                 <label for="paymentMethod[accountId]" class="bmd-label-static">
                                     決済アカウントID
                                 </label>
@@ -173,6 +191,57 @@
                                     決済ID
                                 </label>
                                 <input class="form-control" placeholder="決済ID" name="paymentMethodId" id="paymentMethodId" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationNumber" class="bmd-label-static">
+                                    予約番号
+                                </label>
+                                <input class="form-control" placeholder="予約番号" name="reservationNumber" id="reservationNumber" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[id]" class="bmd-label-static">
+                                    予約イベントID
+                                </label>
+                                <input class="form-control" placeholder="予約イベントID" name="reservationFor[id]" id="reservationFor[id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[name]" class="bmd-label-static">
+                                    予約イベント名称
+                                </label>
+                                <input class="form-control" placeholder="予約イベント名称" name="reservationFor[name]" id="reservationFor[name]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-4">
+                                <label for="reservationForStartFrom" class="bmd-label-static">
+                                    予約イベント開催期間
+                                </label>
+
+                                <div class="input-group">
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="reservationForStartFrom" id="reservationForStartFrom" value="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">から</span>
+                                    </div>
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="reservationForStartThrough" id="reservationForStartThrough" valufe="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">まで</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[superEvent][id]" class="bmd-label-static">
+                                    予約施設コンテンツID
+                                </label>
+                                <input class="form-control" placeholder="予約施設コンテンツID" name="reservationFor[superEvent][id]" id="reservationFor[superEvent][id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[workPerformed][identifier]" class="bmd-label-static">
+                                    予約コンテンツコード
+                                </label>
+                                <input class="form-control" placeholder="予約コンテンツコード" name="reservationFor[workPerformed][identifier]" id="reservationFor[workPerformed][identifier]" />
                             </div>
                         </div>
                     </div>
@@ -189,15 +258,15 @@
                             <th>注文日時</th>
                             <th>ステータス</th>
                             <th>確認番号</th>
-                            <th>返品日時</th>
                             <th>カスタマー</th>
                             <th>販売者</th>
-                            <th>仲介</th>
-                            <th>アプリ</th>
                             <th>金額</th>
                             <th>アイテム</th>
                             <th>決済方法</th>
+                            <th>仲介</th>
+                            <th>アプリ</th>
                             <th>返品者</th>
+                            <th>返品日時</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -211,13 +280,10 @@
                                 $orderDate$
                             </td>
                             <td name="orderStatus">
-                                $orderStatus$
+                                <span class="badge badge-light">$orderStatus$</span>
                             </td>
                             <td name="confirmationNumber">
                                 $confirmationNumber$
-                            </td>
-                            <td name="dateReturned|date:YY-MM-DD HH:mm:ssZ">
-                                $dateReturned$
                             </td>
                             <td name="orderNumber__customer.name|slice:10">
                                 <a href="javascript:void(0)" class="showCustomer" data-orderNumber="$orderNumber$">
@@ -227,23 +293,26 @@
                             <td name="orderNumber__seller.name|slice:10">
                                 $seller.name$
                             </td>
+                            <td name="price__priceCurrency">$price$ $priceCurrency$</td>
+                            <td name="numItems__itemTypeStr">x $numItems$<br><span class="badge badge-light">$itemTypeStr$</span></td>
+                            <td name="orderNumber__numPaymentMethods__paymentMethodTypeStr">
+                                <a href="javascript:void(0)" class="showPaymentMethods" data-orderNumber="$orderNumber$">
+                                    x $numPaymentMethods$<br><span class="badge badge-light">$paymentMethodTypeStr$</span>
+                                </a>
+                            </td>
                             <td name="orderNumber__broker.typeOf|slice:10">
                                 <a href="javascript:void(0)" class="showBroker" data-orderNumber="$orderNumber$">
-                                    $broker.typeOf$
+                                    <span class="badge badge-light">$broker.typeOf$</span>
                                 </a>
                             </td>
-                            <td name="application.name|slice:15">$application.name$</td>
-                            <td name="price__priceCurrency">$price$ $priceCurrency$</td>
-                            <td name="numItems">$numItems$</td>
-                            <td name="orderNumber__numPaymentMethods">
-                                <a href="javascript:void(0)" class="showPaymentMethods" data-orderNumber="$orderNumber$">
-                                    $numPaymentMethods$ methods
-                                </a>
-                            </td>
+                            <td name="application.name|slice:10">$application.name$</td>
                             <td name="orderNumber__returner.typeOf|slice:10">
                                 <a href="javascript:void(0)" class="showReturner" data-orderNumber="$orderNumber$">
-                                    $returner.typeOf$
+                                    <span class="badge badge-light">$returner.typeOf$</span>
                                 </a>
+                            </td>
+                            <td name="dateReturned|date:YY-MM-DD HH:mm:ssZ">
+                                $dateReturned$
                             </td>
                         </tr>
                     </tbody>
