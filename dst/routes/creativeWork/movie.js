@@ -325,7 +325,7 @@ function preDelete(req, movie) {
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient
         });
-        const searchEventsResult = yield eventService.search({
+        const searchEventSeriesResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -333,8 +333,20 @@ function preDelete(req, movie) {
                 identifiers: [movie.identifier]
             }
         });
-        if (searchEventsResult.data.length > 0) {
+        if (searchEventSeriesResult.data.length > 0) {
             throw new Error('関連する施設コンテンツが存在します');
+        }
+        // イベントが存在するかどうか
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            superEvent: {
+                workPerformedIdentifiers: [movie.identifier]
+            }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連するイベントが存在します');
         }
     });
 }

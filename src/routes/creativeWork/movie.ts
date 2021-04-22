@@ -380,7 +380,7 @@ async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.
         auth: req.user.authClient
     });
 
-    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+    const searchEventSeriesResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
         limit: 1,
         project: { ids: [req.project.id] },
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -388,8 +388,21 @@ async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.
             identifiers: [movie.identifier]
         }
     });
-    if (searchEventsResult.data.length > 0) {
+    if (searchEventSeriesResult.data.length > 0) {
         throw new Error('関連する施設コンテンツが存在します');
+    }
+
+    // イベントが存在するかどうか
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        superEvent: {
+            workPerformedIdentifiers: [movie.identifier]
+        }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連するイベントが存在します');
     }
 }
 
