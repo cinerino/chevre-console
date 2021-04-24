@@ -50,8 +50,10 @@ authorizationsRouter.get(
                 object: {
                     typeOfs: (typeof req.query.object?.typeOf === 'string' && req.query.object.typeOf.length > 0)
                         ? [req.query.object.typeOf]
+                        : undefined,
+                    ids: (typeof req.query.object?.id === 'string' && req.query.object.id.length > 0)
+                        ? [req.query.object.id]
                         : undefined
-                    // ids?: string[];
                     // typeOfGood?: {
                     //     typeOfs?: string[];
                     //     ids?: string[];

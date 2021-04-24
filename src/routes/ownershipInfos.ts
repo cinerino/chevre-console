@@ -59,7 +59,13 @@ ownershipInfosRouter.get(
                         : undefined,
                     identifier: (typeof req.query.typeOfGood?.identifier === 'string' && req.query.typeOfGood.identifier.length > 0)
                         ? { $eq: req.query.typeOfGood.identifier }
-                        : undefined
+                        : undefined,
+                    issuedThrough: {
+                        id: (typeof req.query.typeOfGood?.issuedThrough?.id === 'string'
+                            && req.query.typeOfGood.issuedThrough.id.length > 0)
+                            ? { $eq: req.query.typeOfGood.issuedThrough.id }
+                            : undefined
+                    }
                 }
             };
             const { data } = await ownershipInfoService.search(searchConditions);

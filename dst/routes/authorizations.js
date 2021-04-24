@@ -26,7 +26,7 @@ authorizationsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, func
 authorizationsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     try {
         const authorizationService = new chevre.service.Authorization({
             endpoint: process.env.API_ENDPOINT,
@@ -53,8 +53,10 @@ authorizationsRouter.get('/search',
             object: {
                 typeOfs: (typeof ((_a = req.query.object) === null || _a === void 0 ? void 0 : _a.typeOf) === 'string' && req.query.object.typeOf.length > 0)
                     ? [req.query.object.typeOf]
+                    : undefined,
+                ids: (typeof ((_b = req.query.object) === null || _b === void 0 ? void 0 : _b.id) === 'string' && req.query.object.id.length > 0)
+                    ? [req.query.object.id]
                     : undefined
-                // ids?: string[];
                 // typeOfGood?: {
                 //     typeOfs?: string[];
                 //     ids?: string[];

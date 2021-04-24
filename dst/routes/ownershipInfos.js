@@ -26,7 +26,7 @@ ownershipInfosRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, func
 ownershipInfosRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e;
+    var _a, _b, _c, _d, _e, _f, _g;
     try {
         const ownershipInfoService = new chevre.service.OwnershipInfo({
             endpoint: process.env.API_ENDPOINT,
@@ -62,7 +62,13 @@ ownershipInfosRouter.get('/search',
                     : undefined,
                 identifier: (typeof ((_e = req.query.typeOfGood) === null || _e === void 0 ? void 0 : _e.identifier) === 'string' && req.query.typeOfGood.identifier.length > 0)
                     ? { $eq: req.query.typeOfGood.identifier }
-                    : undefined
+                    : undefined,
+                issuedThrough: {
+                    id: (typeof ((_g = (_f = req.query.typeOfGood) === null || _f === void 0 ? void 0 : _f.issuedThrough) === null || _g === void 0 ? void 0 : _g.id) === 'string'
+                        && req.query.typeOfGood.issuedThrough.id.length > 0)
+                        ? { $eq: req.query.typeOfGood.issuedThrough.id }
+                        : undefined
+                }
             }
         };
         const { data } = yield ownershipInfoService.search(searchConditions);
