@@ -26,7 +26,8 @@ screeningRoomRouter.all<any>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -100,7 +101,8 @@ screeningRoomRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -183,7 +185,8 @@ screeningRoomRouter.all<ParamsDictionary>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
@@ -260,7 +263,8 @@ screeningRoomRouter.delete<ParamsDictionary>(
 
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
@@ -296,7 +300,8 @@ async function preDelete(req: Request, screeningRoom: chevre.factory.place.scree
     // スケジュールが存在するかどうか
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({

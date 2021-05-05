@@ -28,11 +28,13 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
     let errors = {};
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -80,7 +82,8 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
     });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('products/new', {
@@ -101,7 +104,8 @@ productsRouter.get('/search',
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offersValidFromLte = (typeof ((_b = (_a = req.query.offers) === null || _a === void 0 ? void 0 : _a.$elemMatch) === null || _b === void 0 ? void 0 : _b.validThrough) === 'string'
             && req.query.offers.$elemMatch.validThrough.length > 0)
@@ -167,11 +171,13 @@ productsRouter.all('/:id', ...validate(),
         let errors = {};
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let product = yield productService.findById({ id: req.params.id });
         if (req.method === 'POST') {
@@ -217,7 +223,8 @@ productsRouter.all('/:id', ...validate(),
         });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('products/update', {
@@ -236,7 +243,8 @@ productsRouter.all('/:id', ...validate(),
 productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('products/index', {

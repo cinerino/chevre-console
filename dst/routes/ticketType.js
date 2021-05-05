@@ -38,11 +38,13 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     let errors = {};
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -165,19 +167,23 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
     let errors = {};
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let ticketType = yield offerService.findById({ id: req.params.id });
@@ -404,11 +410,13 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // インポート対象の施設ブランチコードを検索
         const { data } = yield placeService.searchMovieTheaters({ limit: 100 });
@@ -464,11 +472,13 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let offerCategory;
         if (typeof req.body.category === 'string' && req.body.category.length > 0) {

@@ -26,7 +26,8 @@ ownershipInfosRouter.get(
         try {
             const ownershipInfoService = new chevre.service.OwnershipInfo({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchConditions: chevre.factory.ownershipInfo.ISearchConditions = {

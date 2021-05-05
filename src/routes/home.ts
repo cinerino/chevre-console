@@ -30,7 +30,8 @@ homeRouter.get(
         try {
             const projectService = new chevre.service.Project({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: '' }
             });
 
             const project = await projectService.findById({ id: req.project.id });
@@ -51,7 +52,8 @@ homeRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const stats = await eventService.fetch({
                 uri: '/stats/dbStats',
@@ -79,7 +81,8 @@ homeRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const stats = await eventService.fetch({
                 uri: '/health',
@@ -112,7 +115,8 @@ homeRouter.get(
         try {
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await taskService.search({
                 limit: 1,
@@ -141,7 +145,8 @@ homeRouter.get(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await reservationService.search({
                 limit: 10,
@@ -173,7 +178,8 @@ homeRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await eventService.search({
                 typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -210,7 +216,8 @@ homeRouter.get(
         try {
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const runsThrough = moment()

@@ -28,7 +28,8 @@ homeRouter.get('/projectAggregation', (req, res) => __awaiter(void 0, void 0, vo
     try {
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         const project = yield projectService.findById({ id: req.project.id });
         res.json(project);
@@ -44,7 +45,8 @@ homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const stats = yield eventService.fetch({
             uri: '/stats/dbStats',
@@ -68,7 +70,8 @@ homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const stats = yield eventService.fetch({
             uri: '/health',
@@ -96,7 +99,8 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, fu
     try {
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const result = yield taskService.search({
             limit: 1,
@@ -121,7 +125,8 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const result = yield reservationService.search({
             limit: 10,
@@ -149,7 +154,8 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const result = yield eventService.search(Object.assign({ typeOf: chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], sort: { startDate: chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, inSessionFrom: moment()
                 .add()
@@ -172,7 +178,8 @@ homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const runsThrough = moment()
             .toDate();

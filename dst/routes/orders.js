@@ -32,7 +32,8 @@ ordersRouter.get('/search',
     try {
         const orderService = new chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const iamService = new cinerino.service.IAM({
             endpoint: process.env.CINERINO_API_ENDPOINT,

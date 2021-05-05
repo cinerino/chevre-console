@@ -30,7 +30,8 @@ seatRouter.all<any>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -112,7 +113,8 @@ seatRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -208,12 +210,14 @@ seatRouter.all<ParamsDictionary>(
 
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchSeatsResult = await placeService.searchSeats({
@@ -323,7 +327,8 @@ seatRouter.delete<ParamsDictionary>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         await placeService.deleteSeat({
@@ -440,11 +445,13 @@ function validate() {
 async function preCreate(req: Request, seat: chevre.factory.place.seat.IPlace) {
     const placeService = new chevre.service.Place({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const projectService = new chevre.service.Project({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: '' }
     });
 
     const searchScreeningRoomsResult = await placeService.searchScreeningRooms({

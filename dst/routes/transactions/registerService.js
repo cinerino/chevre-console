@@ -30,23 +30,28 @@ registerServiceTransactionsRouter.all('/start',
         let message = '';
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const registerService = new chevre.service.transaction.RegisterService({
+        const registerService = new chevre.service.assetTransaction.RegisterService({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const serviceOutputService = new chevre.service.ServiceOutput({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const transactionNumberService = new chevre.service.TransactionNumber({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const product = yield productService.findById({ id: req.query.product });
         const offers = yield productService.searchOffers({ id: String(product.id) });
@@ -102,7 +107,7 @@ registerServiceTransactionsRouter.all('/start',
                 });
                 const transaction = yield registerService.start({
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.transactionType.RegisterService,
+                    typeOf: chevre.factory.assetTransactionType.RegisterService,
                     transactionNumber: transactionNumber,
                     expires: expires,
                     agent: {
@@ -165,11 +170,13 @@ registerServiceTransactionsRouter.all('/:transactionNumber/confirm', (req, res, 
         }
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const registerService = new chevre.service.transaction.RegisterService({
+        const registerService = new chevre.service.assetTransaction.RegisterService({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const productId = (_d = transaction.object[0].itemOffered) === null || _d === void 0 ? void 0 : _d.id;
         if (typeof productId !== 'string') {
@@ -183,7 +190,7 @@ registerServiceTransactionsRouter.all('/:transactionNumber/confirm', (req, res, 
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.transactionNumber}`];
             req.flash('message', message);
-            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.assetTransactionType.RegisterService}/start?product=${productId}`);
             return;
         }
         else {
@@ -211,9 +218,10 @@ registerServiceTransactionsRouter.all('/:transactionNumber/cancel', (req, res, n
         if (transaction === undefined) {
             throw new chevre.factory.errors.NotFound('Transaction in session');
         }
-        const registerService = new chevre.service.transaction.RegisterService({
+        const registerService = new chevre.service.assetTransaction.RegisterService({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const productId = (_e = transaction.object[0].itemOffered) === null || _e === void 0 ? void 0 : _e.id;
         if (typeof productId !== 'string') {
@@ -227,7 +235,7 @@ registerServiceTransactionsRouter.all('/:transactionNumber/cancel', (req, res, n
             // tslint:disable-next-line:no-dynamic-delete
             delete req.session[`transaction:${transaction.transactionNumber}`];
             req.flash('message', message);
-            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+            res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.assetTransactionType.RegisterService}/start?product=${productId}`);
             return;
         }
         throw new Error('not implemented');

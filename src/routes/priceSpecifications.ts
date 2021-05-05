@@ -34,12 +34,14 @@ priceSpecificationsRouter.get(
         try {
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const priceSpecificationService = new chevre.service.PriceSpecification({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // 適用区分検索
@@ -177,7 +179,8 @@ priceSpecificationsRouter.all<any>(
                     let priceSpecification = await createMovieFromBody(req, true);
                     const priceSpecificationService = new chevre.service.PriceSpecification({
                         endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
+                        auth: req.user.authClient,
+                        project: { id: req.project.id }
                     });
                     priceSpecification = await priceSpecificationService.create(priceSpecification);
 
@@ -241,12 +244,14 @@ priceSpecificationsRouter.all<ParamsDictionary>(
 
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const priceSpecificationService = new chevre.service.PriceSpecification({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             let priceSpecification = await priceSpecificationService.findById({
                 id: req.params.id
@@ -380,7 +385,8 @@ priceSpecificationsRouter.delete(
         try {
             const priceSpecificationService = new chevre.service.PriceSpecification({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // validation
@@ -422,7 +428,8 @@ async function createMovieFromBody(req: Request, isNew: boolean): Promise<chevre
         case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const selectedMovieTicketType = JSON.parse(req.body.appliesToMovieTicket);

@@ -54,7 +54,8 @@ customersRouter.all<ParamsDictionary>(
 
         const customerService = new chevre.service.Customer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -112,7 +113,8 @@ customersRouter.get(
         try {
             const customerService = new chevre.service.Customer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -158,7 +160,8 @@ customersRouter.get(
         try {
             const customerService = new chevre.service.Customer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const customer = await customerService.findById({ id: String(req.params.id) });
 
@@ -178,7 +181,8 @@ customersRouter.delete(
         try {
             const customerService = new chevre.service.Customer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const customer = await customerService.findById({ id: req.params.id });
@@ -222,7 +226,8 @@ customersRouter.all<ParamsDictionary>(
 
         const customerService = new chevre.service.Customer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {

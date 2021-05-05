@@ -24,7 +24,8 @@ accountTitleCategoryRouter.get(
     async (req, res) => {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.xhr) {
@@ -77,7 +78,8 @@ accountTitleCategoryRouter.all<any>(
                     debug('saving account title...', accountTitleCategory);
                     const accountTitleService = new chevre.service.AccountTitle({
                         endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
+                        auth: req.user.authClient,
+                        project: { id: req.project.id }
                     });
                     await accountTitleService.createAccounTitleCategory(accountTitleCategory);
                     req.flash('message', '登録しました');
@@ -120,7 +122,8 @@ accountTitleCategoryRouter.all<ParamsDictionary>(
 
             const accountTitleService = new chevre.service.AccountTitle({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
@@ -197,11 +200,13 @@ async function preDelete(req: Request, accountTitleCategory: chevre.factory.acco
     // validation
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 科目に属する全細目

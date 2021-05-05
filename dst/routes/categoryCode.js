@@ -45,7 +45,8 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
     try {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -105,7 +106,8 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -143,7 +145,8 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchProductsResult = yield productService.search({
         project: { id: { $eq: req.project.id } },
@@ -182,7 +185,8 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     let categoryCode = yield categoryCodeService.findById({
         id: req.params.id
@@ -216,7 +220,8 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchProductsResult = yield productService.search({
         project: { id: { $eq: req.project.id } },
@@ -253,7 +258,8 @@ categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         // });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCode = yield categoryCodeService.findById({ id: req.params.id });
         yield preDelete(req, categoryCode);
@@ -273,27 +279,33 @@ function preDelete(req, categoryCode) {
         // validation
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 関連する価格仕様
         const searchPriceSpecificationsResult = yield priceSpecificationService.search({

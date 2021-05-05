@@ -22,7 +22,8 @@ settingsRouter.get<ParamsDictionary>(
 
             const projectService = new chevre.service.Project({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: '' }
             });
 
             const project = await projectService.findById({ id: req.project.id });
@@ -48,7 +49,8 @@ settingsRouter.post(
         try {
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const task = await taskService.create({
@@ -115,7 +117,8 @@ settingsRouter.post(
 
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const task = await taskService.create({

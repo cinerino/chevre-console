@@ -32,15 +32,18 @@ screeningEventSeriesRouter.all<any>(
     async (req, res) => {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const eventService = new chevre.service.Event({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         let message = '';
@@ -112,7 +115,8 @@ screeningEventSeriesRouter.all<any>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchProductsResult = await productService.search({
             project: { id: { $eq: req.project.id } },
@@ -150,12 +154,14 @@ screeningEventSeriesRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchVideoFormatTypesResult = await categoryCodeService.search({
@@ -247,7 +253,8 @@ screeningEventSeriesRouter.get(
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchMovieResult = await creativeWorkService.searchMovies({
                 limit: 100,
@@ -276,11 +283,13 @@ screeningEventSeriesRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const locationId = <string>req.query.locationId;
@@ -369,19 +378,23 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             let message = '';
@@ -525,7 +538,8 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchProductsResult = await productService.search({
                 project: { id: { $eq: req.project.id } },
@@ -557,7 +571,8 @@ screeningEventSeriesRouter.delete(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // validation
@@ -579,7 +594,8 @@ async function preDelete(req: Request, eventSeries: chevre.factory.event.screeni
     // validation
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
         limit: 1,
@@ -598,7 +614,8 @@ screeningEventSeriesRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchScreeningEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
                 ...req.query,

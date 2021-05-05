@@ -26,7 +26,8 @@ projectsRouter.get<ParamsDictionary>(
 
             const chevreProjectService = new chevre.service.Project({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: '' }
             });
 
             await chevreProjectService.create({

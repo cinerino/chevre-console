@@ -30,7 +30,8 @@ authorizationsRouter.get('/search',
     try {
         const authorizationService = new chevre.service.Authorization({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchConditions = {
             limit: req.query.limit,

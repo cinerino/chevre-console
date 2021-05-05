@@ -21,7 +21,8 @@ accountTitleSetRouter.get(
     async (req, res) => {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.xhr) {
@@ -74,7 +75,8 @@ accountTitleSetRouter.all<any>(
 
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -134,7 +136,8 @@ accountTitleSetRouter.all<ParamsDictionary>(
 
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
@@ -221,11 +224,13 @@ async function preDelete(req: Request, accountTitleSet: chevre.factory.accountTi
     // validation
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 科目に属する全細目
@@ -287,7 +292,8 @@ async function preDelete(req: Request, accountTitleSet: chevre.factory.accountTi
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.accountTitle.IAccountTitle> {
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 科目分類検索

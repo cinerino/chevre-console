@@ -30,7 +30,8 @@ ownershipInfosRouter.get('/search',
     try {
         const ownershipInfoService = new chevre.service.OwnershipInfo({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchConditions = {
             limit: req.query.limit,

@@ -53,7 +53,8 @@ categoryCodesRouter.get(
         try {
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -125,7 +126,8 @@ categoryCodesRouter.all<any>(
 
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -173,7 +175,8 @@ categoryCodesRouter.all<any>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchProductsResult = await productService.search({
             project: { id: { $eq: req.project.id } },
@@ -223,7 +226,8 @@ categoryCodesRouter.all<ParamsDictionary>(
 
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let categoryCode = await categoryCodeService.findById({
             id: req.params.id
@@ -265,7 +269,8 @@ categoryCodesRouter.all<ParamsDictionary>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchProductsResult = await productService.search({
             project: { id: { $eq: req.project.id } },
@@ -307,7 +312,8 @@ categoryCodesRouter.delete(
             // });
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const categoryCode = await categoryCodeService.findById({ id: req.params.id });
@@ -329,27 +335,33 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
     // validation
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const placeService = new chevre.service.Place({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const priceSpecificationService = new chevre.service.PriceSpecification({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 関連する価格仕様

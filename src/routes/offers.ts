@@ -46,15 +46,18 @@ offersRouter.all<any>(
 
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -168,18 +171,21 @@ offersRouter.all<ParamsDictionary>(
 
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchAccountTitlesResult = await accountTitleService.search({
             project: { ids: [req.project.id] }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {
@@ -262,7 +268,8 @@ offersRouter.get(
         try {
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = 100;
@@ -300,7 +307,8 @@ offersRouter.get(
         try {
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const iamService = new cinerino.service.IAM({
                 endpoint: <string>process.env.CINERINO_API_ENDPOINT,
@@ -357,11 +365,13 @@ offersRouter.get(
         try {
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -526,7 +536,8 @@ offersRouter.delete(
         try {
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // validation
@@ -584,7 +595,8 @@ async function preDelete(req: Request, offer: chevre.factory.offer.IOffer) {
     // validation
     const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchCatalogsResult = await offerCatalogService.search({
@@ -603,7 +615,8 @@ async function preDelete(req: Request, offer: chevre.factory.offer.IOffer) {
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;

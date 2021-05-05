@@ -25,12 +25,14 @@ addOnRouter.all<any>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -95,7 +97,8 @@ addOnRouter.get(
         try {
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -143,12 +146,14 @@ addOnRouter.all<ParamsDictionary>(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             let product = await productService.findById({ id: req.params.id });

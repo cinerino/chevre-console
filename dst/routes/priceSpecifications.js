@@ -35,11 +35,13 @@ priceSpecificationsRouter.get('/search',
     try {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 適用区分検索
         const searchApplicableCategoryCodesResult = yield categoryCodeService.search({
@@ -151,7 +153,8 @@ priceSpecificationsRouter.all('/new', ...validate(),
                 let priceSpecification = yield createMovieFromBody(req, true);
                 const priceSpecificationService = new chevre.service.PriceSpecification({
                     endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                    auth: req.user.authClient,
+                    project: { id: req.project.id }
                 });
                 priceSpecification = yield priceSpecificationService.create(priceSpecification);
                 req.flash('message', '登録しました');
@@ -206,11 +209,13 @@ priceSpecificationsRouter.all('/:id/update', ...validate(),
         let errors = {};
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let priceSpecification = yield priceSpecificationService.findById({
             id: req.params.id
@@ -337,7 +342,8 @@ priceSpecificationsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0,
     try {
         const priceSpecificationService = new chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // validation
         const priceSpecification = yield priceSpecificationService.findById({ id: req.params.id });
@@ -375,7 +381,8 @@ function createMovieFromBody(req, isNew) {
             case chevre.factory.priceSpecificationType.MovieTicketTypeChargeSpecification:
                 const categoryCodeService = new chevre.service.CategoryCode({
                     endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                    auth: req.user.authClient,
+                    project: { id: req.project.id }
                 });
                 const selectedMovieTicketType = JSON.parse(req.body.appliesToMovieTicket);
                 const searchMovieTicketTypesResult = yield categoryCodeService.search({

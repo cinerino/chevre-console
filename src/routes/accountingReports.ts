@@ -23,7 +23,8 @@ accountingReportsRouter.get(
         try {
             const accountingReportService = new chevreapi.service.AccountingReport({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
                 // project: req.project
             });
 

@@ -25,7 +25,8 @@ settingsRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         const errors = {};
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         const project = yield projectService.findById({ id: req.project.id });
         const forms = Object.assign({}, project);
@@ -43,7 +44,8 @@ settingsRouter.post('/aggregate', (req, res, next) => __awaiter(void 0, void 0, 
     try {
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const task = yield taskService.create({
             name: 'aggregateOnProject',
@@ -102,7 +104,8 @@ settingsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
             : req.user.profile.email;
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const task = yield taskService.create({
             name: 'createReservationReport',

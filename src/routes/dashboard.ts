@@ -81,7 +81,8 @@ dashboardRouter.get(
             try {
                 const chevreProjectService = new chevre.service.Project({
                     endpoint: <string>process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                    auth: req.user.authClient,
+                    project: { id: '' }
                 });
                 await chevreProjectService.findById({ id: projectId });
             } catch (error) {

@@ -31,7 +31,8 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
     let errors = {};
     const customerService = new chevre.service.Customer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -76,7 +77,8 @@ customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, 
     try {
         const customerService = new chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -112,7 +114,8 @@ customersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const customerService = new chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const customer = yield customerService.findById({ id: String(req.params.id) });
         res.json(customer);
@@ -128,7 +131,8 @@ customersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const customerService = new chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const customer = yield customerService.findById({ id: req.params.id });
         yield preDelete(req, customer);
@@ -164,7 +168,8 @@ customersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(
     let errors = {};
     const customerService = new chevre.service.Customer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let customer = yield customerService.findById({ id: req.params.id });

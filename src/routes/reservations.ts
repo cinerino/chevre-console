@@ -19,11 +19,13 @@ reservationsRouter.get(
     async (req, res) => {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -54,7 +56,8 @@ reservationsRouter.get(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const iamService = new cinerino.service.IAM({
@@ -335,9 +338,10 @@ reservationsRouter.post(
                 throw new Error('ids must be Array');
             }
 
-            const cancelReservationService = new chevre.service.transaction.CancelReservation({
+            const cancelReservationService = new chevre.service.assetTransaction.CancelReservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const expires = moment()
@@ -345,7 +349,7 @@ reservationsRouter.post(
                 .toDate();
             for (const id of ids) {
                 const transaction = await cancelReservationService.start({
-                    typeOf: chevre.factory.transactionType.CancelReservation,
+                    typeOf: chevre.factory.assetTransactionType.CancelReservation,
                     project: { typeOf: req.project.typeOf, id: req.project.id },
                     agent: {
                         typeOf: 'Person',
@@ -379,7 +383,8 @@ reservationsRouter.patch(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             await reservationService.update({

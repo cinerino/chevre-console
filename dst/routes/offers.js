@@ -45,15 +45,18 @@ offersRouter.all('/add', ...validate(),
     }
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -138,18 +141,21 @@ offersRouter.all('/:id/update', ...validate(),
     }
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchAccountTitlesResult = yield accountTitleService.search({
         project: { ids: [req.project.id] }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let offer = yield offerService.findById({ id: req.params.id });
@@ -216,7 +222,8 @@ offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = 100;
         const page = 1;
@@ -249,7 +256,8 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const iamService = new cinerino.service.IAM({
             endpoint: process.env.CINERINO_API_ENDPOINT,
@@ -298,11 +306,13 @@ offersRouter.get('/getlist',
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -447,7 +457,8 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // validation
         const offer = yield offerService.findById({ id: req.params.id });
@@ -497,7 +508,8 @@ function preDelete(req, offer) {
         // validation
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchCatalogsResult = yield offerCatalogService.search({
             limit: 1,
@@ -517,7 +529,8 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let offerCategory;
         if (typeof ((_a = req.body.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && ((_b = req.body.category) === null || _b === void 0 ? void 0 : _b.codeValue.length) > 0) {

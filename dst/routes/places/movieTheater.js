@@ -37,7 +37,8 @@ movieTheaterRouter.all('/new', ...validate(),
                 let movieTheater = yield createMovieTheaterFromBody(req, true);
                 const placeService = new chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                    auth: req.user.authClient,
+                    project: { id: req.project.id }
                 });
                 const { data } = yield placeService.searchMovieTheaters({
                     limit: 100,
@@ -111,7 +112,8 @@ movieTheaterRouter.all('/new', ...validate(),
     }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('places/movieTheater/new', {
@@ -131,11 +133,13 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         const branchCodeRegex = (_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex;
@@ -204,7 +208,8 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const movieTheater = yield placeService.findMovieTheaterById({ id: req.params.id });
         yield preDelete(req, movieTheater);
@@ -222,7 +227,8 @@ function preDelete(req, movieTheater) {
         // 施設コンテンツが存在するかどうか
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchEventsResult = yield eventService.search({
             limit: 1,
@@ -244,11 +250,13 @@ movieTheaterRouter.all('/:id/update', ...validate(),
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     let movieTheater = yield placeService.findMovieTheaterById({
         id: req.params.id
@@ -324,7 +332,8 @@ movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, vo
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const movieTheater = yield placeService.findMovieTheaterById({
             id: req.params.id
@@ -371,7 +380,8 @@ function createMovieTheaterFromBody(req, isNew) {
         const selectedSeller = JSON.parse(req.body.parentOrganization);
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const seller = yield sellerService.findById({ id: selectedSeller.id });
         const parentOrganization = {

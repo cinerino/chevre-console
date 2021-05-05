@@ -30,7 +30,8 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -90,7 +91,8 @@ screeningRoomSectionRouter.get('/search',
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -150,7 +152,8 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
         const screeningRoomSectionBranchCode = splittedId[2];
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections(Object.assign({ limit: 1, project: { id: { $eq: req.project.id } }, branchCode: { $eq: screeningRoomSectionBranchCode }, containedInPlace: {
                 branchCode: { $eq: screeningRoomBranchCode },
@@ -218,7 +221,8 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
     const screeningRoomSectionBranchCode = splittedId[2];
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     yield placeService.deleteScreeningRoomSection({
         project: { id: req.project.id },
@@ -237,7 +241,8 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSeatingTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -343,11 +348,13 @@ function preUpdate(req, section, originalSeatCount) {
     return __awaiter(this, void 0, void 0, function* () {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
             limit: 1,

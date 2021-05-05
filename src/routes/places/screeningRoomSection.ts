@@ -31,7 +31,8 @@ screeningRoomSectionRouter.all<any>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -107,7 +108,8 @@ screeningRoomSectionRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -190,7 +192,8 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
 
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchScreeningRoomSectionsResult = await placeService.searchScreeningRoomSections({
@@ -282,7 +285,8 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         await placeService.deleteScreeningRoomSection({
@@ -304,7 +308,8 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.place.screeningRoomSection.IPlace> {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchSeatingTypesResult = await categoryCodeService.search({
@@ -433,11 +438,13 @@ function validate() {
 async function preUpdate(req: Request, section: chevre.factory.place.screeningRoomSection.IPlace, originalSeatCount?: number) {
     const placeService = new chevre.service.Place({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const projectService = new chevre.service.Project({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: '' }
     });
 
     const searchScreeningRoomsResult = await placeService.searchScreeningRooms({

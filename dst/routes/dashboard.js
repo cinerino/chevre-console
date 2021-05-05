@@ -70,7 +70,8 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
         try {
             const chevreProjectService = new chevre.service.Project({
                 endpoint: process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: '' }
             });
             yield chevreProjectService.findById({ id: projectId });
         }

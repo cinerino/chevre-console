@@ -25,11 +25,13 @@ addOnRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, v
     let errors = {};
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -79,7 +81,8 @@ addOnRouter.get('/search',
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -119,11 +122,13 @@ addOnRouter.all('/:id', ...validate(),
         let errors = {};
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let product = yield productService.findById({ id: req.params.id });
         if (req.method === 'POST') {

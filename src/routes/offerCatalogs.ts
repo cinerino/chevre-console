@@ -28,16 +28,19 @@ offerCatalogsRouter.all<any>(
     async (req, res) => {
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         let message = '';
@@ -137,15 +140,18 @@ offerCatalogsRouter.all<ParamsDictionary>(
     async (req, res) => {
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchServiceTypesResult = await categoryCodeService.search({
@@ -227,11 +233,13 @@ offerCatalogsRouter.delete(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const offerCatalog = await offerCatalogService.findById({ id: req.params.id });
@@ -270,11 +278,13 @@ offerCatalogsRouter.get(
         try {
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const offerCatalog = await offerCatalogService.findById({ id: req.params.id });
@@ -332,12 +342,14 @@ offerCatalogsRouter.get(
         try {
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchServiceTypesResult = await categoryCodeService.search({
@@ -408,7 +420,8 @@ offerCatalogsRouter.get(
         try {
             const offerService = new chevre.service.Offer({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             let data: chevre.factory.offer.IOffer[];
@@ -470,7 +483,8 @@ async function createFromBody(req: Request): Promise<chevre.factory.offerCatalog
     if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchServiceTypesResult = await categoryCodeService.search({

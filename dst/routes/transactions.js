@@ -20,7 +20,7 @@ const moment = require("moment");
 const registerService_1 = require("./transactions/registerService");
 const debug = createDebug('chevre-console:router');
 const transactionsRouter = express.Router();
-transactionsRouter.use(`/${chevre.factory.transactionType.RegisterService}`, registerService_1.default);
+transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
 /**
  * 取引検索
  */
@@ -45,19 +45,23 @@ transactionsRouter.all('/reserve/start',
         let message = '';
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const reserveService = new chevre.service.transaction.Reserve({
+        const reserveService = new chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const transactionNumberService = new chevre.service.TransactionNumber({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const event = yield eventService.findById({ id: req.query.event });
         const searchSeatSectionsResult = yield placeService.searchScreeningRoomSections({
@@ -174,7 +178,7 @@ transactionsRouter.all('/reserve/start',
                 });
                 yield reserveService.startWithNoResponse({
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.transactionType.Reserve,
+                    typeOf: chevre.factory.assetTransactionType.Reserve,
                     transactionNumber: transactionNumber,
                     expires: expires,
                     agent: {
@@ -225,11 +229,13 @@ transactionsRouter.all('/reserve/:transactionNumber/confirm', (req, res, next) =
         }
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const reserveService = new chevre.service.transaction.Reserve({
+        const reserveService = new chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const eventId = (_d = transaction.object.event) === null || _d === void 0 ? void 0 : _d.id;
         if (typeof eventId !== 'string') {
@@ -271,9 +277,10 @@ transactionsRouter.all('/reserve/:transactionNumber/cancel', (req, res, next) =>
         if (transaction === undefined) {
             throw new chevre.factory.errors.NotFound('Transaction in session');
         }
-        const reserveService = new chevre.service.transaction.Reserve({
+        const reserveService = new chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const eventId = (_e = transaction.object.event) === null || _e === void 0 ? void 0 : _e.id;
         if (typeof eventId !== 'string') {

@@ -26,7 +26,8 @@ authorizationsRouter.get(
         try {
             const authorizationService = new chevre.service.Authorization({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchConditions: chevre.factory.authorization.ISearchConditions = {

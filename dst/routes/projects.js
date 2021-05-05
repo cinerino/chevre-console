@@ -31,7 +31,8 @@ projectsRouter.get('/:id/initialize', (req, res, next) => __awaiter(void 0, void
         const project = yield projectService.findById({ id: req.params.id });
         const chevreProjectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         yield chevreProjectService.create({
             typeOf: chevre.factory.organizationType.Project,

@@ -33,15 +33,18 @@ screeningEventSeriesRouter.all('/add', ...validate(),
     var _a, _b;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     let message = '';
     let errors = {};
@@ -104,7 +107,8 @@ screeningEventSeriesRouter.all('/add', ...validate(),
     }
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchProductsResult = yield productService.search({
         project: { id: { $eq: req.project.id } },
@@ -133,11 +137,13 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchVideoFormatTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -219,7 +225,8 @@ screeningEventSeriesRouter.get('/searchMovies', (req, res) => __awaiter(void 0, 
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchMovieResult = yield creativeWorkService.searchMovies({
             limit: 100,
@@ -245,11 +252,13 @@ screeningEventSeriesRouter.get('/search',
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const locationId = req.query.locationId;
         const movieTheater = yield placeService.findMovieTheaterById({ id: locationId });
@@ -322,19 +331,23 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let message = '';
         let errors = {};
@@ -460,7 +473,8 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         }
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchProductsResult = yield productService.search({
             project: { id: { $eq: req.project.id } },
@@ -488,7 +502,8 @@ screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // validation
         const event = yield eventService.findById({ id: req.params.id });
@@ -507,7 +522,8 @@ function preDelete(req, eventSeries) {
         // validation
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchEventsResult = yield eventService.search({
             limit: 1,
@@ -524,7 +540,8 @@ screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awai
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchScreeningEventsResult = yield eventService.search(Object.assign(Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, superEvent: { ids: [req.params.eventId] } }), {
             countDocuments: '1'
