@@ -19,6 +19,7 @@ actionsRouter.get(
 
 actionsRouter.get(
     '/search',
+    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
         try {
             const actionService = new chevre.service.Action({
@@ -35,6 +36,18 @@ actionsRouter.get(
                 limit: req.query.limit,
                 page: req.query.page,
                 project: { id: { $eq: req.project.id } },
+                agent: {
+                    id: {
+                        $in: (typeof req.query.agent?.id?.$eq === 'string' && req.query.agent.id.$eq.length > 0)
+                            ? [req.query.agent.id.$eq]
+                            : undefined
+                    },
+                    typeOf: {
+                        $in: (typeof req.query.agent?.typeOf?.$eq === 'string' && req.query.agent.typeOf.$eq.length > 0)
+                            ? [req.query.agent.typeOf.$eq]
+                            : undefined
+                    }
+                },
                 typeOf: {
                     $eq: (typeof req.query.typeOf?.$eq === 'string' && req.query.typeOf.$eq.length > 0)
                         ? req.query.typeOf.$eq

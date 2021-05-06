@@ -22,8 +22,10 @@ actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
         ActionStatusType: chevre.factory.actionStatusType
     });
 }));
-actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r;
+actionsRouter.get('/search', 
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
@@ -37,19 +39,31 @@ actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, fun
             limit: req.query.limit,
             page: req.query.page,
             project: { id: { $eq: req.project.id } },
+            agent: {
+                id: {
+                    $in: (typeof ((_l = (_k = req.query.agent) === null || _k === void 0 ? void 0 : _k.id) === null || _l === void 0 ? void 0 : _l.$eq) === 'string' && req.query.agent.id.$eq.length > 0)
+                        ? [req.query.agent.id.$eq]
+                        : undefined
+                },
+                typeOf: {
+                    $in: (typeof ((_o = (_m = req.query.agent) === null || _m === void 0 ? void 0 : _m.typeOf) === null || _o === void 0 ? void 0 : _o.$eq) === 'string' && req.query.agent.typeOf.$eq.length > 0)
+                        ? [req.query.agent.typeOf.$eq]
+                        : undefined
+                }
+            },
             typeOf: {
-                $eq: (typeof ((_k = req.query.typeOf) === null || _k === void 0 ? void 0 : _k.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
+                $eq: (typeof ((_p = req.query.typeOf) === null || _p === void 0 ? void 0 : _p.$eq) === 'string' && req.query.typeOf.$eq.length > 0)
                     ? req.query.typeOf.$eq
                     : undefined
             },
             actionStatus: {
-                $in: (typeof ((_l = req.query.actionStatus) === null || _l === void 0 ? void 0 : _l.$eq) === 'string' && req.query.actionStatus.$eq.length > 0)
+                $in: (typeof ((_q = req.query.actionStatus) === null || _q === void 0 ? void 0 : _q.$eq) === 'string' && req.query.actionStatus.$eq.length > 0)
                     ? [req.query.actionStatus.$eq]
                     : undefined
             },
             location: {
                 identifier: {
-                    $eq: (typeof ((_o = (_m = req.query.location) === null || _m === void 0 ? void 0 : _m.identifier) === null || _o === void 0 ? void 0 : _o.$eq) === 'string' && req.query.location.identifier.$eq.length > 0)
+                    $eq: (typeof ((_s = (_r = req.query.location) === null || _r === void 0 ? void 0 : _r.identifier) === null || _s === void 0 ? void 0 : _s.$eq) === 'string' && req.query.location.identifier.$eq.length > 0)
                         ? req.query.location.identifier.$eq
                         : undefined
                 }
@@ -57,7 +71,7 @@ actionsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, fun
             object: {
                 reservationFor: {
                     id: {
-                        $eq: (typeof ((_r = (_q = (_p = req.query.object) === null || _p === void 0 ? void 0 : _p.reservationFor) === null || _q === void 0 ? void 0 : _q.id) === null || _r === void 0 ? void 0 : _r.$eq) === 'string'
+                        $eq: (typeof ((_v = (_u = (_t = req.query.object) === null || _t === void 0 ? void 0 : _t.reservationFor) === null || _u === void 0 ? void 0 : _u.id) === null || _v === void 0 ? void 0 : _v.$eq) === 'string'
                             && req.query.object.reservationFor.id.$eq.length > 0)
                             ? req.query.object.reservationFor.id.$eq
                             : undefined
