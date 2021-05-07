@@ -160,7 +160,9 @@ Aa-4
                                             $id$
                                         </a>
                                     </td>
-                                    <td name="eventStatus">$eventStatus$</td>
+                                    <td name="eventStatus__eventStatus">
+                                        <span class="badge badge-light $eventStatus$">$eventStatus$</span>
+                                    </td>
                                     <td name="superEvent.id__superEvent.name.ja|slice">
                                         <a target="_blank"
                                             href="/projects/<%= req.project.id %>/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$

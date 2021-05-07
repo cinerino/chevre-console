@@ -287,9 +287,11 @@
                                 $bookingTime$
                             </td>
                             <td class="reservationStatusTypeName"
-                                name="previousReservationStatus__reservationStatus__reservationStatusTypeName">
+                                name="previousReservationStatus__reservationStatus__reservationStatus__reservationStatusTypeName">
                                 <a href="#"
-                                    title="$previousReservationStatus$ -> $reservationStatus$">$reservationStatusTypeName$</a>
+                                    title="$previousReservationStatus$ -> $reservationStatus$">
+                                    <span class="badge badge-light $reservationStatus$">$reservationStatusTypeName$</span>
+                                </a>
                             </td>
                             <td name="reservationFor.id__reservationFor.startDate|date:YY-MM-DD HH:mm:ssZ">
                                 <span class="badge badge-light">$reservationFor.id$</span><br>

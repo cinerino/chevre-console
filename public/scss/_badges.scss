@@ -1,0 +1,74 @@
+@import "node_modules/material-dashboard/assets/scss/material-dashboard";
+
+.badge.OrderDelivered {
+    @extend .badge-success;
+}
+.badge.OrderProcessing {
+    @extend .badge-info;
+}
+.badge.OrderReturned {
+    @extend .badge-danger;
+}
+.badge.Confirmed {
+    @extend .badge-success;
+}
+.badge.Canceled {
+    @extend .badge-warning;
+}
+.badge.InProgress {
+    @extend .badge-primary;
+}
+.badge.Expired {
+    @extend .badge-danger;
+}
+.badge.Ready {
+    @extend .badge-warning;
+}
+.badge.Running {
+    @extend .badge-primary;
+}
+.badge.Executed {
+    @extend .badge-success;
+}
+.badge.Aborted {
+    @extend .badge-danger;
+}
+.badge.ActiveActionStatus {
+    @extend .badge-primary;
+}
+.badge.CompletedActionStatus {
+    @extend .badge-success;
+}
+.badge.CanceledActionStatus {
+    @extend .badge-warning;
+}
+.badge.FailedActionStatus {
+    @extend .badge-danger;
+}
+
+.badge.Opened {
+    @extend .badge-success;
+}
+.badge.Closed {
+    @extend .badge-danger;
+}
+
+.badge.ReservationConfirmed {
+    @extend .badge-success;
+}
+.badge.ReservationHold {
+    @extend .badge-warning;
+}
+.badge.ReservationPending {
+    @extend .badge-warning;
+}
+.badge.ReservationCancelled {
+    @extend .badge-danger;
+}
+
+.badge.EventScheduled {
+    @extend .badge-success;
+}
+.badge.EventCancelled {
+    @extend .badge-danger;
+}
