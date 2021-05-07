@@ -568,7 +568,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 id: addOnItemOfferedId
             });
             if (addOn.hasOfferCatalog === undefined) {
-                throw new Error(`アドオン '${addOn.identifier}' にはカタログが登録されていません`);
+                throw new Error(`アドオン '${addOn.productID}' にはカタログが登録されていません`);
             }
 
             availableAddOn.push({
