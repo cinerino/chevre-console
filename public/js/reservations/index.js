@@ -611,41 +611,57 @@ async function onClickDownload() {
 
         // 全ページ検索する
         var searchResult = undefined;
-        try {
-            searchResult = await new Promise((resolve, reject) => {
-                $.ajax({
-                    url: '/projects/' + PROJECT_ID + '/reservations/search',
-                    cache: false,
-                    type: 'GET',
-                    dataType: 'json',
-                    data: conditions4csv,
-                    // data: {
-                    //     // limit,
-                    //     page,
-                    //     format: 'datatable'
-                    // }
-                    beforeSend: function () {
-                        $('#loadingModal').modal({ backdrop: 'static' });
-                    }
-                }).done(function (result) {
-                    console.log('searched.', result);
-                    resolve(result);
-                }).fail(function (xhr) {
-                    var res = { error: { message: '予期せぬエラー' } };
-                    try {
-                        var res = $.parseJSON(xhr.responseText);
-                        console.error(res.error);
-                    } catch (error) {
-                        // no op                    
-                    }
-                    reject(new Error(res.error.message));
-                }).always(function () {
-                    $('#loadingModal').modal('hide');
-                    notifyOnSearching.close();
+        var searchError = { message: 'unexpected error' };
+        // retry some times
+        var tryCount = 0;
+        const MAX_TRY_COUNT = 3;
+        while (tryCount < MAX_TRY_COUNT) {
+            try {
+                tryCount += 1;
+
+                searchResult = await new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: '/projects/' + PROJECT_ID + '/reservations/search',
+                        cache: false,
+                        type: 'GET',
+                        dataType: 'json',
+                        data: conditions4csv,
+                        // data: {
+                        //     // limit,
+                        //     page,
+                        //     format: 'datatable'
+                        // }
+                        beforeSend: function () {
+                            $('#loadingModal').modal({ backdrop: 'static' });
+                        }
+                    }).done(function (result) {
+                        console.log('searched.', result);
+                        resolve(result);
+                    }).fail(function (xhr) {
+                        var res = { error: { message: '予期せぬエラー' } };
+                        try {
+                            var res = $.parseJSON(xhr.responseText);
+                            console.error(res.error);
+                        } catch (error) {
+                            // no op                    
+                        }
+                        reject(new Error(res.error.message));
+                    }).always(function () {
+                        $('#loadingModal').modal('hide');
+                        notifyOnSearching.close();
+                    });
                 });
-            });
-        } catch (error) {
-            alert('ダウンロードが中断されました。再度お試しください。' + error.message);
+
+                break;
+            } catch (error) {
+                // tslint:disable-next-line:no-console
+                console.error(error);
+                searchError = error;
+            }
+        }
+
+        if (searchResult === undefined) {
+            alert('ダウンロードが中断されました。再度お試しください。' + searchError.message);
 
             return;
         }
