@@ -103,6 +103,7 @@ offersRouter.all<any>(
                 },
                 accounting: {}
             },
+            itemOffered: { typeOf: itemOfferedTypeOf },
             // isBoxTicket: (typeof req.body.isBoxTicket !== 'string' || req.body.isBoxTicket.length === 0) ? '' : req.body.isBoxTicket,
             // isOnlineTicket: (typeof req.body.isOnlineTicket !== 'string' || req.body.isOnlineTicket.length === 0)
             //     ? ''

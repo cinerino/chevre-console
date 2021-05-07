@@ -92,7 +92,7 @@ offersRouter.all('/add', ...validate(),
                 value: 1
             },
             accounting: {}
-        } }, req.body);
+        }, itemOffered: { typeOf: itemOfferedTypeOf } }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
