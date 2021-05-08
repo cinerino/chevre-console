@@ -15,6 +15,12 @@ export default (err: any, _: Request, res: Response, next: NextFunction) => {
 
     // エラーオブジェクトの場合は、キャッチされた例外でクライント依存のエラーの可能性が高い
     if (err instanceof Error) {
+        if (err.message === 'invalid_grant') {
+            res.redirect('/logout');
+
+            return;
+        }
+
         res.status(BAD_REQUEST)
             .render('error/badRequest', {
                 message: err.message,
