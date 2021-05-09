@@ -25,7 +25,7 @@ actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* (
 actionsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24;
     try {
         const actionService = new chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
@@ -69,9 +69,17 @@ actionsRouter.get('/search',
                 }
             },
             object: {
+                event: {
+                    id: {
+                        $in: (typeof ((_v = (_u = (_t = req.query.object) === null || _t === void 0 ? void 0 : _t.event) === null || _u === void 0 ? void 0 : _u.id) === null || _v === void 0 ? void 0 : _v.$eq) === 'string'
+                            && req.query.object.event.id.$eq.length > 0)
+                            ? [req.query.object.event.id.$eq]
+                            : undefined
+                    }
+                },
                 reservationFor: {
                     id: {
-                        $eq: (typeof ((_v = (_u = (_t = req.query.object) === null || _t === void 0 ? void 0 : _t.reservationFor) === null || _u === void 0 ? void 0 : _u.id) === null || _v === void 0 ? void 0 : _v.$eq) === 'string'
+                        $eq: (typeof ((_y = (_x = (_w = req.query.object) === null || _w === void 0 ? void 0 : _w.reservationFor) === null || _x === void 0 ? void 0 : _x.id) === null || _y === void 0 ? void 0 : _y.$eq) === 'string'
                             && req.query.object.reservationFor.id.$eq.length > 0)
                             ? req.query.object.reservationFor.id.$eq
                             : undefined
@@ -93,6 +101,81 @@ actionsRouter.get('/search',
                             ? paymentMethodTypeEq
                             : undefined
                     }
+                },
+                typeOf: {
+                    $eq: (typeof ((_0 = (_z = req.query.object) === null || _z === void 0 ? void 0 : _z.typeOf) === null || _0 === void 0 ? void 0 : _0.$eq) === 'string' && req.query.object.typeOf.$eq.length > 0)
+                        ? req.query.object.typeOf.$eq
+                        : undefined
+                },
+                id: {
+                    $eq: (typeof ((_2 = (_1 = req.query.object) === null || _1 === void 0 ? void 0 : _1.id) === null || _2 === void 0 ? void 0 : _2.$eq) === 'string' && req.query.object.id.$eq.length > 0)
+                        ? req.query.object.id.$eq
+                        : undefined
+                },
+                orderNumber: {
+                    $in: (typeof ((_4 = (_3 = req.query.object) === null || _3 === void 0 ? void 0 : _3.orderNumber) === null || _4 === void 0 ? void 0 : _4.$eq) === 'string' && req.query.object.orderNumber.$eq.length > 0)
+                        ? [req.query.object.orderNumber.$eq]
+                        : undefined
+                },
+                acceptedOffer: {
+                    ticketedSeat: {
+                        seatNumber: {
+                            $in: (typeof ((_8 = (_7 = (_6 = (_5 = req.query.object) === null || _5 === void 0 ? void 0 : _5.acceptedOffer) === null || _6 === void 0 ? void 0 : _6.ticketedSeat) === null || _7 === void 0 ? void 0 : _7.seatNumber) === null || _8 === void 0 ? void 0 : _8.$eq) === 'string'
+                                && req.query.object.acceptedOffer.ticketedSeat.seatNumber.$eq.length > 0)
+                                ? [req.query.object.acceptedOffer.ticketedSeat.seatNumber.$eq]
+                                : undefined
+                        }
+                    }
+                }
+            },
+            purpose: {
+                typeOf: {
+                    $in: (typeof ((_10 = (_9 = req.query.purpose) === null || _9 === void 0 ? void 0 : _9.typeOf) === null || _10 === void 0 ? void 0 : _10.$eq) === 'string' && req.query.purpose.typeOf.$eq.length > 0)
+                        ? [req.query.purpose.typeOf.$eq]
+                        : undefined
+                },
+                id: {
+                    $in: (typeof ((_12 = (_11 = req.query.purpose) === null || _11 === void 0 ? void 0 : _11.id) === null || _12 === void 0 ? void 0 : _12.$eq) === 'string' && req.query.purpose.id.$eq.length > 0)
+                        ? [req.query.purpose.id.$eq]
+                        : undefined
+                },
+                orderNumber: {
+                    $in: (typeof ((_14 = (_13 = req.query.purpose) === null || _13 === void 0 ? void 0 : _13.orderNumber) === null || _14 === void 0 ? void 0 : _14.$eq) === 'string' && req.query.purpose.orderNumber.$eq.length > 0)
+                        ? [req.query.purpose.orderNumber.$eq]
+                        : undefined
+                }
+            },
+            result: {
+                typeOf: {
+                    $in: (typeof ((_16 = (_15 = req.query.result) === null || _15 === void 0 ? void 0 : _15.typeOf) === null || _16 === void 0 ? void 0 : _16.$eq) === 'string' && req.query.result.typeOf.$eq.length > 0)
+                        ? [req.query.result.typeOf.$eq]
+                        : undefined
+                },
+                id: {
+                    $in: (typeof ((_18 = (_17 = req.query.result) === null || _17 === void 0 ? void 0 : _17.id) === null || _18 === void 0 ? void 0 : _18.$eq) === 'string' && req.query.result.id.$eq.length > 0)
+                        ? [req.query.result.id.$eq]
+                        : undefined
+                },
+                orderNumber: {
+                    $in: (typeof ((_20 = (_19 = req.query.result) === null || _19 === void 0 ? void 0 : _19.orderNumber) === null || _20 === void 0 ? void 0 : _20.$eq) === 'string' && req.query.result.orderNumber.$eq.length > 0)
+                        ? [req.query.result.orderNumber.$eq]
+                        : undefined
+                }
+            },
+            fromLocation: {
+                accountNumber: {
+                    $in: (typeof ((_22 = (_21 = req.query.fromLocation) === null || _21 === void 0 ? void 0 : _21.accountNumber) === null || _22 === void 0 ? void 0 : _22.$eq) === 'string'
+                        && req.query.fromLocation.accountNumber.$eq.length > 0)
+                        ? [req.query.fromLocation.accountNumber.$eq]
+                        : undefined
+                }
+            },
+            toLocation: {
+                accountNumber: {
+                    $in: (typeof ((_24 = (_23 = req.query.toLocation) === null || _23 === void 0 ? void 0 : _23.accountNumber) === null || _24 === void 0 ? void 0 : _24.$eq) === 'string'
+                        && req.query.toLocation.accountNumber.$eq.length > 0)
+                        ? [req.query.toLocation.accountNumber.$eq]
+                        : undefined
                 }
             }
         };

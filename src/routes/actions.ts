@@ -66,6 +66,14 @@ actionsRouter.get(
                     }
                 },
                 object: {
+                    event: {
+                        id: {
+                            $in: (typeof req.query.object?.event?.id?.$eq === 'string'
+                                && req.query.object.event.id.$eq.length > 0)
+                                ? [req.query.object.event.id.$eq]
+                                : undefined
+                        }
+                    },
                     reservationFor: {
                         id: {
                             $eq: (typeof req.query.object?.reservationFor?.id?.$eq === 'string'
@@ -90,6 +98,81 @@ actionsRouter.get(
                                 ? paymentMethodTypeEq
                                 : undefined
                         }
+                    },
+                    typeOf: {
+                        $eq: (typeof req.query.object?.typeOf?.$eq === 'string' && req.query.object.typeOf.$eq.length > 0)
+                            ? req.query.object.typeOf.$eq
+                            : undefined
+                    },
+                    id: {
+                        $eq: (typeof req.query.object?.id?.$eq === 'string' && req.query.object.id.$eq.length > 0)
+                            ? req.query.object.id.$eq
+                            : undefined
+                    },
+                    orderNumber: {
+                        $in: (typeof req.query.object?.orderNumber?.$eq === 'string' && req.query.object.orderNumber.$eq.length > 0)
+                            ? [req.query.object.orderNumber.$eq]
+                            : undefined
+                    },
+                    acceptedOffer: {
+                        ticketedSeat: {
+                            seatNumber: {
+                                $in: (typeof req.query.object?.acceptedOffer?.ticketedSeat?.seatNumber?.$eq === 'string'
+                                    && req.query.object.acceptedOffer.ticketedSeat.seatNumber.$eq.length > 0)
+                                    ? [req.query.object.acceptedOffer.ticketedSeat.seatNumber.$eq]
+                                    : undefined
+                            }
+                        }
+                    }
+                },
+                purpose: {
+                    typeOf: {
+                        $in: (typeof req.query.purpose?.typeOf?.$eq === 'string' && req.query.purpose.typeOf.$eq.length > 0)
+                            ? [req.query.purpose.typeOf.$eq]
+                            : undefined
+                    },
+                    id: {
+                        $in: (typeof req.query.purpose?.id?.$eq === 'string' && req.query.purpose.id.$eq.length > 0)
+                            ? [req.query.purpose.id.$eq]
+                            : undefined
+                    },
+                    orderNumber: {
+                        $in: (typeof req.query.purpose?.orderNumber?.$eq === 'string' && req.query.purpose.orderNumber.$eq.length > 0)
+                            ? [req.query.purpose.orderNumber.$eq]
+                            : undefined
+                    }
+                },
+                result: {
+                    typeOf: {
+                        $in: (typeof req.query.result?.typeOf?.$eq === 'string' && req.query.result.typeOf.$eq.length > 0)
+                            ? [req.query.result.typeOf.$eq]
+                            : undefined
+                    },
+                    id: {
+                        $in: (typeof req.query.result?.id?.$eq === 'string' && req.query.result.id.$eq.length > 0)
+                            ? [req.query.result.id.$eq]
+                            : undefined
+                    },
+                    orderNumber: {
+                        $in: (typeof req.query.result?.orderNumber?.$eq === 'string' && req.query.result.orderNumber.$eq.length > 0)
+                            ? [req.query.result.orderNumber.$eq]
+                            : undefined
+                    }
+                },
+                fromLocation: {
+                    accountNumber: {
+                        $in: (typeof req.query.fromLocation?.accountNumber?.$eq === 'string'
+                            && req.query.fromLocation.accountNumber.$eq.length > 0)
+                            ? [req.query.fromLocation.accountNumber.$eq]
+                            : undefined
+                    }
+                },
+                toLocation: {
+                    accountNumber: {
+                        $in: (typeof req.query.toLocation?.accountNumber?.$eq === 'string'
+                            && req.query.toLocation.accountNumber.$eq.length > 0)
+                            ? [req.query.toLocation.accountNumber.$eq]
+                            : undefined
                     }
                 }
             };

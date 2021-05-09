@@ -208,6 +208,9 @@
                             <th>Object</th>
                             <th>Purpose</th>
                             <th>Instrument</th>
+                            <th>Amount</th>
+                            <th>From</th>
+                            <th>To</th>
                             <th>Result </th>
                             <th>Error</th>
                         </tr>
@@ -215,7 +218,7 @@
                     <tbody>
                         <tr id="templateRow" data-id="$id$">
                             <td name="typeOf">
-                                $typeOf$
+                                <span class="badge badge-light">$typeOf$</span>
                             </td>
                             <td name="id">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="id" data-id="$id$">
@@ -231,35 +234,50 @@
                             <td name="endDate|date:YY-MM-DD HH:mm:ssZ">
                                 $endDate$
                             </td>
-                            <td name="id__agent__agent.typeOf">
+                            <td name="id__agent__agent.typeOf__agent.name|slice:10">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="agent"
                                     data-id="$id$">
-                                    $agent.typeOf$
+                                    <span class="badge badge-light">$agent.typeOf$</span><br>
+                                    $agent.name$
                                 </a>
                             </td>
-                            <td name="id__recipient__recipient.typeOf">
+                            <td name="id__recipient__recipient.typeOf__recipient.name|slice:10">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="recipient"
                                     data-id="$id$">
-                                    $recipient.typeOf$
+                                    <span class="badge badge-light">$recipient.typeOf$</span><br>
+                                    $recipient.name$
                                 </a>
                             </td>
-                            <td name="id__object__objectType">
+                            <td name="id__object__objectType__object.id|slice:10">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="object"
                                     data-id="$id$">
-                                    $objectType$
+                                    <span class="badge badge-light">$objectType$</span><br>
+                                    $object.id$
                                 </a>
                             </td>
-                            <td name="id__purpose__purposeType">
+                            <td name="id__purpose__purposeType__purpose.id|slice:10">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="purpose"
                                     data-id="$id$">
-                                    $purposeType$
+                                    <span class="badge badge-light">$purposeType$</span><br>
+                                    $purpose.id$
                                 </a>
                             </td>
                             <td name="id__instrument__instrumentType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="instrument"
                                     data-id="$id$">
-                                    $instrumentType$
+                                    <span class="badge badge-light">$instrumentType$</span>
                                 </a>
+                            </td>
+                            <td name="id__amount.value__amount.currency">
+                                $amount.value$ $amount.currency$
+                            </td>
+                            <td name="id__fromLocation.typeOf__fromLocation.name|slice:10__fromLocation.identifier">
+                                <span class="badge badge-light">$fromLocation.typeOf$</span><br>
+                                $fromLocation.name$ $fromLocation.identifier$
+                            </td>
+                            <td name="id__toLocation.typeOf__toLocation.name|slice:10__toLocation.identifier">
+                                <span class="badge badge-light">$toLocation.typeOf$</span><br>
+                                $toLocation.name$ $toLocation.identifier$
                             </td>
                             <td name="id__result__resultType">
                                 <a href="javascript:void(0)" class="showAttribute" data-attribute="result"
