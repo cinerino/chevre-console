@@ -93,6 +93,10 @@ function updateHealth(cb) {
 }
 
 function updateDbStats(cb) {
+    if ($('.usedSpace').length === 0) {
+        return;
+    }
+
     var GB = 1000000000;
     $.getJSON(
         '/projects/' + PROJECT_ID + '/home/dbStats',
@@ -216,6 +220,10 @@ function updateEventsWithAggregation(cb) {
 }
 
 function updateErrorReporting(cb) {
+    if ($('.errorReporting').length === 0) {
+        return;
+    }
+
     $.getJSON(
         '/projects/' + PROJECT_ID + '/home/errorReporting',
         {

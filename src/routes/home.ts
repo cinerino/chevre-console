@@ -2,7 +2,8 @@
  * プロジェクトホームルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { Router } from 'express';
+import * as cinerinoapi from '@cinerino/sdk';
+import { Request, Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
@@ -11,18 +12,47 @@ const homeRouter = Router();
 homeRouter.get(
     '/',
     async (req, res, next) => {
-        if (req.query.next !== undefined) {
-            next(new Error(req.param('next')));
+        try {
+            if (req.query.next !== undefined) {
+                next(new Error(req.param('next')));
 
-            return;
+                return;
+            }
+
+            const roleNames = await searchRoleNames(req);
+
+            res.render(
+                'home',
+                { roleNames }
+            );
+        } catch (error) {
+            next(error);
         }
-
-        res.render(
-            'home',
-            {}
-        );
     }
 );
+
+async function searchRoleNames(req: Request): Promise<string[]> {
+    // 自分のロールを確認
+    const iamService = new cinerinoapi.service.IAM({
+        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project?.id }
+    });
+    const searchMembersResult = await iamService.searchMembers({
+        limit: 1,
+        member: {
+            typeOf: { $eq: cinerinoapi.factory.personType.Person },
+            id: { $eq: req.user.profile.sub }
+        }
+    });
+    let roleNames: string[] | undefined = searchMembersResult.data.shift()?.member.hasRole
+        .map((r) => r.roleName);
+    if (!Array.isArray(roleNames)) {
+        roleNames = [];
+    }
+
+    return roleNames;
+}
 
 homeRouter.get(
     '/projectAggregation',
