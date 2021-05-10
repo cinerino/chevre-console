@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 承認検索を追加
 - 所有権検索を追加
 - 注文CSVダウンロードを実装
+- タスク検索を追加
 
 ### Changed
 

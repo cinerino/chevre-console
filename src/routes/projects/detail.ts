@@ -30,6 +30,7 @@ import reservationsRouter from '../reservations';
 import salesReportsRouter from '../salesReports';
 import sellersRouter from '../sellers';
 import settingsRouter from '../settings';
+import tasksRouter from '../tasks';
 import ticketTypeMasterRouter from '../ticketType';
 import transactionsRouter from '../transactions';
 
@@ -62,6 +63,7 @@ projectDetailRouter.use('/reservations', reservationsRouter);
 projectDetailRouter.use('/salesReports', salesReportsRouter);
 projectDetailRouter.use('/sellers', sellersRouter);
 projectDetailRouter.use('/settings', settingsRouter);
+projectDetailRouter.use('/tasks', tasksRouter);
 projectDetailRouter.use('/ticketTypes', ticketTypeMasterRouter);
 projectDetailRouter.use('/transactions', transactionsRouter);
 
