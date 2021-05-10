@@ -36,6 +36,7 @@ tasksRouter.get('/search',
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
+            sort: { runsAt: chevre.factory.sortType.Descending },
             project: { id: { $eq: req.project.id } },
             name: (typeof ((_a = req.query.name) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.name.$eq.length > 0)
                 ? req.query.name.$eq
