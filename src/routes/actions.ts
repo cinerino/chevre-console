@@ -3,6 +3,7 @@
  */
 import * as chevre from '@chevre/api-nodejs-client';
 import { Router } from 'express';
+import { INTERNAL_SERVER_ERROR } from 'http-status';
 
 const actionsRouter = Router();
 
@@ -206,12 +207,12 @@ actionsRouter.get(
                 })
             });
         } catch (err) {
-            console.error(err);
-            res.json({
-                success: false,
-                count: 0,
-                results: []
-            });
+            res.status((typeof err.code === 'number') ? err.code : INTERNAL_SERVER_ERROR)
+                .json({
+                    success: false,
+                    count: 0,
+                    results: []
+                });
         }
     }
 );

@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const http_status_1 = require("http-status");
 const tasksRouter = express_1.Router();
 tasksRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('tasks/index', {
@@ -55,8 +56,8 @@ tasksRouter.get('/search',
         });
     }
     catch (err) {
-        console.error(err);
-        res.json({
+        res.status((typeof err.code === 'number') ? err.code : http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             success: false,
             count: 0,
             results: []
