@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 所有権検索を追加
 - 注文CSVダウンロードを実装
 - タスク検索を追加
+- IAMメンバー検索を追加
+- IAMロール検索を追加
 
 ### Changed
 
