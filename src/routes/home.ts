@@ -32,23 +32,30 @@ homeRouter.get(
 );
 
 async function searchRoleNames(req: Request): Promise<string[]> {
-    // 自分のロールを確認
-    const iamService = new cinerinoapi.service.IAM({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project?.id }
-    });
-    const searchMembersResult = await iamService.searchMembers({
-        limit: 1,
-        member: {
-            typeOf: { $eq: cinerinoapi.factory.personType.Person },
-            id: { $eq: req.user.profile.sub }
-        }
-    });
-    let roleNames: string[] | undefined = searchMembersResult.data.shift()?.member.hasRole
-        .map((r) => r.roleName);
-    if (!Array.isArray(roleNames)) {
-        roleNames = [];
+    let roleNames: string[] = [];
+
+    try {
+        // 自分のロールを確認
+        const iamService = new cinerinoapi.service.IAM({
+            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project?.id }
+        });
+        const member = await iamService.findMemberById({ member: { id: 'me' } });
+        // const searchMembersResult = await iamService.searchMembers({
+        //     limit: 1,
+        //     member: {
+        //         typeOf: { $eq: cinerinoapi.factory.personType.Person },
+        //         id: { $eq: req.user.profile.sub }
+        //     }
+        // });
+        roleNames = member.member.hasRole
+            .map((r) => r.roleName);
+        // if (!Array.isArray(roleNames)) {
+        //     roleNames = [];
+        // }
+    } catch (error) {
+        console.error(error);
     }
 
     return roleNames;

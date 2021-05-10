@@ -32,24 +32,32 @@ homeRouter.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
 }));
 function searchRoleNames(req) {
-    var _a, _b;
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        // 自分のロールを確認
-        const iamService = new cinerinoapi.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
-        });
-        const searchMembersResult = yield iamService.searchMembers({
-            limit: 1,
-            member: {
-                typeOf: { $eq: cinerinoapi.factory.personType.Person },
-                id: { $eq: req.user.profile.sub }
-            }
-        });
-        let roleNames = (_b = searchMembersResult.data.shift()) === null || _b === void 0 ? void 0 : _b.member.hasRole.map((r) => r.roleName);
-        if (!Array.isArray(roleNames)) {
-            roleNames = [];
+        let roleNames = [];
+        try {
+            // 自分のロールを確認
+            const iamService = new cinerinoapi.service.IAM({
+                endpoint: process.env.CINERINO_API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
+            });
+            const member = yield iamService.findMemberById({ member: { id: 'me' } });
+            // const searchMembersResult = await iamService.searchMembers({
+            //     limit: 1,
+            //     member: {
+            //         typeOf: { $eq: cinerinoapi.factory.personType.Person },
+            //         id: { $eq: req.user.profile.sub }
+            //     }
+            // });
+            roleNames = member.member.hasRole
+                .map((r) => r.roleName);
+            // if (!Array.isArray(roleNames)) {
+            //     roleNames = [];
+            // }
+        }
+        catch (error) {
+            console.error(error);
         }
         return roleNames;
     });
