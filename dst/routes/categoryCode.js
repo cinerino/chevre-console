@@ -53,6 +53,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
         const { data } = yield categoryCodeService.search({
             limit: limit,
             page: page,
+            sort: { codeValue: chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             inCodeSet: {
                 identifier: {

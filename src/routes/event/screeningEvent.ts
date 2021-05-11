@@ -108,8 +108,8 @@ screeningEventRouter.get(
             const superEventWorkPerformedIdentifierEq = req.query.superEvent?.workPerformed?.identifier;
             const onlyEventScheduled = req.query.onlyEventScheduled === '1';
 
-            const searchConditions: chevre.factory.event.ISearchConditions<chevre.factory.eventType.ScreeningEvent>
-                = {
+            const searchConditions: chevre.factory.event.ISearchConditions<chevre.factory.eventType.ScreeningEvent> = {
+                sort: { startDate: chevre.factory.sortType.Ascending },
                 project: { ids: [req.project.id] },
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined,

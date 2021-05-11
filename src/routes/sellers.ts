@@ -100,6 +100,7 @@ sellersRouter.get(
             const searchConditions: chevre.factory.seller.ISearchConditions = {
                 limit: limit,
                 page: page,
+                sort: { branchCode: chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
                 branchCode: {
                     $regex: (typeof req.query.branchCode?.$regex === 'string' && req.query.branchCode.$regex.length > 0)

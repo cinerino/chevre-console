@@ -85,6 +85,7 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
         const searchConditions = {
             limit: limit,
             page: page,
+            sort: { branchCode: chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             branchCode: {
                 $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
