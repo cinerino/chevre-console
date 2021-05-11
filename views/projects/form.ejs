@@ -2,6 +2,8 @@
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
             <a class="btn btn-primary aggregate" href="javascript:void(0)">
                 <i class="material-icons">save</i> 集計</a>
             <a class="btn btn-primary createReservationReport" href="javascript:void(0)">
@@ -14,20 +16,114 @@
                     基本設定
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link3" role="tablist">
+                    注文通知
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
+                    高度な設定
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane active show" id="link1">
-                <input type="hidden" name="id" value="<%= forms.id %>">
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="id" class="bmd-label-static">
+                            ID<span class="text-danger">＊</span>
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="id" id="id" placeholder=""
+                            maxlength="20" value="<%= forms.id %>">
+                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                        <% } else { %>
+                        <input readonly type="text" class="form-control" name="id" id="id"
+                            placeholder="" maxlength="20" value="<%= forms.id %>">
+                        <% } %>
+                        <% if (errors && errors.id) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.id.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
 
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="name" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input type="text" class="form-control" name="name" id="name" placeholder=""
+                            maxlength=64 value="<%=forms.name %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['name']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['name'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="logo" class="bmd-label-static">
+                            ロゴ
+                        </label>
+                        <input type="text" class="form-control" name="logo" id="logo" placeholder=""
+                            maxlength=64 value="<%= forms.logo %>">
+                        <% if (errors && errors['logo']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['logo'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="settings[cognito][customerUserPool][id]" class="bmd-label-static">
+                            Cognito カスタマーユーザープールID<span class="text-danger">＊</span>
+                        </label>
+                        <input<% if (!isNew) { %> readonly<% } %> type="text" class="form-control" name="settings[cognito][customerUserPool][id]" id="settings[cognito][customerUserPool][id]" placeholder=""
+                            maxlength=64 value="<%=forms.settings.cognito.customerUserPool.id %>">
+                        <% if (errors && errors['settings.cognito.customerUserPool.id']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['settings.cognito.customerUserPool.id'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="settings[sendgridApiKey]" class="bmd-label-static">
+                            Sendgrid API Key
+                        </label>
+                        <input type="text" class="form-control" name="settings[sendgridApiKey]" id="settings[sendgridApiKey]" placeholder=""
+                            maxlength=256 value="<%= forms.settings.sendgridApiKey %>">
+                        <% if (errors && errors['settings.sendgridApiKey']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['settings.sendgridApiKey'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="link3">
+                <%- include('./_orderWebhooks', {
+                    orderWebhooks: forms.orderWebhooks
+                }) %>
+            </div>
+
+            <div class="tab-pane" id="link4">
+                <% if (!isNew) { %>
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
                         <textarea disabled class="form-control"
                             rows=40><%= JSON.stringify(forms, null, '\t')%></textarea>
                     </div>
                 </div>
-            </div>
-            <div class="tab-pane" id="link2">
+                <% } %>
             </div>
         </div>
 

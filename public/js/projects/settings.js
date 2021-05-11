@@ -1,5 +1,13 @@
 
 $(function () {
+    // 保存ボタン
+    $('.btn-ok').on('click', function () {
+        $(this).addClass('disabled')
+            .text('processing...');
+
+        $('form').submit();
+    });
+
     // 集計ボタン
     $('.aggregate').on('click', function () {
         if (window.confirm('元には戻せません。本当に集計しますか？')) {
