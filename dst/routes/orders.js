@@ -59,6 +59,7 @@ ordersRouter.get('/search',
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
+            sort: { orderDate: chevre.factory.sortType.Descending },
             project: { id: { $eq: req.project.id } },
             confirmationNumbers: (typeof req.query.confirmationNumber === 'string' && req.query.confirmationNumber.length > 0)
                 ? [req.query.confirmationNumber]
