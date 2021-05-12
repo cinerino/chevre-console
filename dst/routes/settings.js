@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createFromBody = exports.validate = exports.NUM_ORDER_WEBHOOKS = void 0;
 /**
  * プロジェクトルーター
  */
@@ -20,7 +21,7 @@ const moment = require("moment-timezone");
 const Message = require("../message");
 const DEFAULT_EMAIL_SENDER = process.env.DEFAULT_EMAIL_SENDER;
 const NAME_MAX_LENGTH_NAME = 64;
-const NUM_ORDER_WEBHOOKS = 2;
+exports.NUM_ORDER_WEBHOOKS = 2;
 const settingsRouter = express_1.Router();
 // tslint:disable-next-line:use-default-type-parameter
 settingsRouter.all('', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -62,9 +63,9 @@ settingsRouter.all('', ...validate(), (req, res, next) => __awaiter(void 0, void
             // no op
         }
         else {
-            if (forms.orderWebhooks.length < NUM_ORDER_WEBHOOKS) {
+            if (forms.orderWebhooks.length < exports.NUM_ORDER_WEBHOOKS) {
                 // tslint:disable-next-line:prefer-array-literal
-                forms.orderWebhooks.push(...[...Array(NUM_ORDER_WEBHOOKS - forms.orderWebhooks.length)].map(() => {
+                forms.orderWebhooks.push(...[...Array(exports.NUM_ORDER_WEBHOOKS - forms.orderWebhooks.length)].map(() => {
                     return {};
                 }));
             }
@@ -81,13 +82,13 @@ settingsRouter.all('', ...validate(), (req, res, next) => __awaiter(void 0, void
 }));
 function validate() {
     return [
-        // body('branchCode')
-        //     .notEmpty()
-        //     .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
-        //     .matches(/^[0-9a-zA-Z]+$/)
-        //     .isLength({ max: 20 })
-        //     // tslint:disable-next-line:no-magic-numbers
-        //     .withMessage(Message.Common.getMaxLength('コード', 20)),
+        express_validator_1.body('id')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ID'))
+            .matches(/^[0-9a-zA-Z\-]+$/)
+            .isLength({ min: 5, max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('ID', 30)),
         express_validator_1.body(['name'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
@@ -95,6 +96,7 @@ function validate() {
             .withMessage(Message.Common.getMaxLength('名称', NAME_MAX_LENGTH_NAME))
     ];
 }
+exports.validate = validate;
 function createFromBody(req, __) {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
@@ -107,7 +109,7 @@ function createFromBody(req, __) {
             });
         }
         return {
-            id: req.project.id,
+            id: req.body.id,
             typeOf: chevre.factory.organizationType.Project,
             logo: req.body.logo,
             name: req.body.name,
@@ -131,6 +133,7 @@ function createFromBody(req, __) {
         };
     });
 }
+exports.createFromBody = createFromBody;
 settingsRouter.post('/aggregate', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const taskService = new chevre.service.Task({

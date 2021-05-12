@@ -13,7 +13,7 @@ import * as Message from '../message';
 
 const DEFAULT_EMAIL_SENDER = process.env.DEFAULT_EMAIL_SENDER;
 const NAME_MAX_LENGTH_NAME = 64;
-const NUM_ORDER_WEBHOOKS = 2;
+export const NUM_ORDER_WEBHOOKS = 2;
 
 const settingsRouter = Router();
 
@@ -87,15 +87,15 @@ settingsRouter.all<ParamsDictionary>(
     }
 );
 
-function validate() {
+export function validate() {
     return [
-        // body('branchCode')
-        //     .notEmpty()
-        //     .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
-        //     .matches(/^[0-9a-zA-Z]+$/)
-        //     .isLength({ max: 20 })
-        //     // tslint:disable-next-line:no-magic-numbers
-        //     .withMessage(Message.Common.getMaxLength('コード', 20)),
+        body('id')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'ID'))
+            .matches(/^[0-9a-zA-Z\-]+$/)
+            .isLength({ min: 5, max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('ID', 30)),
 
         body(['name'])
             .notEmpty()
@@ -105,7 +105,7 @@ function validate() {
     ];
 }
 
-async function createFromBody(
+export async function createFromBody(
     req: Request, __: boolean
 ): Promise<chevre.factory.project.IProject> {
     let orderWebhooks: chevre.factory.project.IInformParams[] = [];
@@ -118,7 +118,7 @@ async function createFromBody(
     }
 
     return {
-        id: req.project.id,
+        id: req.body.id,
         typeOf: chevre.factory.organizationType.Project,
         logo: req.body.logo,
         name: req.body.name,
