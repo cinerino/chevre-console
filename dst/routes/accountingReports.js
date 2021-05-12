@@ -14,6 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const chevreapi = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
+const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const accountingReportsRouter = express_1.Router();
 accountingReportsRouter.get('', 
@@ -154,7 +155,13 @@ accountingReportsRouter.get('',
         }
     }
     catch (error) {
-        next(error);
+        if (req.query.format === 'datatable') {
+            res.status((typeof error.code === 'number') ? error.code : http_status_1.INTERNAL_SERVER_ERROR)
+                .json({ message: error.message });
+        }
+        else {
+            next(error);
+        }
     }
 }));
 exports.default = accountingReportsRouter;

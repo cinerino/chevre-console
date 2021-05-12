@@ -4,6 +4,7 @@
 import * as chevreapi from '@chevre/api-nodejs-client';
 import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
+import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
 export type IAction = cinerinoapi.factory.chevre.action.trade.pay.IAction | cinerinoapi.factory.chevre.action.trade.refund.IAction;
@@ -178,7 +179,12 @@ accountingReportsRouter.get(
                 });
             }
         } catch (error) {
-            next(error);
+            if (req.query.format === 'datatable') {
+                res.status((typeof error.code === 'number') ? error.code : INTERNAL_SERVER_ERROR)
+                    .json({ message: error.message });
+            } else {
+                next(error);
+            }
         }
     }
 );
