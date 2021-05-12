@@ -67,6 +67,7 @@ projectsRouter.all('/new', ...settings_1.validate(), (req, res, next) => __await
             }
         }
         res.render('projects/new', {
+            layout: 'layouts/dashboard',
             message: message,
             errors: errors,
             forms: forms

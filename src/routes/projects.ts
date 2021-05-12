@@ -75,6 +75,7 @@ projectsRouter.all<ParamsDictionary>(
             }
 
             res.render('projects/new', {
+                layout: 'layouts/dashboard',
                 message: message,
                 errors: errors,
                 forms: forms
