@@ -491,13 +491,14 @@ async function onClickDownload() {
         delay: 200,
         newest_on_top: true
     });
+    var limit4download = 50;
 
     const datas = [];
     let page = 0;
     while (true) {
         page += 1;
         conditions4csv.page = page;
-        console.log('searching reports...', conditions4csv.limit, page);
+        console.log('searching reports...', limit4download, page);
         var notifyOnSearching = $.notify({
             message: page + 'ページ目を検索しています...',
         }, {
@@ -522,7 +523,10 @@ async function onClickDownload() {
                         cache: false,
                         type: 'GET',
                         dataType: 'json',
-                        data: conditions4csv,
+                        data: {
+                            ...conditions4csv,
+                            limit: limit4download
+                        },
                         // data: {
                         //     // limit,
                         //     page,
@@ -569,7 +573,7 @@ async function onClickDownload() {
             }));
         }
 
-        if (searchResult.results.length < conditions4csv.limit) {
+        if (searchResult.results.length < limit4download) {
             break;
         }
     }
