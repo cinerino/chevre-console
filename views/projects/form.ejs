@@ -39,11 +39,11 @@
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="id" id="id" placeholder=""
-                            maxlength="20" value="<%= forms.id %>">
+                            maxlength="30" value="<%= forms.id %>">
                         <span class="bmd-help">半角20文字以内でご入力ください</span>
                         <% } else { %>
                         <input readonly type="text" class="form-control" name="id" id="id"
-                            placeholder="" maxlength="20" value="<%= forms.id %>">
+                            placeholder="" maxlength="30" value="<%= forms.id %>">
                         <% } %>
                         <% if (errors && errors.id) { %>
                         <span class="bmd-help text-danger d-block">
@@ -73,7 +73,7 @@
                             ロゴ
                         </label>
                         <input type="text" class="form-control" name="logo" id="logo" placeholder=""
-                            maxlength=64 value="<%= forms.logo %>">
+                            maxlength=256 value="<%= forms.logo %>">
                         <% if (errors && errors['logo']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['logo'].msg %>

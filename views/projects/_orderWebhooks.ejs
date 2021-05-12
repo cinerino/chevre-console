@@ -13,7 +13,7 @@
     <div class="form-group bmd-form-group col-6">
         <label class="bmd-label-floating">url</label>
         <input class="form-control" name="orderWebhooks[<%= key %>][url]"
-            id="orderWebhooks[<%= key %>][url]" maxlength=128 value="<%= orderWebhooks[key].url %>">
+            id="orderWebhooks[<%= key %>][url]" maxlength=256 value="<%= orderWebhooks[key].url %>">
         <% if (errors && errors[`orderWebhooks[${key}].url`]) { %>
         <span class="bmd-help text-danger d-block">
             <%- errors[`orderWebhooks[${key}].url`].msg %>
