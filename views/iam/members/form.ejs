@@ -1,0 +1,76 @@
+<div class="card card-plain">
+    <div class="card-body">
+        <div class="toolbar">
+            <!--        Here you can write extra buttons/actions for the toolbar              -->
+            <a class="btn btn-primary btn-ok" href="javascript:void(0)">
+                <i class="material-icons">save</i> 保存</a>
+            <% if (!isNew) { %>
+            <a class="btn btn-delete btn-danger" href="javascript:void(0)">
+                <i class="material-icons">delete</i> 削除</a>
+            <% } %>
+        </div>
+
+        <ul class="nav nav-pills nav-pills-dark mt-3" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#link1" role="tablist">
+                    基本設定
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active show" id="link1">
+                <% if (isNew) { %>
+                <% } else { %>
+                <input type="hidden" name="member[typeOf]" value="<%= forms.member.typeOf %>">
+                <input type="hidden" name="member[id]" value="<%= forms.member.id %>">
+                <% } %>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="member[name]" class="bmd-label-static">
+                            名称<span class="text-danger">＊</span>
+                        </label>
+                        <input type="text" class="form-control" name="member[name]" id="member[name]" placeholder=""
+                            maxlength=64 value="<%=forms.member.name %>">
+                        <span class="bmd-help">全角64文字以内でご入力ください</span>
+                        <% if (errors && errors['member.name']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['member.name'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="roleName[]" class="bmd-label-static">
+                            ロール
+                        </label>
+
+                        <% roles.forEach((role) => { %>
+                        <%
+                        let checked = false;
+                        if (Array.isArray(forms.roleNames) && forms.roleNames.some((roleName)=>role.roleName === roleName)) {
+                            checked = true;
+                        }
+                        %>
+                        <div class="form-check form-check-inline">
+                            <label class="form-check-label">
+                                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                                    <% } %> value="<%= role.roleName %>"
+                                    name="roleName[]"><%= role.roleName %>
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end card -->

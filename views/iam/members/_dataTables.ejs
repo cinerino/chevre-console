@@ -34,6 +34,7 @@
                             <th>Name</th>
                             <th>Username</th>
                             <th>Roles</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,6 +53,11 @@
                             </td>
                             <td name="rolesStr">
                                 $rolesStr$
+                            </td>
+                            <td name="member.id__edit">
+                                <a target="_blank" href="/projects/<%= req.project.id %>/iam/members/$member.id$/update">
+                                    <i class="material-icons" style="font-size: 1.2em;">edit</i>
+                                </a>
                             </td>
                         </tr>
                     </tbody>
