@@ -18,6 +18,69 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
 const iamMembersRouter = express_1.Router();
+// tslint:disable-next-line:use-default-type-parameter
+iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let message = '';
+    let errors = {};
+    const iamService = new chevre.service.IAM({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    if (req.method === 'POST') {
+        // 検証
+        const validatorResult = express_validator_1.validationResult(req);
+        errors = validatorResult.mapped();
+        // 検証
+        if (validatorResult.isEmpty()) {
+            // 登録プロセス
+            try {
+                const memberAttributes = createFromBody(req, true);
+                const iamMember = yield iamService.createMember(memberAttributes);
+                req.flash('message', '登録しました');
+                res.redirect(`/projects/${req.project.id}/iam/members/${iamMember.member.id}/update`);
+                return;
+            }
+            catch (error) {
+                message = error.message;
+            }
+        }
+    }
+    const forms = Object.assign({ roleName: [], member: {} }, req.body);
+    if (req.method === 'POST') {
+        // 対応決済方法を補完
+        // if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+        //     forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+        // } else {
+        //     forms.paymentAccepted = [];
+        // }
+    }
+    else {
+        // if (Array.isArray(member.member.hasRole) && member.member.hasRole.length > 0) {
+        //     forms.roleNames = member.member.hasRole.map((r) => {
+        //         return r.roleName;
+        //     });
+        // } else {
+        //     forms.roleNames = [];
+        // }
+    }
+    if (req.method === 'POST') {
+        // 対応決済方法を補完
+        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
+            forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+        }
+        else {
+            forms.paymentAccepted = [];
+        }
+    }
+    const searchRolesResult = yield iamService.searchRoles({ limit: 100 });
+    res.render('iam/members/new', {
+        message: message,
+        errors: errors,
+        forms: forms,
+        roles: searchRolesResult.data
+    });
+}));
 iamMembersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('iam/members/index', {
         message: '',
@@ -97,7 +160,7 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
                 }
             }
         }
-        const forms = Object.assign(Object.assign({ roleNames: [] }, member), req.body);
+        const forms = Object.assign(Object.assign({ roleName: [] }, member), req.body);
         if (req.method === 'POST') {
             // 対応決済方法を補完
             // if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
@@ -108,12 +171,12 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
         }
         else {
             if (Array.isArray(member.member.hasRole) && member.member.hasRole.length > 0) {
-                forms.roleNames = member.member.hasRole.map((r) => {
+                forms.roleName = member.member.hasRole.map((r) => {
                     return r.roleName;
                 });
             }
             else {
-                forms.roleNames = [];
+                forms.roleName = [];
             }
         }
         const searchRolesResult = yield iamService.searchRoles({ limit: 100 });
@@ -126,6 +189,25 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
     }
     catch (error) {
         next(error);
+    }
+}));
+iamMembersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        // await preDelete(req, seller);
+        yield iamService.deleteMember({
+            member: { id: req.params.id }
+        });
+        res.status(http_status_1.NO_CONTENT)
+            .end();
+    }
+    catch (error) {
+        res.status(http_status_1.BAD_REQUEST)
+            .json({ error: { message: error.message } });
     }
 }));
 function createFromBody(req, __) {
@@ -150,7 +232,10 @@ function validate() {
     return [
         express_validator_1.body('member.typeOf')
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', 'メンバータイプ'))
+            .withMessage(Message.Common.required.replace('$fieldName$', 'メンバータイプ')),
+        express_validator_1.body('member.id')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーID'))
         // body(['name.ja', 'name.en'])
         //     .notEmpty()
         //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
