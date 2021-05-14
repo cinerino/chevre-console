@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - タスク検索を追加
 - IAMメンバー検索を追加
 - IAMロール検索を追加
+- IAMユーザー検索を追加
 
 ### Changed
 
