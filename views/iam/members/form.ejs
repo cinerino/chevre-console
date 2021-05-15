@@ -16,6 +16,11 @@
                     基本設定
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
+                    JSON
+                </a>
+            </li>
         </ul>
 
         <div class="tab-content">
@@ -126,6 +131,27 @@
                         <% }) %>
                     </div>
                 </div>
+            </div>
+            
+
+            <div class="tab-pane" id="link4">
+                <% if (!isNew) { %>
+
+                <% if (userPoolClient !== undefined) { %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            userPoolClient
+                        </label>
+                        <div id="userPoolClient">
+                            <textarea disabled class="form-control" name="userPoolClient"
+                                rows=20><%= JSON.stringify(userPoolClient, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <% } %>
             </div>
         </div>
 

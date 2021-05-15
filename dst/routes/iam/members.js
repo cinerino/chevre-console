@@ -17,6 +17,7 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
+const ADMIN_USER_POOL_ID = process.env.ADMIN_USER_POOL_ID;
 const iamMembersRouter = express_1.Router();
 // tslint:disable-next-line:use-default-type-parameter
 iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -138,6 +139,11 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
+    const userPoolService = new chevre.service.UserPool({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
     try {
         let member = yield iamService.findMemberById({ member: { id: req.params.id } });
         if (req.method === 'POST') {
@@ -180,11 +186,30 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
             }
         }
         const searchRolesResult = yield iamService.searchRoles({ limit: 100 });
+        // Cognitoユーザープール検索
+        // let userPoolClient: chevre.factory.cognito.UserPoolClientType | undefined;
+        let userPoolClient;
+        try {
+            if (member.member.typeOf === chevre.factory.creativeWorkType.WebApplication) {
+                // userPoolClient = await userPoolService.findClientById({
+                //     userPoolId: customerUserPoolId,
+                //     clientId: req.params.id
+                // });
+                userPoolClient = yield userPoolService.findClientById({
+                    userPoolId: ADMIN_USER_POOL_ID,
+                    clientId: req.params.id
+                });
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
         res.render('iam/members/update', {
             message: message,
             errors: errors,
             forms: forms,
-            roles: searchRolesResult.data
+            roles: searchRolesResult.data,
+            userPoolClient
         });
     }
     catch (error) {

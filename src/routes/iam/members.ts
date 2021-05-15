@@ -10,6 +10,8 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
+const ADMIN_USER_POOL_ID = <string>process.env.ADMIN_USER_POOL_ID;
+
 const iamMembersRouter = Router();
 
 // tslint:disable-next-line:use-default-type-parameter
@@ -161,6 +163,11 @@ iamMembersRouter.all<ParamsDictionary>(
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        const userPoolService = new chevre.service.UserPool({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
 
         try {
             let member = await iamService.findMemberById({ member: { id: req.params.id } });
@@ -216,11 +223,30 @@ iamMembersRouter.all<ParamsDictionary>(
 
             const searchRolesResult = await iamService.searchRoles({ limit: 100 });
 
+            // Cognitoユーザープール検索
+            // let userPoolClient: chevre.factory.cognito.UserPoolClientType | undefined;
+            let userPoolClient: any;
+            try {
+                if (member.member.typeOf === chevre.factory.creativeWorkType.WebApplication) {
+                    // userPoolClient = await userPoolService.findClientById({
+                    //     userPoolId: customerUserPoolId,
+                    //     clientId: req.params.id
+                    // });
+                    userPoolClient = await userPoolService.findClientById({
+                        userPoolId: ADMIN_USER_POOL_ID,
+                        clientId: req.params.id
+                    });
+                }
+            } catch (error) {
+                console.error(error);
+            }
+
             res.render('iam/members/update', {
                 message: message,
                 errors: errors,
                 forms: forms,
-                roles: searchRolesResult.data
+                roles: searchRolesResult.data,
+                userPoolClient
             });
         } catch (error) {
             next(error);
