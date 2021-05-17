@@ -154,6 +154,7 @@ iamMembersRouter.get(
 iamMembersRouter.all<ParamsDictionary>(
     '/:id/update',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res, next) => {
         let message = '';
         let errors: any = {};
@@ -226,6 +227,7 @@ iamMembersRouter.all<ParamsDictionary>(
             // Cognitoユーザープール検索
             // let userPoolClient: chevre.factory.cognito.UserPoolClientType | undefined;
             let userPoolClient: any;
+            let profile: chevre.factory.person.IProfile | undefined;
             try {
                 if (member.member.typeOf === chevre.factory.creativeWorkType.WebApplication) {
                     // userPoolClient = await userPoolService.findClientById({
@@ -236,6 +238,8 @@ iamMembersRouter.all<ParamsDictionary>(
                         userPoolId: ADMIN_USER_POOL_ID,
                         clientId: req.params.id
                     });
+                } else if (member.member.typeOf === chevre.factory.personType.Person) {
+                    profile = await iamService.getMemberProfile({ member: { id: req.params.id } });
                 }
             } catch (error) {
                 console.error(error);
@@ -246,7 +250,8 @@ iamMembersRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 roles: searchRolesResult.data,
-                userPoolClient
+                userPoolClient,
+                profile
             });
         } catch (error) {
             next(error);

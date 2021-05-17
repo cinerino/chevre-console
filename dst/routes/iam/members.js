@@ -131,7 +131,9 @@ iamMembersRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 // tslint:disable-next-line:use-default-type-parameter
-iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+iamMembersRouter.all('/:id/update', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const iamService = new chevre.service.IAM({
@@ -189,6 +191,7 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
         // Cognitoユーザープール検索
         // let userPoolClient: chevre.factory.cognito.UserPoolClientType | undefined;
         let userPoolClient;
+        let profile;
         try {
             if (member.member.typeOf === chevre.factory.creativeWorkType.WebApplication) {
                 // userPoolClient = await userPoolService.findClientById({
@@ -200,6 +203,9 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
                     clientId: req.params.id
                 });
             }
+            else if (member.member.typeOf === chevre.factory.personType.Person) {
+                profile = yield iamService.getMemberProfile({ member: { id: req.params.id } });
+            }
         }
         catch (error) {
             console.error(error);
@@ -209,7 +215,8 @@ iamMembersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter
             errors: errors,
             forms: forms,
             roles: searchRolesResult.data,
-            userPoolClient
+            userPoolClient,
+            profile
         });
     }
     catch (error) {

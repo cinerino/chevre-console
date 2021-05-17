@@ -151,6 +151,20 @@
                 </div>
                 <% } %>
 
+                <% if (profile !== undefined) { %>
+                <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-12">
+                        <label for="" class="bmd-label-static">
+                            profile
+                        </label>
+                        <div id="profile">
+                            <textarea disabled class="form-control" name="profile"
+                                rows=20><%= JSON.stringify(profile, null, '\t') %></textarea>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+    
                 <% } %>
             </div>
         </div>
