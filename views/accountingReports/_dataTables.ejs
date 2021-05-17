@@ -101,7 +101,8 @@
                             <th>注文日時</th>
                             <th>アイテム数</th>
                             <th>予約イベント日時</th>
-                            <th>識別子</th>
+                            <th>カスタマー識別子</th>
+                            <th>カスタマー追加特性</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -138,6 +139,11 @@
                             </td>
                             <td name="isPartOf.mainEntity.orderNumber__isPartOf.mainEntity.customer.identifier">
                                 <a href="javascript:void(0)" class="showCustomerIdentifier" data-orderNumber="$isPartOf.mainEntity.orderNumber$">
+                                    表示
+                                </a>
+                            </td>
+                            <td name="isPartOf.mainEntity.orderNumber__isPartOf.mainEntity.customer.additionalProperty">
+                                <a href="javascript:void(0)" class="showCustomerAdditionalProperty" data-orderNumber="$isPartOf.mainEntity.orderNumber$">
                                     表示
                                 </a>
                             </td>

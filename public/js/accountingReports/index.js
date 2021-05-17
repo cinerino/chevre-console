@@ -36,6 +36,13 @@ $(function () {
         showCustomerIdentifier(orderNumber);
     });
 
+    $(document).on('click', '.showCustomerAdditionalProperty', function (event) {
+        var orderNumber = $(this).attr('data-orderNumber');
+        console.log('showing customer...orderNumber:', orderNumber);
+
+        showCustomerAdditionalProperty(orderNumber);
+    });
+
     $(document).on('click', '.btn-downloadCSV', function () {
         onClickDownload();
     });
@@ -89,6 +96,63 @@ function showCustomerIdentifier(orderNumber) {
                 .append($('<dd>').addClass('col-md-9').html(table));
         } else {
             body.append($('<dt>').addClass('col-md-3').append($('<h6>').text('識別子')))
+                .append($('<dd>').addClass('col-md-9').text('なし'));
+        }
+    }
+
+    modal.find('.modal-title').html(title);
+    modal.find('.modal-body').html(body);
+    modal.modal();
+}
+
+function showCustomerAdditionalProperty(orderNumber) {
+    var report = $.CommonMasterList.getDatas().find(function (data) {
+        return data.isPartOf.mainEntity.orderNumber === orderNumber
+    });
+    if (report === undefined) {
+        alert('レポート' + orderNumber + 'が見つかりません');
+
+        return;
+    }
+
+    var modal = $('#modal-report');
+    var title = 'レポート `' + report.isPartOf.mainEntity.orderNumber + '` カスタマー追加特性';
+
+    var customer = report.isPartOf.mainEntity.customer;
+    var body = $('<dl>').addClass('row');
+    if (customer !== undefined && customer !== null) {
+        // body.append($('<dt>').addClass('col-md-3').append($('<span>').text('タイプ')))
+        //     .append($('<dd>').addClass('col-md-9').append(customer.typeOf))
+        //     .append($('<dt>').addClass('col-md-3').append($('<span>').text('ID')))
+        //     .append($('<dd>').addClass('col-md-9').append(customer.id))
+        //     .append($('<dt>').addClass('col-md-3').append($('<span>').text('名称')))
+        //     .append($('<dd>').addClass('col-md-9').append(customer.name))
+        //     .append($('<dt>').addClass('col-md-3').append($('<span>').text('メールアドレス')))
+        //     .append($('<dd>').addClass('col-md-9').append(customer.email))
+        //     .append($('<dt>').addClass('col-md-3').append($('<span>').text('電話番号')))
+        //     .append($('<dd>').addClass('col-md-9').append(customer.telephone));
+
+        if (Array.isArray(customer.additionalProperty)) {
+            var thead = $('<thead>').addClass('text-primary');
+            var tbody = $('<tbody>');
+            thead.append([
+                $('<tr>').append([
+                    $('<th>').text('Name'),
+                    $('<th>').text('Value')
+                ])
+            ]);
+            tbody.append(customer.additionalProperty.map(function (property) {
+                return $('<tr>').append([
+                    $('<td>').text(property.name),
+                    $('<td>').text(property.value)
+                ]);
+            }));
+            var table = $('<table>').addClass('table table-sm')
+                .append([thead, tbody]);
+            body.append($('<dt>').addClass('col-md-3').append($('<span>').text('追加特性')))
+                .append($('<dd>').addClass('col-md-9').html(table));
+        } else {
+            body.append($('<dt>').addClass('col-md-3').append($('<h6>').text('追加特性')))
                 .append($('<dd>').addClass('col-md-9').text('なし'));
         }
     }
@@ -244,6 +308,7 @@ async function onClickDownload() {
         { label: '予約イベント日時', default: '', value: 'eventStartDates' },
         { label: 'アプリケーションクライアント', default: '', value: 'clientId' },
         { label: 'カスタマー識別子', default: '', value: 'isPartOf.mainEntity.customer.identifier' },
+        { label: 'カスタマー追加特性', default: '', value: 'isPartOf.mainEntity.customer.additionalProperty' }
     ];
     const opts = {
         fields: fields,
