@@ -60,6 +60,30 @@ $(function () {
             }
         }
     });
+
+    // ロール更新
+    var updateButton = $('button.update');
+    $('#modal-update').on('shown.bs.modal', function () {
+        $('#confirmUpdate').val('');
+        updateButton.prop('disabled', true);
+        updateButton.addClass('disabled');
+    });
+    $('#confirmUpdate').keyup(function () {
+        var validValue = (String($(this).val()) === String($(this).data('expected')));
+        if (validValue) {
+            updateButton.prop('disabled', false);
+            updateButton.removeClass('disabled');
+        } else {
+            updateButton.prop('disabled', true);
+            updateButton.addClass('disabled');
+        }
+    });
+    updateButton.click(function () {
+        $(this).addClass('disabled')
+            .text('processing...');
+
+        $('form').submit();
+    });
 });
 
 /**
