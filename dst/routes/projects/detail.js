@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 const express = require("express");
 const accountingReports_1 = require("../accountingReports");
+const accounts_1 = require("../accounts");
 const accountTitles_1 = require("../accountTitles");
 const actions_1 = require("../actions");
 const applications_1 = require("../applications");
@@ -40,6 +41,7 @@ const transactions_1 = require("../transactions");
 const projectDetailRouter = express.Router();
 projectDetailRouter.use('/home', home_1.default);
 projectDetailRouter.use('/accountingReports', accountingReports_1.default);
+projectDetailRouter.use('/accounts', accounts_1.default);
 projectDetailRouter.use('/accountTitles', accountTitles_1.default);
 projectDetailRouter.use('/actions', actions_1.default);
 projectDetailRouter.use('/applications', applications_1.default);

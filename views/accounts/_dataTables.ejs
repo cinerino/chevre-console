@@ -1,0 +1,93 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="accountNumber" class="bmd-label-static">
+                                口座番号
+                            </label>
+                            <input type="text" class="form-control" name="accountNumber" id="accountNumber"
+                                placeholder="口座番号" />
+                        </div>
+
+                    </div>
+
+                    <div class="advanced collapse">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>口座種別</th>
+                            <th>通貨</th>
+                            <th>ステータス</th>
+                            <th>口座番号</th>
+                            <th>名義</th>
+                            <th>残高</th>
+                            <th>利用可能残高</th>
+                            <th>開設</th>
+                            <th>解約</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="typeOf">
+                                $typeOf$
+                            </td>
+                            <td name="accountType">
+                                $accountType$
+                            </td>
+                            <td name="status__status">
+                                <span class="badge badge-light $status$">$status$</span>
+                            </td>
+                            <td name="accountNumber">
+                                $accountNumber$
+                            </td>
+                            <td name="name">
+                                $name$
+                            </td>
+                            <td name="balance">
+                                $balance$
+                            </td>
+                            <td name="availableBalance">
+                                $availableBalance$
+                            </td>
+                            <td name="openDate|date:YY-MM-DD HH:mm:ssZ">
+                                $openDate$
+                            </td>
+                            <td name="closeDate|date:YY-MM-DD HH:mm:ssZ">
+                                $closeDate$
+                            </td>
+                            <td name="isPartOf.mainEntity.orderNumber__isPartOf.mainEntity.customer.identifier">
+                                <a href="javascript:void(0)" class="showCustomerIdentifier" data-orderNumber="$isPartOf.mainEntity.orderNumber$">
+                                    表示
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

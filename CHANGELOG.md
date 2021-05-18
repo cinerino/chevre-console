@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IAMメンバー検索を追加
 - IAMロール検索を追加
 - IAMユーザー検索を追加
+- 口座検索を追加
 
 ### Changed
 
