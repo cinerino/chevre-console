@@ -35,6 +35,12 @@ $(function () {
 
         showCustomerAdditionalProperty(accountNumber);
     });
+
+    $(document).on('click', '.showMoneyTransferActions', function (event) {
+        var accountNumber = $(this).attr('data-accountNumber');
+
+        showMoneyTransferActionsById(accountNumber);
+    });
 });
 
 function showCustomerAdditionalProperty(accountNumber) {
@@ -132,4 +138,91 @@ function search(pageNumber) {
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
+}
+
+function showMoneyTransferActionsById(accountNumber) {
+    var account = $.CommonMasterList.getDatas().find(function (data) {
+        return data.accountNumber === accountNumber
+    });
+    if (account === undefined) {
+        alert(accountNumber + 'が見つかりません');
+
+        return;
+    }
+
+    $.ajax({
+        dataType: 'json',
+        url: '/projects/' + PROJECT_ID + '/accounts/' + account.accountNumber + '/moneyTransferActions',
+        cache: false,
+        type: 'GET',
+        data: { limit: 50, page: 1 },
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (data) {
+        showMoneyTransferActions(account, data);
+    }).fail(function (jqxhr, textStatus, error) {
+        alert('検索できませんでした');
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
+}
+
+function showMoneyTransferActions(account, actions) {
+    var modal = $('#modal-account');
+
+    var thead = $('<thead>').addClass('text-primary')
+        .append([
+            $('<tr>').append([
+                $('<th>').text('開始'),
+                $('<th>').text('終了'),
+                $('<th>').text('ステータス'),
+                $('<th>').text('From'),
+                $('<th>').text('To'),
+                $('<th>').text('金額'),
+                $('<th>').text('説明'),
+                $('<th>').text('取引')
+            ])
+        ]);
+    var tbody = $('<tbody>')
+        .append(actions.map(function (action) {
+            return $('<tr>').append([
+                $('<td>').text(action.startDate),
+                $('<td>').text(action.endDate),
+                $('<td>').text(action.actionStatus),
+                $('<td>').html(
+                    action.fromLocation.typeOf
+                    + ((typeof action.fromLocation.accountNumber === 'string') ? '<br>' + String(action.fromLocation.accountNumber) : '')
+                    + ((typeof action.fromLocation.name === 'string') ? '<br>' + String(action.fromLocation.name) : '')
+                ),
+                $('<td>').html(
+                    action.toLocation.typeOf
+                    + ((typeof action.toLocation.accountNumber === 'string') ? '<br>' + String(action.toLocation.accountNumber) : '')
+                    + ((typeof action.toLocation.name === 'string') ? '<br>' + String(action.toLocation.name) : '')
+                ),
+                $('<td>').text(action.amount.value + ' ' + action.amount.currency),
+                $('<td>').text(action.description),
+                $('<td>').text(action.purpose.typeOf)
+            ]);
+        }))
+    var table = $('<table>').addClass('table table-sm')
+        .append([thead, tbody]);
+
+    // var validity = $('<dl>').addClass('row')
+    //     .append($('<dt>').addClass('col-md-3').append('販売期間'))
+    //     .append($('<dd>').addClass('col-md-9').append(
+    //         moment(event.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+    //         + ' - '
+    //         + moment(event.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+    //     ));
+
+    var div = $('<div>')
+        // .append(seller)
+        // .append(availability)
+        // .append(validity)
+        .append($('<div>').addClass('table-responsive').append(table));
+
+    modal.find('.modal-title').text('転送アクション');
+    modal.find('.modal-body').html(div);
+    modal.modal();
 }

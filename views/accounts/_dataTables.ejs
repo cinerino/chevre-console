@@ -36,7 +36,7 @@
                             <th>利用可能残高</th>
                             <th>開設</th>
                             <th>解約</th>
-                            <th></th>
+                            <th>転送アクション</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,8 +68,8 @@
                             <td name="closeDate|date:YY-MM-DD HH:mm:ssZ">
                                 $closeDate$
                             </td>
-                            <td name="isPartOf.mainEntity.orderNumber__isPartOf.mainEntity.customer.identifier">
-                                <a href="javascript:void(0)" class="showCustomerIdentifier" data-orderNumber="$isPartOf.mainEntity.orderNumber$">
+                            <td name="accountNumber__moneyTransferActions">
+                                <a href="javascript:void(0)" class="showMoneyTransferActions" data-accountNumber="$accountNumber$">
                                     表示
                                 </a>
                             </td>

@@ -87,4 +87,26 @@ accountsRouter.get('',
         }
     }
 }));
+accountsRouter.get('/:accountNumber/moneyTransferActions', 
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accountService = new chevreapi.service.Account({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchConditions = {
+            limit: req.query.limit,
+            page: req.query.page,
+            sort: { startDate: chevreapi.factory.sortType.Descending }
+        };
+        const searchResult = yield accountService.searchMoneyTransferActions(Object.assign(Object.assign({}, searchConditions), { accountNumber: req.params.accountNumber }));
+        res.json(searchResult.data);
+    }
+    catch (error) {
+        res.status((typeof error.code === 'number') ? error.code : http_status_1.INTERNAL_SERVER_ERROR)
+            .json({ message: error.message });
+    }
+}));
 exports.default = accountsRouter;
