@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IAMロール検索を追加
 - IAMユーザー検索を追加
 - 口座検索を追加
+- 口座アクション検索を追加
 
 ### Changed
 
