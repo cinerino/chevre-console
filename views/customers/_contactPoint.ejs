@@ -1,3 +1,11 @@
+<% if (errors && errors[`contactPoint`]) { %>
+<div class="form-row">
+    <p class="bmd-help text-danger d-block">
+        <%- errors[`contactPoint`].msg %>
+    </p>
+</div>
+<% } %>
+
 <% contactPoint.forEach((_, key) => { %>
     <div class="form-row">
         <div class="form-group bmd-form-group col-4">

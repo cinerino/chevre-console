@@ -6,6 +6,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
+import { PhoneNumberFormat, PhoneNumberUtil } from 'google-libphonenumber';
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../message';
@@ -355,7 +356,87 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
             .isLength({ max: 64 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 64))
+            .withMessage(Message.Common.getMaxLength('名称', 64)),
+
+        body('contactPoint.*.email')
+            .optional()
+            .if((value: any) => String(value).length > 0)
+            .isEmail()
+            .withMessage('メールアドレスの形式が不適切です')
+            .isLength({ max: 128 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('メールアドレス', 128)),
+
+        body('contactPoint.*.telephone')
+            .optional()
+            .if((value: any) => String(value).length > 0)
+            .custom((value) => {
+                // 電話番号バリデーション
+                try {
+                    const phoneUtil = PhoneNumberUtil.getInstance();
+                    // const phoneNumber = phoneUtil.parse(telephone, params.agent.telephoneRegion);
+                    const phoneNumber = phoneUtil.parse(value);
+                    if (!phoneUtil.isValidNumber(phoneNumber)) {
+                        throw new Error('Invalid phone number');
+                    }
+                } catch (error) {
+                    throw new Error('電話番号の形式が不適切です');
+                }
+
+                return true;
+            })
+            .customSanitizer((value) => {
+                // 電話番号バリデーション
+                let formattedTelephone: string = value;
+                try {
+                    const phoneUtil = PhoneNumberUtil.getInstance();
+                    // const phoneNumber = phoneUtil.parse(telephone, params.agent.telephoneRegion);
+                    const phoneNumber = phoneUtil.parse(value);
+                    // if (!phoneUtil.isValidNumber(phoneNumber)) {
+                    //     throw new Error('Invalid phone number');
+                    // }
+                    formattedTelephone = phoneUtil.format(phoneNumber, PhoneNumberFormat.E164);
+                    // value = formattedTelephone;
+                } catch (error) {
+                    // no op
+                }
+
+                return formattedTelephone;
+            })
+            .isLength({ max: 128 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('電話番号', 128))
+
+        // body('contactPoint')
+        //     .optional()
+        //     .isArray()
+        //     .custom((value) => {
+        //         // 電話番号バリデーション
+        //         // const telephones = (<any[]>value)
+        //         //     .filter((p) => String(p.telephone).length > 0)
+        //         //     .map((p) => String(p.telephone));
+
+        //         (<any[]>value).forEach((p) => {
+        //             const telephone = String(p.telephone);
+        //             if (telephone.length > 0) {
+        //                 let formattedTelephone: string;
+        //                 try {
+        //                     const phoneUtil = PhoneNumberUtil.getInstance();
+        //                     // const phoneNumber = phoneUtil.parse(telephone, params.agent.telephoneRegion);
+        //                     const phoneNumber = phoneUtil.parse(telephone);
+        //                     if (!phoneUtil.isValidNumber(phoneNumber)) {
+        //                         throw new Error('Invalid phone number');
+        //                     }
+        //                     formattedTelephone = phoneUtil.format(phoneNumber, PhoneNumberFormat.E164);
+        //                     p.telephone = formattedTelephone;
+        //                 } catch (error) {
+        //                     throw new Error('電話番号のフォーマットを確認してください');
+        //                 }
+        //             }
+        //         });
+
+        //         return true;
+        //     })
     ];
 }
 
