@@ -380,7 +380,7 @@ function validate() {
                         throw new Error('Invalid phone number');
                     }
                 } catch (error) {
-                    throw new Error('電話番号の形式が不適切です');
+                    throw new Error('E.164形式で入力してください');
                 }
 
                 return true;
