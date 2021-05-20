@@ -78,6 +78,8 @@ customersRouter.all<ParamsDictionary>(
                 } catch (error) {
                     message = error.message;
                 }
+            } else {
+                message = '入力項目をご確認ください';
             }
         }
 
@@ -252,6 +254,8 @@ customersRouter.all<ParamsDictionary>(
                     } catch (error) {
                         message = error.message;
                     }
+                } else {
+                    message = '入力項目をご確認ください';
                 }
             }
 

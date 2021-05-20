@@ -54,6 +54,9 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
                 message = error.message;
             }
         }
+        else {
+            message = '入力項目をご確認ください';
+        }
     }
     const forms = Object.assign({ additionalProperty: [], contactPoint: [], name: {} }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -191,6 +194,9 @@ customersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(
                 catch (error) {
                     message = error.message;
                 }
+            }
+            else {
+                message = '入力項目をご確認ください';
             }
         }
         const forms = Object.assign(Object.assign({}, customer), req.body);
