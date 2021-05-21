@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiEndpoint = void 0;
 const chevreapi = require("@chevre/api-nodejs-client");
-// import * as cinerinoapi from '@cinerino/sdk';
 const createDebug = require("debug");
 const debug = createDebug('chevre-backend:user');
 /**
@@ -36,13 +35,6 @@ class User {
             redirectUri: `https://${configurations.host}/signIn`,
             logoutUri: `https://${configurations.host}/logout`
         });
-        // this.cinerinoAuthClient = new cinerinoapi.auth.OAuth2({
-        //     domain: <string>process.env.CINERINO_AUTHORIZE_SERVER_DOMAIN,
-        //     clientId: <string>process.env.CINERINO_CLIENT_ID,
-        //     clientSecret: <string>process.env.CINERINO_CLIENT_SECRET,
-        //     redirectUri: `https://${configurations.host}/signIn`,
-        //     logoutUri: `https://${configurations.host}/logout`
-        // });
         this.authClient.setCredentials({ refresh_token: this.getRefreshToken() });
     }
     generateAuthUrl() {

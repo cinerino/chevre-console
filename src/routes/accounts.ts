@@ -2,16 +2,15 @@
  * 口座ルーター
  */
 import * as chevreapi from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
-export type IAction = cinerinoapi.factory.chevre.action.trade.pay.IAction | cinerinoapi.factory.chevre.action.trade.refund.IAction;
+export type IAction = chevreapi.factory.chevre.action.trade.pay.IAction | chevreapi.factory.chevre.action.trade.refund.IAction;
 export interface IAccountingReoprt {
     mainEntity: IAction;
     isPartOf: {
-        mainEntity: cinerinoapi.factory.order.IOrder;
+        mainEntity: chevreapi.factory.order.IOrder;
     };
 }
 
@@ -54,28 +53,6 @@ accountsRouter.get(
                         : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(searchResult.data.length),
                     results: searchResult.data
                 });
-                // } else if (req.query.format === cinerinoapi.factory.chevre.encodingFormat.Text.csv) {
-                //     const stream = <NodeJS.ReadableStream>await streamingOrderService.download({
-                //         ...searchConditions,
-                //         format: cinerinoapi.factory.chevre.encodingFormat.Text.csv,
-                //         limit: undefined,
-                //         page: undefined
-                //     });
-                //     const filename = 'OrderReport';
-                //     res.setHeader('Content-disposition', `attachment; filename*=UTF-8\'\'${encodeURIComponent(`${filename}.csv`)}`);
-                //     res.setHeader('Content-Type', `${cinerinoapi.factory.chevre.encodingFormat.Text.csv}; charset=UTF-8`);
-                //     stream.pipe(res);
-                // } else if (req.query.format === cinerinoapi.factory.chevre.encodingFormat.Application.json) {
-                //     const stream = <NodeJS.ReadableStream>await streamingOrderService.download({
-                //         ...searchConditions,
-                //         format: cinerinoapi.factory.chevre.encodingFormat.Application.json,
-                //         limit: undefined,
-                //         page: undefined
-                //     });
-                //     const filename = 'OrderReport';
-                //     res.setHeader('Content-disposition', `attachment; filename*=UTF-8\'\'${encodeURIComponent(`${filename}.json`)}`);
-                //     res.setHeader('Content-Type', `${cinerinoapi.factory.chevre.encodingFormat.Application.json}; charset=UTF-8`);
-                //     stream.pipe(res);
             } else {
                 res.render('accounts/index', {
                     moment: moment,

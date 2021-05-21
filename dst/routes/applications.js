@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * アプリケーションルーター
  */
+const chevre = require("@chevre/api-nodejs-client");
 const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
@@ -29,7 +30,7 @@ applicationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
         const searchConditions = {
             limit: limit,
             member: {
-                typeOf: { $eq: cinerino.factory.chevre.creativeWorkType.WebApplication },
+                typeOf: { $eq: chevre.factory.chevre.creativeWorkType.WebApplication },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         };

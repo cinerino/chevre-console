@@ -1,6 +1,7 @@
 /**
  * アプリケーションルーター
  */
+import * as chevre from '@chevre/api-nodejs-client';
 import * as cinerino from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
@@ -24,7 +25,7 @@ applicationsRouter.get(
             const searchConditions: any = {
                 limit: limit,
                 member: {
-                    typeOf: { $eq: cinerino.factory.chevre.creativeWorkType.WebApplication },
+                    typeOf: { $eq: chevre.factory.chevre.creativeWorkType.WebApplication },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
                 }
             };

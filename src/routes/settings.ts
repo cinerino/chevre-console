@@ -2,7 +2,6 @@
  * プロジェクトルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -232,7 +231,7 @@ settingsRouter.post(
                     typeOf: 'CreateAction',
                     project: { typeOf: req.project.typeOf, id: req.project.id },
                     agent: {
-                        typeOf: cinerinoapi.factory.personType.Person,
+                        typeOf: chevre.factory.personType.Person,
                         id: req.user.profile.sub,
                         familyName: req.user.profile.family_name,
                         givenName: req.user.profile.given_name,

@@ -2,7 +2,6 @@
  * プロジェクトホームルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/sdk';
 import { Request, Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
@@ -36,8 +35,8 @@ async function searchRoleNames(req: Request): Promise<string[]> {
 
     try {
         // 自分のロールを確認
-        const iamService = new cinerinoapi.service.IAM({
-            endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project?.id }
         });
@@ -45,7 +44,7 @@ async function searchRoleNames(req: Request): Promise<string[]> {
         // const searchMembersResult = await iamService.searchMembers({
         //     limit: 1,
         //     member: {
-        //         typeOf: { $eq: cinerinoapi.factory.personType.Person },
+        //         typeOf: { $eq: chevreapi.factory.personType.Person },
         //         id: { $eq: req.user.profile.sub }
         //     }
         // });

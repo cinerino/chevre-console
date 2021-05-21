@@ -2,15 +2,14 @@
  * 旧売上レポートルーター
  */
 import * as chevreapi from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment-timezone';
 
-export type IAction = cinerinoapi.factory.chevre.action.trade.pay.IAction | cinerinoapi.factory.chevre.action.trade.refund.IAction;
+export type IAction = chevreapi.factory.chevre.action.trade.pay.IAction | chevreapi.factory.chevre.action.trade.refund.IAction;
 export interface IAccountingReoprt {
     mainEntity: IAction;
     isPartOf: {
-        mainEntity: cinerinoapi.factory.order.IOrder;
+        mainEntity: chevreapi.factory.order.IOrder;
     };
 }
 

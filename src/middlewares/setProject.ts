@@ -1,7 +1,7 @@
 /**
  * リクエストプロジェクト設定ルーター
  */
-import * as cinerino from '@cinerino/sdk';
+import * as chevre from '@chevre/api-nodejs-client';
 import * as express from 'express';
 
 const setProject = express.Router();
@@ -10,7 +10,7 @@ const setProject = express.Router();
 setProject.use(
     '/projects/:id',
     async (req, _, next) => {
-        req.project = { typeOf: cinerino.factory.chevre.organizationType.Project, id: req.params.id };
+        req.project = { typeOf: chevre.factory.chevre.organizationType.Project, id: req.params.id };
 
         next();
     }

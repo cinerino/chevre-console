@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロジェクトホームルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerinoapi = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
@@ -37,8 +36,8 @@ function searchRoleNames(req) {
         let roleNames = [];
         try {
             // 自分のロールを確認
-            const iamService = new cinerinoapi.service.IAM({
-                endpoint: process.env.CINERINO_API_ENDPOINT,
+            const iamService = new chevre.service.IAM({
+                endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
             });
@@ -46,7 +45,7 @@ function searchRoleNames(req) {
             // const searchMembersResult = await iamService.searchMembers({
             //     limit: 1,
             //     member: {
-            //         typeOf: { $eq: cinerinoapi.factory.personType.Person },
+            //         typeOf: { $eq: chevreapi.factory.personType.Person },
             //         id: { $eq: req.user.profile.sub }
             //     }
             // });

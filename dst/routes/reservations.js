@@ -274,7 +274,7 @@ reservationsRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, 
         const { data } = yield iamService.searchMembers({
             limit: limit,
             member: {
-                typeOf: { $eq: cinerino.factory.personType.Person },
+                typeOf: { $eq: chevre.factory.personType.Person },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         });

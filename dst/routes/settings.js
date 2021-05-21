@@ -14,7 +14,6 @@ exports.createFromBody = exports.validate = exports.NUM_ORDER_WEBHOOKS = void 0;
  * プロジェクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerinoapi = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");
@@ -209,7 +208,7 @@ settingsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
                 typeOf: 'CreateAction',
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 agent: {
-                    typeOf: cinerinoapi.factory.personType.Person,
+                    typeOf: chevre.factory.personType.Person,
                     id: req.user.profile.sub,
                     familyName: req.user.profile.family_name,
                     givenName: req.user.profile.given_name,

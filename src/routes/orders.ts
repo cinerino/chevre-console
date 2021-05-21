@@ -272,7 +272,7 @@ ordersRouter.get(
             const { data } = await iamService.searchMembers({
                 limit: limit,
                 member: {
-                    typeOf: { $eq: cinerino.factory.personType.Person },
+                    typeOf: { $eq: chevre.factory.personType.Person },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
                 }
             });
