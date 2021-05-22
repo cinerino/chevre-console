@@ -187,6 +187,34 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
         });
     }
 }));
+homeRouter.get('/latestOrders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const orderService = new chevre.service.Order({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const result = yield orderService.search({
+            limit: 10,
+            page: 1,
+            sort: { orderDate: chevre.factory.sortType.Descending },
+            project: { id: { $eq: req.project.id } },
+            orderDate: {
+                $gte: moment()
+                    .add(-1, 'day')
+                    .toDate()
+            }
+        });
+        res.json(result);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            error: { message: error.message }
+        });
+    }
+}));
 homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const eventService = new chevre.service.Event({

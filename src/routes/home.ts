@@ -209,6 +209,38 @@ homeRouter.get(
 );
 
 homeRouter.get(
+    '/latestOrders',
+    async (req, res) => {
+        try {
+            const orderService = new chevre.service.Order({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const result = await orderService.search({
+                limit: 10,
+                page: 1,
+                sort: { orderDate: chevre.factory.sortType.Descending },
+                project: { id: { $eq: req.project.id } },
+                orderDate: {
+                    $gte: moment()
+                        .add(-1, 'day')
+                        .toDate()
+                }
+            });
+
+            res.json(result);
+        } catch (error) {
+            console.error(error);
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
+        }
+    }
+);
+
+homeRouter.get(
     '/eventsWithAggregations',
     async (req, res) => {
         try {

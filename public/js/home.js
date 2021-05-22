@@ -46,6 +46,9 @@ function updateCharts() {
     updateLatestReservations(function () {
     });
 
+    updateLatestOrders(function () {
+    });
+
     updateEventsWithAggregation(function () {
     });
 
@@ -150,7 +153,7 @@ function updateLatestReservations(cb) {
 
         $.each(data.data, function (_, reservation) {
             var html = '<td>' + reservation.reservationNumber + '</td>'
-                + '<td>' + moment(reservation.bookingTime).format('MM/DD HH:mm') + '</td>'
+                + '<td>' + moment(reservation.bookingTime).format('MM/DD HH:mmZ') + '</td>'
                 + '<td>' + reservation.reservationFor.name.ja.slice(0, 5) + '...</td>';
             // + '<td><span class="text-muted">' + reservation.reservationStatus + '</span></td>';
             $('<tr>').html(html)
@@ -163,6 +166,39 @@ function updateLatestReservations(cb) {
         $('<p>').addClass('display-4 text-danger')
             .text(textStatus)
             .appendTo('#latestReservations tbody');
+    });
+}
+
+function updateLatestOrders(cb) {
+    $.getJSON(
+        '/projects/' + PROJECT_ID + '/home/latestOrders',
+        {
+            limit: 10,
+            page: 1,
+            // sort: { orderDate: -1 },
+            // orderDateFrom: moment().add(-1, 'day').toISOString(),
+            // orderDateThrough: moment().toISOString()
+        }
+    ).done(function (data) {
+        $('#latestOrders tbody').empty();
+
+        // $('.eventsCount').text(data.totalCount);
+
+        $.each(data.data, function (_, order) {
+            var html = '<td>' + order.orderNumber + '</td>'
+                + '<td>' + moment(order.orderDate).format('MM/DD HH:mmZ') + '</td>'
+                + '<td>' + order.price + ' ' + order.priceCurrency + '</td>';
+            // + '<td><span class="text-muted">' + reservation.reservationStatus + '</span></td>';
+            $('<tr>').html(html)
+                .appendTo('#latestOrders tbody');
+        });
+
+        cb();
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('注文を検索できませんでした', jqXHR);
+        $('<p>').addClass('display-4 text-danger')
+            .text(textStatus)
+            .appendTo('#latestOrders tbody');
     });
 }
 
@@ -201,7 +237,7 @@ function updateEventsWithAggregation(cb) {
                 attendeeCount = String(event.aggregateReservation.attendeeCount);
             }
 
-            var html = '<td>' + moment(event.startDate).format('MM/DD HH:mm') + '</td>'
+            var html = '<td>' + moment(event.startDate).format('MM/DD HH:mmZ') + '</td>'
                 + '<td>' + name + '...</td>'
                 + '<td>' + event.superEvent.location.name.ja + '</td>'
                 + '<td>' + reservationCount + '</td>'
@@ -259,7 +295,7 @@ function updateErrorReporting(cb) {
 
                 var tr = $('<tr>')
                     .append($('<td>').text(task.name))
-                    .append($('<td>').text(moment(task.runsAt).format('MM-DD HH:mm:ss')))
+                    .append($('<td>').text(moment(task.runsAt).format('MM-DD HH:mm:ssZ')))
                     .append($('<td>').text(message));
 
                 tbody.append(tr);
