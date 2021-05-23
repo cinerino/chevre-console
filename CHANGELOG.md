@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - オファーの利用可能なアプリケーション候補をロールで限定
 - コンテンツ削除前にイベントの存在を確認
 - 全chevreサービスにプロジェクトを指定
+- @cinerino/sdkへの依存を排除
 
 ### Deprecated
 

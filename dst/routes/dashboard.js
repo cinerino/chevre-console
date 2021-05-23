@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * ダッシュボードルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerinoapi = require("@cinerino/sdk");
+// import * as cinerinoapi from '@cinerino/sdk';
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const dashboardRouter = express_1.Router();
@@ -27,11 +27,17 @@ dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         //     return;
         // }
         // 管理プロジェクト検索
-        const projectService = new cinerinoapi.service.Project({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient
+        const meService = new chevre.service.Me({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: '' }
         });
-        const { data } = yield projectService.search({ limit: 2 });
+        const { data } = yield meService.searchProjects({ limit: 2 });
+        // const projectService = new cinerinoapi.service.Project({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        // const { data } = await projectService.search({ limit: 2 });
         // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
         if (data.length === 1) {
             res.redirect(`/dashboard/projects/${data[0].id}/select`);
@@ -49,11 +55,17 @@ dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // 管理プロジェクト検索
-        const projectService = new cinerinoapi.service.Project({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient
+        const meService = new chevre.service.Me({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: '' }
         });
-        const searchProjectsResult = yield projectService.search({});
+        const searchProjectsResult = yield meService.searchProjects({ limit: 100 });
+        // const projectService = new cinerinoapi.service.Project({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient
+        // });
+        // const searchProjectsResult = await projectService.search({});
         res.json(searchProjectsResult);
     }
     catch (error) {

@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * プロジェクトルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerinoapi = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const settings_1 = require("./settings");
@@ -84,11 +83,6 @@ projectsRouter.all('/new', ...settings_1.validate(), (req, res, next) => __await
 projectsRouter.get('/:id/initialize', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // プロジェクト作成
-        const projectService = new cinerinoapi.service.Project({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const project = yield projectService.findById({ id: req.params.id });
         // const chevreProjectService = new chevre.service.Project({
         //     endpoint: <string>process.env.API_ENDPOINT,
         //     auth: req.user.authClient,
@@ -100,7 +94,7 @@ projectsRouter.get('/:id/initialize', (req, res, next) => __awaiter(void 0, void
         //     logo: project.logo,
         //     name: (typeof project.name === 'string') ? project.name : project.name?.ja
         // });
-        res.redirect(`/projects/${project.id}/home`);
+        res.redirect(`/projects/${req.params.id}/home`);
     }
     catch (err) {
         next(err);

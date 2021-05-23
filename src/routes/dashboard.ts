@@ -2,7 +2,7 @@
  * ダッシュボードルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerinoapi from '@cinerino/sdk';
+// import * as cinerinoapi from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR, NOT_FOUND } from 'http-status';
 
@@ -22,12 +22,20 @@ dashboardRouter.get(
             // }
 
             // 管理プロジェクト検索
-            const projectService = new cinerinoapi.service.Project({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient
+            const meService = new chevre.service.Me({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: '' }
             });
 
-            const { data } = await projectService.search({ limit: 2 });
+            const { data } = await meService.searchProjects({ limit: 2 });
+
+            // const projectService = new cinerinoapi.service.Project({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+
+            // const { data } = await projectService.search({ limit: 2 });
 
             // プロジェクトが1つのみであれば、プロジェクトホームへ自動遷移
             if (data.length === 1) {
@@ -54,12 +62,19 @@ dashboardRouter.get(
     async (req, res) => {
         try {
             // 管理プロジェクト検索
-            const projectService = new cinerinoapi.service.Project({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-                auth: req.user.authClient
+            const meService = new chevre.service.Me({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: '' }
             });
+            const searchProjectsResult = await meService.searchProjects({ limit: 100 });
 
-            const searchProjectsResult = await projectService.search({});
+            // const projectService = new cinerinoapi.service.Project({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+
+            // const searchProjectsResult = await projectService.search({});
 
             res.json(searchProjectsResult);
         } catch (error) {
