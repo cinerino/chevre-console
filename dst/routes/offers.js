@@ -14,7 +14,7 @@ exports.searchApplications = exports.SMART_THEATER_CLIENT_NEW = exports.SMART_TH
  * 単価オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
+// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -259,11 +259,16 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         let data = [];
         const offer = yield offerService.findById({ id: req.params.id });
         if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
@@ -475,11 +480,16 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 const AVAILABLE_ROLE_NAMES = ['customer', 'pos'];
 function searchApplications(req) {
     return __awaiter(this, void 0, void 0, function* () {
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const searchApplicationsResult = yield iamService.searchMembers({
             member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });

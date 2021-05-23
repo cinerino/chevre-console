@@ -13,17 +13,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * アプリケーションルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
+// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const applicationsRouter = express_1.Router();
 applicationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const limit = 10;
         const page = 1;
         const nameRegex = req.query.name;

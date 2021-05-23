@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 注文ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
+// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -35,11 +35,16 @@ ordersRouter.get('/search',
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const searchApplicationsResult = yield iamService.searchMembers({
             member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
@@ -246,11 +251,16 @@ ordersRouter.get('/search',
 }));
 ordersRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const limit = 10;
         const page = 1;
         const nameRegex = req.query.name;

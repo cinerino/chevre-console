@@ -2,7 +2,7 @@
  * 単価オファー管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
+// import * as cinerino from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -311,11 +311,16 @@ offersRouter.get(
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
-            const iamService = new cinerino.service.IAM({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            const iamService = new chevre.service.IAM({
+                endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
+            // const iamService = new cinerino.service.IAM({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
 
             let data: any[] = [];
             const offer = await offerService.findById({ id: req.params.id });
@@ -559,11 +564,16 @@ offersRouter.delete(
 const AVAILABLE_ROLE_NAMES = ['customer', 'pos'];
 
 export async function searchApplications(req: Request) {
-    const iamService = new cinerino.service.IAM({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+    const iamService = new chevre.service.IAM({
+        endpoint: <string>process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
+    // const iamService = new cinerino.service.IAM({
+    //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+    //     auth: req.user.authClient,
+    //     project: { id: req.project.id }
+    // });
 
     const searchApplicationsResult = await iamService.searchMembers({
         member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
