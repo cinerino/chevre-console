@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - IAMユーザー検索を追加
 - 口座検索を追加
 - 口座アクション検索を追加
+- ムビチケ認証を追加
 
 ### Changed
 

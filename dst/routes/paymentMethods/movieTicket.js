@@ -1,0 +1,136 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * ムビチケ決済方法ルーター
+ */
+const chevreapi = require("@chevre/api-nodejs-client");
+// import * as createDebug from 'debug';
+const express = require("express");
+const http_status_1 = require("http-status");
+// const debug = createDebug('cinerino-console:routes');
+const movieTicketPaymentMethodRouter = express.Router();
+/**
+ * ムビチケ認証
+ */
+movieTicketPaymentMethodRouter.get('/check', 
+// tslint:disable-next-line:max-func-body-length
+(req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
+    try {
+        const payService = new chevreapi.service.assetTransaction.Pay({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const sellerService = new chevreapi.service.Seller({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchSellersResult = yield sellerService.search({});
+        const sellers = searchSellersResult.data;
+        const searchConditions = {
+            seller: {
+                id: req.query.seller
+            },
+            identifier: req.query.identifier,
+            accessCode: req.query.accessCode,
+            serviceOutput: {
+                reservationFor: {
+                    id: (_b = (_a = req.query.serviceOutput) === null || _a === void 0 ? void 0 : _a.reservationFor) === null || _b === void 0 ? void 0 : _b.id
+                }
+            }
+        };
+        if (req.query.format === 'datatable') {
+            const seller = sellers.find((s) => s.id === searchConditions.seller.id);
+            if (seller === undefined) {
+                throw new Error(`Seller ${searchConditions.seller.id} not found`);
+            }
+            const paymentMethodType = req.query.paymentMethodType;
+            const checkAction = yield payService.check({
+                project: { id: req.project.id, typeOf: chevreapi.factory.organizationType.Project },
+                typeOf: chevreapi.factory.actionType.CheckAction,
+                agent: {
+                    typeOf: chevreapi.factory.personType.Person,
+                    id: req.user.profile.sub,
+                    name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
+                },
+                object: [{
+                        typeOf: chevreapi.factory.service.paymentService.PaymentServiceType.MovieTicket,
+                        paymentMethod: {
+                            typeOf: paymentMethodType,
+                            additionalProperty: [],
+                            name: paymentMethodType,
+                            paymentMethodId: '' // 使用されないので空でよし
+                        },
+                        movieTickets: [{
+                                project: { typeOf: req.project.typeOf, id: req.project.id },
+                                typeOf: chevreapi.factory.paymentMethodType.MovieTicket,
+                                identifier: searchConditions.identifier,
+                                accessCode: searchConditions.accessCode,
+                                serviceType: '',
+                                serviceOutput: {
+                                    reservationFor: {
+                                        // tslint:disable-next-line:max-line-length
+                                        typeOf: chevreapi.factory.eventType.ScreeningEvent,
+                                        id: searchConditions.serviceOutput.reservationFor.id
+                                    },
+                                    reservedTicket: {
+                                        ticketedSeat: {
+                                            typeOf: chevreapi.factory.placeType.Seat,
+                                            seatNumber: '',
+                                            seatRow: '',
+                                            seatSection: ''
+                                        }
+                                    }
+                                }
+                            }],
+                        seller: {
+                            typeOf: seller.typeOf,
+                            id: String(seller.id)
+                        }
+                    }]
+            });
+            const result = checkAction.result;
+            if (result === undefined) {
+                throw new Error('checkAction.result undefined');
+            }
+            // res.json({
+            //     draw: req.body.draw,
+            //     recordsTotal: result.movieTickets.length,
+            //     recordsFiltered: result.movieTickets.length,
+            //     data: result.movieTickets
+            // });
+            res.json({
+                success: true,
+                count: result.movieTickets.length,
+                results: result.movieTickets
+            });
+        }
+        else {
+            res.render('paymentMethods/movieTicket/check', {
+            // searchConditions: searchConditions,
+            // sellers: sellers
+            });
+        }
+    }
+    catch (error) {
+        if (req.query.format === 'datatable') {
+            res.status((typeof error.code === 'number') ? error.code : http_status_1.INTERNAL_SERVER_ERROR)
+                .json({ message: error.message });
+        }
+        else {
+            next(error);
+        }
+    }
+}));
+exports.default = movieTicketPaymentMethodRouter;
