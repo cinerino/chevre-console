@@ -6,6 +6,8 @@ import { Request, Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
+import * as TimelineFactory from '../factory/timeline';
+
 const homeRouter = Router();
 
 homeRouter.get(
@@ -231,7 +233,6 @@ homeRouter.get(
 
             res.json(result);
         } catch (error) {
-            console.error(error);
             res.status(INTERNAL_SERVER_ERROR)
                 .json({
                     error: { message: error.message }
@@ -302,6 +303,43 @@ homeRouter.get(
             });
 
             res.json(result);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
+        }
+    }
+);
+
+homeRouter.get(
+    '/timelines',
+    async (req, res) => {
+        try {
+            const timelines: TimelineFactory.ITimeline[] = [];
+            const actionService = new chevre.service.Action({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project?.id }
+            });
+
+            const searchActionsResult = await actionService.search({
+                limit: Number(req.query.limit),
+                page: Number(req.query.page),
+                sort: { startDate: chevre.factory.sortType.Descending },
+                startFrom: moment(req.query.startFrom)
+                    .toDate(),
+                startThrough: moment(req.query.startThrough)
+                    .toDate()
+            });
+            timelines.push(...searchActionsResult.data.map((a) => {
+                return TimelineFactory.createFromAction({
+                    project: req.project,
+                    action: a
+                });
+            }));
+
+            res.json(timelines);
         } catch (error) {
             res.status(INTERNAL_SERVER_ERROR)
                 .json({

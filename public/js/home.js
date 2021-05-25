@@ -49,6 +49,9 @@ function updateCharts() {
     updateLatestOrders(function () {
     });
 
+    updateLatestActions(function () {
+    });
+
     updateEventsWithAggregation(function () {
     });
 
@@ -170,6 +173,10 @@ function updateLatestReservations(cb) {
 }
 
 function updateLatestOrders(cb) {
+    if ($('#latestOrders tbody').length === 0) {
+        return;
+    }
+
     $.getJSON(
         '/projects/' + PROJECT_ID + '/home/latestOrders',
         {
@@ -199,6 +206,66 @@ function updateLatestOrders(cb) {
         $('<p>').addClass('display-4 text-danger')
             .text(textStatus)
             .appendTo('#latestOrders tbody');
+    });
+}
+
+function updateLatestActions(cb) {
+    if ($('#latestActions tbody').length === 0) {
+        return;
+    }
+
+    $.getJSON(
+        '/projects/' + PROJECT_ID + '/home/timelines',
+        {
+            limit: 10,
+            page: 1,
+            startFrom: moment()
+                .add(-1, 'day')
+                .toISOString(),
+            startThrough: moment()
+                .toISOString()
+        }
+    ).done(function (data) {
+        $('#latestActions tbody').empty();
+
+        $.each(data, function (_, timeline) {
+            var description = '<a href="javascript:void(0)">' + timeline.agent.name
+                + '</a>が';
+
+            if (timeline.recipient !== undefined) {
+                var recipientName = String(timeline.recipient.name);
+                if (recipientName.length > 40) {
+                    recipientName = String(timeline.recipient.name).slice(0, 40) + '...';
+                }
+                description += '<a href="javascript:void(0)">'
+                    + '<span>' + recipientName + '</span>'
+                    + '</a> に';
+            }
+
+            if (timeline.purpose !== undefined) {
+                description += '<a href="javascript:void(0)">'
+                    + '<span>' + timeline.purpose.name + '</span>'
+                    + '</a> のために';
+            }
+
+            description += '<a href="javascript:void(0)">'
+                + '<span>' + timeline.object.name + '</span>'
+                + '</a> を'
+                + '<span>' + timeline.actionName + '</span>'
+                + '<span>' + timeline.actionStatusDescription + '</span>';
+
+            var html = '<td>' + description + '</td>'
+                + '<td>' + '<span class="badge ' + timeline.action.actionStatus + '">' + moment(timeline.action.startDate).fromNow() + '</span>' + '</td>';
+            $('<tr>').html(html)
+                .appendTo('#latestActions tbody');
+        });
+
+        cb();
+    }).fail(function (jqXHR, textStatus, error) {
+        console.error('アクションを検索できませんでした', jqXHR);
+        $('<p>').addClass('display-4 text-danger')
+            .text(textStatus)
+            .appendTo('#latestActions tbody');
     });
 }
 

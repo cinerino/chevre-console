@@ -16,6 +16,7 @@ const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
+const TimelineFactory = require("../factory/timeline");
 const homeRouter = express_1.Router();
 homeRouter.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -208,7 +209,6 @@ homeRouter.get('/latestOrders', (req, res) => __awaiter(void 0, void 0, void 0, 
         res.json(result);
     }
     catch (error) {
-        console.error(error);
         res.status(http_status_1.INTERNAL_SERVER_ERROR)
             .json({
             error: { message: error.message }
@@ -259,6 +259,39 @@ homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0
             runsThrough: runsThrough
         });
         res.json(result);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            error: { message: error.message }
+        });
+    }
+}));
+homeRouter.get('/timelines', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const timelines = [];
+        const actionService = new chevre.service.Action({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
+        });
+        const searchActionsResult = yield actionService.search({
+            limit: Number(req.query.limit),
+            page: Number(req.query.page),
+            sort: { startDate: chevre.factory.sortType.Descending },
+            startFrom: moment(req.query.startFrom)
+                .toDate(),
+            startThrough: moment(req.query.startThrough)
+                .toDate()
+        });
+        timelines.push(...searchActionsResult.data.map((a) => {
+            return TimelineFactory.createFromAction({
+                project: req.project,
+                action: a
+            });
+        }));
+        res.json(timelines);
     }
     catch (error) {
         res.status(http_status_1.INTERNAL_SERVER_ERROR)
