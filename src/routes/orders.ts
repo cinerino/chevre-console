@@ -2,7 +2,6 @@
  * 注文ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-// import * as cinerino from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment';
@@ -56,11 +55,6 @@ ordersRouter.get(
             // let underNameIdEq: string | undefined;
             // if (typeof req.query.underName?.id === 'string' && req.query.underName?.id.length > 0) {
             //     underNameIdEq = req.query.underName?.id;
-            // }
-
-            // let brokerIdEq: string | undefined;
-            // if (typeof req.query.admin?.id === 'string' && req.query.admin?.id.length > 0) {
-            //     brokerIdEq = req.query.admin?.id;
             // }
 
             const searchConditions: chevre.factory.order.ISearchConditions = {
@@ -200,12 +194,14 @@ ordersRouter.get(
                     $lte: (typeof req.query.price?.$lte === 'string' && req.query.price.$lte.length > 0)
                         ? Number(req.query.price.$lte)
                         : undefined
+                },
+                broker: {
+                    id: {
+                        $eq: (typeof req.query.broker?.id === 'string' && req.query.broker?.id.length > 0)
+                            ? req.query.broker?.id
+                            : undefined
+                    }
                 }
-                // broker: {
-                //     id: (typeof brokerIdEq === 'string')
-                //         ? brokerIdEq
-                //         : undefined
-                // }
             };
             const { data } = await orderService.search(searchConditions);
 

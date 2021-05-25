@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * ダッシュボードルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-// import * as cinerinoapi from '@cinerino/sdk';
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const dashboardRouter = express_1.Router();

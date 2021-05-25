@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 注文ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -28,7 +27,7 @@ ordersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 ordersRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
     try {
         const orderService = new chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
@@ -56,10 +55,6 @@ ordersRouter.get('/search',
         // let underNameIdEq: string | undefined;
         // if (typeof req.query.underName?.id === 'string' && req.query.underName?.id.length > 0) {
         //     underNameIdEq = req.query.underName?.id;
-        // }
-        // let brokerIdEq: string | undefined;
-        // if (typeof req.query.admin?.id === 'string' && req.query.admin?.id.length > 0) {
-        //     brokerIdEq = req.query.admin?.id;
         // }
         const searchConditions = {
             limit: req.query.limit,
@@ -198,12 +193,13 @@ ordersRouter.get('/search',
                 $lte: (typeof ((_v = req.query.price) === null || _v === void 0 ? void 0 : _v.$lte) === 'string' && req.query.price.$lte.length > 0)
                     ? Number(req.query.price.$lte)
                     : undefined
+            },
+            broker: {
+                id: {
+                    $eq: (typeof ((_w = req.query.broker) === null || _w === void 0 ? void 0 : _w.id) === 'string' && ((_x = req.query.broker) === null || _x === void 0 ? void 0 : _x.id.length) > 0)
+                        ? (_y = req.query.broker) === null || _y === void 0 ? void 0 : _y.id : undefined
+                }
             }
-            // broker: {
-            //     id: (typeof brokerIdEq === 'string')
-            //         ? brokerIdEq
-            //         : undefined
-            // }
         };
         const { data } = yield orderService.search(searchConditions);
         res.json({

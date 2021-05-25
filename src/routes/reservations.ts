@@ -2,7 +2,6 @@
  * 予約ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-// import * as cinerino from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';

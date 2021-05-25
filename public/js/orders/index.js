@@ -214,7 +214,7 @@ $(function () {
         }
     });
 
-    $('#admin\\[id\\]').select2({
+    $('#broker\\[id\\]').select2({
         // width: 'resolve', // need to override the changed default,
         placeholder: 'ユーザー選択',
         allowClear: true,
@@ -348,7 +348,7 @@ function showBroker(orderNumber) {
     }
 
     var modal = $('#modal-order');
-    var title = '注文 `' + order.orderNumber + '` 仲介';
+    var title = '注文 `' + order.orderNumber + '` 代理';
 
     var body = $('<div>');
 

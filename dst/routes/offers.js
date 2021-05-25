@@ -14,7 +14,6 @@ exports.searchApplications = exports.SMART_THEATER_CLIENT_NEW = exports.SMART_TH
  * 単価オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-// import * as cinerino from '@cinerino/sdk';
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
