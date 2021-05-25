@@ -279,6 +279,7 @@ homeRouter.get('/timelines', (req, res) => __awaiter(void 0, void 0, void 0, fun
         const searchActionsResult = yield actionService.search({
             limit: Number(req.query.limit),
             page: Number(req.query.page),
+            project: { id: { $eq: req.project.id } },
             sort: { startDate: chevre.factory.sortType.Descending },
             startFrom: moment(req.query.startFrom)
                 .toDate(),

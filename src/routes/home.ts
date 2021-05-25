@@ -326,6 +326,7 @@ homeRouter.get(
             const searchActionsResult = await actionService.search({
                 limit: Number(req.query.limit),
                 page: Number(req.query.page),
+                project: { id: { $eq: req.project.id } },
                 sort: { startDate: chevre.factory.sortType.Descending },
                 startFrom: moment(req.query.startFrom)
                     .toDate(),
