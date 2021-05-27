@@ -11,26 +11,6 @@ import { BAD_REQUEST, INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 
 import * as Message from '../message';
 
-export interface IContactPoint {
-    typeOf: 'ContactPoint';
-    email: string;
-    name: string;
-    telephone: string;
-}
-export interface ICustomer extends chevre.factory.organization.IOrganization {
-    id: string;
-    contactPoint?: IContactPoint[];
-    name: chevre.factory.multilingualString;
-    project: { id: string; typeOf: chevre.factory.organizationType.Project };
-}
-
-export interface ISearchConditions {
-    limit?: number;
-    page?: number;
-    project?: { id?: { $eq?: string } };
-    name?: { $regex?: string };
-}
-
 const NUM_CONTACT_POINT = 5;
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -123,14 +103,14 @@ customersRouter.get(
             const limit = Number(req.query.limit);
             const page = Number(req.query.page);
 
-            const searchConditions: ISearchConditions = {
+            const searchConditions: chevre.factory.customer.ISearchConditions = {
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
                 name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? { $regex: req.query.name } : undefined
             };
 
-            let data: ICustomer[];
+            let data: chevre.factory.customer.ICustomer[];
             const searchResult = await customerService.search(searchConditions);
             data = searchResult.data;
 
@@ -202,7 +182,7 @@ customersRouter.delete(
     }
 );
 
-async function preDelete(__: Request, ___: ICustomer) {
+async function preDelete(__: Request, ___: chevre.factory.customer.ICustomer) {
     // 施設が存在するかどうか
     // const placeService = new chevre.service.Place({
     //     endpoint: <string>process.env.API_ENDPOINT,
@@ -296,7 +276,7 @@ customersRouter.all<ParamsDictionary>(
 // tslint:disable-next-line:cyclomatic-complexity
 async function createFromBody(
     req: Request, isNew: boolean
-): Promise<ICustomer> {
+): Promise<chevre.factory.customer.ICustomer> {
     let nameFromJson: any = {};
     if (typeof req.body.nameStr === 'string' && req.body.nameStr.length > 0) {
         try {
@@ -311,7 +291,7 @@ async function createFromBody(
 
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
-        typeOf: 'Organization',
+        typeOf: chevre.factory.organizationType.Organization,
         id: req.body.id,
         name: {
             ...nameFromJson,

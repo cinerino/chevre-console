@@ -243,7 +243,7 @@ function createFromBody(req, isNew) {
         }
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Organization', id: req.body.id, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Organization, id: req.body.id, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
