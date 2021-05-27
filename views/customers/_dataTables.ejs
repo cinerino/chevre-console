@@ -23,6 +23,7 @@
                     width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
                     <thead class="text-primary">
                         <tr>
+                            <th>コード</th>
                             <th>名称</th>
                             <th>URL</th>
                             <th>連絡窓口</th>
@@ -33,6 +34,7 @@
 
                     <tbody>
                         <tr id="templateRow" _id="$id$">
+                            <td name="identifier">$identifier$</td>
                             <td name="name.ja|slice">$name.ja$</td>
                             <td name="url__url|slice">
                                 <a target="_blank" href="$url$">

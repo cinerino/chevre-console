@@ -50,6 +50,14 @@ customersRouter.all<ParamsDictionary>(
                     req.body.id = '';
                     let customer = await createFromBody(req, true);
 
+                    const { data } = await customerService.search({
+                        limit: 1,
+                        identifier: { $regex: `^${customer.identifier}$` }
+                    });
+                    if (data.length > 0) {
+                        throw new Error('既に存在するコードです');
+                    }
+
                     customer = await customerService.create(customer);
                     req.flash('message', '登録しました');
                     res.redirect(`/projects/${req.project.id}/customers/${customer.id}/update`);
@@ -293,6 +301,7 @@ async function createFromBody(
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.organizationType.Organization,
         id: req.body.id,
+        identifier: req.body.identifier,
         name: {
             ...nameFromJson,
             ja: req.body.name.ja,
@@ -335,6 +344,15 @@ async function createFromBody(
 
 function validate() {
     return [
+        body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage('半角英数字で入力してください')
+            .isLength({ max: 32 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 32)),
+
         body(['name.ja'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

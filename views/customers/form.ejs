@@ -41,6 +41,29 @@
                 <% } %>
 
                 <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="identifier" class="bmd-label-static">
+                            コード<span class="text-danger">＊</span>
+                        </label>
+                        <% if (isNew) { %>
+                        <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+                            maxlength=32 value="<%= forms.identifier %>">
+                        <% } else { %>
+                        <input type="text" disabled class="form-control" placeholder="" maxlength=32
+                            value="<%= forms.identifier %>">
+                        <input type="hidden" class="form-control" name="identifier" id="identifier"
+                            value="<%= forms.identifier %>">
+                        <% } %>
+                        <span class="bmd-help">半角英数字32文字以内でご入力ください</span>
+                        <% if (errors && errors.identifier) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors.identifier.msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
                         <label for="name[ja]" class="bmd-label-static">
                             名称<span class="text-danger">＊</span>

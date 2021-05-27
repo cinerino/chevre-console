@@ -45,6 +45,13 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
             try {
                 req.body.id = '';
                 let customer = yield createFromBody(req, true);
+                const { data } = yield customerService.search({
+                    limit: 1,
+                    identifier: { $regex: `^${customer.identifier}$` }
+                });
+                if (data.length > 0) {
+                    throw new Error('既に存在するコードです');
+                }
                 customer = yield customerService.create(customer);
                 req.flash('message', '登録しました');
                 res.redirect(`/projects/${req.project.id}/customers/${customer.id}/update`);
@@ -243,7 +250,7 @@ function createFromBody(req, isNew) {
         }
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Organization, id: req.body.id, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Organization, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -267,6 +274,14 @@ function createFromBody(req, isNew) {
 }
 function validate() {
     return [
+        express_validator_1.body('identifier')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
+            .matches(/^[0-9a-zA-Z]+$/)
+            .withMessage('半角英数字で入力してください')
+            .isLength({ max: 32 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('コード', 32)),
         express_validator_1.body(['name.ja'])
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

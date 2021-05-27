@@ -285,12 +285,14 @@
                             <td name="confirmationNumber">
                                 $confirmationNumber$
                             </td>
-                            <td name="orderNumber__customer.name|slice:10">
+                            <td name="customer.typeOf__orderNumber__customer.name|slice:10">
+                                <span class="badge badge-light">$customer.typeOf$</span><br>
                                 <a href="javascript:void(0)" class="showCustomer" data-orderNumber="$orderNumber$">
                                     $customer.name$
                                 </a>
                             </td>
-                            <td name="orderNumber__seller.name|slice:10">
+                            <td name="seller.typeOf__orderNumber__seller.name|slice:10">
+                                <span class="badge badge-light">$seller.typeOf$</span><br>
                                 $seller.name$
                             </td>
                             <td name="price__priceCurrency">$price$ $priceCurrency$</td>
