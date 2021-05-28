@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 口座検索を追加
 - 口座アクション検索を追加
 - ムビチケ認証を追加
+- サービスアウトプット検索を追加
 
 ### Changed
 
