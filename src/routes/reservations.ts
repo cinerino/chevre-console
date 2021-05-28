@@ -416,4 +416,28 @@ reservationsRouter.patch(
     }
 );
 
+reservationsRouter.get(
+    '/:id/actions/use',
+    async (req, res) => {
+        try {
+            const reservationService = new chevre.service.Reservation({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const searchResult = await reservationService.searchUseActions({
+                object: { id: req.params.id }
+            });
+
+            res.json(searchResult.data);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
+        }
+    }
+);
+
 export default reservationsRouter;

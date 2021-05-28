@@ -62,6 +62,13 @@ $(function () {
         showAdditionalProperty(id);
     });
 
+    // 使用アクション検索
+    $(document).on('click', '.showUseActions', function (event) {
+        event.preventDefault();
+        var id = $(this).attr('data-id');
+        showUseActions(id);
+    });
+
     // キャンセルボタンイベント
     $(document).on('click', '.btn-cancel', function () {
         cancelReservations();
@@ -371,6 +378,66 @@ function showAdditionalProperty(id) {
     modal.find('.modal-title').text('追加特性');
     modal.find('.modal-body').html(div);
     modal.modal();
+}
+
+function showUseActions(id) {
+    $.ajax({
+        dataType: 'json',
+        url: '/projects/' + PROJECT_ID + '/reservations/' + id + '/actions/use',
+        cache: false,
+        type: 'GET',
+        // data: conditions,
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (actions) {
+        var modal = $('#modal-reservation');
+
+        var thead = $('<thead>').addClass('text-primary')
+            .append([
+                $('<tr>').append([
+                    $('<th>').text('開始'),
+                    $('<th>').text('終了'),
+                    // $('<th>').text('ステータス'),
+                    $('<th>').text('Agent'),
+                    $('<th>').text('Location'),
+                ])
+            ]);
+        var tbody = $('<tbody>')
+            .append(actions.map(function (action) {
+                return $('<tr>').append([
+                    $('<td>').text(action.startDate),
+                    $('<td>').text(action.endDate),
+                    $('<td>').html((action.agent !== undefined) ? action.agent.typeOf + '<br>' + action.agent.id : ''),
+                    // $('<td>').text(action.actionStatus),
+                    $('<td>').text((action.location !== undefined) ? action.location.identifier : ''),
+                ]);
+            }))
+        var table = $('<table>').addClass('table table-sm')
+            .append([thead, tbody]);
+
+        // var validity = $('<dl>').addClass('row')
+        //     .append($('<dt>').addClass('col-md-3').append('販売期間'))
+        //     .append($('<dd>').addClass('col-md-9').append(
+        //         moment(event.offers.validFrom).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        //         + ' - '
+        //         + moment(event.offers.validThrough).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss')
+        //     ));
+
+        var div = $('<div>')
+            // .append(seller)
+            // .append(availability)
+            // .append(validity)
+            .append($('<div>').addClass('table-responsive').append(table));
+
+        modal.find('.modal-title').text('入場アクション');
+        modal.find('.modal-body').html(div);
+        modal.modal();
+    }).fail(function (jqxhr, textStatus, error) {
+        alert(error);
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
 }
 
 function initializeView() {

@@ -368,4 +368,23 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
         });
     }
 }));
+reservationsRouter.get('/:id/actions/use', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchResult = yield reservationService.searchUseActions({
+            object: { id: req.params.id }
+        });
+        res.json(searchResult.data);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
+        });
+    }
+}));
 exports.default = reservationsRouter;
