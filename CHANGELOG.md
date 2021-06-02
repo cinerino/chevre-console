@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.26.0 - 2021-06-02
+
+### Added
+
 - 注文検索を実装
 - 経理レポート検索を実装
 - 予約CSVダウンロードを実装
@@ -36,14 +50,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - コンテンツ削除前にイベントの存在を確認
 - 全chevreサービスにプロジェクトを指定
 - @cinerino/sdkへの依存を排除
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v2.25.0 - 2021-03-23
 
