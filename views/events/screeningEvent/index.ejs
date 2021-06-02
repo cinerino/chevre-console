@@ -14,7 +14,7 @@ Aa-4
 
 <%- contentFor('body') %>
 
-<div class="card">
+<div class="card card-plain">
     <div class="card-body search">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
@@ -160,7 +160,9 @@ Aa-4
                                             $id$
                                         </a>
                                     </td>
-                                    <td name="eventStatus">$eventStatus$</td>
+                                    <td name="eventStatus__eventStatus">
+                                        <span class="badge badge-light $eventStatus$">$eventStatus$</span>
+                                    </td>
                                     <td name="superEvent.id__superEvent.name.ja|slice">
                                         <a target="_blank"
                                             href="/projects/<%= req.project.id %>/events/screeningEventSeries/$superEvent.id$/update">$superEvent.name.ja$
@@ -172,22 +174,22 @@ Aa-4
                                     <td name="location.name.ja|slice">
                                         $location.name.ja$
                                     </td>
-                                    <td name="startDate|date:YY/MM/DD HH:mm">$startDate$</td>
-                                    <td name="endDate|date:YY/MM/DD HH:mm">$endDate$</td>
+                                    <td name="startDate|date:YY-MM-DD HH:mm:ssZ">$startDate$</td>
+                                    <td name="endDate|date:YY-MM-DD HH:mm:ssZ">$endDate$</td>
                                     <td name="remainingAttendeeCapacity__maximumAttendeeCapacity">
                                         $remainingAttendeeCapacity$ / $maximumAttendeeCapacity$</td>
                                     <td
-                                        name="aggregateReservation.aggregateDate|date:YYYY/MM/DD HH:mm:ss__aggregateReservation.reservationCount">
+                                        name="aggregateReservation.aggregateDate|date:YY-MM-DD HH:mm:ssZ__aggregateReservation.reservationCount">
                                         <a href="javascript:void(0)"
                                             title="集計日時:$aggregateReservation.aggregateDate$">$aggregateReservation.reservationCount$</a>
                                     </td>
                                     <td
-                                        name="aggregateReservation.aggregateDate|date:YYYY/MM/DD HH:mm:ss__aggregateReservation.checkInCount">
+                                        name="aggregateReservation.aggregateDate|date:YY-MM-DD HH:mm:ssZ__aggregateReservation.checkInCount">
                                         <a href="javascript:void(0)"
                                             title="集計日時:$aggregateReservation.aggregateDate$">$aggregateReservation.checkInCount$</a>
                                     </td>
                                     <td
-                                        name="aggregateReservation.aggregateDate|date:YYYY/MM/DD HH:mm:ss__aggregateReservation.attendeeCount">
+                                        name="aggregateReservation.aggregateDate|date:YY-MM-DD HH:mm:ssZ__aggregateReservation.attendeeCount">
                                         <a href="javascript:void(0)"
                                             title="集計日時:$aggregateReservation.aggregateDate$">$aggregateReservation.attendeeCount$</a>
                                     </td>

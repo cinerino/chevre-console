@@ -28,7 +28,8 @@ paymentServicesRouter.all('/new', ...validate(),
     let errors = {};
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -90,7 +91,8 @@ paymentServicesRouter.all('/new', ...validate(),
     }
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('paymentServices/new', {
@@ -108,7 +110,8 @@ paymentServicesRouter.get('/search',
     try {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -154,7 +157,8 @@ paymentServicesRouter.all('/:id', ...validate(),
         let errors = {};
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let product = yield productService.findById({ id: req.params.id });
         if (req.method === 'POST') {
@@ -202,7 +206,8 @@ paymentServicesRouter.all('/:id', ...validate(),
         }
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
         res.render('paymentServices/update', {
@@ -220,7 +225,8 @@ paymentServicesRouter.all('/:id', ...validate(),
 paymentServicesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('paymentServices/index', {

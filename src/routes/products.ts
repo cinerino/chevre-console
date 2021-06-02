@@ -30,12 +30,14 @@ productsRouter.all<any>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -97,7 +99,8 @@ productsRouter.all<any>(
 
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -121,7 +124,8 @@ productsRouter.get(
         try {
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const offersValidFromLte = (typeof req.query.offers?.$elemMatch?.validThrough === 'string'
@@ -196,12 +200,14 @@ productsRouter.all<ParamsDictionary>(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             let product = <chevre.factory.product.IProduct>await productService.findById({ id: req.params.id });
@@ -256,7 +262,8 @@ productsRouter.all<ParamsDictionary>(
 
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -279,7 +286,8 @@ productsRouter.get(
     async (req, res) => {
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 

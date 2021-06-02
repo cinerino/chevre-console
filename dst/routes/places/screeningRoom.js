@@ -27,7 +27,8 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -85,7 +86,8 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -112,7 +114,7 @@ screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
             ? {
                 $projection: req.query.$projection
             }
-            : undefined));
+            : { $projection: { seatCount: 1 } }));
         const results = data.map((screeningRoom) => {
             return Object.assign(Object.assign({}, screeningRoom), { openSeatingAllowedStr: (screeningRoom.openSeatingAllowed === true) ? 'done' : undefined });
         });
@@ -142,7 +144,8 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     const screeningRoomBranchCode = splittedId[1];
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
         limit: 1,
@@ -204,7 +207,8 @@ screeningRoomRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         const screeningRoomBranchCode = splittedId[1];
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
             limit: 1,
@@ -238,7 +242,8 @@ function preDelete(req, screeningRoom) {
         // スケジュールが存在するかどうか
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchEventsResult = yield eventService.search({
             limit: 1,

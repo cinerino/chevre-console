@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiEndpoint = void 0;
 const chevreapi = require("@chevre/api-nodejs-client");
-// import * as cinerinoapi from '@cinerino/sdk';
 const createDebug = require("debug");
 const debug = createDebug('chevre-backend:user');
 /**
@@ -36,13 +35,6 @@ class User {
             redirectUri: `https://${configurations.host}/signIn`,
             logoutUri: `https://${configurations.host}/logout`
         });
-        // this.cinerinoAuthClient = new cinerinoapi.auth.OAuth2({
-        //     domain: <string>process.env.CINERINO_AUTHORIZE_SERVER_DOMAIN,
-        //     clientId: <string>process.env.CINERINO_CLIENT_ID,
-        //     clientSecret: <string>process.env.CINERINO_CLIENT_SECRET,
-        //     redirectUri: `https://${configurations.host}/signIn`,
-        //     logoutUri: `https://${configurations.host}/logout`
-        // });
         this.authClient.setCredentials({ refresh_token: this.getRefreshToken() });
     }
     generateAuthUrl() {
@@ -93,13 +85,14 @@ class User {
             if (this.profile['cognito:groups'] !== undefined
                 && this.profile['cognito:groups'].length > 0
                 && this.cognitoGroups.movieTheaters === undefined) {
-                const cognitoGroups = this.profile['cognito:groups'];
-                const placeService = new chevreapi.service.Place({
-                    endpoint: process.env.API_ENDPOINT,
-                    auth: this.authClient
-                });
-                const { data } = yield placeService.searchMovieTheaters({});
-                this.cognitoGroups.movieTheaters = data.filter((d) => cognitoGroups.find((c) => d.id === c) !== undefined);
+                // const cognitoGroups = this.profile['cognito:groups'];
+                // const placeService = new chevreapi.service.Place({
+                //     endpoint: <string>process.env.API_ENDPOINT,
+                //     auth: this.authClient
+                // });
+                // const { data } = await placeService.searchMovieTheaters({});
+                // this.cognitoGroups.movieTheaters = data.filter((d: any) => cognitoGroups.find((c) => d.id === c) !== undefined);
+                this.cognitoGroups.movieTheaters = [];
             }
             // debug('profile', this.profile);
             // debug('cognitoGroups', this.cognitoGroups);

@@ -1,7 +1,7 @@
 /**
  * アプリケーション特有の型
  */
-import * as cinerino from '@cinerino/sdk';
+import * as chevre from '@chevre/api-nodejs-client';
 // import * as express from 'express';
 // import { ISubscription } from '../factory/subscription';
 
@@ -11,7 +11,7 @@ declare global {
         // tslint:disable-next-line:interface-name
         export interface Request {
             user: User;
-            project: cinerino.factory.project.IProject;
+            project: chevre.factory.project.IProject;
             // subscription?: ISubscription;
         }
     }

@@ -40,11 +40,13 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         // サブスクリプション決定
         const chevreProject = yield projectService.findById({ id: req.project.id });
@@ -77,11 +79,13 @@ screeningEventRouter.get('/search',
     var _b, _c;
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     // const offerCatalogService = new chevre.service.OfferCatalog({
     //     endpoint: <string>process.env.API_ENDPOINT,
@@ -97,7 +101,7 @@ screeningEventRouter.get('/search',
         const screeningRoomBranchCode = req.query.screen;
         const superEventWorkPerformedIdentifierEq = (_c = (_b = req.query.superEvent) === null || _b === void 0 ? void 0 : _b.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier;
         const onlyEventScheduled = req.query.onlyEventScheduled === '1';
-        const searchConditions = Object.assign({ project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+        const searchConditions = Object.assign({ sort: { startDate: chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .add(days, 'day')
                 .toDate(), 
@@ -196,7 +200,8 @@ screeningEventRouter.get('/search',
 screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         const searchResult = yield eventService.search({
@@ -225,7 +230,8 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const validatorResult = express_validator_1.validationResult(req);
         // errors = validatorResult.mapped();
@@ -262,7 +268,8 @@ screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) 
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const validatorResult = express_validator_1.validationResult(req);
         // errors = validatorResult.mapped();
@@ -290,7 +297,8 @@ screeningEventRouter.put('/:eventId/cancel', (req, res) => __awaiter(void 0, voi
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const event = yield eventService.findById({ id: req.params.eventId });
         if (moment(event.startDate)
@@ -321,7 +329,8 @@ screeningEventRouter.post('/:eventId/aggregateReservation', (req, res) => __awai
     try {
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const taskAttributes = {
             project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -349,11 +358,13 @@ screeningEventRouter.get('/:id/hasOfferCatalog', (req, res) => __awaiter(void 0,
     var _d;
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const offerCatalogService = new chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         const event = yield eventService.findById({ id: req.params.id });
@@ -373,7 +384,8 @@ screeningEventRouter.get('/:id/hasOfferCatalog', (req, res) => __awaiter(void 0,
 screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const eventService = new chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         const offers = yield eventService.searchTicketOffers({ id: req.params.id });
@@ -391,7 +403,8 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
     try {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const event = yield eventService.findById({ id: req.params.id });
         const { data } = yield eventService.searchSeats(Object.assign({ id: event.id, limit: 100, page: 1 }, {
@@ -417,11 +430,13 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const movieTheater = yield placeService.findMovieTheaterById({ id: req.body.theater });
         const importFrom = moment()
@@ -465,27 +480,33 @@ function createEventFromBody(req) {
         const user = req.user;
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         // サブスクリプション決定
         const chevreProject = yield projectService.findById({ id: req.project.id });
@@ -661,27 +682,33 @@ function createMultipleEventFromBody(req, user) {
     return __awaiter(this, void 0, void 0, function* () {
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const offerCatalogService = new chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: user.authClient
+            auth: user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const projectService = new chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: '' }
         });
         // サブスクリプション決定
         const chevreProject = yield projectService.findById({ id: req.project.id });

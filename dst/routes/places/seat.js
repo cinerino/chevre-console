@@ -18,6 +18,8 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions = require('../../../subscriptions.json');
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const seatRouter = express_1.Router();
@@ -27,7 +29,8 @@ seatRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, vo
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -42,6 +45,7 @@ seatRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, vo
                 // if (existingMovieTheater !== undefined) {
                 //     throw new Error('コードが重複しています');
                 // }
+                yield preCreate(req, seat);
                 yield placeService.createSeat(seat);
                 req.flash('message', '登録しました');
                 res.redirect(`/projects/${req.project.id}/places/seat/${(_c = (_b = (_a = seat.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode}:${(_e = (_d = seat.containedInPlace) === null || _d === void 0 ? void 0 : _d.containedInPlace) === null || _e === void 0 ? void 0 : _e.branchCode}:${(_f = seat.containedInPlace) === null || _f === void 0 ? void 0 : _f.branchCode}:${seat.branchCode}/update`);
@@ -93,7 +97,8 @@ seatRouter.get('/search',
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
@@ -174,11 +179,13 @@ seatRouter.all('/:id/update', ...validate(),
         const seatBranchCode = splittedId[3];
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSeatsResult = yield placeService.searchSeats({
             limit: 1,
@@ -275,7 +282,8 @@ seatRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     const seatBranchCode = splittedId[3];
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     yield placeService.deleteSeat({
         project: { id: req.project.id },
@@ -367,5 +375,51 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('名称(English)', 64))
     ];
+}
+function preCreate(req, seat) {
+    var _a, _b, _c, _d, _e, _f;
+    return __awaiter(this, void 0, void 0, function* () {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: '' }
+        });
+        const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            branchCode: { $eq: (_b = (_a = seat.containedInPlace) === null || _a === void 0 ? void 0 : _a.containedInPlace) === null || _b === void 0 ? void 0 : _b.branchCode },
+            containedInPlace: {
+                branchCode: { $eq: (_e = (_d = (_c = seat.containedInPlace) === null || _c === void 0 ? void 0 : _c.containedInPlace) === null || _d === void 0 ? void 0 : _d.containedInPlace) === null || _e === void 0 ? void 0 : _e.branchCode }
+            },
+            $projection: { seatCount: 1 }
+        });
+        const screeningRoom = searchScreeningRoomsResult.data.shift();
+        if (screeningRoom === undefined) {
+            throw new Error('ルームが存在しません');
+        }
+        const seatCount = screeningRoom.seatCount;
+        if (typeof seatCount !== 'number') {
+            throw new Error('座席数が不明です');
+        }
+        // サブスクリプションからmaximumAttendeeCapacityを取得
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_f = chevreProject.subscription) === null || _f === void 0 ? void 0 : _f.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+        const maximumAttendeeCapacitySetting = subscription === null || subscription === void 0 ? void 0 : subscription.settings.maximumAttendeeCapacity;
+        // 座席数がmax以内かどうか
+        if (typeof maximumAttendeeCapacitySetting === 'number') {
+            if (seatCount + 1 > maximumAttendeeCapacitySetting) {
+                throw new Error(`ルーム座席数の最大値は${maximumAttendeeCapacitySetting}です`);
+            }
+        }
+    });
 }
 exports.default = seatRouter;

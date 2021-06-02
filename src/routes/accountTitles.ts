@@ -40,7 +40,8 @@ accountTitlesRouter.get(
         try {
             const accountTitleService = new chevre.service.AccountTitle({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             debug('searching...', req.query);
@@ -93,7 +94,8 @@ accountTitlesRouter.all<any>(
 
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -167,7 +169,8 @@ accountTitlesRouter.all<ParamsDictionary>(
 
             const accountTitleService = new chevre.service.AccountTitle({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchAccountTitlesResult = await accountTitleService.search({
@@ -261,7 +264,8 @@ async function preDelete(req: Request, accountTitle: chevre.factory.accountTitle
     // validation
     const offerService = new chevre.service.Offer({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 関連するオファー
@@ -284,7 +288,8 @@ async function preDelete(req: Request, accountTitle: chevre.factory.accountTitle
 async function createFromBody(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle> {
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     // 科目検索

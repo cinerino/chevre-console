@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card card-plain">
     <div class="card-body">
         <div class="toolbar">
             <!--        Here you can write extra buttons/actions for the toolbar              -->
@@ -64,11 +64,10 @@
                             アイテム<span class="text-danger">＊</span>
                         </label>
                         <select class="form-control" name="itemOffered[typeOf]">
-                            <option value="" disabled selected>選択してください</option>
                             <% productTypes.forEach((productType) => { %>
                             <option value="<%= productType.codeValue %>"
                                 <% if (forms.itemOffered!==undefined && forms.itemOffered.typeOf === productType.codeValue) { %>
-                                selected<% } %>><%= productType.name %></option>
+                                selected<% } else { %> disabled<% } %>><%= productType.name %></option>
                             <% }) %>
                         </select>
                         <% if (errors && errors['itemOffered[typeOf]']) { %>

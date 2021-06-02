@@ -43,7 +43,8 @@ movieRouter.all<any>(
 
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -128,12 +129,14 @@ movieRouter.get(
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const categoryCodeService = new chevre.service.CategoryCode({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchDistributorTypesResult = await categoryCodeService.search({
@@ -235,12 +238,14 @@ movieRouter.all<ParamsDictionary>(
     async (req, res) => {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         let message = '';
@@ -355,7 +360,8 @@ movieRouter.delete(
         try {
             const creativeWorkService = new chevre.service.CreativeWork({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // validation
@@ -377,10 +383,11 @@ async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.
     // 施設コンテンツが存在するかどうか
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
-    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
+    const searchEventSeriesResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
         limit: 1,
         project: { ids: [req.project.id] },
         typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -388,8 +395,21 @@ async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.
             identifiers: [movie.identifier]
         }
     });
-    if (searchEventsResult.data.length > 0) {
+    if (searchEventSeriesResult.data.length > 0) {
         throw new Error('関連する施設コンテンツが存在します');
+    }
+
+    // イベントが存在するかどうか
+    const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
+        limit: 1,
+        project: { ids: [req.project.id] },
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        superEvent: {
+            workPerformedIdentifiers: [movie.identifier]
+        }
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('関連するイベントが存在します');
     }
 }
 
@@ -397,7 +417,8 @@ async function preDelete(req: Request, movie: chevre.factory.creativeWork.movie.
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.creativeWork.movie.ICreativeWork> {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     let contentRating: string | undefined;

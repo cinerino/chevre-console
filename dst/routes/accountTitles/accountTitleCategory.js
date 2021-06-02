@@ -26,7 +26,8 @@ const accountTitleCategoryRouter = express_1.Router();
 accountTitleCategoryRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.xhr) {
         try {
@@ -75,7 +76,8 @@ accountTitleCategoryRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
                 debug('saving account title...', accountTitleCategory);
                 const accountTitleService = new chevre.service.AccountTitle({
                     endpoint: process.env.API_ENDPOINT,
-                    auth: req.user.authClient
+                    auth: req.user.authClient,
+                    project: { id: req.project.id }
                 });
                 yield accountTitleService.createAccounTitleCategory(accountTitleCategory);
                 req.flash('message', '登録しました');
@@ -107,7 +109,8 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
         let errors = {};
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
             project: { ids: [req.project.id] },
@@ -174,11 +177,13 @@ function preDelete(req, accountTitleCategory) {
         // validation
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 科目に属する全細目
         const limit = 100;

@@ -2,7 +2,6 @@
  * 予約ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR, NO_CONTENT } from 'http-status';
 import * as moment from 'moment';
@@ -19,11 +18,13 @@ reservationsRouter.get(
     async (req, res) => {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -54,14 +55,20 @@ reservationsRouter.get(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
-            });
-
-            const iamService = new cinerino.service.IAM({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
+
+            const iamService = new chevre.service.IAM({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            // const iamService = new cinerino.service.IAM({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
 
             const searchApplicationsResult = await iamService.searchMembers({
                 member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
@@ -208,12 +215,10 @@ reservationsRouter.get(
                 },
                 attended: (req.query.attended === '1') ? true : undefined,
                 checkedIn: (req.query.checkedIn === '1') ? true : undefined,
-                ...{
-                    broker: {
-                        id: (typeof brokerIdEq === 'string')
-                            ? brokerIdEq
-                            : undefined
-                    }
+                broker: {
+                    id: (typeof brokerIdEq === 'string')
+                        ? brokerIdEq
+                        : undefined
                 }
             };
             const { data } = await reservationService.search(searchConditions);
@@ -272,17 +277,18 @@ reservationsRouter.get(
                         checkedInText: (t.checkedIn === true) ? 'done' : undefined,
                         attendedText: (t.attended === true) ? 'done' : undefined,
                         unitPriceSpec: unitPriceSpec,
-                        ticketedSeat: ticketedSeatStr
+                        ticketedSeatStr: ticketedSeatStr
                     };
                 })
             });
         } catch (err) {
-            console.error(err);
-            res.json({
-                success: false,
-                count: 0,
-                results: []
-            });
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    success: false,
+                    count: 0,
+                    results: [],
+                    error: { message: err.message }
+                });
         }
     }
 );
@@ -291,11 +297,16 @@ reservationsRouter.get(
     '/searchAdmins',
     async (req, res) => {
         try {
-            const iamService = new cinerino.service.IAM({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            const iamService = new chevre.service.IAM({
+                endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
+            // const iamService = new cinerino.service.IAM({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
 
             const limit = 10;
             const page = 1;
@@ -304,7 +315,7 @@ reservationsRouter.get(
             const { data } = await iamService.searchMembers({
                 limit: limit,
                 member: {
-                    typeOf: { $eq: cinerino.factory.personType.Person },
+                    typeOf: { $eq: chevre.factory.personType.Person },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
                 }
             });
@@ -336,9 +347,10 @@ reservationsRouter.post(
                 throw new Error('ids must be Array');
             }
 
-            const cancelReservationService = new chevre.service.transaction.CancelReservation({
+            const cancelReservationService = new chevre.service.assetTransaction.CancelReservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const expires = moment()
@@ -346,7 +358,7 @@ reservationsRouter.post(
                 .toDate();
             for (const id of ids) {
                 const transaction = await cancelReservationService.start({
-                    typeOf: chevre.factory.transactionType.CancelReservation,
+                    typeOf: chevre.factory.assetTransactionType.CancelReservation,
                     project: { typeOf: req.project.typeOf, id: req.project.id },
                     agent: {
                         typeOf: 'Person',
@@ -380,7 +392,8 @@ reservationsRouter.patch(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             await reservationService.update({
@@ -394,6 +407,30 @@ reservationsRouter.patch(
 
             res.status(NO_CONTENT)
                 .end();
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
+        }
+    }
+);
+
+reservationsRouter.get(
+    '/:id/actions/use',
+    async (req, res) => {
+        try {
+            const reservationService = new chevre.service.Reservation({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const searchResult = await reservationService.searchUseActions({
+                object: { id: req.params.id }
+            });
+
+            res.json(searchResult.data);
         } catch (error) {
             res.status(INTERNAL_SERVER_ERROR)
                 .json({

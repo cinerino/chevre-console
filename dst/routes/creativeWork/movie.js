@@ -40,7 +40,8 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
     let errors = {};
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -108,11 +109,13 @@ movieRouter.get('/getlist',
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchDistributorTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -198,11 +201,13 @@ movieRouter.all('/:id/update', ...validate(),
     var _d, _e;
     const creativeWorkService = new chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     let message = '';
     let errors = {};
@@ -304,7 +309,8 @@ movieRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const creativeWorkService = new chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // validation
         const movie = yield creativeWorkService.findMovieById({ id: req.params.id });
@@ -323,9 +329,10 @@ function preDelete(req, movie) {
         // 施設コンテンツが存在するかどうか
         const eventService = new chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const searchEventsResult = yield eventService.search({
+        const searchEventSeriesResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
             typeOf: chevre.factory.eventType.ScreeningEventSeries,
@@ -333,8 +340,20 @@ function preDelete(req, movie) {
                 identifiers: [movie.identifier]
             }
         });
-        if (searchEventsResult.data.length > 0) {
+        if (searchEventSeriesResult.data.length > 0) {
             throw new Error('関連する施設コンテンツが存在します');
+        }
+        // イベントが存在するかどうか
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.eventType.ScreeningEvent,
+            superEvent: {
+                workPerformedIdentifiers: [movie.identifier]
+            }
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('関連するイベントが存在します');
         }
     });
 }
@@ -344,7 +363,8 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let contentRating;
         if (typeof req.body.contentRating === 'string' && req.body.contentRating.length > 0) {

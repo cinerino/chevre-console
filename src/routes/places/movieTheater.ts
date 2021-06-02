@@ -35,7 +35,8 @@ movieTheaterRouter.all<any>(
                     let movieTheater = await createMovieTheaterFromBody(req, true);
                     const placeService = new chevre.service.Place({
                         endpoint: <string>process.env.API_ENDPOINT,
-                        auth: req.user.authClient
+                        auth: req.user.authClient,
+                        project: { id: req.project.id }
                     });
 
                     const { data } = await placeService.searchMovieTheaters({
@@ -121,7 +122,8 @@ movieTheaterRouter.all<any>(
 
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -149,12 +151,14 @@ movieTheaterRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -241,7 +245,8 @@ movieTheaterRouter.delete(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const movieTheater = await placeService.findMovieTheaterById({ id: req.params.id });
@@ -262,7 +267,8 @@ async function preDelete(req: Request, movieTheater: chevre.factory.place.movieT
     // 施設コンテンツが存在するかどうか
     const eventService = new chevre.service.Event({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
@@ -287,11 +293,13 @@ movieTheaterRouter.all<ParamsDictionary>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         let movieTheater = await placeService.findMovieTheaterById({
@@ -383,7 +391,8 @@ movieTheaterRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const movieTheater = await placeService.findMovieTheaterById({
                 id: req.params.id
@@ -442,7 +451,8 @@ async function createMovieTheaterFromBody(
     const selectedSeller = JSON.parse(req.body.parentOrganization);
     const sellerService = new chevre.service.Seller({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const seller = await sellerService.findById({ id: selectedSeller.id });
 

@@ -2,27 +2,65 @@
  * プロジェクトホームルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import { Router } from 'express';
+import { Request, Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
+
+import * as TimelineFactory from '../factory/timeline';
 
 const homeRouter = Router();
 
 homeRouter.get(
     '/',
     async (req, res, next) => {
-        if (req.query.next !== undefined) {
-            next(new Error(req.param('next')));
+        try {
+            if (req.query.next !== undefined) {
+                next(new Error(req.param('next')));
 
-            return;
+                return;
+            }
+
+            const roleNames = await searchRoleNames(req);
+
+            res.render(
+                'home',
+                { roleNames }
+            );
+        } catch (error) {
+            next(error);
         }
-
-        res.render(
-            'home',
-            {}
-        );
     }
 );
+
+async function searchRoleNames(req: Request): Promise<string[]> {
+    let roleNames: string[] = [];
+
+    try {
+        // 自分のロールを確認
+        const iamService = new chevre.service.IAM({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project?.id }
+        });
+        const member = await iamService.findMemberById({ member: { id: 'me' } });
+        // const searchMembersResult = await iamService.searchMembers({
+        //     limit: 1,
+        //     member: {
+        //         typeOf: { $eq: chevreapi.factory.personType.Person },
+        //         id: { $eq: req.user.profile.sub }
+        //     }
+        // });
+        roleNames = member.member.hasRole
+            .map((r) => r.roleName);
+        // if (!Array.isArray(roleNames)) {
+        //     roleNames = [];
+        // }
+    } catch (error) {
+        console.error(error);
+    }
+
+    return roleNames;
+}
 
 homeRouter.get(
     '/projectAggregation',
@@ -30,7 +68,8 @@ homeRouter.get(
         try {
             const projectService = new chevre.service.Project({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: '' }
             });
 
             const project = await projectService.findById({ id: req.project.id });
@@ -51,7 +90,8 @@ homeRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const stats = await eventService.fetch({
                 uri: '/stats/dbStats',
@@ -79,7 +119,8 @@ homeRouter.get(
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const stats = await eventService.fetch({
                 uri: '/health',
@@ -112,7 +153,8 @@ homeRouter.get(
         try {
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await taskService.search({
                 limit: 1,
@@ -141,7 +183,8 @@ homeRouter.get(
         try {
             const reservationService = new chevre.service.Reservation({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await reservationService.search({
                 limit: 10,
@@ -168,12 +211,44 @@ homeRouter.get(
 );
 
 homeRouter.get(
+    '/latestOrders',
+    async (req, res) => {
+        try {
+            const orderService = new chevre.service.Order({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const result = await orderService.search({
+                limit: 10,
+                page: 1,
+                sort: { orderDate: chevre.factory.sortType.Descending },
+                project: { id: { $eq: req.project.id } },
+                orderDate: {
+                    $gte: moment()
+                        .add(-1, 'day')
+                        .toDate()
+                }
+            });
+
+            res.json(result);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
+        }
+    }
+);
+
+homeRouter.get(
     '/eventsWithAggregations',
     async (req, res) => {
         try {
             const eventService = new chevre.service.Event({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const result = await eventService.search({
                 typeOf: chevre.factory.eventType.ScreeningEvent,
@@ -210,7 +285,8 @@ homeRouter.get(
         try {
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const runsThrough = moment()
@@ -227,6 +303,44 @@ homeRouter.get(
             });
 
             res.json(result);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    error: { message: error.message }
+                });
+        }
+    }
+);
+
+homeRouter.get(
+    '/timelines',
+    async (req, res) => {
+        try {
+            const timelines: TimelineFactory.ITimeline[] = [];
+            const actionService = new chevre.service.Action({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project?.id }
+            });
+
+            const searchActionsResult = await actionService.search({
+                limit: Number(req.query.limit),
+                page: Number(req.query.page),
+                project: { id: { $eq: req.project.id } },
+                sort: { startDate: chevre.factory.sortType.Descending },
+                startFrom: moment(req.query.startFrom)
+                    .toDate(),
+                startThrough: moment(req.query.startThrough)
+                    .toDate()
+            });
+            timelines.push(...searchActionsResult.data.map((a) => {
+                return TimelineFactory.createFromAction({
+                    project: req.project,
+                    action: a
+                });
+            }));
+
+            res.json(timelines);
         } catch (error) {
             res.status(INTERNAL_SERVER_ERROR)
                 .json({

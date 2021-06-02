@@ -13,7 +13,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 予約ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -23,11 +22,13 @@ const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
@@ -53,13 +54,19 @@ reservationsRouter.get('/search',
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
-        });
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const searchApplicationsResult = yield iamService.searchMembers({
             member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
         });
@@ -76,14 +83,22 @@ reservationsRouter.get('/search',
         if (typeof ((_d = req.query.admin) === null || _d === void 0 ? void 0 : _d.id) === 'string' && ((_e = req.query.admin) === null || _e === void 0 ? void 0 : _e.id.length) > 0) {
             brokerIdEq = (_f = req.query.admin) === null || _f === void 0 ? void 0 : _f.id;
         }
-        const searchConditions = Object.assign({ limit: req.query.limit, page: req.query.page, project: { ids: [req.project.id] }, typeOf: chevre.factory.reservationType.EventReservation, additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
+        const searchConditions = {
+            limit: req.query.limit,
+            page: req.query.page,
+            project: { ids: [req.project.id] },
+            typeOf: chevre.factory.reservationType.EventReservation,
+            additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
                 ? req.query.additionalTicketText
-                : undefined, reservationNumbers: (req.query.reservationNumber !== undefined
+                : undefined,
+            reservationNumbers: (req.query.reservationNumber !== undefined
                 && req.query.reservationNumber !== '')
                 ? [String(req.query.reservationNumber)]
-                : undefined, reservationStatuses: (req.query.reservationStatus !== undefined && req.query.reservationStatus !== '')
+                : undefined,
+            reservationStatuses: (req.query.reservationStatus !== undefined && req.query.reservationStatus !== '')
                 ? [req.query.reservationStatus]
-                : undefined, reservationFor: {
+                : undefined,
+            reservationFor: {
                 ids: (req.query.reservationFor !== undefined
                     && req.query.reservationFor.id !== undefined
                     && req.query.reservationFor.id !== '')
@@ -122,21 +137,26 @@ reservationsRouter.get('/search',
                         .add(1, 'day')
                         .toDate()
                     : undefined
-            }, modifiedFrom: (req.query.modifiedFrom !== '')
+            },
+            modifiedFrom: (req.query.modifiedFrom !== '')
                 ? moment(`${String(req.query.modifiedFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .toDate()
-                : undefined, modifiedThrough: (req.query.modifiedThrough !== '')
+                : undefined,
+            modifiedThrough: (req.query.modifiedThrough !== '')
                 ? moment(`${String(req.query.modifiedThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate()
-                : undefined, bookingFrom: (req.query.bookingFrom !== '')
+                : undefined,
+            bookingFrom: (req.query.bookingFrom !== '')
                 ? moment(`${String(req.query.bookingFrom)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .toDate()
-                : undefined, bookingThrough: (req.query.bookingThrough !== '')
+                : undefined,
+            bookingThrough: (req.query.bookingThrough !== '')
                 ? moment(`${String(req.query.bookingThrough)}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                     .add(1, 'day')
                     .toDate()
-                : undefined, reservedTicket: {
+                : undefined,
+            reservedTicket: {
                 ticketType: {
                     ids: (req.query.reservedTicket !== undefined
                         && req.query.reservedTicket.ticketType !== undefined
@@ -162,7 +182,8 @@ reservationsRouter.get('/search',
                         ? [req.query.reservedTicket.ticketedSeat.seatNumber]
                         : undefined
                 }
-            }, underName: {
+            },
+            underName: {
                 id: (typeof underNameIdEq === 'string')
                     ? underNameIdEq
                     : undefined,
@@ -184,13 +205,15 @@ reservationsRouter.get('/search',
                 identifier: {
                     $in: (underNameIdentifierIn.length > 0) ? underNameIdentifierIn : undefined
                 }
-            }, attended: (req.query.attended === '1') ? true : undefined, checkedIn: (req.query.checkedIn === '1') ? true : undefined }, {
+            },
+            attended: (req.query.attended === '1') ? true : undefined,
+            checkedIn: (req.query.checkedIn === '1') ? true : undefined,
             broker: {
                 id: (typeof brokerIdEq === 'string')
                     ? brokerIdEq
                     : undefined
             }
-        });
+        };
         const { data } = yield reservationService.search(searchConditions);
         // const offerService = new chevre.service.Offer({
         //     endpoint: <string>process.env.API_ENDPOINT,
@@ -228,33 +251,39 @@ reservationsRouter.get('/search',
                                 : ticketedSeat.seatingType.typeOf // 旧データへの互換性対応
                         : '', ticketedSeat.seatSection, ticketedSeat.seatNumber)
                     : 'なし';
-                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, unitPriceSpec: unitPriceSpec, ticketedSeat: ticketedSeatStr });
+                return Object.assign(Object.assign({}, t), { application: application, reservationStatusTypeName: reservationStatusType === null || reservationStatusType === void 0 ? void 0 : reservationStatusType.name, checkedInText: (t.checkedIn === true) ? 'done' : undefined, attendedText: (t.attended === true) ? 'done' : undefined, unitPriceSpec: unitPriceSpec, ticketedSeatStr: ticketedSeatStr });
             })
         });
     }
     catch (err) {
-        console.error(err);
-        res.json({
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
             success: false,
             count: 0,
-            results: []
+            results: [],
+            error: { message: err.message }
         });
     }
 }));
 reservationsRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
+        const iamService = new chevre.service.IAM({
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
+        // const iamService = new cinerino.service.IAM({
+        //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
         const limit = 10;
         const page = 1;
         const nameRegex = req.query.name;
         const { data } = yield iamService.searchMembers({
             limit: limit,
             member: {
-                typeOf: { $eq: cinerino.factory.personType.Person },
+                typeOf: { $eq: chevre.factory.personType.Person },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         });
@@ -280,16 +309,17 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
         if (!Array.isArray(ids)) {
             throw new Error('ids must be Array');
         }
-        const cancelReservationService = new chevre.service.transaction.CancelReservation({
+        const cancelReservationService = new chevre.service.assetTransaction.CancelReservation({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const expires = moment()
             .add(1, 'minute')
             .toDate();
         for (const id of ids) {
             const transaction = yield cancelReservationService.start({
-                typeOf: chevre.factory.transactionType.CancelReservation,
+                typeOf: chevre.factory.assetTransactionType.CancelReservation,
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 agent: {
                     typeOf: 'Person',
@@ -319,7 +349,8 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const reservationService = new chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         yield reservationService.update({
             id: req.params.id,
@@ -329,6 +360,25 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
         });
         res.status(http_status_1.NO_CONTENT)
             .end();
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
+        });
+    }
+}));
+reservationsRouter.get('/:id/actions/use', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const reservationService = new chevre.service.Reservation({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchResult = yield reservationService.searchUseActions({
+            object: { id: req.params.id }
+        });
+        res.json(searchResult.data);
     }
     catch (error) {
         res.status(http_status_1.INTERNAL_SERVER_ERROR)

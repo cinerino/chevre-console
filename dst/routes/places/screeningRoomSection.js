@@ -19,6 +19,8 @@ const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions = require('../../../subscriptions.json');
 const debug = createDebug('chevre-backend:router');
 const NUM_ADDITIONAL_PROPERTY = 5;
 const screeningRoomSectionRouter = express_1.Router();
@@ -28,7 +30,8 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
     let errors = {};
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -88,20 +91,16 @@ screeningRoomSectionRouter.get('/search',
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const { data } = yield placeService.searchScreeningRoomSections({
-            limit: limit,
-            page: page,
-            project: { id: { $eq: req.project.id } },
-            branchCode: {
+        const { data } = yield placeService.searchScreeningRoomSections(Object.assign({ limit: limit, page: page, project: { id: { $eq: req.project.id } }, branchCode: {
                 $regex: (typeof ((_f = (_e = req.query) === null || _e === void 0 ? void 0 : _e.branchCode) === null || _f === void 0 ? void 0 : _f.$eq) === 'string'
                     && ((_h = (_g = req.query) === null || _g === void 0 ? void 0 : _g.branchCode) === null || _h === void 0 ? void 0 : _h.$eq.length) > 0)
                     ? (_k = (_j = req.query) === null || _j === void 0 ? void 0 : _j.branchCode) === null || _k === void 0 ? void 0 : _k.$eq : undefined
-            },
-            containedInPlace: {
+            }, containedInPlace: {
                 branchCode: {
                     $eq: (typeof ((_o = (_m = (_l = req.query) === null || _l === void 0 ? void 0 : _l.containedInPlace) === null || _m === void 0 ? void 0 : _m.branchCode) === null || _o === void 0 ? void 0 : _o.$eq) === 'string'
                         && ((_r = (_q = (_p = req.query) === null || _p === void 0 ? void 0 : _p.containedInPlace) === null || _q === void 0 ? void 0 : _q.branchCode) === null || _r === void 0 ? void 0 : _r.$eq.length) > 0)
@@ -114,13 +113,13 @@ screeningRoomSectionRouter.get('/search',
                             ? (_6 = (_5 = (_4 = (_3 = req.query) === null || _3 === void 0 ? void 0 : _3.containedInPlace) === null || _4 === void 0 ? void 0 : _4.containedInPlace) === null || _5 === void 0 ? void 0 : _5.branchCode) === null || _6 === void 0 ? void 0 : _6.$eq : undefined
                     }
                 }
-            },
-            name: {
+            }, name: {
                 $regex: (typeof ((_8 = (_7 = req.query) === null || _7 === void 0 ? void 0 : _7.name) === null || _8 === void 0 ? void 0 : _8.$regex) === 'string'
                     && ((_10 = (_9 = req.query) === null || _9 === void 0 ? void 0 : _9.name) === null || _10 === void 0 ? void 0 : _10.$regex.length) > 0)
                     ? (_12 = (_11 = req.query) === null || _11 === void 0 ? void 0 : _11.name) === null || _12 === void 0 ? void 0 : _12.$regex : undefined
-            }
-        });
+            } }, {
+            $projection: { seatCount: 1 }
+        }));
         const results = data.map((seat, index) => {
             return Object.assign(Object.assign({}, seat), { id: `${seat.branchCode}:${index}` });
         });
@@ -153,20 +152,18 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
         const screeningRoomSectionBranchCode = splittedId[2];
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
-        const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections({
-            limit: 1,
-            project: { id: { $eq: req.project.id } },
-            branchCode: { $eq: screeningRoomSectionBranchCode },
-            containedInPlace: {
+        const searchScreeningRoomSectionsResult = yield placeService.searchScreeningRoomSections(Object.assign({ limit: 1, project: { id: { $eq: req.project.id } }, branchCode: { $eq: screeningRoomSectionBranchCode }, containedInPlace: {
                 branchCode: { $eq: screeningRoomBranchCode },
                 containedInPlace: {
                     branchCode: { $eq: movieTheaterBranchCode }
                 }
-            }
-        });
-        let screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
+            } }, {
+            $projection: { seatCount: 1 }
+        }));
+        const screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
         if (screeningRoomSection === undefined) {
             throw new Error('Screening Room Section Not Found');
         }
@@ -176,8 +173,10 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
             errors = validatorResult.mapped();
             if (validatorResult.isEmpty()) {
                 try {
-                    screeningRoomSection = yield createFromBody(req, false);
-                    yield placeService.updateScreeningRoomSection(screeningRoomSection);
+                    const originalSeatCount = screeningRoomSection.seatCount;
+                    const newScreeningRoomSection = yield createFromBody(req, false);
+                    yield preUpdate(req, newScreeningRoomSection, originalSeatCount);
+                    yield placeService.updateScreeningRoomSection(newScreeningRoomSection);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
                     return;
@@ -222,7 +221,8 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
     const screeningRoomSectionBranchCode = splittedId[2];
     const placeService = new chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     yield placeService.deleteScreeningRoomSection({
         project: { id: req.project.id },
@@ -241,7 +241,8 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSeatingTypesResult = yield categoryCodeService.search({
             limit: 100,
@@ -341,5 +342,56 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('英語名称', 64))
     ];
+}
+function preUpdate(req, section, originalSeatCount) {
+    var _a, _b, _c, _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        const placeService = new chevre.service.Place({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const projectService = new chevre.service.Project({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: '' }
+        });
+        const searchScreeningRoomsResult = yield placeService.searchScreeningRooms({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            branchCode: { $eq: (_a = section.containedInPlace) === null || _a === void 0 ? void 0 : _a.branchCode },
+            containedInPlace: {
+                branchCode: { $eq: (_c = (_b = section.containedInPlace) === null || _b === void 0 ? void 0 : _b.containedInPlace) === null || _c === void 0 ? void 0 : _c.branchCode }
+            },
+            $projection: { seatCount: 1 }
+        });
+        const screeningRoom = searchScreeningRoomsResult.data.shift();
+        if (screeningRoom === undefined) {
+            throw new Error('ルームが存在しません');
+        }
+        const seatCount = screeningRoom.seatCount;
+        if (typeof seatCount !== 'number') {
+            throw new Error('ルーム座席数が不明です');
+        }
+        if (typeof originalSeatCount !== 'number') {
+            throw new Error('セクション座席数が不明です');
+        }
+        // サブスクリプションからmaximumAttendeeCapacityを取得
+        const chevreProject = yield projectService.findById({ id: req.project.id });
+        let subscriptionIdentifier = (_d = chevreProject.subscription) === null || _d === void 0 ? void 0 : _d.identifier;
+        if (subscriptionIdentifier === undefined) {
+            subscriptionIdentifier = 'Free';
+        }
+        const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+        const maximumAttendeeCapacitySetting = subscription === null || subscription === void 0 ? void 0 : subscription.settings.maximumAttendeeCapacity;
+        // 座席の更新がある場合、座席数がmax以内かどうか
+        if (Array.isArray(section.containsPlace) && section.containsPlace.length > 0) {
+            if (typeof maximumAttendeeCapacitySetting === 'number') {
+                if (seatCount - originalSeatCount + section.containsPlace.length > maximumAttendeeCapacitySetting) {
+                    throw new Error(`ルーム座席数の最大値は${maximumAttendeeCapacitySetting}です`);
+                }
+            }
+        }
+    });
 }
 exports.default = screeningRoomSectionRouter;

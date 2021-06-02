@@ -1,8 +1,7 @@
 /**
- * 券種管理ルーター
+ * 単価オファー管理ルーター
  */
 import * as chevre from '@chevre/api-nodejs-client';
-import * as cinerino from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -14,8 +13,7 @@ import * as Message from '../message';
 
 import { ProductType } from '../factory/productType';
 
-const SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
-const SMART_THEATER_CLIENT_NEW = process.env.SMART_THEATER_CLIENT_NEW;
+import { searchApplications, SMART_THEATER_CLIENT_NEW, SMART_THEATER_CLIENT_OLD } from './offers';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -41,11 +39,13 @@ ticketTypeMasterRouter.all<any>(
 
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -191,19 +191,23 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
 
         const offerService = new chevre.service.Offer({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {
@@ -451,34 +455,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
     }
 );
 
-async function searchApplications(req: Request) {
-    const iamService = new cinerino.service.IAM({
-        endpoint: <string>process.env.CINERINO_API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
-
-    const searchApplicationsResult = await iamService.searchMembers({
-        member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-    });
-
-    let applications = searchApplicationsResult.data;
-
-    // 新旧クライアントが両方存在すれば、新クライアントを隠す
-    const memberIds = applications.map((a) => a.member.id);
-    if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
-        && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0
-    ) {
-        const oldClientExists = memberIds.includes(SMART_THEATER_CLIENT_OLD);
-        const newClientExists = memberIds.includes(SMART_THEATER_CLIENT_NEW);
-        if (oldClientExists && newClientExists) {
-            applications = applications.filter((a) => a.member.id !== SMART_THEATER_CLIENT_NEW);
-        }
-    }
-
-    return applications;
-}
-
 /**
  * COA券種インポート
  */
@@ -488,11 +464,13 @@ ticketTypeMasterRouter.post(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const taskService = new chevre.service.Task({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             // インポート対象の施設ブランチコードを検索
@@ -553,12 +531,14 @@ ticketTypeMasterRouter.post(
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {
     const productService = new chevre.service.Product({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;
@@ -588,7 +568,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 id: addOnItemOfferedId
             });
             if (addOn.hasOfferCatalog === undefined) {
-                throw new Error(`アドオン '${addOn.identifier}' にはカタログが登録されていません`);
+                throw new Error(`アドオン '${addOn.productID}' にはカタログが登録されていません`);
             }
 
             availableAddOn.push({

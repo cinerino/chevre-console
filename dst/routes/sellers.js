@@ -26,7 +26,8 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
     let errors = {};
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -76,13 +77,15 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
     try {
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const searchConditions = {
             limit: limit,
             page: page,
+            sort: { branchCode: chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             branchCode: {
                 $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
@@ -121,7 +124,8 @@ sellersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const seller = yield sellerService.findById({ id: String(req.params.id) });
         res.json(seller);
@@ -137,7 +141,8 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
     try {
         const sellerService = new chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const seller = yield sellerService.findById({ id: req.params.id });
         yield preDelete(req, seller);
@@ -155,7 +160,8 @@ function preDelete(req, seller) {
         // 施設が存在するかどうか
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             limit: 1,
@@ -173,11 +179,13 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
     let errors = {};
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let seller = yield sellerService.findById({ id: req.params.id });

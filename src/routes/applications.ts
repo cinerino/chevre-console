@@ -1,7 +1,7 @@
 /**
  * アプリケーションルーター
  */
-import * as cinerino from '@cinerino/sdk';
+import * as chevre from '@chevre/api-nodejs-client';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 
@@ -11,11 +11,16 @@ applicationsRouter.get(
     '/search',
     async (req, res) => {
         try {
-            const iamService = new cinerino.service.IAM({
-                endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            const iamService = new chevre.service.IAM({
+                endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
+            // const iamService = new cinerino.service.IAM({
+            //     endpoint: <string>process.env.CINERINO_API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
 
             const limit = 10;
             const page = 1;
@@ -24,7 +29,7 @@ applicationsRouter.get(
             const searchConditions: any = {
                 limit: limit,
                 member: {
-                    typeOf: { $eq: cinerino.factory.chevre.creativeWorkType.WebApplication },
+                    typeOf: { $eq: chevre.factory.chevre.creativeWorkType.WebApplication },
                     name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
                 }
             };

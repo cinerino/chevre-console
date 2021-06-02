@@ -1,0 +1,132 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="code" class="bmd-label-static">
+                                所有権ID
+                            </label>
+                            <input class="form-control" placeholder="所有権ID" name="id[$eq]"
+                                id="id[$eq]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-4">
+                            <label for="ownedFrom" class="bmd-label-static">
+                                所有期間
+                            </label>
+
+                            <div class="input-group">
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="ownedFrom" id="ownedFrom" value="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">から</span>
+                                </div>
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="ownedThrough" id="ownedThrough" valufe="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">まで</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="ownedBy[id]" class="bmd-label-static">
+                                所有者ID
+                            </label>
+                            <input class="form-control" placeholder="所有権ID" name="ownedBy[id]"
+                                id="ownedBy[id]" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[typeOf]" class="bmd-label-static">
+                                所有物タイプ
+                            </label>
+                            <input class="form-control" placeholder="所有物タイプ" name="typeOfGood[typeOf]"
+                                id="typeOfGood[typeOf]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[id]" class="bmd-label-static">
+                                所有物ID
+                            </label>
+                            <input class="form-control" placeholder="所有物ID" name="typeOfGood[id]"
+                                id="typeOfGood[id]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[identifier]" class="bmd-label-static">
+                                所有物識別子
+                            </label>
+                            <input class="form-control" placeholder="所有物識別子" name="typeOfGood[identifier]"
+                                id="typeOfGood[identifier]" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[issuedThrough][id]" class="bmd-label-static">
+                                発行サービスID
+                            </label>
+                            <input class="form-control" placeholder="発行サービスID" name="typeOfGood[issuedThrough][id]"
+                                id="typeOfGood[issuedThrough][id]" />
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>所有開始</th>
+                            <th>所有終了</th>
+                            <th>所有者</th>
+                            <th>所有物</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="id">
+                                $id$
+                            </td>
+                            <td name="ownedFrom|date:YYYY-MM-DD HH:mm:ssZ">
+                                $ownedFrom$
+                            </td>
+                            <td name="ownedThrough|date:YYYY-MM-DD HH:mm:ssZ">
+                                $ownedThrough$
+                            </td>
+                            <td name="id__ownedBy.typeOf__ownedBy.name|slice:10">
+                                <a href="javascript:void(0)" class="showOwnedBy" data-id="$id$">
+                                    $ownedBy.typeOf$
+                                    <br>$ownedBy.name$
+                                </a>
+                            </td>
+                            <td name="id__typeOfGood.typeOf__typeOfGood.id__typeOfGood.identifier">
+                                <a href="javascript:void(0)" class="showTypeOfGood" data-id="$id$">
+                                    $typeOfGood.typeOf$
+                                    <br>$typeOfGood.id$ $typeOfGood.identifier$
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

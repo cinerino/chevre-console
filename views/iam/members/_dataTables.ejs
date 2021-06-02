@@ -1,0 +1,79 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="member[typeOf][$eq]" class="bmd-label-static">
+                                メンバータイプ
+                            </label>
+                            <select class="form-control" name="member[typeOf][$eq]">
+                                <option value="">全て</option>
+                                <option value="WebApplication">WebApplication</option>
+                                <option value="Person">Person</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>Type</th>
+                            <th>Member</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Roles</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="member.typeOf">
+                                <span class="badge badge-light">$member.typeOf$</span>
+                            </td>
+                            <td name="member.id">
+                                $member.id$
+                            </td>
+                            <td name="member.name">
+                                $member.name$
+                            </td>
+                            <td name="member.username">
+                                $member.username$
+                            </td>
+                            <td name="rolesStr">
+                                $rolesStr$
+                            </td>
+                            <td name="member.id__edit">
+                                <a target="_blank" href="/projects/<%= req.project.id %>/iam/members/$member.id$/update">
+                                    <i class="material-icons" style="font-size: 1.2em;">edit</i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

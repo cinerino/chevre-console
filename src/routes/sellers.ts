@@ -26,7 +26,8 @@ sellersRouter.all<any>(
 
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -89,7 +90,8 @@ sellersRouter.get(
         try {
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -98,6 +100,7 @@ sellersRouter.get(
             const searchConditions: chevre.factory.seller.ISearchConditions = {
                 limit: limit,
                 page: page,
+                sort: { branchCode: chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
                 branchCode: {
                     $regex: (typeof req.query.branchCode?.$regex === 'string' && req.query.branchCode.$regex.length > 0)
@@ -145,7 +148,8 @@ sellersRouter.get(
         try {
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const seller = await sellerService.findById({ id: String(req.params.id) });
 
@@ -165,7 +169,8 @@ sellersRouter.delete(
         try {
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const seller = await sellerService.findById({ id: req.params.id });
@@ -186,7 +191,8 @@ async function preDelete(req: Request, seller: chevre.factory.seller.ISeller) {
     // 施設が存在するかどうか
     const placeService = new chevre.service.Place({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
@@ -209,11 +215,13 @@ sellersRouter.all<ParamsDictionary>(
 
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         try {

@@ -1,0 +1,336 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="orderStatus" class="bmd-label-static">
+                                ステータス
+                            </label>
+                            <select class="form-control" name="orderStatus">
+                                <option value="">ステータス選択</option>
+                                <% orderStatusTypes.forEach(function(orderStatusType) { %>
+                                <option value="<%= orderStatusType.codeValue %>">
+                                    <%= orderStatusType.name %>
+                                </option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="confirmationNumber" class="bmd-label-static">
+                                確認番号
+                            </label>
+                            <input class="form-control" placeholder="確認番号" name="confirmationNumber"
+                                id="confirmationNumber" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="application" class="bmd-label-static">
+                                アプリケーション
+                            </label>
+                            <select class="form-control" name="application" id="application" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="seller" class="bmd-label-static">
+                                販売者
+                            </label>
+                            <select class="form-control" name="seller" id="seller" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="customerId" class="bmd-label-static">
+                                顧客
+                            </label>
+                            <select class="form-control" name="customerId"
+                                id="customerId" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="paymentMethodType" class="bmd-label-static">
+                                決済方法区分
+                            </label>
+                            <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="orderNumber" class="bmd-label-static">
+                                    注文番号
+                                </label>
+                                <input type="text" class="form-control" name="orderNumber" id="orderNumber"
+                                    placeholder="注文番号" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-4">
+                                <label for="orderFrom" class="bmd-label-static">
+                                    注文日(From - To)
+                                </label>
+
+                                <div class="input-group">
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="orderFrom" id="orderFrom" value="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">から</span>
+                                    </div>
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="orderThrough" id="orderThrough" valufe="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">まで</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-4">
+                                <label for="price[$gte]" class="bmd-label-static">
+                                    金額
+                                </label>
+
+                                <div class="input-group">
+                                    <input class="form-control" placeholder="" maxlength=10
+                                        name="price[$gte]" id="price[$gte]" value="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">円以上</span>
+                                    </div>
+                                    <input class="form-control" placeholder="" maxlength=10
+                                        name="price[$lte]" id="price[$lte]" valufe="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">円以下</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="broker[id]" class="bmd-label-static">
+                                    代理
+                                </label>
+                                <select class="form-control" name="broker[id]" id="broker[id]" style="width: 100%;">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[membershipNumber]" class="bmd-label-static">
+                                    カスタマーusername
+                                </label>
+                                <input class="form-control" placeholder="username" name="customer[membershipNumber]" id="customer[membershipNumber]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[id]" class="bmd-label-static">
+                                    カスタマーID
+                                </label>
+                                <input class="form-control" placeholder="ID" name="customer[id]" id="customer[id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[familyName]" class="bmd-label-static">
+                                    Family Name
+                                </label>
+                                <input class="form-control" placeholder="^もーしょん(正規表現)" name="customer[familyName]" id="customer[familyName]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[givenName]" class="bmd-label-static">
+                                    Given Name
+                                </label>
+                                <input class="form-control" placeholder="^たろう(正規表現)" name="customer[givenName]" id="customer[givenName]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[email]" class="bmd-label-static">
+                                    カスタマーEmail
+                                </label>
+                                <input class="form-control" placeholder="^cinerino(正規表現)" name="customer[email]"
+                                    id="customer[email]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customer[telephone]" class="bmd-label-static">
+                                    カスタマーTEL
+                                </label>
+                                <input class="form-control" placeholder="^\+81901234(正規表現)" name="customer[telephone]"
+                                    id="customer[telephone]" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[typeOf]" class="bmd-label-static">
+                                    アイテムタイプ
+                                </label>
+                                <input class="form-control" placeholder="アイテムタイプ" name="itemOffered[typeOf]" id="itemOffered[typeOf]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[id]" class="bmd-label-static">
+                                    アイテムID
+                                </label>
+                                <input class="form-control" placeholder="アイテムID" name="itemOffered[id]" id="itemOffered[id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[identifier]" class="bmd-label-static">
+                                    アイテム識別子
+                                </label>
+                                <input class="form-control" placeholder="アイテム識別子" name="itemOffered[identifier]" id="itemOffered[identifier]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="itemOffered[issuedThrough][id]" class="bmd-label-static">
+                                    アイテム発行サービスID
+                                </label>
+                                <input class="form-control" placeholder="アイテム発行サービスID" name="itemOffered[issuedThrough][id]" id="itemOffered[issuedThrough][id]" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="paymentMethod[accountId]" class="bmd-label-static">
+                                    決済アカウントID
+                                </label>
+                                <input class="form-control" placeholder="************1111、口座番号、購入管理番号" name="paymentMethod[accountId]" id="paymentMethod[accountId]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="paymentMethodId" class="bmd-label-static">
+                                    決済ID
+                                </label>
+                                <input class="form-control" placeholder="決済ID" name="paymentMethodId" id="paymentMethodId" />
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationNumber" class="bmd-label-static">
+                                    予約番号
+                                </label>
+                                <input class="form-control" placeholder="予約番号" name="reservationNumber" id="reservationNumber" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[id]" class="bmd-label-static">
+                                    予約イベントID
+                                </label>
+                                <input class="form-control" placeholder="予約イベントID" name="reservationFor[id]" id="reservationFor[id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[name]" class="bmd-label-static">
+                                    予約イベント名称
+                                </label>
+                                <input class="form-control" placeholder="予約イベント名称" name="reservationFor[name]" id="reservationFor[name]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-4">
+                                <label for="reservationForStartFrom" class="bmd-label-static">
+                                    予約イベント開催期間
+                                </label>
+
+                                <div class="input-group">
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="reservationForStartFrom" id="reservationForStartFrom" value="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">から</span>
+                                    </div>
+                                    <input class="form-control datepicker" placeholder="" maxlength=10
+                                        name="reservationForStartThrough" id="reservationForStartThrough" valufe="" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">まで</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[superEvent][id]" class="bmd-label-static">
+                                    予約施設コンテンツID
+                                </label>
+                                <input class="form-control" placeholder="予約施設コンテンツID" name="reservationFor[superEvent][id]" id="reservationFor[superEvent][id]" />
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="reservationFor[workPerformed][identifier]" class="bmd-label-static">
+                                    予約コンテンツコード
+                                </label>
+                                <input class="form-control" placeholder="予約コンテンツコード" name="reservationFor[workPerformed][identifier]" id="reservationFor[workPerformed][identifier]" />
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>注文番号</th>
+                            <th>注文日時</th>
+                            <th>ステータス</th>
+                            <th>確認番号</th>
+                            <th>カスタマー</th>
+                            <th>販売者</th>
+                            <th>金額</th>
+                            <th>アイテム</th>
+                            <th>決済方法</th>
+                            <th>代理</th>
+                            <th>アプリ</th>
+                            <th>返品者</th>
+                            <th>返品日時</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="orderNumber__orderNumber">
+                                <a href="javascript:void(0)" class="showOrder" data-orderNumber="$orderNumber$">
+                                    $orderNumber$
+                                </a>
+                            </td>
+                            <td name="orderDate|date:YY-MM-DD HH:mm:ssZ">
+                                $orderDate$
+                            </td>
+                            <td name="orderStatus__orderStatus">
+                                <span class="badge badge-light $orderStatus$">$orderStatus$</span>
+                            </td>
+                            <td name="confirmationNumber">
+                                $confirmationNumber$
+                            </td>
+                            <td name="customer.typeOf__orderNumber__customer.name|slice:10">
+                                <span class="badge badge-light">$customer.typeOf$</span><br>
+                                <a href="javascript:void(0)" class="showCustomer" data-orderNumber="$orderNumber$">
+                                    $customer.name$
+                                </a>
+                            </td>
+                            <td name="seller.typeOf__orderNumber__seller.name|slice:10">
+                                <span class="badge badge-light">$seller.typeOf$</span><br>
+                                $seller.name$
+                            </td>
+                            <td name="price__priceCurrency">$price$ $priceCurrency$</td>
+                            <td name="numItems__itemTypeStr">x $numItems$<br><span class="badge badge-light">$itemTypeStr$</span></td>
+                            <td name="orderNumber__numPaymentMethods__paymentMethodTypeStr">
+                                <a href="javascript:void(0)" class="showPaymentMethods" data-orderNumber="$orderNumber$">
+                                    x $numPaymentMethods$<br><span class="badge badge-light">$paymentMethodTypeStr$</span>
+                                </a>
+                            </td>
+                            <td name="orderNumber__broker.typeOf|slice:10">
+                                <a href="javascript:void(0)" class="showBroker" data-orderNumber="$orderNumber$">
+                                    <span class="badge badge-light">$broker.typeOf$</span>
+                                </a>
+                            </td>
+                            <td name="application.name|slice:10">$application.name$</td>
+                            <td name="orderNumber__returner.typeOf|slice:10">
+                                <a href="javascript:void(0)" class="showReturner" data-orderNumber="$orderNumber$">
+                                    <span class="badge badge-light">$returner.typeOf$</span>
+                                </a>
+                            </td>
+                            <td name="dateReturned|date:YY-MM-DD HH:mm:ssZ">
+                                $dateReturned$
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

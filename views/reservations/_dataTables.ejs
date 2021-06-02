@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="admin[id]" class="bmd-label-static">
-                                管理ユーザー
+                                代理
                             </label>
                             <select class="form-control" name="admin[id]" id="admin[id]" style="width: 100%;">
                             </select>
@@ -283,16 +283,18 @@
                                     $reservationNumber$
                                 </a>
                             </td>
-                            <td name="bookingTime|date:YY-MM-DD HH:mm:ss">
+                            <td name="bookingTime|date:YY-MM-DD HH:mm:ssZ">
                                 $bookingTime$
                             </td>
                             <td class="reservationStatusTypeName"
-                                name="previousReservationStatus__reservationStatus__reservationStatusTypeName">
+                                name="previousReservationStatus__reservationStatus__reservationStatus__reservationStatusTypeName">
                                 <a href="#"
-                                    title="$previousReservationStatus$ -> $reservationStatus$">$reservationStatusTypeName$</a>
+                                    title="$previousReservationStatus$ -> $reservationStatus$">
+                                    <span class="badge badge-light $reservationStatus$">$reservationStatusTypeName$</span>
+                                </a>
                             </td>
-                            <td name="reservationFor.id__reservationFor.startDate|date:YY-MM-DD HH:mm">
-                                $reservationFor.id$<br>
+                            <td name="reservationFor.id__reservationFor.startDate|date:YY-MM-DD HH:mm:ssZ">
+                                <span class="badge badge-light">$reservationFor.id$</span><br>
                                 $reservationFor.startDate$
                             </td>
                             <td name="reservationFor.superEvent.id__reservationFor.superEvent.name.ja|slice:10">
@@ -307,14 +309,14 @@
                             </td>
                             <td
                                 name="reservedTicket.ticketType.id__reservedTicket.ticketType.name.ja|slice:10__unitPriceSpec.price__unitPriceSpec.referenceQuantity.value__unitPriceSpec.priceCurrency">
-                                <span class="font-weight-bold"><a target="_blank"
+                                <a target="_blank"
                                         href="/projects/<%= req.project.id %>/ticketTypes/$reservedTicket.ticketType.id$/update">$reservedTicket.ticketType.name.ja$
                                         <i class="material-icons"
-                                            style="font-size: 1.2em;">open_in_new</i></a></span><br>
+                                            style="font-size: 1.2em;">open_in_new</i></a><br>
                                 $unitPriceSpec.price$ $unitPriceSpec.priceCurrency$ /
                                 $unitPriceSpec.referenceQuantity.value$
                             </td>
-                            <td name="ticketedSeat">$ticketedSeat$</td>
+                            <td name="ticketedSeatStr"><span class="badge badge-light">$ticketedSeatStr$</span></td>
                             <td name="id__underName.name|slice:10">
                                 <a href="javascript:void(0)" class="showUnderName" data-id="$id$">
                                     $underName.name$
@@ -330,11 +332,15 @@
                                     表示
                                 </a>
                             </td>
-                            <td name="checkedInText">
-                                <i class="material-icons" style="font-size: 1.2em;">$checkedInText$</i>
+                            <td name="id__checkedInText">
+                                <a href="javascript:void(0)" class="" data-id="$id$">
+                                    <i class="material-icons" style="font-size: 1.2em;">$checkedInText$</i>
+                                </a>
                             </td>
-                            <td name="attendedText">
-                                <i class="material-icons" style="font-size: 1.2em;">$attendedText$</i>
+                            <td name="id__attendedText">
+                                <a href="javascript:void(0)" class="showUseActions" data-id="$id$">
+                                    <i class="material-icons" style="font-size: 1.2em;">$attendedText$</i>
+                                </a>
                             </td>
                             <td name="id__additionalProperty">
                                 <a href="javascript:void(0)" class="showAdditionalProperty" data-id="$id$">

@@ -25,7 +25,8 @@ accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
     var _a;
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.xhr) {
         try {
@@ -70,7 +71,8 @@ accountTitleSetRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0,
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -120,7 +122,8 @@ accountTitleSetRouter.all('/:codeValue', ...validate(),
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
         project: { ids: [req.project.id] },
@@ -197,11 +200,13 @@ function preDelete(req, accountTitleSet) {
         // validation
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 科目に属する全細目
         const limit = 100;
@@ -259,7 +264,8 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 科目分類検索
         let accountTitleCategory;

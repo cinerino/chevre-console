@@ -39,6 +39,7 @@
         "identifier": "Enterprise",
         "settings": {
             "allowNoCapacity": true,
+            "maximumAttendeeCapacity": 10000,
             "useAdvancedScheduling": true,
             "useSeats": true,
             "useProducts": true,

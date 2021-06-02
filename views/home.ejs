@@ -30,6 +30,8 @@ HO-01
 
                 </div>
             </div>
+
+            <% if (roleNames.includes('owner')) { %>
             <div class="card card-product">
                 <div class="card-body">
                     <h4 class="card-title">
@@ -46,6 +48,30 @@ HO-01
                     </div>
                 </div>
             </div>
+            <% } %>
+            
+            
+            <% if (roleNames.includes('owner')) { %>
+            <div class="card card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <span class="pl-1">最近のアクション</span></h4>
+                    </h4>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="latestActions">
+                            <table class="table table-sm table-hover">
+                                <thead class="text-primary">
+                                    <th></th>
+                                    <th></th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% } %> 
         </div>
 
         <div class="col-md-4">
@@ -81,7 +107,7 @@ HO-01
                             <ul class="nav nav-tabs" data-tabs="tabs">
                                 <li class="nav-item">
                                     <a class="nav-link active" href="#latestReservations" data-toggle="tab">
-                                        <i class="material-icons">event_seat</i> 直近の予約
+                                        <i class="material-icons">event_seat</i> 最近の予約
                                         <div class="ripple-container"></div>
                                     </a>
                                 </li>
@@ -92,7 +118,7 @@ HO-01
                 <div class="card-body">
                     <h4 class="card-title">
                         <i class="material-icons align-middle">event_seat</i>
-                        <span class="pl-1">直近の予約</span></h4>
+                        <span class="pl-1">最近の予約</span></h4>
                     </h4>
                     <div class="tab-content">
                         <div class="tab-pane active" id="latestReservations">
@@ -133,6 +159,7 @@ HO-01
                 </div>
             </div>
 
+            <% if (roleNames.includes('owner')) { %>
             <div class="card card-product errorReporting">
                 <div class="card-body">
                     <h4 class="card-title">
@@ -146,6 +173,7 @@ HO-01
                     </div>
                 </div>
             </div>
+            <% } %>
 
             <!-- <div class="card card-product">
                 <div class="card-body">
@@ -165,6 +193,28 @@ HO-01
                     </dl>
                 </div>
             </div> -->
+            
+            <div class="card card-product">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <i class="material-icons align-middle">receipt</i>
+                        <span class="pl-1">最近の注文</span></h4>
+                    </h4>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="latestOrders">
+                            <table class="table table-sm table-hover">
+                                <thead class="text-primary">
+                                    <th>注文番号</th>
+                                    <th>日時</th>
+                                    <th>金額</th>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>   
         </div>
     </div>
 

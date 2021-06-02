@@ -1,0 +1,127 @@
+<div class="material-datatables">
+    <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
+        <div class="row">
+            <div class="col-sm-12">
+                <form method="post" class="search">
+                    <%- include('../common/master/_hidden') %>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="additionalTicketText[$eq]" class="bmd-label-static">
+                                identifier
+                            </label>
+                            <input class="form-control" placeholder="8559919013" name="identifier"
+                                id="identifier" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="issuedThrough[id][$eq]" class="bmd-label-static">
+                                サービス
+                            </label>
+                            <select class="form-control" name="issuedThrough[id][$eq]"
+                                id="issuedThrough[id][$eq]" style="width: 100%;">
+                            </select>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="issuedBy[id][$eq]" class="bmd-label-static">
+                                発行者
+                            </label>
+                            <select class="form-control" name="issuedBy[id][$eq]" id="issuedBy[id][$eq]" style="width: 100%;">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="advanced collapse">
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="list" style="display:none;" class="row">
+            <div class="col-sm-12 table-responsive">
+                <table id="datatables" class="table table-no-bordered table-hover dataTable dtr-inline" cellspacing="0"
+                    width="100%" style="width: 100%;" role="grid" aria-describedby="datatables_info">
+                    <thead class="text-primary">
+                        <tr>
+                            <th>タイプ</th>
+                            <th>識別子</th>
+                            <th>名称</th>
+                            <th><i class="fa fa-key"></i></th>
+                            <th>サービス</th>
+                            <th>発行日時</th>
+                            <th>発行者</th>
+                            <th>validFor</th>
+                            <th>validFrom</th>
+                            <th>validThrough</th>
+                            <th>amount</th>
+                            <th>depositAmount</th>
+                            <th>paymentAmount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="templateRow" data-id="$id$">
+                            <td name="typeOf">
+                                <span class="badge badge-light">$typeOf$</span>
+                            </td>
+                            <td name="identifier">
+                                $identifier$
+                            </td>
+                            <td name="name|slice:10">
+                                $name$
+                            </td>
+                            <td name="accessCode">
+                                $accessCode$
+                            </td>
+                            <td name="issuedThrough.typeOf__issuedThrough.id">
+                                <span class="badge badge-light">$issuedThrough.typeOf$</span><br>
+                                $issuedThrough.id$
+                            </td>
+                            <td name="dateIssued|date:YY-MM-DD HH:mm:ssZ">
+                                $dateIssued$
+                            </td>
+                            <td
+                                name="issuedBy.typeOf__issuedBy.id">
+                                <span class="badge badge-light">$issuedBy.typeOf$</span><br>
+                                $issuedBy.id$
+                            </td>
+                            <td name="validFor">
+                                $validFor$
+                            </td>
+                            <td name="validFrom|date:YY-MM-DD HH:mm:ssZ">
+                                $validFrom$
+                            </td>
+                            <td name="validUntil|date:YY-MM-DD HH:mm:ssZ">
+                                $validUntil$
+                            </td>
+                            <td name="id__amount.typeOf__amount.currency">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="amount" data-id="$id$">
+                                    <span class="badge badge-light">$amount.typeOf$</span><br>
+                                    $amount.currency$
+                                </a>
+                            </td>
+                            <td name="id__depositAmount.typeOf">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="depositAmount" data-id="$id$">
+                                    <span class="badge badge-light">$depositAmount.typeOf$</span>
+                                </a>
+                            </td>
+                            <td name="id__paymentAmount.typeOf">
+                                <a href="javascript:void(0)" class="showAttribute" data-attribute="paymentAmount" data-id="$id$">
+                                    <span class="badge badge-light">$paymentAmount.typeOf$</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 col-md-5">
+                <div class="dataTables_info" id="datatables_info" role="status" aria-live="polite">
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-7">
+                <div class="dataTables_paginate paging_full_numbers" id="datatables_paginate">
+                </div>
+                <div id="pager" class="div_pager_parent float-right"></div>
+            </div>
+        </div>
+    </div>
+</div>

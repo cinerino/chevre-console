@@ -35,7 +35,8 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
     try {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         debug('searching...', req.query);
         const limit = Number(req.query.limit);
@@ -82,7 +83,8 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     let errors = {};
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // バリデーション
@@ -144,7 +146,8 @@ accountTitlesRouter.all('/:codeValue', ...validate(),
         let errors = {};
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
             project: { ids: [req.project.id] },
@@ -228,7 +231,8 @@ function preDelete(req, accountTitle) {
         // validation
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 関連するオファー
         const searchOffersResult = yield offerService.search({
@@ -251,7 +255,8 @@ function createFromBody(req) {
     return __awaiter(this, void 0, void 0, function* () {
         const accountTitleService = new chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // 科目検索
         let accountTitleSet;

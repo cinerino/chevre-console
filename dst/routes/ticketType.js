@@ -10,18 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * 券種管理ルーター
+ * 単価オファー管理ルーター
  */
 const chevre = require("@chevre/api-nodejs-client");
-const cinerino = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
 const Message = require("../message");
 const productType_1 = require("../factory/productType");
-const SMART_THEATER_CLIENT_OLD = process.env.SMART_THEATER_CLIENT_OLD;
-const SMART_THEATER_CLIENT_NEW = process.env.SMART_THEATER_CLIENT_NEW;
+const offers_1 = require("./offers");
 const NUM_ADDITIONAL_PROPERTY = 10;
 // 券種コード 半角64
 const NAME_MAX_LENGTH_CODE = 30;
@@ -40,11 +38,13 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     let errors = {};
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     if (req.method === 'POST') {
         // 検証
@@ -139,7 +139,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
         limit: 100
     }));
-    const applications = yield searchApplications(req);
+    const applications = yield offers_1.searchApplications(req);
     res.render('ticketType/add', {
         message: message,
         errors: errors,
@@ -167,19 +167,23 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
     let errors = {};
     const offerService = new chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const productService = new chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     const accountTitleService = new chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
     try {
         let ticketType = yield offerService.findById({ id: req.params.id });
@@ -377,7 +381,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         const searchAddOnsResult = yield productService.search(Object.assign({ project: { id: { $eq: req.project.id } }, typeOf: { $eq: productType_1.ProductType.Product } }, {
             limit: 100
         }));
-        const applications = yield searchApplications(req);
+        const applications = yield offers_1.searchApplications(req);
         res.render('ticketType/update', {
             message: message,
             errors: errors,
@@ -399,30 +403,6 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
         next(error);
     }
 }));
-function searchApplications(req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const iamService = new cinerino.service.IAM({
-            endpoint: process.env.CINERINO_API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
-        const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
-        });
-        let applications = searchApplicationsResult.data;
-        // 新旧クライアントが両方存在すれば、新クライアントを隠す
-        const memberIds = applications.map((a) => a.member.id);
-        if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
-            && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0) {
-            const oldClientExists = memberIds.includes(SMART_THEATER_CLIENT_OLD);
-            const newClientExists = memberIds.includes(SMART_THEATER_CLIENT_NEW);
-            if (oldClientExists && newClientExists) {
-                applications = applications.filter((a) => a.member.id !== SMART_THEATER_CLIENT_NEW);
-            }
-        }
-        return applications;
-    });
-}
 /**
  * COA券種インポート
  */
@@ -430,11 +410,13 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
     try {
         const placeService = new chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const taskService = new chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         // インポート対象の施設ブランチコードを検索
         const { data } = yield placeService.searchMovieTheaters({ limit: 100 });
@@ -490,11 +472,13 @@ function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
         const productService = new chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         let offerCategory;
         if (typeof req.body.category === 'string' && req.body.category.length > 0) {
@@ -521,7 +505,7 @@ function createFromBody(req, isNew) {
                     id: addOnItemOfferedId
                 });
                 if (addOn.hasOfferCatalog === undefined) {
-                    throw new Error(`アドオン '${addOn.identifier}' にはカタログが登録されていません`);
+                    throw new Error(`アドオン '${addOn.productID}' にはカタログが登録されていません`);
                 }
                 availableAddOn.push({
                     project: addOn.project,
@@ -551,12 +535,12 @@ function createFromBody(req, isNew) {
         }
         // スマシの新旧クライアント対応
         const availableClientIds = availableAtOrFrom.map((a) => a.id);
-        if (typeof SMART_THEATER_CLIENT_OLD === 'string' && SMART_THEATER_CLIENT_OLD.length > 0
-            && typeof SMART_THEATER_CLIENT_NEW === 'string' && SMART_THEATER_CLIENT_NEW.length > 0) {
-            const oldClientAvailable = availableClientIds.includes(SMART_THEATER_CLIENT_OLD);
-            const newClientAvailable = availableClientIds.includes(SMART_THEATER_CLIENT_NEW);
+        if (typeof offers_1.SMART_THEATER_CLIENT_OLD === 'string' && offers_1.SMART_THEATER_CLIENT_OLD.length > 0
+            && typeof offers_1.SMART_THEATER_CLIENT_NEW === 'string' && offers_1.SMART_THEATER_CLIENT_NEW.length > 0) {
+            const oldClientAvailable = availableClientIds.includes(offers_1.SMART_THEATER_CLIENT_OLD);
+            const newClientAvailable = availableClientIds.includes(offers_1.SMART_THEATER_CLIENT_NEW);
             if (oldClientAvailable && !newClientAvailable) {
-                availableAtOrFrom.push({ id: SMART_THEATER_CLIENT_NEW });
+                availableAtOrFrom.push({ id: offers_1.SMART_THEATER_CLIENT_NEW });
             }
         }
         const referenceQuantityValue = Number(req.body.seatReservationUnit);

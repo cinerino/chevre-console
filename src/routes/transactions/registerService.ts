@@ -22,23 +22,28 @@ registerServiceTransactionsRouter.all(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
-            const registerService = new chevre.service.transaction.RegisterService({
+            const registerService = new chevre.service.assetTransaction.RegisterService({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const serviceOutputService = new chevre.service.ServiceOutput({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const transactionNumberService = new chevre.service.TransactionNumber({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const product = <chevre.factory.product.IProduct>await productService.findById({ id: req.query.product });
@@ -65,7 +70,7 @@ registerServiceTransactionsRouter.all(
                         typeOf: seller.typeOf
                     };
 
-                    let acceptedOffer: chevre.factory.transaction.registerService.IAcceptedOffer[];
+                    let acceptedOffer: chevre.factory.assetTransaction.registerService.IAcceptedOffer[];
 
                     // tslint:disable-next-line:prefer-array-literal
                     acceptedOffer = [...Array(Number(numOutputs))].map(() => {
@@ -92,7 +97,7 @@ registerServiceTransactionsRouter.all(
                         .add(1, 'minutes')
                         .toDate();
 
-                    let object: chevre.factory.transaction.registerService.IObjectWithoutDetail = acceptedOffer;
+                    let object: chevre.factory.assetTransaction.registerService.IObjectWithoutDetail = acceptedOffer;
                     object = await createServiceOutputIdentifier({ acceptedOffer, product })({
                         serviceOutputService: serviceOutputService
                     });
@@ -103,7 +108,7 @@ registerServiceTransactionsRouter.all(
 
                     const transaction = await registerService.start({
                         project: { typeOf: req.project.typeOf, id: req.project.id },
-                        typeOf: chevre.factory.transactionType.RegisterService,
+                        typeOf: chevre.factory.assetTransactionType.RegisterService,
                         transactionNumber: transactionNumber,
                         expires: expires,
                         agent: {
@@ -142,12 +147,12 @@ registerServiceTransactionsRouter.all(
 );
 
 function createServiceOutputIdentifier(params: {
-    acceptedOffer: chevre.factory.transaction.registerService.IObjectWithoutDetail;
+    acceptedOffer: chevre.factory.assetTransaction.registerService.IObjectWithoutDetail;
     product: chevre.factory.product.IProduct;
 }) {
     return async (repos: {
         serviceOutputService: chevre.service.ServiceOutput;
-    }): Promise<chevre.factory.transaction.registerService.IObjectWithoutDetail> => {
+    }): Promise<chevre.factory.assetTransaction.registerService.IObjectWithoutDetail> => {
         const publishParams = params.acceptedOffer.map(() => {
             return { project: { id: params.product.project.id } };
         });
@@ -186,7 +191,7 @@ registerServiceTransactionsRouter.all(
         try {
             let message = '';
 
-            const transaction = <chevre.factory.transaction.registerService.ITransaction>
+            const transaction = <chevre.factory.assetTransaction.registerService.ITransaction>
                 (<Express.Session>req.session)[`transaction:${req.params.transactionNumber}`];
             if (transaction === undefined) {
                 throw new chevre.factory.errors.NotFound('Transaction in session');
@@ -194,11 +199,13 @@ registerServiceTransactionsRouter.all(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
-            const registerService = new chevre.service.transaction.RegisterService({
+            const registerService = new chevre.service.assetTransaction.RegisterService({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const productId = transaction.object[0].itemOffered?.id;
@@ -214,7 +221,7 @@ registerServiceTransactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.assetTransactionType.RegisterService}/start?product=${productId}`);
 
                 return;
             } else {
@@ -242,15 +249,16 @@ registerServiceTransactionsRouter.all(
         try {
             let message = '';
 
-            const transaction = <chevre.factory.transaction.registerService.ITransaction>
+            const transaction = <chevre.factory.assetTransaction.registerService.ITransaction>
                 (<Express.Session>req.session)[`transaction:${req.params.transactionNumber}`];
             if (transaction === undefined) {
                 throw new chevre.factory.errors.NotFound('Transaction in session');
             }
 
-            const registerService = new chevre.service.transaction.RegisterService({
+            const registerService = new chevre.service.assetTransaction.RegisterService({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const productId = transaction.object[0].itemOffered?.id;
@@ -266,7 +274,7 @@ registerServiceTransactionsRouter.all(
                 // tslint:disable-next-line:no-dynamic-delete
                 delete (<Express.Session>req.session)[`transaction:${transaction.transactionNumber}`];
                 req.flash('message', message);
-                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.transactionType.RegisterService}/start?product=${productId}`);
+                res.redirect(`/projects/${req.project.id}/transactions/${chevre.factory.assetTransactionType.RegisterService}/start?product=${productId}`);
 
                 return;
             }

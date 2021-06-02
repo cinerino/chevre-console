@@ -10,7 +10,11 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
 import { NO_CONTENT } from 'http-status';
 
+import { ISubscription } from '../../factory/subscription';
 import * as Message from '../../message';
+
+// tslint:disable-next-line:no-require-imports no-var-requires
+const subscriptions: ISubscription[] = require('../../../subscriptions.json');
 
 const debug = createDebug('chevre-backend:router');
 
@@ -27,7 +31,8 @@ screeningRoomSectionRouter.all<any>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -103,7 +108,8 @@ screeningRoomSectionRouter.get(
         try {
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -139,6 +145,9 @@ screeningRoomSectionRouter.get(
                         && req.query?.name?.$regex.length > 0)
                         ? req.query?.name?.$regex
                         : undefined
+                },
+                ...{
+                    $projection: { seatCount: 1 }
                 }
             });
 
@@ -183,7 +192,8 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
 
             const placeService = new chevre.service.Place({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const searchScreeningRoomSectionsResult = await placeService.searchScreeningRoomSections({
@@ -195,10 +205,13 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
                     containedInPlace: {
                         branchCode: { $eq: movieTheaterBranchCode }
                     }
+                },
+                ...{
+                    $projection: { seatCount: 1 }
                 }
             });
 
-            let screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
+            const screeningRoomSection = searchScreeningRoomSectionsResult.data[0];
             if (screeningRoomSection === undefined) {
                 throw new Error('Screening Room Section Not Found');
             }
@@ -209,8 +222,12 @@ screeningRoomSectionRouter.all<ParamsDictionary>(
                 errors = validatorResult.mapped();
                 if (validatorResult.isEmpty()) {
                     try {
-                        screeningRoomSection = await createFromBody(req, false);
-                        await placeService.updateScreeningRoomSection(screeningRoomSection);
+                        const originalSeatCount = (<any>screeningRoomSection).seatCount;
+                        const newScreeningRoomSection = await createFromBody(req, false);
+
+                        await preUpdate(req, newScreeningRoomSection, originalSeatCount);
+
+                        await placeService.updateScreeningRoomSection(newScreeningRoomSection);
 
                         req.flash('message', '更新しました');
                         res.redirect(req.originalUrl);
@@ -268,7 +285,8 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
 
         const placeService = new chevre.service.Place({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         await placeService.deleteScreeningRoomSection({
@@ -290,7 +308,8 @@ screeningRoomSectionRouter.delete<ParamsDictionary>(
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.place.screeningRoomSection.IPlace> {
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: <string>process.env.API_ENDPOINT,
-        auth: req.user.authClient
+        auth: req.user.authClient,
+        project: { id: req.project.id }
     });
 
     const searchSeatingTypesResult = await categoryCodeService.search({
@@ -414,6 +433,58 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .withMessage(Message.Common.getMaxLength('英語名称', 64))
     ];
+}
+
+async function preUpdate(req: Request, section: chevre.factory.place.screeningRoomSection.IPlace, originalSeatCount?: number) {
+    const placeService = new chevre.service.Place({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const projectService = new chevre.service.Project({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: '' }
+    });
+
+    const searchScreeningRoomsResult = await placeService.searchScreeningRooms({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        branchCode: { $eq: section.containedInPlace?.branchCode },
+        containedInPlace: {
+            branchCode: { $eq: section.containedInPlace?.containedInPlace?.branchCode }
+        },
+        $projection: { seatCount: 1 }
+    });
+    const screeningRoom = searchScreeningRoomsResult.data.shift();
+    if (screeningRoom === undefined) {
+        throw new Error('ルームが存在しません');
+    }
+
+    const seatCount = screeningRoom.seatCount;
+    if (typeof seatCount !== 'number') {
+        throw new Error('ルーム座席数が不明です');
+    }
+    if (typeof originalSeatCount !== 'number') {
+        throw new Error('セクション座席数が不明です');
+    }
+
+    // サブスクリプションからmaximumAttendeeCapacityを取得
+    const chevreProject = await projectService.findById({ id: req.project.id });
+    let subscriptionIdentifier = chevreProject.subscription?.identifier;
+    if (subscriptionIdentifier === undefined) {
+        subscriptionIdentifier = 'Free';
+    }
+    const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
+    const maximumAttendeeCapacitySetting = subscription?.settings.maximumAttendeeCapacity;
+    // 座席の更新がある場合、座席数がmax以内かどうか
+    if (Array.isArray(section.containsPlace) && section.containsPlace.length > 0) {
+        if (typeof maximumAttendeeCapacitySetting === 'number') {
+            if (seatCount - originalSeatCount + section.containsPlace.length > maximumAttendeeCapacitySetting) {
+                throw new Error(`ルーム座席数の最大値は${maximumAttendeeCapacitySetting}です`);
+            }
+        }
+    }
 }
 
 export default screeningRoomSectionRouter;

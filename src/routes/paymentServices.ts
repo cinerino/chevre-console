@@ -27,7 +27,8 @@ paymentServicesRouter.all<any>(
 
         const productService = new chevre.service.Product({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
 
         if (req.method === 'POST') {
@@ -107,7 +108,8 @@ paymentServicesRouter.all<any>(
 
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -128,7 +130,8 @@ paymentServicesRouter.get(
         try {
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             const limit = Number(req.query.limit);
@@ -182,7 +185,8 @@ paymentServicesRouter.all<ParamsDictionary>(
 
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
 
             let product = await productService.findById({ id: req.params.id });
@@ -242,7 +246,8 @@ paymentServicesRouter.all<ParamsDictionary>(
 
             const sellerService = new chevre.service.Seller({
                 endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient
+                auth: req.user.authClient,
+                project: { id: req.project.id }
             });
             const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
@@ -264,7 +269,8 @@ paymentServicesRouter.get(
     async (req, res) => {
         const sellerService = new chevre.service.Seller({
             endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient
+            auth: req.user.authClient,
+            project: { id: req.project.id }
         });
         const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
 
