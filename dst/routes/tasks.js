@@ -23,9 +23,7 @@ tasksRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () 
         TaskStatus: chevre.factory.taskStatus
     });
 }));
-tasksRouter.get('/search', 
-// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
-(req, res) => __awaiter(void 0, void 0, void 0, function* () {
+tasksRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
         const taskService = new chevre.service.Task({
@@ -51,9 +49,7 @@ tasksRouter.get('/search',
             count: (data.length === Number(searchConditions.limit))
                 ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
                 : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
-            results: data.map((t) => {
-                return Object.assign({}, t);
-            })
+            results: data
         });
     }
     catch (err) {

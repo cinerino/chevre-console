@@ -430,7 +430,7 @@ offersRouter.get('/getlist',
             results: data.map((t) => {
                 var _a, _b, _c, _d, _e, _f, _g, _h, _j;
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
-                const productType = productType_1.productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
+                const productType = productType_1.productTypes.find((p) => { var _a; return p.codeValue === ((_a = t.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf); });
                 const itemAvailability = itemAvailability_1.itemAvailabilities.find((i) => i.codeValue === t.availability);
                 const priceUnitStr = (((_b = t.priceSpecification) === null || _b === void 0 ? void 0 : _b.referenceQuantity.unitCode) === chevre.factory.unitCode.C62)
                     ? '枚'

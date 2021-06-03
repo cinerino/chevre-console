@@ -20,7 +20,6 @@ tasksRouter.get(
 
 tasksRouter.get(
     '/search',
-    // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res) => {
         try {
             const taskService = new chevre.service.Task({
@@ -48,11 +47,7 @@ tasksRouter.get(
                 count: (data.length === Number(searchConditions.limit))
                     ? (Number(searchConditions.page) * Number(searchConditions.limit)) + 1
                     : ((Number(searchConditions.page) - 1) * Number(searchConditions.limit)) + Number(data.length),
-                results: data.map((t) => {
-                    return {
-                        ...t
-                    };
-                })
+                results: data
             });
         } catch (err) {
             res.status((typeof err.code === 'number') ? err.code : INTERNAL_SERVER_ERROR)

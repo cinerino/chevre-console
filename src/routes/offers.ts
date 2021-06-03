@@ -496,7 +496,7 @@ offersRouter.get(
                 results: data.map((t) => {
                     const categoryCode = t.category?.codeValue;
 
-                    const productType = productTypes.find((p) => p.codeValue === t.itemOffered.typeOf);
+                    const productType = productTypes.find((p) => p.codeValue === t.itemOffered?.typeOf);
                     const itemAvailability = itemAvailabilities.find((i) => i.codeValue === t.availability);
 
                     const priceUnitStr = (t.priceSpecification?.referenceQuantity.unitCode === chevre.factory.unitCode.C62)
