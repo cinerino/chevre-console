@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.26.1 - 2021-06-03
+
+### Changed
+
+- update @chevre/api-nodejs-client
+
 ## v2.26.0 - 2021-06-02
 
 ### Added
