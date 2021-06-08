@@ -500,9 +500,9 @@ function validate() {
             .isString()
             .matches(/^[0-9a-zA-Z]+$/)
             .withMessage(() => '英数字で入力してください')
-            .isLength({ max: 64 })
+            .isLength({ max: 12 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 64)),
+            .withMessage(Message.Common.getMaxLength('コード', 12)),
         express_validator_1.body('hasPOS.*.name')
             .optional()
             .if((value) => String(value).length > 0)
@@ -530,9 +530,9 @@ function validate() {
             .isString()
             .matches(/^[0-9a-zA-Z_]+$/)
             .withMessage(() => '英数字で入力してください')
-            .isLength({ max: 64 })
+            .isLength({ max: 12 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 64))
+            .withMessage(Message.Common.getMaxLength('コード', 12))
     ];
 }
 exports.default = movieTheaterRouter;
