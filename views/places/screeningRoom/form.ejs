@@ -55,8 +55,8 @@
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
-                            maxlength=64 value="<%= forms.branchCode %>">
-                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                            maxlength=12 value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角12文字以内でご入力ください</span>
                         <% if (errors && errors.branchCode) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors.branchCode.msg %>

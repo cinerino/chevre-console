@@ -32,14 +32,14 @@
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
-                            maxlength=64 value="<%= forms.identifier %>">
+                            maxlength=30 value="<%= forms.identifier %>">
                         <% } else { %>
-                        <input type="text" class="form-control" disabled placeholder="" maxlength=64
+                        <input type="text" class="form-control" disabled placeholder="" maxlength=30
                             value="<%= forms.identifier %>">
                         <input type="hidden" name="id" value="<%= forms.id %>">
                         <input type="hidden" name="identifier" value="<%= forms.identifier %>">
                         <% } %>
-                        <span class="bmd-help">半角64文字以内でご入力ください</span>
+                        <span class="bmd-help">半角30文字以内でご入力ください</span>
                         <span class="bmd-help text-danger d-block">
                             <% if (errors && errors.identifier) { %>
                             <%- errors.identifier.msg %>

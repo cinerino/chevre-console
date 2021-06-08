@@ -47,11 +47,11 @@
                         </label>
                         <% if (isNew) { %>
                         <input type="text" class="form-control" name="branchCode" id="branchCode" placeholder=""
-                            maxlength="20" value="<%= forms.branchCode %>">
-                        <span class="bmd-help">半角20文字以内でご入力ください</span>
+                            maxlength="12" value="<%= forms.branchCode %>">
+                        <span class="bmd-help">半角12文字以内でご入力ください</span>
                         <% } else { %>
                         <input readonly type="text" class="form-control" name="branchCode" id="branchCode"
-                            placeholder="" maxlength="20" value="<%= forms.branchCode %>">
+                            placeholder="" maxlength="12" value="<%= forms.branchCode %>">
                         <input type="hidden" name="id" value="<%= forms.id %>">
                         <% } %>
                         <% if (errors && errors.branchCode) { %>

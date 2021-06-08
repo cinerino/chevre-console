@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - 高度な設定を必要最低限に表示
+- コード最大文字数を調整
 
 ### Deprecated
 

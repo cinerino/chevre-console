@@ -54,9 +54,9 @@
                         <label for="codeValue" class="bmd-label-static">
                             コード<span class="text-danger">＊</span>
                         </label>
-                        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=30
+                        <input class="form-control" name="codeValue" id="codeValue" placeholder="" maxlength=12
                             value="<%= forms.codeValue %>" <% if (!isNew) { %> readonly <% } %>>
-                        <span class="bmd-help">半角30文字以内でご入力ください</span>
+                        <span class="bmd-help">半角12文字以内でご入力ください</span>
                         <% if (errors && errors['codeValue']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['codeValue'].msg %>
