@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Added
 
 - 区分にメンバーシップタイプを追加
+- オファー編集に適用メンバーシップ区分を追加
 
 ### Changed
 
