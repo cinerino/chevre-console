@@ -280,7 +280,7 @@ function createFromBody(req, isNew) {
                     } : undefined);
                     return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: String(p.branchCode)
                             // tslint:disable-next-line:no-magic-numbers
-                            .slice(0, 20), seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [], additionalProperty: [] }, (typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined);
+                            .slice(0, 12), seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [], additionalProperty: [] }, (typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined);
                 });
             }
         }
@@ -320,9 +320,9 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
-            .isLength({ max: 20 })
+            .isLength({ max: 12 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 12)),
         express_validator_1.body('containedInPlace.containedInPlace')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),

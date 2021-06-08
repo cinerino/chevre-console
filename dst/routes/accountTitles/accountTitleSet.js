@@ -18,7 +18,6 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../../message");
 const NUM_ADDITIONAL_PROPERTY = 5;
-const NAME_MAX_LENGTH_CODE = 30;
 const NAME_MAX_LENGTH_NAME_JA = 64;
 const accountTitleSetRouter = express_1.Router();
 accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -305,8 +304,9 @@ function validate() {
         express_validator_1.body('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: 12 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 12))
             .matches(/^[0-9a-zA-Z]+$/)
             .withMessage(() => '英数字で入力してください'),
         express_validator_1.body('name')

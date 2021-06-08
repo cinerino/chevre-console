@@ -417,9 +417,9 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z\-]+$/)
-            .isLength({ max: 20 })
+            .isLength({ max: 12 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 12)),
         body('movieTheater')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '施設')),
