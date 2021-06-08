@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+- 区分にメンバーシップタイプを追加
+
 ### Changed
 
 - 高度な設定を必要最低限に表示
