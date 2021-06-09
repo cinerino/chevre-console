@@ -606,7 +606,7 @@ async function onClickDownload() {
         { label: 'カスタマーID', default: '', value: 'customer.id' },
         { label: 'カスタマー名称', default: '', value: 'customer.name' },
         { label: 'カスタマー名', default: '', value: 'customer.givenName' },
-        { label: 'カスタマー性', default: '', value: 'customer.familyName' },
+        { label: 'カスタマー姓', default: '', value: 'customer.familyName' },
         { label: 'カスタマーメールアドレス', default: '', value: 'customer.email' },
         { label: 'カスタマー電話番号', default: '', value: 'customer.telephone' },
         // { label: 'カスタマー会員番号', default: '', value: 'customer.memberOf.membershipNumber' },
