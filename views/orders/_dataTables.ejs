@@ -6,6 +6,24 @@
                     <%- include('../common/master/_hidden') %>
 
                     <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-4">
+                            <label for="orderFrom" class="bmd-label-static">
+                                注文日(From - To)
+                            </label>
+
+                            <div class="input-group">
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="orderFrom" id="orderFrom" value="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">から</span>
+                                </div>
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="orderThrough" id="orderThrough" valufe="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">まで</span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="orderStatus" class="bmd-label-static">
                                 ステータス
@@ -27,25 +45,10 @@
                                 id="confirmationNumber" />
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
-                            <label for="application" class="bmd-label-static">
-                                アプリケーション
-                            </label>
-                            <select class="form-control" name="application" id="application" style="width: 100%;">
-                            </select>
-                        </div>
-                        <div class="form-group bmd-form-group col-md-2">
                             <label for="seller" class="bmd-label-static">
                                 販売者
                             </label>
                             <select class="form-control" name="seller" id="seller" style="width: 100%;">
-                            </select>
-                        </div>
-                        <div class="form-group bmd-form-group col-md-2">
-                            <label for="customerId" class="bmd-label-static">
-                                顧客
-                            </label>
-                            <select class="form-control" name="customerId"
-                                id="customerId" style="width: 100%;">
                             </select>
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
@@ -66,23 +69,20 @@
                                 <input type="text" class="form-control" name="orderNumber" id="orderNumber"
                                     placeholder="注文番号" />
                             </div>
-                            <div class="form-group bmd-form-group col-md-4">
-                                <label for="orderFrom" class="bmd-label-static">
-                                    注文日(From - To)
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="application" class="bmd-label-static">
+                                    アプリケーション
                                 </label>
-
-                                <div class="input-group">
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="orderFrom" id="orderFrom" value="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">から</span>
-                                    </div>
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="orderThrough" id="orderThrough" valufe="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">まで</span>
-                                    </div>
-                                </div>
+                                <select class="form-control" name="application" id="application" style="width: 100%;">
+                                </select>
+                            </div>
+                            <div class="form-group bmd-form-group col-md-2">
+                                <label for="customerId" class="bmd-label-static">
+                                    顧客
+                                </label>
+                                <select class="form-control" name="customerId"
+                                    id="customerId" style="width: 100%;">
+                                </select>
                             </div>
                             <div class="form-group bmd-form-group col-md-4">
                                 <label for="price[$gte]" class="bmd-label-static">
