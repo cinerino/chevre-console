@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chevre = require("@chevre/api-nodejs-client");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
-const http_status_1 = require("http-status");
 const Message = require("../../message");
 const productType_1 = require("../../factory/productType");
 const NUM_ADDITIONAL_PROPERTY = 10;
@@ -147,12 +146,6 @@ addOnRouter.all('/:id', ...validate(),
                     message = error.message;
                 }
             }
-        }
-        else if (req.method === 'DELETE') {
-            yield productService.deleteById({ id: req.params.id });
-            res.status(http_status_1.NO_CONTENT)
-                .end();
-            return;
         }
         const forms = Object.assign({}, product);
         const searchOfferCatalogsResult = yield offerCatalogService.search({

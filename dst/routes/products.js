@@ -198,9 +198,17 @@ productsRouter.all('/:id', ...validate(),
             }
         }
         else if (req.method === 'DELETE') {
-            yield productService.deleteById({ id: req.params.id });
-            res.status(http_status_1.NO_CONTENT)
-                .end();
+            try {
+                // validation
+                yield preDelete(req, product);
+                yield productService.deleteById({ id: req.params.id });
+                res.status(http_status_1.NO_CONTENT)
+                    .end();
+            }
+            catch (error) {
+                res.status(http_status_1.BAD_REQUEST)
+                    .json({ error: { message: error.message } });
+            }
             return;
         }
         const forms = Object.assign(Object.assign({}, product), { offersValidFrom: (Array.isArray(product.offers) && product.offers.length > 0 && product.offers[0].validFrom !== undefined)
@@ -240,6 +248,24 @@ productsRouter.all('/:id', ...validate(),
         next(err);
     }
 }));
+function preDelete(req, product) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // validation
+        const offerService = new chevre.service.Offer({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchOffersResult = yield offerService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            addOn: { itemOffered: { id: { $eq: product.id } } }
+        });
+        if (searchOffersResult.data.length > 0) {
+            throw new Error('関連するオファーが存在します');
+        }
+    });
+}
 productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const sellerService = new chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,

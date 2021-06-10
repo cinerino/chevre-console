@@ -6,7 +6,6 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { NO_CONTENT } from 'http-status';
 
 import * as Message from '../../message';
 
@@ -156,7 +155,7 @@ addOnRouter.all<ParamsDictionary>(
                 project: { id: req.project.id }
             });
 
-            let product = await productService.findById({ id: req.params.id });
+            let product = <chevre.factory.product.IProduct>await productService.findById({ id: req.params.id });
 
             if (req.method === 'POST') {
                 // 検証
@@ -174,12 +173,6 @@ addOnRouter.all<ParamsDictionary>(
                         message = error.message;
                     }
                 }
-            } else if (req.method === 'DELETE') {
-                await productService.deleteById({ id: req.params.id });
-                res.status(NO_CONTENT)
-                    .end();
-
-                return;
             }
 
             const forms = {
