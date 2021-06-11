@@ -37,7 +37,7 @@
                             <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=64>
                         </div>
 
-                        <div class="form-group bmd-form-group col-md-4">
+                        <div class="form-group bmd-form-group col-md-3">
                             <label for="" class="bmd-label-static">
                                 単価
                             </label>
@@ -91,6 +91,24 @@
 
                     <div class="form-row">
                         <div class="form-group bmd-form-group col-md-2">
+                            <label for="accountTitle[codeValue]" class="bmd-label-static">
+                                細目
+                            </label>
+                            <select class="form-control" name="accountTitle[codeValue]" id="accountTitle[codeValue]"
+                                style="width: 100%;">
+                            </select>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="addOn[itemOffered][id]" class="bmd-label-static">
+                                アドオン
+                            </label>
+                            <select class="form-control" name="addOn[itemOffered][id]" id="addOn[itemOffered][id]"
+                                style="width: 100%;">
+                            </select>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
                             <label for="appliesToMovieTicket" class="bmd-label-static">
                                 適用決済カード区分
                             </label>
@@ -104,15 +122,6 @@
                                 適用座席区分
                             </label>
                             <select class="form-control" name="eligibleSeatingType" id="eligibleSeatingType"
-                                style="width: 100%;">
-                            </select>
-                        </div>
-
-                        <div class="form-group bmd-form-group col-md-2">
-                            <label for="accountTitle[codeValue]" class="bmd-label-static">
-                                細目
-                            </label>
-                            <select class="form-control" name="accountTitle[codeValue]" id="accountTitle[codeValue]"
                                 style="width: 100%;">
                             </select>
                         </div>

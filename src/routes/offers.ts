@@ -480,6 +480,15 @@ offersRouter.get(
                         && req.query.category.codeValue !== '')
                         ? { $in: [req.query.category.codeValue] }
                         : undefined
+                },
+                addOn: {
+                    itemOffered: {
+                        id: {
+                            $eq: (typeof req.query.addOn?.itemOffered?.id === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                                ? req.query.addOn.itemOffered.id
+                                : undefined
+                        }
+                    }
                 }
             };
 

@@ -162,6 +162,11 @@ productsRouter.get(
                                 : undefined
                         }
                     }
+                },
+                ...{
+                    name: {
+                        $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                    }
                 }
             };
             const { data } = await productService.search(searchConditions);
@@ -433,7 +438,14 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+
+        body('name.en')
+            .optional()
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('英語名称', 30))
     ];
 }
 

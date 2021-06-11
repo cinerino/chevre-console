@@ -119,13 +119,9 @@ productsRouter.get('/search',
             : undefined;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const searchConditions = {
-            limit: limit,
-            page: page,
+        const searchConditions = Object.assign({ limit: limit, page: page, 
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
-            project: { id: { $eq: req.project.id } },
-            typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq },
-            offers: {
+            project: { id: { $eq: req.project.id } }, typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq }, offers: {
                 $elemMatch: {
                     validFrom: {
                         $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
@@ -140,8 +136,11 @@ productsRouter.get('/search',
                             : undefined
                     }
                 }
+            } }, {
+            name: {
+                $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             }
-        };
+        });
         const { data } = yield productService.search(searchConditions);
         res.json({
             success: true,
@@ -366,7 +365,13 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('name.en')
+            .optional()
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('英語名称', 30))
     ];
 }
 exports.default = productsRouter;

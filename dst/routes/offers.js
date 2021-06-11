@@ -306,7 +306,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g, _h;
+    var _d, _e, _f, _g, _h, _j, _k;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -416,6 +416,15 @@ offersRouter.get('/getlist',
                     && req.query.category.codeValue !== '')
                     ? { $in: [req.query.category.codeValue] }
                     : undefined
+            },
+            addOn: {
+                itemOffered: {
+                    id: {
+                        $eq: (typeof ((_k = (_j = req.query.addOn) === null || _j === void 0 ? void 0 : _j.itemOffered) === null || _k === void 0 ? void 0 : _k.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                            ? req.query.addOn.itemOffered.id
+                            : undefined
+                    }
+                }
             }
         };
         let data;
