@@ -1,3 +1,8 @@
+<%
+const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string')
+? process.env.PROJECT_CREATOR_IDS.split(',')
+: [];
+%>
 <div class="material-datatables">
     <div id="datatables_wrapper" class="dataTables_wrapper dt-bootstrap4">
         <div class="row">
@@ -125,6 +130,17 @@
                                 style="width: 100%;">
                             </select>
                         </div>
+
+                        <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="eligibleMembershipType" class="bmd-label-static">
+                                適用メンバーシップ区分
+                            </label>
+                            <select class="form-control" name="eligibleMembershipType" id="eligibleMembershipType"
+                                style="width: 100%;">
+                            </select>
+                        </div>
+                        <% } %>
                     </div>
                 </form>
             </div>
@@ -143,7 +159,7 @@
                             <th>売上金額</th>
                             <th>カテゴリー</th>
                             <th>アプリ</th>
-                            <th>有効性</th>
+                            <th>有効期間</th>
                             <th>アドオン</th>
                             <th>カタログ</th>
                             <th>追加特性</th>
@@ -170,9 +186,9 @@
                                 </a>
                             </td>
                             <td
-                                name="validFrom|date:YY-MM-DD HH:mm:ssZ__validThrough|date:YY-MM-DD HH:mm:ssZ">
-                                $validFrom$ ~ $validThrough$
-                            </td>
+                                name="validFromStr__validFrom|date:YYYY-MM-DD HH:mm:ssZ__validThrough|date:YYYY-MM-DD HH:mm:ssZ">
+                                <a href="javascript:void(0)"
+                                title="$validFrom$ ~ $validThrough$">$validFromStr$</a>
                             </td>
                             <td name="id__addOnCount">
                                 <a href="javascript:void(0)" class="showAddOn" data-id="$id$">

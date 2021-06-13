@@ -339,10 +339,16 @@ offersRouter.get('/getlist',
                 }
             },
             project: { id: { $eq: req.project.id } },
+            eligibleMembershipType: {
+                codeValue: {
+                    $eq: (typeof req.query.eligibleMembershipType === 'string' && req.query.eligibleMembershipType.length > 0)
+                        ? req.query.eligibleMembershipType
+                        : undefined
+                }
+            },
             eligibleSeatingType: {
                 codeValue: {
-                    $eq: (typeof req.query.eligibleSeatingType === 'string'
-                        && req.query.eligibleSeatingType.length > 0)
+                    $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)
                         ? req.query.eligibleSeatingType
                         : undefined
                 }
@@ -453,7 +459,7 @@ offersRouter.get('/getlist',
                         : 0, categoryName: (typeof categoryCode === 'string')
                         ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', addOnCount: (Array.isArray(t.addOn))
                         ? t.addOn.length
-                        : 0, priceStr });
+                        : 0, priceStr, validFromStr: (t.validFrom !== undefined || t.validThrough !== undefined) ? '有' : '' });
             })
         });
     }

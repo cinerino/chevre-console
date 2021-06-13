@@ -402,10 +402,16 @@ offersRouter.get(
                     }
                 },
                 project: { id: { $eq: req.project.id } },
+                eligibleMembershipType: {
+                    codeValue: {
+                        $eq: (typeof req.query.eligibleMembershipType === 'string' && req.query.eligibleMembershipType.length > 0)
+                            ? req.query.eligibleMembershipType
+                            : undefined
+                    }
+                },
                 eligibleSeatingType: {
                     codeValue: {
-                        $eq: (typeof req.query.eligibleSeatingType === 'string'
-                            && req.query.eligibleSeatingType.length > 0)
+                        $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)
                             ? req.query.eligibleSeatingType
                             : undefined
                     }
@@ -529,7 +535,8 @@ offersRouter.get(
                         addOnCount: (Array.isArray(t.addOn))
                             ? t.addOn.length
                             : 0,
-                        priceStr
+                        priceStr,
+                        validFromStr: (t.validFrom !== undefined || t.validThrough !== undefined) ? '有' : ''
                     };
                 })
             });
