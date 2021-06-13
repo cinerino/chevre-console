@@ -481,6 +481,14 @@ function getSelectedReservations() {
 async function onClickDownload() {
     var conditions4csv = $.fn.getDataFromForm('form.search');
 
+    // 注文日時条件がなければ警告
+    if (typeof conditions4csv.orderFrom !== 'string' || conditions4csv.orderFrom.length === 0
+        || typeof conditions4csv.orderThrough !== 'string' || conditions4csv.orderThrough.length === 0) {
+        if (!window.confirm('注文日期間が指定されていません。ダウンロードに時間がかかる可能性がありますが続けますか？')) {
+            return false;
+        }
+    }
+
     console.log('downloaing...');
     // this.utilService.loadStart({ process: 'load' });
     var notify = $.notify({
@@ -588,28 +596,29 @@ async function onClickDownload() {
     });
 
     const fields = [
-        { label: '注文ステータス', default: '', value: 'orderStatus' },
-        { label: '注文日時', default: '', value: 'orderDate' },
         { label: '注文番号', default: '', value: 'orderNumber' },
+        { label: '注文日時', default: '', value: 'orderDate' },
+        { label: '注文ステータス', default: '', value: 'orderStatus' },
         { label: '確認番号', default: '', value: 'confirmationNumber' },
-        { label: '注文識別子', default: '', value: 'identifier' },
+        // { label: '注文識別子', default: '', value: 'identifier' },
         { label: '金額', default: '', value: 'price' },
-        { label: '購入者タイプ', default: '', value: 'customer.typeOf' },
-        { label: '購入者ID', default: '', value: 'customer.id' },
-        { label: '購入者名称', default: '', value: 'customer.name' },
-        { label: '購入者名', default: '', value: 'customer.givenName' },
-        { label: '購入者性', default: '', value: 'customer.familyName' },
-        { label: '購入者メールアドレス', default: '', value: 'customer.email' },
-        { label: '購入者電話番号', default: '', value: 'customer.telephone' },
-        { label: '購入者会員番号', default: '', value: 'customer.memberOf.membershipNumber' },
-        { label: '購入者トークン発行者', default: '', value: 'customer.tokenIssuer' },
-        { label: '購入者クライアント', default: '', value: 'customer.clientId' },
-        { label: '購入者追加特性', default: '', value: 'customer.additionalProperty' },
-        { label: '購入者識別子', default: '', value: 'customer.identifier' },
-        { label: '販売者タイプ', default: '', value: 'seller.typeOf' },
+        { label: 'カスタマータイプ', default: '', value: 'customer.typeOf' },
+        { label: 'カスタマーID', default: '', value: 'customer.id' },
+        { label: 'カスタマー名称', default: '', value: 'customer.name' },
+        { label: 'カスタマー名', default: '', value: 'customer.givenName' },
+        { label: 'カスタマー姓', default: '', value: 'customer.familyName' },
+        { label: 'カスタマーメールアドレス', default: '', value: 'customer.email' },
+        { label: 'カスタマー電話番号', default: '', value: 'customer.telephone' },
+        // { label: 'カスタマー会員番号', default: '', value: 'customer.memberOf.membershipNumber' },
+        // { label: 'カスタマートークン発行者', default: '', value: 'customer.tokenIssuer' },
+        { label: 'カスタマー追加特性', default: '', value: 'customer.additionalProperty' },
+        { label: 'カスタマー識別子', default: '', value: 'customer.identifier' },
+        { label: 'アプリケーションID', default: '', value: 'applicationId' },
+        { label: 'アプリケーション名称', default: '', value: 'applicationName' },
+        // { label: '販売者タイプ', default: '', value: 'seller.typeOf' },
         { label: '販売者ID', default: '', value: 'seller.id' },
         { label: '販売者名称', default: '', value: 'seller.name' },
-        { label: '販売者URL', default: '', value: 'seller.url' },
+        // { label: '販売者URL', default: '', value: 'seller.url' },
         { label: 'オファータイプ', default: '', value: 'acceptedOffers.typeOf' },
         { label: 'オファーID', default: '', value: 'acceptedOffers.id' },
         { label: 'オファー名称', default: '', value: 'acceptedOffers.name' },
@@ -617,16 +626,19 @@ async function onClickDownload() {
         { label: 'オファー単価仕様通貨', default: '', value: 'acceptedOffers.unitPriceSpecification.priceCurrency' },
         { label: '注文アイテムタイプ', default: '', value: 'acceptedOffers.itemOffered.typeOf' },
         { label: '注文アイテムID', default: '', value: 'acceptedOffers.itemOffered.id' },
-        { label: '注文アイテム名称', default: '', value: 'acceptedOffers.itemOffered.name' },
+        // { label: '注文アイテム名称', default: '', value: 'acceptedOffers.itemOffered.name' },
         { label: '注文アイテム数', default: '', value: 'acceptedOffers.itemOffered.numItems' },
-        { label: '注文アイテムイベントタイプ', default: '', value: 'acceptedOffers.itemOffered.event.typeOf' },
+        // { label: '注文アイテムイベントタイプ', default: '', value: 'acceptedOffers.itemOffered.event.typeOf' },
         { label: '注文アイテムイベントID', default: '', value: 'acceptedOffers.itemOffered.event.id' },
         { label: '注文アイテムイベント名称', default: '', value: 'acceptedOffers.itemOffered.event.name' },
         { label: '注文アイテムイベント開始日時', default: '', value: 'acceptedOffers.itemOffered.event.startDate' },
         { label: '注文アイテムイベント終了日時', default: '', value: 'acceptedOffers.itemOffered.event.endDate' },
-        { label: '注文アイテムイベント場所', default: '', value: 'acceptedOffers.itemOffered.event.location' },
-        { label: '注文アイテム親イベント場所枝番号', default: '', value: 'acceptedOffers.itemOffered.event.superEventLocationBranchCode' },
-        { label: '注文アイテム親イベント場所', default: '', value: 'acceptedOffers.itemOffered.event.superEventLocation' },
+        { label: '注文アイテムイベントコンテンツコード', default: '', value: 'acceptedOffers.itemOffered.event.creativeWorkIdentifier' },
+        { label: '注文アイテムイベントコンテンツ名称', default: '', value: 'acceptedOffers.itemOffered.event.creativeWorkName' },
+        { label: '注文アイテムイベントルームコード', default: '', value: 'acceptedOffers.itemOffered.event.locationBranchCode' },
+        { label: '注文アイテムイベントルーム名称', default: '', value: 'acceptedOffers.itemOffered.event.location' },
+        { label: '注文アイテムイベント施設コード', default: '', value: 'acceptedOffers.itemOffered.event.superEventLocationBranchCode' },
+        { label: '注文アイテムイベント施設名称', default: '', value: 'acceptedOffers.itemOffered.event.superEventLocation' },
         { label: '決済方法タイプ1', default: '', value: 'paymentMethodType.0' },
         { label: '決済ID1', default: '', value: 'paymentMethodId.0' },
         { label: '決済方法タイプ2', default: '', value: 'paymentMethodType.1' },
@@ -728,9 +740,12 @@ function order2report(params) {
                     name: '',
                     startDate: '',
                     endDate: '',
+                    locationBranchCode: '',
                     location: '',
                     superEventLocationBranchCode: '',
-                    superEventLocation: ''
+                    superEventLocation: '',
+                    creativeWorkIdentifier: '',
+                    creativeWorkName: ''
                 }
             };
 
@@ -771,12 +786,21 @@ function order2report(params) {
                                 .toISOString() : '',
                             endDate: (event !== undefined) ? moment(event.endDate)
                                 .toISOString() : '',
+                            locationBranchCode: (typeof event.location.branchCode === 'string')
+                                ? event.location.branchCode
+                                : '',
                             location: (typeof event.location.name?.ja === 'string')
                                 ? event.location.name.ja
                                 : '',
                             superEventLocationBranchCode: (event !== undefined) ? event.superEvent.location.branchCode : '',
                             superEventLocation: (typeof event.superEvent.location.name?.ja === 'string')
                                 ? event.superEvent.location.name.ja
+                                : '',
+                            creativeWorkIdentifier: (typeof event.superEvent.workPerformed?.identifier === 'string')
+                                ? event.superEvent.workPerformed.identifier
+                                : '',
+                            creativeWorkName: (typeof event.superEvent.workPerformed.name === 'string')
+                                ? event.superEvent.workPerformed.name
                                 : ''
                         }
                     };
@@ -834,6 +858,8 @@ function order2report(params) {
         price: `${order.price} ${order.priceCurrency}`,
         paymentMethodType: order.paymentMethods.map((method) => method.typeOf),
         paymentMethodId: order.paymentMethods.map((method) => method.paymentMethodId),
-        identifier: (Array.isArray(order.identifier)) ? JSON.stringify(order.identifier) : ''
+        identifier: (Array.isArray(order.identifier)) ? JSON.stringify(order.identifier) : '',
+        applicationId: order.application?.id,
+        applicationName: order.application?.name
     };
 }

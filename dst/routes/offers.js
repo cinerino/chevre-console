@@ -306,7 +306,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g, _h;
+    var _d, _e, _f, _g, _h, _j, _k;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -339,10 +339,16 @@ offersRouter.get('/getlist',
                 }
             },
             project: { id: { $eq: req.project.id } },
+            eligibleMembershipType: {
+                codeValue: {
+                    $eq: (typeof req.query.eligibleMembershipType === 'string' && req.query.eligibleMembershipType.length > 0)
+                        ? req.query.eligibleMembershipType
+                        : undefined
+                }
+            },
             eligibleSeatingType: {
                 codeValue: {
-                    $eq: (typeof req.query.eligibleSeatingType === 'string'
-                        && req.query.eligibleSeatingType.length > 0)
+                    $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)
                         ? req.query.eligibleSeatingType
                         : undefined
                 }
@@ -416,6 +422,15 @@ offersRouter.get('/getlist',
                     && req.query.category.codeValue !== '')
                     ? { $in: [req.query.category.codeValue] }
                     : undefined
+            },
+            addOn: {
+                itemOffered: {
+                    id: {
+                        $eq: (typeof ((_k = (_j = req.query.addOn) === null || _j === void 0 ? void 0 : _j.itemOffered) === null || _k === void 0 ? void 0 : _k.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                            ? req.query.addOn.itemOffered.id
+                            : undefined
+                    }
+                }
             }
         };
         let data;
@@ -444,7 +459,7 @@ offersRouter.get('/getlist',
                         : 0, categoryName: (typeof categoryCode === 'string')
                         ? (_j = (_h = offerCategoryTypes.find((c) => c.codeValue === categoryCode)) === null || _h === void 0 ? void 0 : _h.name) === null || _j === void 0 ? void 0 : _j.ja : '', addOnCount: (Array.isArray(t.addOn))
                         ? t.addOn.length
-                        : 0, priceStr });
+                        : 0, priceStr, validFromStr: (t.validFrom !== undefined || t.validThrough !== undefined) ? '有' : '' });
             })
         });
     }
@@ -729,8 +744,9 @@ function validate() {
     return [
         express_validator_1.body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
             .notEmpty()
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30))
             .matches(/^[0-9a-zA-Z\-_]+$/)
             .withMessage(() => '英数字で入力してください'),
         express_validator_1.body('name.ja')

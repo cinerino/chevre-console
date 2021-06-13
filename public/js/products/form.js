@@ -1,6 +1,7 @@
 
 $(function () {
     var productId = $('input[name="id"]').val();
+    var productType = $('select[name="typeOf"]').val();
 
     $('.btn-ok').on('click', function () {
         $(this).addClass('disabled')
@@ -18,7 +19,7 @@ $(function () {
                 type: 'DELETE'
             }).done(function () {
                 alert('削除しました');
-                location.href = '/projects/' + PROJECT_ID + '/products';
+                location.href = '/projects/' + PROJECT_ID + '/products?typeOf=' + productType;
             }).fail(function (jqxhr, textStatus, error) {
                 var message = '削除できませんでした';
                 if (jqxhr.responseJSON != undefined && jqxhr.responseJSON.error != undefined) {

@@ -128,6 +128,13 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         else {
             forms.eligibleSeatingType = undefined;
         }
+        // 適用メンバーシップ区分を保管
+        if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+            forms.eligibleMembershipType = JSON.parse(req.body.eligibleMembershipType);
+        }
+        else {
+            forms.eligibleMembershipType = undefined;
+        }
         // 適用サブ予約を保管
         if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
             forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
@@ -162,7 +169,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
 ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w;
     let message = '';
     let errors = {};
     const offerService = new chevre.service.Offer({
@@ -293,6 +300,13 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             else {
                 forms.eligibleSeatingType = undefined;
             }
+            // 適用メンバーシップ区分を保管
+            if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+                forms.eligibleMembershipType = JSON.parse(req.body.eligibleMembershipType);
+            }
+            else {
+                forms.eligibleMembershipType = undefined;
+            }
             // 適用サブ予約を保管
             if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
                 forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
@@ -361,9 +375,23 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             else {
                 forms.eligibleSeatingType = undefined;
             }
+            // 適用メンバーシップ区分を検索
+            if (Array.isArray(ticketType.eligibleMembershipType)
+                && typeof ((_t = ticketType.eligibleMembershipType[0]) === null || _t === void 0 ? void 0 : _t.codeValue) === 'string') {
+                const searcheEligibleMembershipTypesResult = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
+                    codeValue: { $eq: (_u = ticketType.eligibleMembershipType[0]) === null || _u === void 0 ? void 0 : _u.codeValue }
+                });
+                forms.eligibleMembershipType = searcheEligibleMembershipTypesResult.data[0];
+            }
+            else {
+                forms.eligibleMembershipType = undefined;
+            }
             // 適用サブ予約を検索
             if (Array.isArray(ticketType.eligibleSubReservation)
-                && typeof ((_u = (_t = ticketType.eligibleSubReservation[0]) === null || _t === void 0 ? void 0 : _t.typeOfGood) === null || _u === void 0 ? void 0 : _u.seatingType) === 'string') {
+                && typeof ((_w = (_v = ticketType.eligibleSubReservation[0]) === null || _v === void 0 ? void 0 : _v.typeOfGood) === null || _w === void 0 ? void 0 : _w.seatingType) === 'string') {
                 const searcheEligibleSubReservationSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -650,6 +678,28 @@ function createFromBody(req, isNew) {
                     inCodeSet: seatingType.inCodeSet
                 }];
         }
+        // 適用メンバーシップ区分があれば設定
+        let eligibleMembershipTypes;
+        if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+            const selectedMembershipType = JSON.parse(req.body.eligibleMembershipType);
+            const searchMembershipTypeResult = yield categoryCodeService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                codeValue: { $eq: selectedMembershipType.codeValue },
+                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } }
+            });
+            const membershipType = searchMembershipTypeResult.data.shift();
+            if (membershipType === undefined) {
+                throw new Error(`Membership Type ${selectedMembershipType.codeValue} Not Found`);
+            }
+            eligibleMembershipTypes = [{
+                    project: membershipType.project,
+                    typeOf: membershipType.typeOf,
+                    id: membershipType.id,
+                    codeValue: membershipType.codeValue,
+                    inCodeSet: membershipType.inCodeSet
+                }];
+        }
         // 適用口座があれば設定
         let eligibleMonetaryAmount;
         // if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
@@ -714,7 +764,7 @@ function createFromBody(req, isNew) {
         if (typeof req.body.color === 'string' && req.body.color.length > 0) {
             color = req.body.color;
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
                 ? {
@@ -756,6 +806,10 @@ function createFromBody(req, isNew) {
             ? {
                 eligibleSeatingType: eligibleSeatingTypes
             }
+            : undefined), (Array.isArray(eligibleMembershipTypes))
+            ? {
+                eligibleMembershipType: eligibleMembershipTypes
+            }
             : undefined), (eligibleMonetaryAmount !== undefined)
             ? {
                 eligibleMonetaryAmount: eligibleMonetaryAmount
@@ -777,7 +831,7 @@ function createFromBody(req, isNew) {
             //     $unset: { eligibleCustomerType: 1 }
             // },
             ? {
-                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof color !== 'string') ? { color: 1 } : undefined), (offerCategory === undefined) ? { category: 1 } : undefined), (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined), (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined), (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof color !== 'string') ? { color: 1 } : undefined), (offerCategory === undefined) ? { category: 1 } : undefined), (eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined), (eligibleMembershipTypes === undefined) ? { eligibleMembershipType: 1 } : undefined), (eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined), (eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
@@ -792,8 +846,9 @@ function validateFormAdd() {
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             // .isAlphanumeric()
             .matches(/^[0-9a-zA-Z\-_]+$/)
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30)),
         // 名称
         express_validator_1.body('name.ja', Message.Common.required.replace('$fieldName$', '名称'))
             .notEmpty(),

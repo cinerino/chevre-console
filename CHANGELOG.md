@@ -18,6 +18,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.27.0 - 2021-06-13
+
+### Added
+
+- 区分にメンバーシップタイプを追加
+- オファー編集に適用メンバーシップ区分を追加
+
+### Changed
+
+- 高度な設定を必要最低限に表示
+- コード最大文字数を調整
+- オファー検索条件拡張
+
 ## v2.26.1 - 2021-06-03
 
 ### Changed

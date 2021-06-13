@@ -10,7 +10,7 @@
 <div class="form-row">
     <div class="form-group bmd-form-group col-6">
         <label class="bmd-label-floating">コード</label>
-        <input class="form-control" name="hasPOS[<%= key %>][id]" id="hasPOS[<%= key %>][id]" maxlength=64
+        <input class="form-control" name="hasPOS[<%= key %>][id]" id="hasPOS[<%= key %>][id]" maxlength=12
             value="<%= place.id %>">
         <% if (errors && errors[`hasPOS[${key}].id`]) { %>
         <span class="bmd-help text-danger d-block">

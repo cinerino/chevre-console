@@ -14,7 +14,6 @@ import * as Message from '../../message';
 const debug = createDebug('chevre-backend:routes');
 
 const NUM_ADDITIONAL_PROPERTY = 5;
-const NAME_MAX_LENGTH_CODE: number = 30;
 const NAME_MAX_LENGTH_NAME_JA: number = 64;
 
 const accountTitleCategoryRouter = Router();
@@ -295,8 +294,9 @@ function validate() {
         body('codeValue')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: 12 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 12))
             .matches(/^[0-9a-zA-Z]+$/)
             .withMessage(() => '英数字で入力してください'),
 

@@ -6,7 +6,7 @@ import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
 import { body, validationResult } from 'express-validator';
-import { NO_CONTENT } from 'http-status';
+import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 
 import * as Message from '../message';
@@ -162,6 +162,11 @@ productsRouter.get(
                                 : undefined
                         }
                     }
+                },
+                ...{
+                    name: {
+                        $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                    }
                 }
             };
             const { data } = await productService.search(searchConditions);
@@ -229,9 +234,17 @@ productsRouter.all<ParamsDictionary>(
                     }
                 }
             } else if (req.method === 'DELETE') {
-                await productService.deleteById({ id: req.params.id });
-                res.status(NO_CONTENT)
-                    .end();
+                try {
+                    // validation
+                    await preDelete(req, product);
+
+                    await productService.deleteById({ id: req.params.id });
+                    res.status(NO_CONTENT)
+                        .end();
+                } catch (error) {
+                    res.status(BAD_REQUEST)
+                        .json({ error: { message: error.message } });
+                }
 
                 return;
             }
@@ -280,6 +293,24 @@ productsRouter.all<ParamsDictionary>(
         }
     }
 );
+
+async function preDelete(req: Request, product: chevre.factory.product.IProduct) {
+    // validation
+    const offerService = new chevre.service.Offer({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+
+    const searchOffersResult = await offerService.search({
+        limit: 1,
+        project: { id: { $eq: req.project.id } },
+        addOn: { itemOffered: { id: { $eq: product.id } } }
+    });
+    if (searchOffersResult.data.length > 0) {
+        throw new Error('関連するオファーが存在します');
+    }
+}
 
 productsRouter.get(
     '',
@@ -407,7 +438,14 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+
+        body('name.en')
+            .optional()
+            // tslint:disable-next-line:no-magic-numbers
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLength('英語名称', 30))
     ];
 }
 

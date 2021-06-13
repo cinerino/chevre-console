@@ -162,11 +162,9 @@ transactionsRouter.all('/reserve/start',
                     .toDate();
                 const object = {
                     acceptedOffer: acceptedOffer,
-                    event: {
-                        id: event.id
-                    },
+                    reservationFor: { id: event.id },
                     broker: {
-                        typeOf: 'Person',
+                        typeOf: chevre.factory.personType.Person,
                         id: req.user.profile.sub,
                         name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                     }

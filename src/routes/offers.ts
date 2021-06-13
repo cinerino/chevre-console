@@ -402,10 +402,16 @@ offersRouter.get(
                     }
                 },
                 project: { id: { $eq: req.project.id } },
+                eligibleMembershipType: {
+                    codeValue: {
+                        $eq: (typeof req.query.eligibleMembershipType === 'string' && req.query.eligibleMembershipType.length > 0)
+                            ? req.query.eligibleMembershipType
+                            : undefined
+                    }
+                },
                 eligibleSeatingType: {
                     codeValue: {
-                        $eq: (typeof req.query.eligibleSeatingType === 'string'
-                            && req.query.eligibleSeatingType.length > 0)
+                        $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)
                             ? req.query.eligibleSeatingType
                             : undefined
                     }
@@ -480,6 +486,15 @@ offersRouter.get(
                         && req.query.category.codeValue !== '')
                         ? { $in: [req.query.category.codeValue] }
                         : undefined
+                },
+                addOn: {
+                    itemOffered: {
+                        id: {
+                            $eq: (typeof req.query.addOn?.itemOffered?.id === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                                ? req.query.addOn.itemOffered.id
+                                : undefined
+                        }
+                    }
                 }
             };
 
@@ -520,7 +535,8 @@ offersRouter.get(
                         addOnCount: (Array.isArray(t.addOn))
                             ? t.addOn.length
                             : 0,
-                        priceStr
+                        priceStr,
+                        validFromStr: (t.validFrom !== undefined || t.validThrough !== undefined) ? '有' : ''
                     };
                 })
             });
@@ -857,8 +873,9 @@ function validate() {
     return [
         body('identifier', Message.Common.required.replace('$fieldName$', 'コード'))
             .notEmpty()
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE))
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30))
             .matches(/^[0-9a-zA-Z\-_]+$/)
             .withMessage(() => '英数字で入力してください'),
 

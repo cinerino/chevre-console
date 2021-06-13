@@ -11,7 +11,7 @@
     <div class="form-group bmd-form-group col-4">
         <label class="bmd-label-floating">コード</label>
         <input class="form-control" name="hasEntranceGate[<%= key %>][identifier]"
-            id="hasEntranceGate[<%= key %>][identifier]" maxlength=64 value="<%= place.identifier %>">
+            id="hasEntranceGate[<%= key %>][identifier]" maxlength=12 value="<%= place.identifier %>">
         <% if (errors && errors[`hasEntranceGate[${key}].identifier`]) { %>
         <span class="bmd-help text-danger d-block">
             <%- errors[`hasEntranceGate[${key}].identifier`].msg %>

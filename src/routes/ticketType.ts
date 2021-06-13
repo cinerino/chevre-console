@@ -141,6 +141,13 @@ ticketTypeMasterRouter.all<any>(
                 forms.eligibleSeatingType = undefined;
             }
 
+            // 適用メンバーシップ区分を保管
+            if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+                forms.eligibleMembershipType = JSON.parse(req.body.eligibleMembershipType);
+            } else {
+                forms.eligibleMembershipType = undefined;
+            }
+
             // 適用サブ予約を保管
             if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
                 forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
@@ -336,6 +343,13 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                     forms.eligibleSeatingType = undefined;
                 }
 
+                // 適用メンバーシップ区分を保管
+                if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+                    forms.eligibleMembershipType = JSON.parse(req.body.eligibleMembershipType);
+                } else {
+                    forms.eligibleMembershipType = undefined;
+                }
+
                 // 適用サブ予約を保管
                 if (typeof req.body.eligibleSubReservation === 'string' && req.body.eligibleSubReservation.length > 0) {
                     forms.eligibleSubReservation = JSON.parse(req.body.eligibleSubReservation);
@@ -403,6 +417,20 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                     forms.eligibleSeatingType = searcheEligibleSeatingTypesResult.data[0];
                 } else {
                     forms.eligibleSeatingType = undefined;
+                }
+
+                // 適用メンバーシップ区分を検索
+                if (Array.isArray(ticketType.eligibleMembershipType)
+                    && typeof ticketType.eligibleMembershipType[0]?.codeValue === 'string') {
+                    const searcheEligibleMembershipTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
+                        codeValue: { $eq: ticketType.eligibleMembershipType[0]?.codeValue }
+                    });
+                    forms.eligibleMembershipType = searcheEligibleMembershipTypesResult.data[0];
+                } else {
+                    forms.eligibleMembershipType = undefined;
                 }
 
                 // 適用サブ予約を検索
@@ -730,6 +758,31 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         }];
     }
 
+    // 適用メンバーシップ区分があれば設定
+    let eligibleMembershipTypes: chevre.factory.offer.IEligibleCategoryCode[] | undefined;
+    if (typeof req.body.eligibleMembershipType === 'string' && req.body.eligibleMembershipType.length > 0) {
+        const selectedMembershipType = JSON.parse(req.body.eligibleMembershipType);
+
+        const searchMembershipTypeResult = await categoryCodeService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            codeValue: { $eq: selectedMembershipType.codeValue },
+            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } }
+        });
+        const membershipType = searchMembershipTypeResult.data.shift();
+        if (membershipType === undefined) {
+            throw new Error(`Membership Type ${selectedMembershipType.codeValue} Not Found`);
+        }
+
+        eligibleMembershipTypes = [{
+            project: membershipType.project,
+            typeOf: membershipType.typeOf,
+            id: membershipType.id,
+            codeValue: membershipType.codeValue,
+            inCodeSet: membershipType.inCodeSet
+        }];
+    }
+
     // 適用口座があれば設定
     let eligibleMonetaryAmount: chevre.factory.offer.IEligibleMonetaryAmount[] | undefined;
     // if (Array.isArray(req.body.eligibleMonetaryAmount) && req.body.eligibleMonetaryAmount.length > 0
@@ -878,6 +931,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                 eligibleSeatingType: eligibleSeatingTypes
             }
             : undefined,
+        ...(Array.isArray(eligibleMembershipTypes))
+            ? {
+                eligibleMembershipType: eligibleMembershipTypes
+            }
+            : undefined,
         ...(eligibleMonetaryAmount !== undefined)
             ? {
                 eligibleMonetaryAmount: eligibleMonetaryAmount
@@ -907,6 +965,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     ...(typeof color !== 'string') ? { color: 1 } : undefined,
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(eligibleSeatingTypes === undefined) ? { eligibleSeatingType: 1 } : undefined,
+                    ...(eligibleMembershipTypes === undefined) ? { eligibleMembershipType: 1 } : undefined,
                     ...(eligibleMonetaryAmount === undefined) ? { eligibleMonetaryAmount: 1 } : undefined,
                     ...(eligibleSubReservation === undefined) ? { eligibleSubReservation: 1 } : undefined,
                     ...(validFrom === undefined) ? { validFrom: 1 } : undefined,
@@ -927,8 +986,9 @@ function validateFormAdd() {
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             // .isAlphanumeric()
             .matches(/^[0-9a-zA-Z\-_]+$/)
-            .isLength({ max: NAME_MAX_LENGTH_CODE })
-            .withMessage(Message.Common.getMaxLengthHalfByte('コード', NAME_MAX_LENGTH_CODE)),
+            .isLength({ max: 30 })
+            // tslint:disable-next-line:no-magic-numbers
+            .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30)),
 
         // 名称
         body('name.ja', Message.Common.required.replace('$fieldName$', '名称'))
