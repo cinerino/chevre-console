@@ -739,11 +739,32 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.InStock;
 
     const referenceQuantityValue: number = Number(req.body.priceSpecification.referenceQuantity.value);
-    const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
+    const referenceQuantityUnitCode = <chevre.factory.unitCode>req.body.priceSpecification.referenceQuantity.unitCode;
+    const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
         value: referenceQuantityValue,
-        unitCode: req.body.priceSpecification.referenceQuantity.unitCode
+        unitCode: referenceQuantityUnitCode
     };
+    // 最大1年まで
+    const MAX_REFERENCE_QUANTITY_VALUE_IN_SECONDS = 31536000;
+    let referenceQuantityValueInSeconds = referenceQuantityValue;
+    switch (referenceQuantityUnitCode) {
+        case chevre.factory.unitCode.Ann:
+            // tslint:disable-next-line:no-magic-numbers
+            referenceQuantityValueInSeconds = referenceQuantityValue * 31536000;
+            break;
+        case chevre.factory.unitCode.Day:
+            // tslint:disable-next-line:no-magic-numbers
+            referenceQuantityValueInSeconds = referenceQuantityValue * 86400;
+            break;
+        case chevre.factory.unitCode.Sec:
+            break;
+        default:
+            throw new Error(`${referenceQuantity.unitCode} not implemented`);
+    }
+    if (referenceQuantityValueInSeconds > MAX_REFERENCE_QUANTITY_VALUE_IN_SECONDS) {
+        throw new Error('単価単位期間は最大で1年です');
+    }
 
     const eligibleQuantityMinValue: number | undefined = (req.body.priceSpecification !== undefined
         && req.body.priceSpecification.eligibleQuantity !== undefined

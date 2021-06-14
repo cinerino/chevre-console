@@ -179,7 +179,7 @@
 
             <%
             const unitCodes = [
-                {codeValue: 'C62', name: '個'},
+                // {codeValue: 'C62', name: '個'},
                 {codeValue: 'ANN', name: '年'},
                 {codeValue: 'DAY', name: '日'},
                 {codeValue: 'SEC', name: '秒'},
@@ -198,6 +198,7 @@
             </select>
         </div>
         <span class="bmd-help">半角10文字以内でご入力ください</span>
+        <span class="bmd-help">単価単位期間は最大で1年です</span>
         <% if (errors && errors['priceSpecification.price']) { %>
         <span class="bmd-help text-danger d-block">
             <%- errors['priceSpecification.price'].msg %>
