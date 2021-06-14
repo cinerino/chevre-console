@@ -1,5 +1,10 @@
+
+<%
+const productType = productTypes.find((p) => p.codeValue === forms.itemOffered.typeOf);
+const productTypeName = (productType !== undefined) ? productType.name : forms.itemOffered.typeOf;
+%>
 <%- contentFor('title') %>
-オファー編集
+<%= productTypeName %>オファー編集
 <%- contentFor('displayId') %>
 OF-02
 <%- contentFor('styles') %>

@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - アイテムごとのオファー編集テンプレートを共通化
+- オファー編集フォーム最適化
 
 ### Deprecated
 

@@ -242,8 +242,13 @@ offersRouter.all<ParamsDictionary>(
                 }
             }
 
+            const accountsReceivable = (typeof offer.priceSpecification?.accounting?.accountsReceivable === 'number')
+                ? String(offer.priceSpecification.accounting.accountsReceivable)
+                : '';
+
             const forms = {
                 ...offer,
+                accountsReceivable,
                 ...req.body
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -783,7 +788,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const accounting = {
         typeOf: <'Accounting'>'Accounting',
         operatingRevenue: <any>undefined,
-        accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
+        accountsReceivable: Number(req.body.accountsReceivable) * 1
     };
     if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
         const selectedAccountTitle = JSON.parse(req.body.accounting);
@@ -836,6 +841,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     let itemOffered: chevre.factory.service.IService;
     const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
+        case ProductType.PaymentCard:
         case ProductType.Product:
             itemOffered = {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -992,6 +998,15 @@ function validate() {
             .isNumeric()
             .isLength({ max: CHAGE_MAX_LENGTH })
             .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
+
+        body('accountsReceivable')
+            .notEmpty()
+            .withMessage(() => Message.Common.required.replace('$fieldName$', '売上金額'))
+            .isNumeric()
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(() => Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
             .custom((value) => Number(value) >= 0)
             .withMessage(() => '0もしくは正の値を入力してください')
     ];

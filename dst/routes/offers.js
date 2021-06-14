@@ -157,7 +157,7 @@ offersRouter.all('/add', ...validate(),
 offersRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d, _e, _f, _g, _h, _j, _k;
+    var _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     let message = '';
     let errors = {};
     const itemOfferedTypeOf = (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf;
@@ -205,7 +205,10 @@ offersRouter.all('/:id/update', ...validate(),
                 }
             }
         }
-        const forms = Object.assign(Object.assign({}, offer), req.body);
+        const accountsReceivable = (typeof ((_f = (_e = offer.priceSpecification) === null || _e === void 0 ? void 0 : _e.accounting) === null || _f === void 0 ? void 0 : _f.accountsReceivable) === 'number')
+            ? String(offer.priceSpecification.accounting.accountsReceivable)
+            : '';
+        const forms = Object.assign(Object.assign(Object.assign({}, offer), { accountsReceivable }), req.body);
         if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
             // tslint:disable-next-line:prefer-array-literal
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -228,7 +231,7 @@ offersRouter.all('/:id/update', ...validate(),
                 forms.accounting = undefined;
             }
             // 利用可能アプリケーションを保管
-            const availableAtOrFromParams = (_e = req.body.availableAtOrFrom) === null || _e === void 0 ? void 0 : _e.id;
+            const availableAtOrFromParams = (_g = req.body.availableAtOrFrom) === null || _g === void 0 ? void 0 : _g.id;
             if (Array.isArray(availableAtOrFromParams)) {
                 forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
                     return { id: applicationId };
@@ -240,7 +243,7 @@ offersRouter.all('/:id/update', ...validate(),
         }
         else {
             // カテゴリーを検索
-            if (typeof ((_f = offer.category) === null || _f === void 0 ? void 0 : _f.codeValue) === 'string') {
+            if (typeof ((_h = offer.category) === null || _h === void 0 ? void 0 : _h.codeValue) === 'string') {
                 const searchOfferCategoriesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -250,11 +253,11 @@ offersRouter.all('/:id/update', ...validate(),
                 forms.category = searchOfferCategoriesResult.data[0];
             }
             // 細目を検索
-            if (typeof ((_j = (_h = (_g = offer.priceSpecification) === null || _g === void 0 ? void 0 : _g.accounting) === null || _h === void 0 ? void 0 : _h.operatingRevenue) === null || _j === void 0 ? void 0 : _j.codeValue) === 'string') {
+            if (typeof ((_l = (_k = (_j = offer.priceSpecification) === null || _j === void 0 ? void 0 : _j.accounting) === null || _k === void 0 ? void 0 : _k.operatingRevenue) === null || _l === void 0 ? void 0 : _l.codeValue) === 'string') {
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
                     project: { ids: [req.project.id] },
-                    codeValue: { $eq: (_k = offer.priceSpecification.accounting.operatingRevenue) === null || _k === void 0 ? void 0 : _k.codeValue }
+                    codeValue: { $eq: (_m = offer.priceSpecification.accounting.operatingRevenue) === null || _m === void 0 ? void 0 : _m.codeValue }
                 });
                 forms.accounting = searchAccountTitlesResult.data[0];
             }
@@ -376,7 +379,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _l, _m, _o, _p, _q, _r, _s;
+    var _o, _p, _q, _r, _s, _t, _u;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -425,8 +428,8 @@ offersRouter.get('/getlist',
             },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf) === 'string' && ((_m = req.query.itemOffered) === null || _m === void 0 ? void 0 : _m.typeOf.length) > 0)
-                        ? (_o = req.query.itemOffered) === null || _o === void 0 ? void 0 : _o.typeOf : undefined
+                    $eq: (typeof ((_o = req.query.itemOffered) === null || _o === void 0 ? void 0 : _o.typeOf) === 'string' && ((_p = req.query.itemOffered) === null || _p === void 0 ? void 0 : _p.typeOf.length) > 0)
+                        ? (_q = req.query.itemOffered) === null || _q === void 0 ? void 0 : _q.typeOf : undefined
                 }
             },
             identifier: {
@@ -441,7 +444,7 @@ offersRouter.get('/getlist',
                 accounting: {
                     operatingRevenue: {
                         codeValue: {
-                            $eq: (typeof ((_p = req.query.accountTitle) === null || _p === void 0 ? void 0 : _p.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
+                            $eq: (typeof ((_r = req.query.accountTitle) === null || _r === void 0 ? void 0 : _r.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
                                 ? String(req.query.accountTitle.codeValue)
                                 : undefined
                         }
@@ -458,7 +461,7 @@ offersRouter.get('/getlist',
                         typeOf: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'
                                 && req.query.appliesToMovieTicket.length > 0)
-                                ? (_q = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _q === void 0 ? void 0 : _q.typeOf
+                                ? (_s = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _s === void 0 ? void 0 : _s.typeOf
                                 : undefined
                         }
                     }
@@ -496,7 +499,7 @@ offersRouter.get('/getlist',
             addOn: {
                 itemOffered: {
                     id: {
-                        $eq: (typeof ((_s = (_r = req.query.addOn) === null || _r === void 0 ? void 0 : _r.itemOffered) === null || _s === void 0 ? void 0 : _s.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                        $eq: (typeof ((_u = (_t = req.query.addOn) === null || _t === void 0 ? void 0 : _t.itemOffered) === null || _u === void 0 ? void 0 : _u.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
                             ? req.query.addOn.itemOffered.id
                             : undefined
                     }
@@ -686,7 +689,7 @@ function createFromBody(req, isNew) {
         const accounting = {
             typeOf: 'Accounting',
             operatingRevenue: undefined,
-            accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
+            accountsReceivable: Number(req.body.accountsReceivable) * 1
         };
         if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
             const selectedAccountTitle = JSON.parse(req.body.accounting);
@@ -735,6 +738,7 @@ function createFromBody(req, isNew) {
         let itemOffered;
         const itemOfferedTypeOf = (_a = req.body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
         switch (itemOfferedTypeOf) {
+            case productType_1.ProductType.PaymentCard:
             case productType_1.ProductType.Product:
                 itemOffered = {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
@@ -854,6 +858,14 @@ function validate() {
             .isNumeric()
             .isLength({ max: CHAGE_MAX_LENGTH })
             .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
+        express_validator_1.body('accountsReceivable')
+            .notEmpty()
+            .withMessage(() => Message.Common.required.replace('$fieldName$', '売上金額'))
+            .isNumeric()
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(() => Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
             .custom((value) => Number(value) >= 0)
             .withMessage(() => '0もしくは正の値を入力してください')
     ];
