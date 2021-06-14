@@ -98,6 +98,23 @@ offersRouter.all('/add', ...validate(),
             return {};
         }));
     }
+    // カテゴリーを検索
+    if (req.method === 'POST') {
+        // カテゴリーを保管
+        if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+            forms.category = JSON.parse(req.body.category);
+        }
+        else {
+            forms.category = undefined;
+        }
+        // 細目を保管
+        if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+            forms.accounting = JSON.parse(req.body.accounting);
+        }
+        else {
+            forms.accounting = undefined;
+        }
+    }
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
@@ -130,7 +147,7 @@ offersRouter.all('/add', ...validate(),
 offersRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c;
+    var _b, _c, _d, _e, _f, _g, _h;
     let message = '';
     let errors = {};
     const itemOfferedTypeOf = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf;
@@ -147,9 +164,6 @@ offersRouter.all('/:id/update', ...validate(),
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
-    });
-    const searchAccountTitlesResult = yield accountTitleService.search({
-        project: { ids: [req.project.id] }
     });
     const categoryCodeService = new chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
@@ -188,6 +202,43 @@ offersRouter.all('/:id/update', ...validate(),
                 return {};
             }));
         }
+        if (req.method === 'POST') {
+            // カテゴリーを保管
+            if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+                forms.category = JSON.parse(req.body.category);
+            }
+            else {
+                forms.category = undefined;
+            }
+            // 細目を保管
+            if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+                forms.accounting = JSON.parse(req.body.accounting);
+            }
+            else {
+                forms.accounting = undefined;
+            }
+        }
+        else {
+            // カテゴリーを検索
+            if (typeof ((_d = offer.category) === null || _d === void 0 ? void 0 : _d.codeValue) === 'string') {
+                const searchOfferCategoriesResult = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                    codeValue: { $eq: offer.category.codeValue }
+                });
+                forms.category = searchOfferCategoriesResult.data[0];
+            }
+            // 細目を検索
+            if (typeof ((_g = (_f = (_e = offer.priceSpecification) === null || _e === void 0 ? void 0 : _e.accounting) === null || _f === void 0 ? void 0 : _f.operatingRevenue) === null || _g === void 0 ? void 0 : _g.codeValue) === 'string') {
+                const searchAccountTitlesResult = yield accountTitleService.search({
+                    limit: 1,
+                    project: { ids: [req.project.id] },
+                    codeValue: { $eq: (_h = offer.priceSpecification.accounting.operatingRevenue) === null || _h === void 0 ? void 0 : _h.codeValue }
+                });
+                forms.accounting = searchAccountTitlesResult.data[0];
+            }
+        }
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -199,7 +250,6 @@ offersRouter.all('/:id/update', ...validate(),
             errors: errors,
             forms: forms,
             ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            accountTitles: searchAccountTitlesResult.data,
             productTypes: productType_1.productTypes,
             applications: applications.map((d) => d.member)
                 .sort((a, b) => {
@@ -306,7 +356,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _d, _e, _f, _g, _h, _j, _k;
+    var _j, _k, _l, _m, _o, _p, _q;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -355,8 +405,8 @@ offersRouter.get('/getlist',
             },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_d = req.query.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === 'string' && ((_e = req.query.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf.length) > 0)
-                        ? (_f = req.query.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf : undefined
+                    $eq: (typeof ((_j = req.query.itemOffered) === null || _j === void 0 ? void 0 : _j.typeOf) === 'string' && ((_k = req.query.itemOffered) === null || _k === void 0 ? void 0 : _k.typeOf.length) > 0)
+                        ? (_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf : undefined
                 }
             },
             identifier: {
@@ -371,7 +421,7 @@ offersRouter.get('/getlist',
                 accounting: {
                     operatingRevenue: {
                         codeValue: {
-                            $eq: (typeof ((_g = req.query.accountTitle) === null || _g === void 0 ? void 0 : _g.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
+                            $eq: (typeof ((_m = req.query.accountTitle) === null || _m === void 0 ? void 0 : _m.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
                                 ? String(req.query.accountTitle.codeValue)
                                 : undefined
                         }
@@ -388,7 +438,7 @@ offersRouter.get('/getlist',
                         typeOf: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'
                                 && req.query.appliesToMovieTicket.length > 0)
-                                ? (_h = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _h === void 0 ? void 0 : _h.typeOf
+                                ? (_o = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _o === void 0 ? void 0 : _o.typeOf
                                 : undefined
                         }
                     }
@@ -426,7 +476,7 @@ offersRouter.get('/getlist',
             addOn: {
                 itemOffered: {
                     id: {
-                        $eq: (typeof ((_k = (_j = req.query.addOn) === null || _j === void 0 ? void 0 : _j.itemOffered) === null || _k === void 0 ? void 0 : _k.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                        $eq: (typeof ((_q = (_p = req.query.addOn) === null || _p === void 0 ? void 0 : _p.itemOffered) === null || _q === void 0 ? void 0 : _q.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
                             ? req.query.addOn.itemOffered.id
                             : undefined
                     }
@@ -549,7 +599,7 @@ function preDelete(req, offer) {
 }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
@@ -557,12 +607,13 @@ function createFromBody(req, isNew) {
             project: { id: req.project.id }
         });
         let offerCategory;
-        if (typeof ((_a = req.body.category) === null || _a === void 0 ? void 0 : _a.codeValue) === 'string' && ((_b = req.body.category) === null || _b === void 0 ? void 0 : _b.codeValue.length) > 0) {
+        if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+            const selectedCategory = JSON.parse(req.body.category);
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-                codeValue: { $eq: (_c = req.body.category) === null || _c === void 0 ? void 0 : _c.codeValue }
+                codeValue: { $eq: selectedCategory.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
                 throw new Error('オファーカテゴリーが見つかりません');
@@ -617,11 +668,12 @@ function createFromBody(req, isNew) {
             operatingRevenue: undefined,
             accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
         };
-        if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
+        if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+            const selectedAccountTitle = JSON.parse(req.body.accounting);
             accounting.operatingRevenue = {
                 typeOf: 'AccountTitle',
-                codeValue: req.body.accountTitle,
-                identifier: req.body.accountTitle,
+                codeValue: selectedAccountTitle.codeValue,
+                identifier: selectedAccountTitle.codeValue,
                 name: ''
             };
         }
@@ -661,7 +713,7 @@ function createFromBody(req, isNew) {
             eligibleTransactionVolume: eligibleTransactionVolume
         };
         let itemOffered;
-        const itemOfferedTypeOf = (_d = req.body.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf;
+        const itemOfferedTypeOf = (_a = req.body.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
         switch (itemOfferedTypeOf) {
             case productType_1.ProductType.Product:
                 itemOffered = {
@@ -680,7 +732,7 @@ function createFromBody(req, isNew) {
                 };
                 break;
             default:
-                throw new Error(`${(_e = req.body.itemOffered) === null || _e === void 0 ? void 0 : _e.typeOf} not implemented`);
+                throw new Error(`${(_b = req.body.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf} not implemented`);
         }
         let pointAward;
         if (typeof req.body.pointAwardStr === 'string' && req.body.pointAwardStr.length > 0) {
@@ -696,7 +748,7 @@ function createFromBody(req, isNew) {
         }
         // 利用可能なアプリケーション設定
         const availableAtOrFrom = [];
-        const availableAtOrFromParams = (_f = req.body.availableAtOrFrom) === null || _f === void 0 ? void 0 : _f.id;
+        const availableAtOrFromParams = (_c = req.body.availableAtOrFrom) === null || _c === void 0 ? void 0 : _c.id;
         if (Array.isArray(availableAtOrFromParams)) {
             availableAtOrFromParams.forEach((applicationId) => {
                 if (typeof applicationId === 'string' && applicationId.length > 0) {
@@ -707,7 +759,11 @@ function createFromBody(req, isNew) {
         else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
             availableAtOrFrom.push({ id: availableAtOrFromParams });
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, availableAtOrFrom: availableAtOrFrom, itemOffered: itemOffered, 
+        let color = 'rgb(51, 51, 51)';
+        if (typeof req.body.color === 'string' && req.body.color.length > 0) {
+            color = req.body.color;
+        }
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, availableAtOrFrom: availableAtOrFrom, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: priceSpec, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
@@ -717,7 +773,11 @@ function createFromBody(req, isNew) {
                         value: String(p.value)
                     };
                 })
-                : undefined }, (offerCategory !== undefined)
+                : undefined }, (typeof color === 'string')
+            ? {
+                color: color
+            }
+            : undefined), (offerCategory !== undefined)
             ? {
                 category: {
                     project: offerCategory.project,
@@ -735,7 +795,7 @@ function createFromBody(req, isNew) {
             }
             : undefined), (!isNew)
             ? {
-                $unset: Object.assign(Object.assign(Object.assign({}, (offerCategory === undefined) ? { category: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
+                $unset: Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof color !== 'string') ? { color: 1 } : undefined), (offerCategory === undefined) ? { category: 1 } : undefined), (validFrom === undefined) ? { validFrom: 1 } : undefined), (validThrough === undefined) ? { validThrough: 1 } : undefined)
             }
             : undefined);
     });
@@ -749,6 +809,9 @@ function validate() {
             .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30))
             .matches(/^[0-9a-zA-Z\-_]+$/)
             .withMessage(() => '英数字で入力してください'),
+        express_validator_1.body('itemOffered.typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'アイテム')),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

@@ -1,0 +1,332 @@
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="identifier" class="bmd-label-static">
+            コード<span class="text-danger">＊</span>
+        </label>
+        <% if (isNew) { %>
+        <input type="text" class="form-control" name="identifier" id="identifier" placeholder=""
+            maxlength=30 value="<%= forms.identifier %>">
+        <span class="bmd-help">半角30文字以内でご入力ください</span>
+        <% } else { %>
+        <label for="identifier" class="bmd-label-static">
+            コード<span class="text-danger">＊</span>
+        </label>
+        <input type="text" disabled class="form-control" value="<%= forms.identifier %>">
+        <input type="hidden" name="id" value="<%= forms.id %>">
+        <input type="hidden" name="identifier" value="<%= forms.identifier %>">
+        <% } %>
+        <% if (errors && errors.identifier) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors.identifier.msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="category" class="bmd-label-static">
+            カテゴリー
+        </label>
+        <select class="form-control" name="category" id="category" style="width: 100%;">
+            <% if (forms.category !== undefined) { %>
+            <option value="<%= JSON.stringify(forms.category) %>" selected="selected">
+                <%= forms.category.name.ja %></option>
+            <% } %>
+        </select>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="itemOffered[typeOf]" class="bmd-label-static">
+            アイテム<span class="text-danger">＊</span>
+        </label>
+        <%
+        const productType = productTypes.find((p) => p.codeValue === forms.itemOffered.typeOf);
+        const productTypeName = (productType !== undefined) ? productType.name : forms.itemOffered.typeOf;
+        %>
+        <input type="text" disabled class="form-control" placeholder=""
+            value="<%= productTypeName %>">
+        <input type="hidden" class="form-control" name="itemOffered[typeOf]" id="itemOffered[typeOf]"
+            value="<%= forms.itemOffered.typeOf %>">
+        <% if (errors && errors['itemOffered[typeOf]']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['itemOffered[typeOf'].msg %>
+        </span>
+        <% } %>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="name[ja]" class="bmd-label-static">
+            名称<span class="text-danger">＊</span>
+        </label>
+        <input type="text" class="form-control" name="name[ja]" id="name[ja]" placeholder=""
+            maxlength=64 value="<%=forms.name.ja %>">
+        <span class="bmd-help">全角64文字以内でご入力ください</span>
+        <% if (errors && errors['name.ja']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['name.ja'].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="name[en]" class="bmd-label-static">
+            英語名称<span class="text-danger">＊</span>
+        </label>
+        <input type="text" class="form-control" name="name[en]" id="name[en]" placeholder=""
+            maxlength=64 value="<%=forms.name.en %>">
+        <span class="bmd-help">半角64文字以内でご入力ください</span>
+        <% if (errors && errors['name.en']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['name.en'].msg %>
+        </span>
+        <% } %>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="alternateName[ja]" class="bmd-label-static">
+            代替名称(管理名称)<span class="text-danger">＊</span>
+        </label>
+        <input type="text" class="form-control" name="alternateName[ja]" id="alternateName[ja]"
+            placeholder="" maxlength=64 value="<%= forms.alternateName.ja %>">
+        <span class="bmd-help">全角64文字以内でご入力ください</span>
+        <% if (errors && errors['alternateName.ja']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['alternateName.ja'].msg %>
+        </span>
+        <% } %>
+    </div>
+</div>
+
+<div class="form-row">
+    
+    <% if (forms.itemOffered.typeOf === 'EventService') { %>
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="price" class="bmd-label-static">
+            発生金額<span class="text-danger">＊</span>
+        </label>
+        <div class="input-group">
+            <input type="number" class="form-control" name="price" id="price" placeholder=""
+                maxlength=10 value="<%=forms.price %>">
+            <div class="input-group-append">
+                <span class="input-group-text">円 / 枚 ×</span>
+            </div>
+            <select class="form-control" name="seatReservationUnit">
+                <% for (let i = 1; i <= 10; i++) { %>
+                <option value="<%= i %>" <% if (forms.seatReservationUnit==i) { %> selected <% } %>>
+                    <%= i %>
+                </option>
+                <% } %>
+            </select>
+            <div class="input-group-append">
+                <span class="input-group-text">枚で販売</span>
+            </div>
+        </div>
+        <span class="bmd-help">半角10文字以内でご入力ください</span>
+
+        <% if (errors && errors.price) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors.price.msg %>
+        </span>
+        <% } %>
+        <% if (errors && errors.seatReservationUnit) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors.seatReservationUnit.msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-4">
+        <label for="accountsReceivable" class="bmd-label-static">
+            売上金額<span class="text-danger">＊</span>
+        </label>
+        <div class="input-group">
+            <input type="number" class="form-control" name="accountsReceivable" id="accountsReceivable"
+                placeholder="" maxlength=10 value="<%=forms.accountsReceivable %>">
+            <div class="input-group-append">
+                <span class="input-group-text">円 / 枚として計上</span>
+            </div>
+        </div>
+        <span class="bmd-help">半角10文字以内でご入力ください</span>
+        <% if (errors && errors.accountsReceivable) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors.accountsReceivable.msg %>
+        </span>
+        <% } %>
+    </div>
+    
+    <% } else { %>
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="priceSpecification[price]" class="bmd-label-static">
+            発生金額<span class="text-danger">＊</span>
+        </label>
+        <div class="input-group">
+            <input type="text" class="form-control" name="priceSpecification[price]"
+                id="priceSpecification[price]" placeholder="" maxlength=10 value="<%= (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.price !== undefined)
+                    ? String(forms.priceSpecification.price)
+                    : '' %>">
+
+            <div class="input-group-append">
+                <span class="input-group-text">円 /</span>
+            </div>
+
+            <input type="number" class="form-control"
+                name="priceSpecification[referenceQuantity][value]"
+                id="priceSpecification[referenceQuantity][value]" placeholder="" maxlength=10
+                value="<%= (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.referenceQuantity !== undefined) ? String(forms.priceSpecification.referenceQuantity.value) : '' %>">
+
+            <%
+            const unitCodes = [
+                {codeValue: 'C62', name: '個'},
+                {codeValue: 'ANN', name: '年'},
+                {codeValue: 'DAY', name: '日'},
+                {codeValue: 'SEC', name: '秒'},
+            ];
+            %>
+            <select class="form-control" name="priceSpecification[referenceQuantity][unitCode]">
+                <% unitCodes.forEach((unitCode) => { %>
+                <option value="<%= unitCode.codeValue %>"
+                    <% if (forms.priceSpecification !==undefined && forms.priceSpecification !== null &&
+                        forms.priceSpecification.referenceQuantity !== undefined &&
+                        String(forms.priceSpecification.referenceQuantity.unitCode) === unitCode.codeValue ) { %> selected <% } %>>
+                    <%= unitCode.name %>
+                </option>
+                <% }) %>
+                </option>
+            </select>
+        </div>
+        <span class="bmd-help">半角10文字以内でご入力ください</span>
+        <% if (errors && errors['priceSpecification.price']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['priceSpecification.price'].msg %>
+        </span>
+        <% } %>
+        <% if (errors && errors['priceSpecification.referenceQuantity.value']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['priceSpecification.referenceQuantity.value'].msg %>
+        </span>
+        <% } %>
+    </div>
+    <% } %>
+</div>
+
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="description[ja]" class="bmd-label-static">
+            補足説明
+        </label>
+        <input type="text" class="form-control" name="description[ja]" id="description[ja]"
+            placeholder="" maxlength=64 value="<%=forms.description.ja %>">
+        <span class="bmd-help">全角64文字以内でご入力ください</span>
+        <% if (errors && errors['description.ja']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['description.ja'].msg %>
+        </span>
+        <% } %>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-6">
+        <label for="description[en]" class="bmd-label-static">
+            補足説明英
+        </label>
+        <input type="text" class="form-control" name="description[en]" id="description[en]"
+            placeholder="" maxlength=64 value="<%=forms.description.en %>">
+        <span class="bmd-help">半角64文字以内でご入力ください</span>
+        <% if (errors && errors['description.en']) { %>
+        <span class="bmd-help text-danger d-block">
+            <%- errors['description.en'].msg %>
+        </span>
+        <% } %>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="color" class="bmd-label-static">
+            カラー
+        </label>
+        <div class="row pt-2 pb-2 px-3">
+            <input type="text" class="form-control cp-preventtouchkeyboardonshow" name="color"
+                id="color" value="<%= forms.color %>"
+                style="background: <%= forms.color %>; color: rgb(255, 255, 255);" title="">
+            <input type="hidden" name="hiddenColor" id="hiddenColor">
+        </div>
+    </div>
+
+    <div class="form-group bmd-form-group col-md-3">
+        <label for="accounting" class="bmd-label-static">
+            細目
+        </label>
+        <select class="form-control" name="accounting" id="accounting" style="width: 100%;">
+            <% if (forms.accounting !== undefined) { %>
+            <option value="<%= JSON.stringify(forms.accounting) %>" selected="selected">
+                <%= forms.accounting.codeValue %> <%= forms.accounting.name %></option>
+            <% } %>
+        </select>
+    </div>
+</div>
+
+<div class="form-row">
+    <div class="form-group bmd-form-group col-md-12">
+        <label for="availableAtOrFrom[][id]" class="bmd-label-static">
+            利用可能アプリケーション
+        </label>
+
+        <% applications.forEach((application) => { %>
+        <%
+        let checked = false;
+        if (Array.isArray(forms.availableAtOrFrom) && forms.availableAtOrFrom.some((a)=>a.id === application.id)) {
+            checked = true;
+        }
+        %>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                    <% } %> value="<%= application.id %>"
+                    name="availableAtOrFrom[id]"><%= application.name %>
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+        <% }) %>
+    </div>
+</div>
+
+<div class="form-row">
+    <% if (forms.itemOffered.typeOf === 'EventService') { %>
+    <div class="form-group bmd-form-group col-md-12">
+        <label for="availableAddOn" class="bmd-label-static">
+            アドオン
+            <a href="javascript:void(0);" data-toggle="tooltip"
+                title="<p class=&quot;text-left mb-0&quot;>プロダクト管理とオファーカタログ管理にて、アドオンとそのカタログを設定することで、オファーにアドオンを設定することができます。</p>"
+                style="pointer-events: auto;">
+                <span class="material-icons" style="font-size: 1.2em;">
+                    help
+                </span>
+            </a>
+        </label>
+
+        <% for (let addOn of addOns) { %>
+        <%
+        let checked = false;
+        if (Array.isArray(forms.addOn) && forms.addOn.some((a)=>a.itemOffered.id === addOn.id)) {
+            checked = true;
+        }
+        %>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                    <% } %> value="<%= addOn.id %>" name="addOn[itemOffered][id]"><%= addOn.name.ja %>
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+        <% } %>
+    </div>
+
+    <% } %>
+</div>

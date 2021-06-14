@@ -11,7 +11,7 @@ import * as moment from 'moment-timezone';
 
 import * as Message from '../message';
 
-import { ProductType } from '../factory/productType';
+import { ProductType, productTypes } from '../factory/productType';
 
 import { searchApplications, SMART_THEATER_CLIENT_NEW, SMART_THEATER_CLIENT_OLD } from './offers';
 
@@ -84,6 +84,7 @@ ticketTypeMasterRouter.all<any>(
             name: {},
             alternateName: {},
             description: {},
+            itemOffered: { typeOf: ProductType.EventService },
             priceSpecification: {
                 referenceQuantity: {
                     value: 1
@@ -171,6 +172,7 @@ ticketTypeMasterRouter.all<any>(
             errors: errors,
             forms: forms,
             addOns: searchAddOnsResult.data,
+            productTypes: productTypes,
             applications: applications.map((d) => d.member)
                 .sort((a, b) => {
                     if (String(a.name) < String(b.name)) {
@@ -465,6 +467,7 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 addOns: searchAddOnsResult.data,
+                productTypes: productTypes,
                 applications: applications.map((d) => d.member)
                     .sort((a, b) => {
                         if (String(a.name) < String(b.name)) {

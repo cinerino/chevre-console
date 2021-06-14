@@ -74,7 +74,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
             }
         }
     }
-    const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {}, description: {}, priceSpecification: {
+    const forms = Object.assign({ additionalProperty: [], name: {}, alternateName: {}, description: {}, itemOffered: { typeOf: productType_1.ProductType.EventService }, priceSpecification: {
             referenceQuantity: {
                 value: 1
             },
@@ -152,6 +152,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         errors: errors,
         forms: forms,
         addOns: searchAddOnsResult.data,
+        productTypes: productType_1.productTypes,
         applications: applications.map((d) => d.member)
             .sort((a, b) => {
             if (String(a.name) < String(b.name)) {
@@ -415,6 +416,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             errors: errors,
             forms: forms,
             addOns: searchAddOnsResult.data,
+            productTypes: productType_1.productTypes,
             applications: applications.map((d) => d.member)
                 .sort((a, b) => {
                 if (String(a.name) < String(b.name)) {
