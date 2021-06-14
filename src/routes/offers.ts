@@ -134,6 +134,16 @@ offersRouter.all<any>(
             } else {
                 forms.accounting = undefined;
             }
+
+            // 利用可能アプリケーションを保管
+            const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+            if (Array.isArray(availableAtOrFromParams)) {
+                forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                    return { id: applicationId };
+                });
+            } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                forms.availableAtOrFrom = { id: availableAtOrFromParams };
+            }
         }
 
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -256,6 +266,16 @@ offersRouter.all<ParamsDictionary>(
                     forms.accounting = JSON.parse(req.body.accounting);
                 } else {
                     forms.accounting = undefined;
+                }
+
+                // 利用可能アプリケーションを保管
+                const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+                if (Array.isArray(availableAtOrFromParams)) {
+                    forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                        return { id: applicationId };
+                    });
+                } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                    forms.availableAtOrFrom = { id: availableAtOrFromParams };
                 }
             } else {
                 // カテゴリーを検索

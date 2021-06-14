@@ -121,6 +121,32 @@ ticketTypeMasterRouter.all<any>(
                 forms.accounting = undefined;
             }
 
+            // 利用可能アプリケーションを保管
+            const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+            if (Array.isArray(availableAtOrFromParams)) {
+                forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                    return { id: applicationId };
+                });
+            } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                forms.availableAtOrFrom = { id: availableAtOrFromParams };
+            }
+
+            // アドオンを保管
+            let addOnItemOfferedIds: string[] = req.body.addOn?.itemOffered?.id;
+            if (typeof addOnItemOfferedIds === 'string') {
+                addOnItemOfferedIds = [addOnItemOfferedIds];
+            }
+            if (Array.isArray(addOnItemOfferedIds)) {
+                forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
+                    return {
+                        typeOf: chevre.factory.offerType.Offer,
+                        itemOffered: {
+                            id: addOnItemOfferedId
+                        }
+                    };
+                });
+            }
+
             // 適用決済カードを保管
             if (typeof req.body.appliesToMovieTicket === 'string' && req.body.appliesToMovieTicket.length > 0) {
                 forms.appliesToMovieTicket = JSON.parse(req.body.appliesToMovieTicket);
@@ -247,22 +273,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 throw new Error('ticketType.priceSpecification undefined');
             }
 
-            // let isBoxTicket = false;
-            // let isOnlineTicket = false;
-            // switch (ticketType.availability) {
-            //     case chevre.factory.itemAvailability.InStock:
-            //         isBoxTicket = true;
-            //         isOnlineTicket = true;
-            //         break;
-            //     case chevre.factory.itemAvailability.InStoreOnly:
-            //         isBoxTicket = true;
-            //         break;
-            //     case chevre.factory.itemAvailability.OnlineOnly:
-            //         isOnlineTicket = true;
-            //         break;
-            //     default:
-            // }
-
             let seatReservationUnit = 1;
             if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
                 seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
@@ -293,8 +303,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                         .format('YYYY/MM/DD')
                     : '',
                 ...req.body,
-                // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
-                // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
                 seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
                     ? seatReservationUnit
                     : req.body.seatReservationUnit,
@@ -322,6 +330,32 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                     forms.accounting = JSON.parse(req.body.accounting);
                 } else {
                     forms.accounting = undefined;
+                }
+
+                // 利用可能アプリケーションを保管
+                const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+                if (Array.isArray(availableAtOrFromParams)) {
+                    forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                        return { id: applicationId };
+                    });
+                } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                    forms.availableAtOrFrom = { id: availableAtOrFromParams };
+                }
+
+                // アドオンを保管
+                let addOnItemOfferedIds: string[] = req.body.addOn?.itemOffered?.id;
+                if (typeof addOnItemOfferedIds === 'string') {
+                    addOnItemOfferedIds = [addOnItemOfferedIds];
+                }
+                if (Array.isArray(addOnItemOfferedIds)) {
+                    forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
+                        return {
+                            typeOf: chevre.factory.offerType.Offer,
+                            itemOffered: {
+                                id: addOnItemOfferedId
+                            }
+                        };
+                    });
                 }
 
                 // 適用決済カードを保管

@@ -34,7 +34,7 @@ const offersRouter = express_1.Router();
 offersRouter.all('/add', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     let message = '';
     let errors = {};
     const itemOfferedTypeOf = (_a = req.query.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf;
@@ -114,6 +114,16 @@ offersRouter.all('/add', ...validate(),
         else {
             forms.accounting = undefined;
         }
+        // 利用可能アプリケーションを保管
+        const availableAtOrFromParams = (_b = req.body.availableAtOrFrom) === null || _b === void 0 ? void 0 : _b.id;
+        if (Array.isArray(availableAtOrFromParams)) {
+            forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                return { id: applicationId };
+            });
+        }
+        else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+            forms.availableAtOrFrom = { id: availableAtOrFromParams };
+        }
     }
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
@@ -147,10 +157,10 @@ offersRouter.all('/add', ...validate(),
 offersRouter.all('/:id/update', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c, _d, _e, _f, _g, _h;
+    var _c, _d, _e, _f, _g, _h, _j, _k;
     let message = '';
     let errors = {};
-    const itemOfferedTypeOf = (_b = req.query.itemOffered) === null || _b === void 0 ? void 0 : _b.typeOf;
+    const itemOfferedTypeOf = (_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf;
     if (itemOfferedTypeOf === productType_1.ProductType.EventService) {
         res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
         return;
@@ -172,7 +182,7 @@ offersRouter.all('/:id/update', ...validate(),
     });
     try {
         let offer = yield offerService.findById({ id: req.params.id });
-        if (((_c = offer.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
+        if (((_d = offer.itemOffered) === null || _d === void 0 ? void 0 : _d.typeOf) === productType_1.ProductType.EventService) {
             res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
             return;
         }
@@ -217,10 +227,20 @@ offersRouter.all('/:id/update', ...validate(),
             else {
                 forms.accounting = undefined;
             }
+            // 利用可能アプリケーションを保管
+            const availableAtOrFromParams = (_e = req.body.availableAtOrFrom) === null || _e === void 0 ? void 0 : _e.id;
+            if (Array.isArray(availableAtOrFromParams)) {
+                forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                    return { id: applicationId };
+                });
+            }
+            else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                forms.availableAtOrFrom = { id: availableAtOrFromParams };
+            }
         }
         else {
             // カテゴリーを検索
-            if (typeof ((_d = offer.category) === null || _d === void 0 ? void 0 : _d.codeValue) === 'string') {
+            if (typeof ((_f = offer.category) === null || _f === void 0 ? void 0 : _f.codeValue) === 'string') {
                 const searchOfferCategoriesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -230,11 +250,11 @@ offersRouter.all('/:id/update', ...validate(),
                 forms.category = searchOfferCategoriesResult.data[0];
             }
             // 細目を検索
-            if (typeof ((_g = (_f = (_e = offer.priceSpecification) === null || _e === void 0 ? void 0 : _e.accounting) === null || _f === void 0 ? void 0 : _f.operatingRevenue) === null || _g === void 0 ? void 0 : _g.codeValue) === 'string') {
+            if (typeof ((_j = (_h = (_g = offer.priceSpecification) === null || _g === void 0 ? void 0 : _g.accounting) === null || _h === void 0 ? void 0 : _h.operatingRevenue) === null || _j === void 0 ? void 0 : _j.codeValue) === 'string') {
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
                     project: { ids: [req.project.id] },
-                    codeValue: { $eq: (_h = offer.priceSpecification.accounting.operatingRevenue) === null || _h === void 0 ? void 0 : _h.codeValue }
+                    codeValue: { $eq: (_k = offer.priceSpecification.accounting.operatingRevenue) === null || _k === void 0 ? void 0 : _k.codeValue }
                 });
                 forms.accounting = searchAccountTitlesResult.data[0];
             }
@@ -356,7 +376,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _j, _k, _l, _m, _o, _p, _q;
+    var _l, _m, _o, _p, _q, _r, _s;
     try {
         const offerService = new chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -405,8 +425,8 @@ offersRouter.get('/getlist',
             },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_j = req.query.itemOffered) === null || _j === void 0 ? void 0 : _j.typeOf) === 'string' && ((_k = req.query.itemOffered) === null || _k === void 0 ? void 0 : _k.typeOf.length) > 0)
-                        ? (_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf : undefined
+                    $eq: (typeof ((_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf) === 'string' && ((_m = req.query.itemOffered) === null || _m === void 0 ? void 0 : _m.typeOf.length) > 0)
+                        ? (_o = req.query.itemOffered) === null || _o === void 0 ? void 0 : _o.typeOf : undefined
                 }
             },
             identifier: {
@@ -421,7 +441,7 @@ offersRouter.get('/getlist',
                 accounting: {
                     operatingRevenue: {
                         codeValue: {
-                            $eq: (typeof ((_m = req.query.accountTitle) === null || _m === void 0 ? void 0 : _m.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
+                            $eq: (typeof ((_p = req.query.accountTitle) === null || _p === void 0 ? void 0 : _p.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
                                 ? String(req.query.accountTitle.codeValue)
                                 : undefined
                         }
@@ -438,7 +458,7 @@ offersRouter.get('/getlist',
                         typeOf: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'
                                 && req.query.appliesToMovieTicket.length > 0)
-                                ? (_o = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _o === void 0 ? void 0 : _o.typeOf
+                                ? (_q = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _q === void 0 ? void 0 : _q.typeOf
                                 : undefined
                         }
                     }
@@ -476,7 +496,7 @@ offersRouter.get('/getlist',
             addOn: {
                 itemOffered: {
                     id: {
-                        $eq: (typeof ((_q = (_p = req.query.addOn) === null || _p === void 0 ? void 0 : _p.itemOffered) === null || _q === void 0 ? void 0 : _q.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                        $eq: (typeof ((_s = (_r = req.query.addOn) === null || _r === void 0 ? void 0 : _r.itemOffered) === null || _s === void 0 ? void 0 : _s.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
                             ? req.query.addOn.itemOffered.id
                             : undefined
                     }
