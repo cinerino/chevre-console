@@ -520,9 +520,28 @@ offersRouter.get('/getlist',
                 const categoryCode = (_a = t.category) === null || _a === void 0 ? void 0 : _a.codeValue;
                 const productType = productType_1.productTypes.find((p) => { var _a; return p.codeValue === ((_a = t.itemOffered) === null || _a === void 0 ? void 0 : _a.typeOf); });
                 const itemAvailability = itemAvailability_1.itemAvailabilities.find((i) => i.codeValue === t.availability);
-                const priceUnitStr = (((_b = t.priceSpecification) === null || _b === void 0 ? void 0 : _b.referenceQuantity.unitCode) === chevre.factory.unitCode.C62)
-                    ? '枚'
-                    : (_c = t.priceSpecification) === null || _c === void 0 ? void 0 : _c.referenceQuantity.unitCode;
+                const referenceQuantityUnitCode = (_b = t.priceSpecification) === null || _b === void 0 ? void 0 : _b.referenceQuantity.unitCode;
+                let priceUnitStr = String(referenceQuantityUnitCode);
+                switch (referenceQuantityUnitCode) {
+                    case chevre.factory.unitCode.C62:
+                        if (((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
+                            priceUnitStr = '枚';
+                        }
+                        else {
+                            priceUnitStr = '点';
+                        }
+                        break;
+                    case chevre.factory.unitCode.Ann:
+                        priceUnitStr = '年';
+                        break;
+                    case chevre.factory.unitCode.Day:
+                        priceUnitStr = '日';
+                        break;
+                    case chevre.factory.unitCode.Sec:
+                        priceUnitStr = '秒';
+                        break;
+                    default:
+                }
                 const priceCurrencyStr = (((_d = t.priceSpecification) === null || _d === void 0 ? void 0 : _d.priceCurrency) === chevre.factory.priceCurrency.JPY)
                     ? '円'
                     : (_e = t.priceSpecification) === null || _e === void 0 ? void 0 : _e.priceCurrency;

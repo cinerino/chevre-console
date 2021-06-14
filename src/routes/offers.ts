@@ -589,9 +589,27 @@ offersRouter.get(
                     const productType = productTypes.find((p) => p.codeValue === t.itemOffered?.typeOf);
                     const itemAvailability = itemAvailabilities.find((i) => i.codeValue === t.availability);
 
-                    const priceUnitStr = (t.priceSpecification?.referenceQuantity.unitCode === chevre.factory.unitCode.C62)
-                        ? '枚'
-                        : t.priceSpecification?.referenceQuantity.unitCode;
+                    const referenceQuantityUnitCode = t.priceSpecification?.referenceQuantity.unitCode;
+                    let priceUnitStr = String(referenceQuantityUnitCode);
+                    switch (referenceQuantityUnitCode) {
+                        case chevre.factory.unitCode.C62:
+                            if (req.query.itemOffered?.typeOf === ProductType.EventService) {
+                                priceUnitStr = '枚';
+                            } else {
+                                priceUnitStr = '点';
+                            }
+                            break;
+                        case chevre.factory.unitCode.Ann:
+                            priceUnitStr = '年';
+                            break;
+                        case chevre.factory.unitCode.Day:
+                            priceUnitStr = '日';
+                            break;
+                        case chevre.factory.unitCode.Sec:
+                            priceUnitStr = '秒';
+                            break;
+                        default:
+                    }
                     const priceCurrencyStr = (t.priceSpecification?.priceCurrency === chevre.factory.priceCurrency.JPY)
                         ? '円'
                         : t.priceSpecification?.priceCurrency;
