@@ -45,28 +45,7 @@
                 <%- include('../offers/_formBasic', {}) %>
             </div>
             <div class="tab-pane" id="link2">
-                <div class="form-group bmd-form-group">
-                    <label for="priceSpecification[eligibleQuantity][minValue]" class="bmd-label-static">
-                        有効期間
-                    </label>
-
-                    <div class="input-group date" id="datetimepicker2">
-                        <input type="text" class="form-control datepicker" name="validFrom"
-                            value="<%= forms.validFrom %>">
-                        <!-- <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span> -->
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="basic-addon2">から</span>
-                        </div>
-
-                        <input type="text" class="form-control datepicker" name="validThrough"
-                            value="<%= forms.validThrough %>">
-                        <div class="input-group-append">
-                            <span class="input-group-text" id="basic-addon2">まで有効</span>
-                        </div>
-                    </div>
-                </div>
+                <%- include('../offers/_formValidity', {}) %>
             </div>
             <div class="tab-pane" id="link3">
                 <%- include('../common/part/_additionalProperty', {
