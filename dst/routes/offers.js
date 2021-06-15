@@ -780,18 +780,13 @@ function createFromBody(req, isNew) {
         switch (itemOfferedTypeOf) {
             case productType_1.ProductType.PaymentCard:
             case productType_1.ProductType.Product:
-                itemOffered = {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: itemOfferedTypeOf
-                };
-                break;
             case productType_1.ProductType.MembershipService:
                 itemOffered = {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    // project: { typeOf: req.project.typeOf, id: req.project.id },
                     typeOf: itemOfferedTypeOf,
                     serviceOutput: {
-                        project: { typeOf: req.project.typeOf, id: req.project.id },
-                        typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
+                    // project: { typeOf: req.project.typeOf, id: req.project.id },
+                    // typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
                     }
                 };
                 break;

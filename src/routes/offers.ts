@@ -877,24 +877,18 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         eligibleTransactionVolume: eligibleTransactionVolume
     };
 
-    let itemOffered: chevre.factory.service.IService;
+    let itemOffered: chevre.factory.offer.IItemOffered;
     const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
         case ProductType.PaymentCard:
         case ProductType.Product:
-            itemOffered = {
-                project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: itemOfferedTypeOf
-            };
-            break;
-
         case ProductType.MembershipService:
             itemOffered = {
-                project: { typeOf: req.project.typeOf, id: req.project.id },
+                // project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: itemOfferedTypeOf,
                 serviceOutput: {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
+                    // project: { typeOf: req.project.typeOf, id: req.project.id },
+                    // typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
                 }
             };
             break;
