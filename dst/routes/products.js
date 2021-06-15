@@ -117,6 +117,7 @@ productsRouter.get('/search',
             ? moment(`${req.query.offers.$elemMatch.validFrom}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .toDate()
             : undefined;
+        console.log(offersValidFromLte, offersValidThroughGte);
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
         const searchConditions = Object.assign({ limit: limit, page: page, 
@@ -266,18 +267,11 @@ function preDelete(req, product) {
     });
 }
 productsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sellerService = new chevre.service.Seller({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
-    const searchSellersResult = yield sellerService.search({ project: { id: { $eq: req.project.id } } });
     res.render('products/index', {
         message: '',
         productTypes: (typeof req.query.typeOf === 'string')
             ? productType_1.productTypes.filter((p) => p.codeValue === req.query.typeOf)
-            : productType_1.productTypes,
-        sellers: searchSellersResult.data
+            : productType_1.productTypes
     });
 }));
 // tslint:disable-next-line:cyclomatic-complexity

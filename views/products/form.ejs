@@ -23,6 +23,11 @@
             %>
             <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
             <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#link4offers" role="tablist">
+                    販売設定
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
                     高度な設定
                 </a>
@@ -141,10 +146,8 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane" id="link2">
-            </div>
 
-            <div class="tab-pane" id="link4">
+            <div class="tab-pane" id="link4offers">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
                         <label for="offers[seller][id]" class="bmd-label-static">
@@ -192,7 +195,9 @@
                             value="<%= forms.offersValidThrough %>">
                     </div>
                 </div>
+            </div>
 
+            <div class="tab-pane" id="link4">
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
                         <label for="" class="bmd-label-static">

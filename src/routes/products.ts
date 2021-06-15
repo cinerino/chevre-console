@@ -315,19 +315,11 @@ async function preDelete(req: Request, product: chevre.factory.product.IProduct)
 productsRouter.get(
     '',
     async (req, res) => {
-        const sellerService = new chevre.service.Seller({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
-        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
-
         res.render('products/index', {
             message: '',
             productTypes: (typeof req.query.typeOf === 'string')
                 ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes,
-            sellers: searchSellersResult.data
+                : productTypes
         });
     }
 );
