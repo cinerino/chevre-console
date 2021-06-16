@@ -44,7 +44,7 @@ $(function () {
 
     $('#offers\\[\\$elemMatch\\]\\[seller\\]\\[id\\]').select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '販売者選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/projects/' + PROJECT_ID + '/sellers/getlist',

@@ -13,7 +13,7 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                     <div class="form-row">
                         <div class="form-group bmd-form-group col-md-4">
                             <label for="orderFrom" class="bmd-label-static">
-                                注文日(From - To)
+                                注文日
                             </label>
 
                             <div class="input-group">
@@ -34,7 +34,7 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                 ステータス
                             </label>
                             <select class="form-control" name="orderStatus">
-                                <option value="">ステータス選択</option>
+                                <option value="">選択する</option>
                                 <% orderStatusTypes.forEach(function(orderStatusType) { %>
                                 <option value="<%= orderStatusType.codeValue %>">
                                     <%= orderStatusType.name %>
@@ -43,10 +43,17 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                             </select>
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
+                            <label for="orderNumber" class="bmd-label-static">
+                                注文番号
+                            </label>
+                            <input type="text" class="form-control" name="orderNumber" id="orderNumber"
+                                placeholder="完全一致" />
+                        </div>
+                        <div class="form-group bmd-form-group col-md-2">
                             <label for="confirmationNumber" class="bmd-label-static">
                                 確認番号
                             </label>
-                            <input class="form-control" placeholder="確認番号" name="confirmationNumber"
+                            <input class="form-control" placeholder="完全一致" name="confirmationNumber"
                                 id="confirmationNumber" />
                         </div>
                         <div class="form-group bmd-form-group col-md-2">
@@ -56,23 +63,37 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                             <select class="form-control" name="seller" id="seller" style="width: 100%;">
                             </select>
                         </div>
-                        <div class="form-group bmd-form-group col-md-2">
-                            <label for="paymentMethodType" class="bmd-label-static">
-                                決済方法区分
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-4">
+                            <label for="reservationForStartFrom" class="bmd-label-static">
+                                予約イベント開始日
                             </label>
-                            <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
-                            </select>
+
+                            <div class="input-group">
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="reservationForStartFrom" id="reservationForStartFrom" value="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">から</span>
+                                </div>
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="reservationForStartThrough" id="reservationForStartThrough" valufe="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">まで</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="advanced collapse">
                         <div class="form-row">
                             <div class="form-group bmd-form-group col-md-2">
-                                <label for="orderNumber" class="bmd-label-static">
-                                    注文番号
+                                <label for="paymentMethodType" class="bmd-label-static">
+                                    決済方法区分
                                 </label>
-                                <input type="text" class="form-control" name="orderNumber" id="orderNumber"
-                                    placeholder="注文番号" />
+                                <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
+                                </select>
                             </div>
                             <div class="form-group bmd-form-group col-md-2">
                                 <label for="application" class="bmd-label-static">
@@ -217,24 +238,6 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                     予約イベント名称
                                 </label>
                                 <input class="form-control" placeholder="予約イベント名称" name="reservationFor[name]" id="reservationFor[name]" />
-                            </div>
-                            <div class="form-group bmd-form-group col-md-4">
-                                <label for="reservationForStartFrom" class="bmd-label-static">
-                                    予約イベント開催期間
-                                </label>
-
-                                <div class="input-group">
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="reservationForStartFrom" id="reservationForStartFrom" value="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">から</span>
-                                    </div>
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="reservationForStartThrough" id="reservationForStartThrough" valufe="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">まで</span>
-                                    </div>
-                                </div>
                             </div>
                             <div class="form-group bmd-form-group col-md-2">
                                 <label for="reservationFor[superEvent][id]" class="bmd-label-static">
