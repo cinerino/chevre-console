@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * IAMユーザールーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -21,13 +21,13 @@ const iamUsersRouter = express_1.Router();
 iamUsersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('iam/users/index', {
         message: '',
-        TaskName: chevre.factory.taskName,
-        TaskStatus: chevre.factory.taskStatus
+        TaskName: sdk_1.chevre.factory.taskName,
+        TaskStatus: sdk_1.chevre.factory.taskStatus
     });
 }));
 iamUsersRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -67,7 +67,7 @@ iamUsersRouter.all('/:id/update',
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const iamService = new chevre.service.IAM({
+    const iamService = new sdk_1.chevre.service.IAM({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }

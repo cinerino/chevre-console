@@ -1,16 +1,16 @@
 /**
  * 口座アクションルーター
  */
-import * as chevreapi from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevreapi.factory.chevre.action.trade.pay.IAction | chevreapi.factory.chevre.action.trade.refund.IAction;
+export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
 export interface IAccountingReoprt {
     mainEntity: IAction;
     isPartOf: {
-        mainEntity: chevreapi.factory.order.IOrder;
+        mainEntity: chevre.factory.order.IOrder;
     };
 }
 
@@ -21,17 +21,17 @@ accountActionsRouter.get(
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
-            const accountActionService = new chevreapi.service.AccountAction({
+            const accountActionService = new chevre.service.AccountAction({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
 
             if (req.query.format === 'datatable') {
-                const searchConditions: chevreapi.factory.account.action.moneyTransfer.ISearchConditions = {
+                const searchConditions: chevre.factory.account.action.moneyTransfer.ISearchConditions = {
                     limit: req.query.limit,
                     page: req.query.page,
-                    sort: { startDate: chevreapi.factory.sortType.Descending },
+                    sort: { startDate: chevre.factory.sortType.Descending },
                     location: {
                         accountNumber: {
                             $eq: (typeof req.query.location?.accountNumber === 'string' && req.query.location.accountNumber.length > 0)
@@ -94,7 +94,7 @@ accountActionsRouter.get(
                 res.render('accountActions/index', {
                     moment: moment,
                     query: req.query,
-                    ActionStatusType: chevreapi.factory.actionStatusType
+                    ActionStatusType: chevre.factory.actionStatusType
                 });
             }
         } catch (error) {

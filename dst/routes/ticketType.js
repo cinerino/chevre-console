@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 単価オファー管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -37,12 +37,12 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
     var _a, _b, _c;
     let message = '';
     let errors = {};
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -126,7 +126,7 @@ ticketTypeMasterRouter.all('/add', ...validateFormAdd(),
         if (Array.isArray(addOnItemOfferedIds)) {
             forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
                 return {
-                    typeOf: chevre.factory.offerType.Offer,
+                    typeOf: sdk_1.chevre.factory.offerType.Offer,
                     itemOffered: {
                         id: addOnItemOfferedId
                     }
@@ -199,22 +199,22 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
     var _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2;
     let message = '';
     let errors = {};
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const accountTitleService = new chevre.service.AccountTitle({
+    const accountTitleService = new sdk_1.chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -306,7 +306,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             if (Array.isArray(addOnItemOfferedIds)) {
                 forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
                     return {
-                        typeOf: chevre.factory.offerType.Offer,
+                        typeOf: sdk_1.chevre.factory.offerType.Offer,
                         itemOffered: {
                             id: addOnItemOfferedId
                         }
@@ -355,7 +355,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searchOfferCategoriesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
                     codeValue: { $eq: ticketType.category.codeValue }
                 });
                 forms.category = searchOfferCategoriesResult.data[0];
@@ -374,7 +374,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searchAppliesToMovieTicketsResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } },
                     codeValue: { $eq: (_t = (_s = ticketType.priceSpecification) === null || _s === void 0 ? void 0 : _s.appliesToMovieTicket) === null || _t === void 0 ? void 0 : _t.serviceType }
                 });
                 forms.appliesToMovieTicket = searchAppliesToMovieTicketsResult.data[0];
@@ -385,7 +385,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searchEligibleAccountTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
                     codeValue: { $eq: (_v = ticketType.eligibleMonetaryAmount[0]) === null || _v === void 0 ? void 0 : _v.currency }
                 });
                 forms.eligibleMonetaryAmount = searchEligibleAccountTypesResult.data[0];
@@ -401,7 +401,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searcheEligibleSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
                     codeValue: { $eq: (_y = ticketType.eligibleSeatingType[0]) === null || _y === void 0 ? void 0 : _y.codeValue }
                 });
                 forms.eligibleSeatingType = searcheEligibleSeatingTypesResult.data[0];
@@ -415,7 +415,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searcheEligibleMembershipTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
                     codeValue: { $eq: (_0 = ticketType.eligibleMembershipType[0]) === null || _0 === void 0 ? void 0 : _0.codeValue }
                 });
                 forms.eligibleMembershipType = searcheEligibleMembershipTypesResult.data[0];
@@ -429,7 +429,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
                 const searcheEligibleSubReservationSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
                     codeValue: { $eq: ticketType.eligibleSubReservation[0].typeOfGood.seatingType }
                 });
                 forms.eligibleSubReservation = searcheEligibleSubReservationSeatingTypesResult.data[0];
@@ -471,12 +471,12 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
  */
 ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -487,8 +487,8 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
         const taskAttributes = data.map((d) => {
             return {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                name: chevre.factory.taskName.ImportOffersFromCOA,
-                status: chevre.factory.taskStatus.Ready,
+                name: sdk_1.chevre.factory.taskName.ImportOffersFromCOA,
+                status: sdk_1.chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 1,
                 numberOfTried: 0,
@@ -533,12 +533,12 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -549,7 +549,7 @@ function createFromBody(req, isNew) {
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
                 codeValue: { $eq: selectedCategory.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
@@ -572,17 +572,17 @@ function createFromBody(req, isNew) {
                 }
                 availableAddOn.push({
                     project: addOn.project,
-                    typeOf: chevre.factory.offerType.Offer,
+                    typeOf: sdk_1.chevre.factory.offerType.Offer,
                     itemOffered: {
                         typeOf: addOn.typeOf,
                         id: addOn.id,
                         name: addOn.name
                     },
-                    priceCurrency: chevre.factory.priceCurrency.JPY
+                    priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY
                 });
             }
         }
-        const availability = chevre.factory.itemAvailability.InStock;
+        const availability = sdk_1.chevre.factory.itemAvailability.InStock;
         // 利用可能なアプリケーション設定
         const availableAtOrFrom = [];
         const availableAtOrFromParams = (_c = req.body.availableAtOrFrom) === null || _c === void 0 ? void 0 : _c.id;
@@ -610,7 +610,7 @@ function createFromBody(req, isNew) {
         const referenceQuantity = {
             typeOf: 'QuantitativeValue',
             value: referenceQuantityValue,
-            unitCode: chevre.factory.unitCode.C62
+            unitCode: sdk_1.chevre.factory.unitCode.C62
         };
         const eligibleQuantityMinValue = (req.body.priceSpecification !== undefined
             && req.body.priceSpecification.eligibleQuantity !== undefined
@@ -629,7 +629,7 @@ function createFromBody(req, isNew) {
                 typeOf: 'QuantitativeValue',
                 minValue: eligibleQuantityMinValue,
                 maxValue: eligibleQuantityMaxValue,
-                unitCode: chevre.factory.unitCode.C62
+                unitCode: sdk_1.chevre.factory.unitCode.C62
             }
             : undefined;
         const eligibleTransactionVolumePrice = (req.body.priceSpecification !== undefined
@@ -642,9 +642,9 @@ function createFromBody(req, isNew) {
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
             ? {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
+                typeOf: sdk_1.chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
-                priceCurrency: chevre.factory.priceCurrency.JPY,
+                priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true
             }
             : undefined;
@@ -656,7 +656,7 @@ function createFromBody(req, isNew) {
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedMovieTicketType.codeValue },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType } }
             });
             const movieTicketType = searchMovieTicketTypesResult.data.shift();
             if (movieTicketType === undefined) {
@@ -699,7 +699,7 @@ function createFromBody(req, isNew) {
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedSeatingType.codeValue },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
             const seatingType = searchSeatingTypeResult.data.shift();
             if (seatingType === undefined) {
@@ -721,7 +721,7 @@ function createFromBody(req, isNew) {
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedMembershipType.codeValue },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } }
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } }
             });
             const membershipType = searchMembershipTypeResult.data.shift();
             if (membershipType === undefined) {
@@ -764,7 +764,7 @@ function createFromBody(req, isNew) {
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedSubReservationSeatingType.codeValue },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
             });
             const seatingType = searchSeatingTypeResult.data.shift();
             if (seatingType === undefined) {
@@ -799,19 +799,19 @@ function createFromBody(req, isNew) {
         if (typeof req.body.color === 'string' && req.body.color.length > 0) {
             color = req.body.color;
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: 'Offer', priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availableAtOrFrom: availableAtOrFrom, availability: availability, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
-            priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
+            priceSpecification: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.priceSpecificationType.UnitPriceSpecification, name: req.body.name, price: Number(req.body.price) * referenceQuantityValue, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY, valueAddedTaxIncluded: true, eligibleQuantity: eligibleQuantity, eligibleTransactionVolume: eligibleTransactionVolume, referenceQuantity: referenceQuantity, accounting: accounting }, (typeof appliesToMovieTicketType === 'string' && appliesToMovieTicketType.length > 0)
                 ? {
                     appliesToMovieTicket: {
-                        typeOf: chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
+                        typeOf: sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
                         serviceType: appliesToMovieTicketType,
                         serviceOutput: {
                             // とりあえず決済方法は固定でムビチケ
                             typeOf: (typeof appliesToMovieTicketServiceOutputType === 'string'
                                 && appliesToMovieTicketServiceOutputType.length > 0)
                                 ? appliesToMovieTicketServiceOutputType
-                                : chevre.factory.paymentMethodType.MovieTicket
+                                : sdk_1.chevre.factory.paymentMethodType.MovieTicket
                         }
                     },
                     // 互換性維持対応

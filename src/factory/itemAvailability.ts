@@ -1,4 +1,4 @@
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 
 export interface IAvailability {
     codeValue: chevre.factory.itemAvailability;

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 予約ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -20,12 +20,12 @@ const util_1 = require("util");
 const reservationStatusType_1 = require("../factory/reservationStatusType");
 const reservationsRouter = express_1.Router();
 reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -33,7 +33,7 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
     const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
         limit: 100,
@@ -41,7 +41,7 @@ reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, funct
     });
     res.render('reservations/index', {
         message: '',
-        reservationStatusType: chevre.factory.reservationStatusType,
+        reservationStatusType: sdk_1.chevre.factory.reservationStatusType,
         reservationStatusTypes: reservationStatusType_1.reservationStatusTypes,
         ticketTypeCategories: searchOfferCategoryTypesResult.data,
         movieTheaters: searchMovieTheatersResult.data
@@ -52,12 +52,12 @@ reservationsRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z;
     try {
-        const reservationService = new chevre.service.Reservation({
+        const reservationService = new sdk_1.chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -68,7 +68,7 @@ reservationsRouter.get('/search',
         //     project: { id: req.project.id }
         // });
         const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: sdk_1.chevre.factory.creativeWorkType.WebApplication } }
         });
         const applications = searchApplicationsResult.data.map((d) => d.member);
         const underNameIdentifierIn = [];
@@ -87,7 +87,7 @@ reservationsRouter.get('/search',
             limit: req.query.limit,
             page: req.query.page,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.reservationType.EventReservation,
+            typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
             additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
                 ? req.query.additionalTicketText
                 : undefined,
@@ -228,7 +228,7 @@ reservationsRouter.get('/search',
             results: data.map((t) => {
                 var _a, _b, _c, _d;
                 const priceSpecification = t.price;
-                const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === chevre.factory.priceSpecificationType.UnitPriceSpecification);
+                const unitPriceSpec = priceSpecification.priceComponent.find((c) => c.typeOf === sdk_1.chevre.factory.priceSpecificationType.UnitPriceSpecification);
                 let clientId;
                 if (Array.isArray((_a = t.underName) === null || _a === void 0 ? void 0 : _a.identifier)) {
                     clientId = (_c = (_b = t.underName) === null || _b === void 0 ? void 0 : _b.identifier.find((i) => i.name === 'clientId')) === null || _c === void 0 ? void 0 : _c.value;
@@ -267,7 +267,7 @@ reservationsRouter.get('/search',
 }));
 reservationsRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -283,7 +283,7 @@ reservationsRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, 
         const { data } = yield iamService.searchMembers({
             limit: limit,
             member: {
-                typeOf: { $eq: chevre.factory.personType.Person },
+                typeOf: { $eq: sdk_1.chevre.factory.personType.Person },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         });
@@ -309,7 +309,7 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
         if (!Array.isArray(ids)) {
             throw new Error('ids must be Array');
         }
-        const cancelReservationService = new chevre.service.assetTransaction.CancelReservation({
+        const cancelReservationService = new sdk_1.chevre.service.assetTransaction.CancelReservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -319,7 +319,7 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
             .toDate();
         for (const id of ids) {
             const transaction = yield cancelReservationService.start({
-                typeOf: chevre.factory.assetTransactionType.CancelReservation,
+                typeOf: sdk_1.chevre.factory.assetTransactionType.CancelReservation,
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 agent: {
                     typeOf: 'Person',
@@ -347,7 +347,7 @@ reservationsRouter.post('/cancel', (req, res) => __awaiter(void 0, void 0, void 
 }));
 reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const reservationService = new chevre.service.Reservation({
+        const reservationService = new sdk_1.chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -370,7 +370,7 @@ reservationsRouter.patch('/:id', (req, res) => __awaiter(void 0, void 0, void 0,
 }));
 reservationsRouter.get('/:id/actions/use', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const reservationService = new chevre.service.Reservation({
+        const reservationService = new sdk_1.chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

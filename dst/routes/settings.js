@@ -13,7 +13,7 @@ exports.createFromBody = exports.validate = exports.NUM_ORDER_WEBHOOKS = void 0;
 /**
  * プロジェクトルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const moment = require("moment-timezone");
@@ -28,7 +28,7 @@ settingsRouter.all('', ...validate(), (req, res, next) => __awaiter(void 0, void
     try {
         let message = '';
         let errors = {};
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -109,7 +109,7 @@ function createFromBody(req, __) {
         }
         return {
             id: req.body.id,
-            typeOf: chevre.factory.organizationType.Project,
+            typeOf: sdk_1.chevre.factory.organizationType.Project,
             logo: req.body.logo,
             name: req.body.name,
             // parentOrganization: params.parentOrganization,
@@ -135,7 +135,7 @@ function createFromBody(req, __) {
 exports.createFromBody = createFromBody;
 settingsRouter.post('/aggregate', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -157,7 +157,7 @@ settingsRouter.post('/aggregate', (req, res, next) => __awaiter(void 0, void 0, 
                         .toDate()
                 }
             },
-            status: chevre.factory.taskStatus.Ready,
+            status: sdk_1.chevre.factory.taskStatus.Ready,
             numberOfTried: 0,
             remainingNumberOfTries: 3,
             executionResults: []
@@ -195,7 +195,7 @@ settingsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
         const recipientEmail = (typeof req.body.recipientEmail === 'string' && req.body.recipientEmail.length > 0)
             ? req.body.recipientEmail
             : req.user.profile.email;
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -208,7 +208,7 @@ settingsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
                 typeOf: 'CreateAction',
                 project: { typeOf: req.project.typeOf, id: req.project.id },
                 agent: {
-                    typeOf: chevre.factory.personType.Person,
+                    typeOf: sdk_1.chevre.factory.personType.Person,
                     id: req.user.profile.sub,
                     familyName: req.user.profile.family_name,
                     givenName: req.user.profile.given_name,
@@ -247,7 +247,7 @@ settingsRouter.post('/createReservationReport', (req, res, next) => __awaiter(vo
                     ]
                 }
             },
-            status: chevre.factory.taskStatus.Ready,
+            status: sdk_1.chevre.factory.taskStatus.Ready,
             numberOfTried: 0,
             remainingNumberOfTries: 3,
             executionResults: []

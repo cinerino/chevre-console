@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - アイテムごとのオファー編集テンプレートを共通化
 - オファー編集フォーム最適化
 - 単価オファーの提供アイテムを最適化
+- @cinerino/sdkで再構築
 
 ### Deprecated
 

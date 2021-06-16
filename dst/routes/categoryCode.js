@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * カテゴリーコードルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -36,14 +36,14 @@ categoryCodesRouter.get('/image', (req, res) => {
 categoryCodesRouter.get('', (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('categoryCodes/index', {
         message: '',
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        CategorySetIdentifier: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier,
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets
     });
 }));
 categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g;
     try {
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -53,7 +53,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
         const { data } = yield categoryCodeService.search({
             limit: limit,
             page: page,
-            sort: { codeValue: chevre.factory.sortType.Ascending },
+            sort: { codeValue: sdk_1.chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             inCodeSet: {
                 identifier: {
@@ -105,7 +105,7 @@ categoryCodesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 
 categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -144,7 +144,7 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
             return {};
         }));
     }
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -153,8 +153,8 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         project: { id: { $eq: req.project.id } },
         typeOf: {
             $in: [
-                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
             ]
         }
     });
@@ -171,7 +171,7 @@ categoryCodesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
         message: message,
         errors: errors,
         forms: forms,
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        CategorySetIdentifier: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier,
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
         paymentServices: searchProductsResult.data
     });
@@ -184,7 +184,7 @@ categoryCodesRouter.get('/:id/image', (__, res) => {
 categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -219,7 +219,7 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
             return {};
         }));
     }
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -228,8 +228,8 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         project: { id: { $eq: req.project.id } },
         typeOf: {
             $in: [
-                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
             ]
         }
     });
@@ -246,7 +246,7 @@ categoryCodesRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
         message: message,
         errors: errors,
         forms: forms,
-        CategorySetIdentifier: chevre.factory.categoryCode.CategorySetIdentifier,
+        CategorySetIdentifier: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier,
         categoryCodeSets: categoryCodeSet_1.categoryCodeSets,
         paymentServices: searchProductsResult.data
     });
@@ -257,7 +257,7 @@ categoryCodesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         //     endpoint: <string>process.env.API_ENDPOINT,
         //     auth: req.user.authClient
         // });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -278,32 +278,32 @@ function preDelete(req, categoryCode) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // validation
-        const creativeWorkService = new chevre.service.CreativeWork({
+        const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const priceSpecificationService = new chevre.service.PriceSpecification({
+        const priceSpecificationService = new sdk_1.chevre.service.PriceSpecification({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -324,10 +324,10 @@ function preDelete(req, categoryCode) {
         }
         switch (categoryCode.inCodeSet.identifier) {
             // 通貨区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.AccountType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.AccountType:
                 break;
             // レイティング区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
                 const searchMoviesResult4contentRating = yield creativeWorkService.searchMovies({
                     limit: 1,
                     project: { ids: [req.project.id] },
@@ -338,7 +338,7 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // 配給区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
                 const searchMoviesResult4distributorType = yield creativeWorkService.searchMovies({
                     limit: 1,
                     project: { ids: [req.project.id] },
@@ -349,7 +349,7 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // 決済カード(ムビチケ券種)区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
                 const searchOffersResult4movieTicketType = yield offerService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -365,7 +365,7 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // オファーカテゴリー区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType:
                 const searchOffersResult = yield offerService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -376,10 +376,10 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // 決済方法区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
                 break;
             // 座席区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.SeatingType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType:
                 const searchSeatsResult = yield placeService.searchSeats({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -400,7 +400,7 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // サービス区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
                 const searchOfferCatalogsResult = yield offerCatalogService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
@@ -411,12 +411,12 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // 音響方式区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SoundFormatType:
                 // 関連する施設コンテンツ
                 const searchEventsResult4soundFormatType = yield eventService.search({
                     limit: 1,
                     project: { ids: [req.project.id] },
-                    typeOf: chevre.factory.eventType.ScreeningEventSeries,
+                    typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     soundFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });
                 if (searchEventsResult4soundFormatType.data.length > 0) {
@@ -424,12 +424,12 @@ function preDelete(req, categoryCode) {
                 }
                 break;
             // 上映方式区分
-            case chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType:
                 // 関連する施設コンテンツ
                 const searchEventsResult4videoFormatType = yield eventService.search({
                     limit: 1,
                     project: { ids: [req.project.id] },
-                    typeOf: chevre.factory.eventType.ScreeningEventSeries,
+                    typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     videoFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });
                 if (searchEventsResult4videoFormatType.data.length > 0) {
@@ -462,13 +462,13 @@ function createCategoryCodeFromBody(req, isNew) {
                     value: String(p.value)
                 };
             })
-            : undefined, name: Object.assign({ ja: req.body.name.ja }, (typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined) }, (inCodeSet.identifier === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
+            : undefined, name: Object.assign({ ja: req.body.name.ja }, (typeof nameEn === 'string' && nameEn.length > 0) ? { en: nameEn } : undefined) }, (inCodeSet.identifier === sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType)
         ? {
             paymentMethod: {
                 typeOf: (typeof paymentMethodType === 'string' && paymentMethodType.length > 0)
                     ? paymentMethodType
                     // デフォルトはとりあえず固定でムビチケ
-                    : chevre.factory.paymentMethodType.MovieTicket
+                    : sdk_1.chevre.factory.paymentMethodType.MovieTicket
             }
         }
         : undefined), (typeof image === 'string') ? { image } : undefined), (typeof color === 'string') ? { color } : undefined), (!isNew)
@@ -510,7 +510,7 @@ function validate() {
             catch (error) {
                 // no op
             }
-            return (inCodeSet === null || inCodeSet === void 0 ? void 0 : inCodeSet.identifier) === chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
+            return (inCodeSet === null || inCodeSet === void 0 ? void 0 : inCodeSet.identifier) === sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType;
         })
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '決済方法'))

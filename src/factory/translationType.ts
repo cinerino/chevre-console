@@ -1,4 +1,4 @@
-import { factory } from '@chevre/api-nodejs-client';
+import { factory } from '@cinerino/sdk';
 
 export enum TranslationTypeCode {
     Subtitle = '0',

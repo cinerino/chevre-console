@@ -1,7 +1,7 @@
 /**
  * 承認ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment';
 

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 取引ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const csvtojson = require("csvtojson");
 const createDebug = require("debug");
 const express = require("express");
@@ -20,7 +20,7 @@ const moment = require("moment");
 const registerService_1 = require("./transactions/registerService");
 const debug = createDebug('chevre-console:router');
 const transactionsRouter = express.Router();
-transactionsRouter.use(`/${chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
+transactionsRouter.use(`/${sdk_1.chevre.factory.assetTransactionType.RegisterService}`, registerService_1.default);
 /**
  * 取引検索
  */
@@ -43,22 +43,22 @@ transactionsRouter.all('/reserve/start',
     try {
         let values = {};
         let message = '';
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const reserveService = new chevre.service.assetTransaction.Reserve({
+        const reserveService = new sdk_1.chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const transactionNumberService = new chevre.service.TransactionNumber({
+        const transactionNumberService = new sdk_1.chevre.service.TransactionNumber({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -121,12 +121,12 @@ transactionsRouter.all('/reserve/start',
                             id: selectedOffer.id,
                             itemOffered: {
                                 serviceOutput: {
-                                    typeOf: chevre.factory.reservationType.EventReservation,
+                                    typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                                     additionalTicketText: additionalTicketText,
                                     reservedTicket: {
                                         typeOf: 'Ticket',
                                         ticketedSeat: {
-                                            typeOf: chevre.factory.placeType.Seat,
+                                            typeOf: sdk_1.chevre.factory.placeType.Seat,
                                             seatNumber: seatNumber,
                                             seatRow: '',
                                             seatSection: seatSection
@@ -147,7 +147,7 @@ transactionsRouter.all('/reserve/start',
                             id: selectedOffer.id,
                             itemOffered: {
                                 serviceOutput: {
-                                    typeOf: chevre.factory.reservationType.EventReservation,
+                                    typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                                     additionalTicketText: additionalTicketText,
                                     reservedTicket: {
                                         typeOf: 'Ticket'
@@ -164,7 +164,7 @@ transactionsRouter.all('/reserve/start',
                     acceptedOffer: acceptedOffer,
                     reservationFor: { id: event.id },
                     broker: {
-                        typeOf: chevre.factory.personType.Person,
+                        typeOf: sdk_1.chevre.factory.personType.Person,
                         id: req.user.profile.sub,
                         name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                     }
@@ -176,11 +176,11 @@ transactionsRouter.all('/reserve/start',
                 });
                 yield reserveService.startWithNoResponse({
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.assetTransactionType.Reserve,
+                    typeOf: sdk_1.chevre.factory.assetTransactionType.Reserve,
                     transactionNumber: transactionNumber,
                     expires: expires,
                     agent: {
-                        typeOf: chevre.factory.creativeWorkType.WebApplication,
+                        typeOf: sdk_1.chevre.factory.creativeWorkType.WebApplication,
                         id: req.user.authClient.options.clientId,
                         name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                     },
@@ -223,21 +223,21 @@ transactionsRouter.all('/reserve/:transactionNumber/confirm', (req, res, next) =
         let message = '';
         const transaction = req.session[`transaction:${req.params.transactionNumber}`];
         if (transaction === undefined) {
-            throw new chevre.factory.errors.NotFound('Transaction in session');
+            throw new sdk_1.chevre.factory.errors.NotFound('Transaction in session');
         }
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const reserveService = new chevre.service.assetTransaction.Reserve({
+        const reserveService = new sdk_1.chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const eventId = (_d = transaction.object.event) === null || _d === void 0 ? void 0 : _d.id;
         if (typeof eventId !== 'string') {
-            throw new chevre.factory.errors.NotFound('Event not specified');
+            throw new sdk_1.chevre.factory.errors.NotFound('Event not specified');
         }
         if (req.method === 'POST') {
             // 確定
@@ -273,16 +273,16 @@ transactionsRouter.all('/reserve/:transactionNumber/cancel', (req, res, next) =>
         let message = '';
         const transaction = req.session[`transaction:${req.params.transactionNumber}`];
         if (transaction === undefined) {
-            throw new chevre.factory.errors.NotFound('Transaction in session');
+            throw new sdk_1.chevre.factory.errors.NotFound('Transaction in session');
         }
-        const reserveService = new chevre.service.assetTransaction.Reserve({
+        const reserveService = new sdk_1.chevre.service.assetTransaction.Reserve({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const eventId = (_e = transaction.object.event) === null || _e === void 0 ? void 0 : _e.id;
         if (typeof eventId !== 'string') {
-            throw new chevre.factory.errors.NotFound('Event not specified');
+            throw new sdk_1.chevre.factory.errors.NotFound('Event not specified');
         }
         if (req.method === 'POST') {
             // 確定

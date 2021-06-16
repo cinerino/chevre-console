@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 座席ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -27,7 +27,7 @@ seatRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, vo
     var _a, _b, _c, _d, _e, _f;
     let message = '';
     let errors = {};
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -95,7 +95,7 @@ seatRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25;
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -177,12 +177,12 @@ seatRouter.all('/:id/update', ...validate(),
         const screeningRoomSectionBranchCode = splittedId[2];
         // tslint:disable-next-line:no-magic-numbers
         const seatBranchCode = splittedId[3];
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -252,7 +252,7 @@ seatRouter.all('/:id/update', ...validate(),
                 const searchSeatingTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } },
                     codeValue: { $eq: seat.seatingType[0] }
                 });
                 forms.seatingType = searchSeatingTypesResult.data[0];
@@ -280,7 +280,7 @@ seatRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
     const screeningRoomSectionBranchCode = splittedId[2];
     // tslint:disable-next-line:no-magic-numbers
     const seatBranchCode = splittedId[3];
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -314,17 +314,17 @@ function createFromBody(req, isNew) {
         name = req.body.name;
     }
     const selecetedMovieTheater = JSON.parse(req.body.movieTheater);
-    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: req.body.branchCode, containedInPlace: {
+    return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.placeType.Seat, branchCode: req.body.branchCode, containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: chevre.factory.placeType.ScreeningRoomSection,
+            typeOf: sdk_1.chevre.factory.placeType.ScreeningRoomSection,
             branchCode: req.body.containedInPlace.branchCode,
             containedInPlace: {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: chevre.factory.placeType.ScreeningRoom,
+                typeOf: sdk_1.chevre.factory.placeType.ScreeningRoom,
                 branchCode: req.body.containedInPlace.containedInPlace.branchCode,
                 containedInPlace: {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.placeType.MovieTheater,
+                    typeOf: sdk_1.chevre.factory.placeType.MovieTheater,
                     branchCode: selecetedMovieTheater.branchCode
                 }
             }
@@ -379,12 +379,12 @@ function validate() {
 function preCreate(req, seat) {
     var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }

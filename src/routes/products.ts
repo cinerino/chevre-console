@@ -1,7 +1,7 @@
 /**
  * プロダクトルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';

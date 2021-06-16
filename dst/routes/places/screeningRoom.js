@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * ルームルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -25,7 +25,7 @@ screeningRoomRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
     var _a;
     let message = '';
     let errors = {};
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -84,7 +84,7 @@ screeningRoomRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
 screeningRoomRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2;
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -142,7 +142,7 @@ screeningRoomRouter.all('/:id/update', ...validate(), (req, res) => __awaiter(vo
     const splittedId = req.params.id.split(':');
     const movieTheaterBranchCode = splittedId[0];
     const screeningRoomBranchCode = splittedId[1];
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -205,7 +205,7 @@ screeningRoomRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
         const splittedId = req.params.id.split(':');
         const movieTheaterBranchCode = splittedId[0];
         const screeningRoomBranchCode = splittedId[1];
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -240,7 +240,7 @@ function preDelete(req, screeningRoom) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         // スケジュールが存在するかどうか
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -248,11 +248,11 @@ function preDelete(req, screeningRoom) {
         const searchEventsResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEvent,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
             eventStatuses: [
-                chevre.factory.eventStatusType.EventPostponed,
-                chevre.factory.eventStatusType.EventRescheduled,
-                chevre.factory.eventStatusType.EventScheduled
+                sdk_1.chevre.factory.eventStatusType.EventPostponed,
+                sdk_1.chevre.factory.eventStatusType.EventRescheduled,
+                sdk_1.chevre.factory.eventStatusType.EventScheduled
             ],
             location: { branchCode: { $eq: screeningRoom.branchCode } },
             superEvent: {
@@ -270,9 +270,9 @@ function createFromBody(req, isNew) {
         openSeatingAllowed = true;
     }
     const selectedContainedInPlace = JSON.parse(req.body.containedInPlace);
-    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
+    return Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.placeType.ScreeningRoom, branchCode: req.body.branchCode, name: req.body.name, address: req.body.address, containedInPlace: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: chevre.factory.placeType.MovieTheater,
+            typeOf: sdk_1.chevre.factory.placeType.MovieTheater,
             branchCode: selectedContainedInPlace.branchCode
         }, containsPlace: [], additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')

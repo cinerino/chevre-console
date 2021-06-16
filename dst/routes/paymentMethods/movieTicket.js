@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * ムビチケ決済方法ルーター
  */
-const chevreapi = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 // import * as createDebug from 'debug';
 const express = require("express");
 const http_status_1 = require("http-status");
@@ -26,12 +26,12 @@ movieTicketPaymentMethodRouter.get('/check',
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const payService = new chevreapi.service.assetTransaction.Pay({
+        const payService = new sdk_1.chevre.service.assetTransaction.Pay({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const sellerService = new chevreapi.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -57,15 +57,15 @@ movieTicketPaymentMethodRouter.get('/check',
             }
             const paymentMethodType = req.query.paymentMethodType;
             const checkAction = yield payService.check({
-                project: { id: req.project.id, typeOf: chevreapi.factory.organizationType.Project },
-                typeOf: chevreapi.factory.actionType.CheckAction,
+                project: { id: req.project.id, typeOf: sdk_1.chevre.factory.organizationType.Project },
+                typeOf: sdk_1.chevre.factory.actionType.CheckAction,
                 agent: {
-                    typeOf: chevreapi.factory.personType.Person,
+                    typeOf: sdk_1.chevre.factory.personType.Person,
                     id: req.user.profile.sub,
                     name: `${req.user.profile.given_name} ${req.user.profile.family_name}`
                 },
                 object: [{
-                        typeOf: chevreapi.factory.service.paymentService.PaymentServiceType.MovieTicket,
+                        typeOf: sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket,
                         paymentMethod: {
                             typeOf: paymentMethodType,
                             additionalProperty: [],
@@ -74,19 +74,19 @@ movieTicketPaymentMethodRouter.get('/check',
                         },
                         movieTickets: [{
                                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                                typeOf: chevreapi.factory.paymentMethodType.MovieTicket,
+                                typeOf: sdk_1.chevre.factory.paymentMethodType.MovieTicket,
                                 identifier: searchConditions.identifier,
                                 accessCode: searchConditions.accessCode,
                                 serviceType: '',
                                 serviceOutput: {
                                     reservationFor: {
                                         // tslint:disable-next-line:max-line-length
-                                        typeOf: chevreapi.factory.eventType.ScreeningEvent,
+                                        typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
                                         id: searchConditions.serviceOutput.reservationFor.id
                                     },
                                     reservedTicket: {
                                         ticketedSeat: {
-                                            typeOf: chevreapi.factory.placeType.Seat,
+                                            typeOf: sdk_1.chevre.factory.placeType.Seat,
                                             seatNumber: '',
                                             seatRow: '',
                                             seatSection: ''

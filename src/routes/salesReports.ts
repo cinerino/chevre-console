@@ -1,15 +1,15 @@
 /**
  * 旧売上レポートルーター
  */
-import * as chevreapi from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevreapi.factory.chevre.action.trade.pay.IAction | chevreapi.factory.chevre.action.trade.refund.IAction;
+export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
 export interface IAccountingReoprt {
     mainEntity: IAction;
     isPartOf: {
-        mainEntity: chevreapi.factory.order.IOrder;
+        mainEntity: chevre.factory.order.IOrder;
     };
 }
 
@@ -20,7 +20,7 @@ salesReportsRouter.get(
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
-            const salesReportService = new chevreapi.service.SalesReport({
+            const salesReportService = new chevre.service.SalesReport({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }

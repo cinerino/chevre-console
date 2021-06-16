@@ -12,21 +12,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * IAMロールルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const iamRolesRouter = express_1.Router();
 iamRolesRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('iam/roles/index', {
         message: '',
-        TaskName: chevre.factory.taskName,
-        TaskStatus: chevre.factory.taskStatus
+        TaskName: sdk_1.chevre.factory.taskName,
+        TaskStatus: sdk_1.chevre.factory.taskStatus
     });
 }));
 iamRolesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * ダッシュボードルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const dashboardRouter = express_1.Router();
@@ -26,7 +26,7 @@ dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         //     return;
         // }
         // 管理プロジェクト検索
-        const meService = new chevre.service.Me({
+        const meService = new sdk_1.chevre.service.Me({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -54,7 +54,7 @@ dashboardRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 dashboardRouter.get('/dashboard/projects', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // 管理プロジェクト検索
-        const meService = new chevre.service.Me({
+        const meService = new sdk_1.chevre.service.Me({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -79,7 +79,7 @@ dashboardRouter.get('/dashboard/projects/:id/select', (req, res, next) => __awai
     try {
         const projectId = req.params.id;
         try {
-            const chevreProjectService = new chevre.service.Project({
+            const chevreProjectService = new sdk_1.chevre.service.Project({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: '' }

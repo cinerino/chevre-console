@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 口座ルーター
  */
-const chevreapi = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
@@ -21,7 +21,7 @@ accountsRouter.get('',
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountService = new chevreapi.service.Account({
+        const accountService = new sdk_1.chevre.service.Account({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -69,7 +69,7 @@ accountsRouter.get('/:accountNumber/moneyTransferActions',
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountService = new chevreapi.service.Account({
+        const accountService = new sdk_1.chevre.service.Account({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -77,7 +77,7 @@ accountsRouter.get('/:accountNumber/moneyTransferActions',
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
-            sort: { startDate: chevreapi.factory.sortType.Descending }
+            sort: { startDate: sdk_1.chevre.factory.sortType.Descending }
         };
         const searchResult = yield accountService.searchMoneyTransferActions(Object.assign(Object.assign({}, searchConditions), { accountNumber: req.params.accountNumber }));
         res.json(searchResult.data);

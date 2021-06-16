@@ -1,16 +1,16 @@
 /**
  * 経理レポートルーター
  */
-import * as chevreapi from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevreapi.factory.chevre.action.trade.pay.IAction | chevreapi.factory.chevre.action.trade.refund.IAction;
+export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
 export interface IAccountingReoprt {
     mainEntity: IAction;
     isPartOf: {
-        mainEntity: chevreapi.factory.order.IOrder;
+        mainEntity: chevre.factory.order.IOrder;
     };
 }
 
@@ -21,7 +21,7 @@ accountingReportsRouter.get(
     // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
     async (req, res, next) => {
         try {
-            const accountingReportService = new chevreapi.service.AccountingReport({
+            const accountingReportService = new chevre.service.AccountingReport({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
@@ -116,11 +116,11 @@ accountingReportsRouter.get(
                     let eventStartDates: any[] = [];
                     if (Array.isArray(order.acceptedOffers)) {
                         eventStartDates = order.acceptedOffers
-                            .filter((o) => o.itemOffered.typeOf === chevreapi.factory.reservationType.EventReservation)
-                            .map((o) => (<chevreapi.factory.order.IReservation>o.itemOffered).reservationFor.startDate);
+                            .filter((o) => o.itemOffered.typeOf === chevre.factory.reservationType.EventReservation)
+                            .map((o) => (<chevre.factory.order.IReservation>o.itemOffered).reservationFor.startDate);
                         eventStartDates = [...new Set(eventStartDates)];
                     } else if ((<any>order.acceptedOffers)?.itemOffered?.typeOf
-                        === chevreapi.factory.reservationType.EventReservation) {
+                        === chevre.factory.reservationType.EventReservation) {
                         eventStartDates = [(<any>order.acceptedOffers).itemOffered.reservationFor.startDate];
                     }
 

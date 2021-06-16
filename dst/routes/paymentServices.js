@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 決済サービスルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -26,7 +26,7 @@ paymentServicesRouter.all('/new', ...validate(),
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -89,7 +89,7 @@ paymentServicesRouter.all('/new', ...validate(),
             });
         }
     }
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -108,7 +108,7 @@ paymentServicesRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -123,8 +123,8 @@ paymentServicesRouter.get('/search',
                 ? { $eq: req.query.typeOf.$eq }
                 : {
                     $in: [
-                        chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                        chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                        sdk_1.chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                        sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
                     ]
                 }
         };
@@ -155,7 +155,7 @@ paymentServicesRouter.all('/:id', ...validate(),
     try {
         let message = '';
         let errors = {};
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -204,7 +204,7 @@ paymentServicesRouter.all('/:id', ...validate(),
                 });
             }
         }
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -223,7 +223,7 @@ paymentServicesRouter.all('/:id', ...validate(),
     }
 }));
 paymentServicesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }

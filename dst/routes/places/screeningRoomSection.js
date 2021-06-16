@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * ルームセクションルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const csvtojson = require("csvtojson");
 const createDebug = require("debug");
 const express_1 = require("express");
@@ -28,7 +28,7 @@ screeningRoomSectionRouter.all('/new', ...validate(), (req, res) => __awaiter(vo
     var _a, _b, _c, _d;
     let message = '';
     let errors = {};
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -89,7 +89,7 @@ screeningRoomSectionRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12;
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -150,7 +150,7 @@ screeningRoomSectionRouter.all('/:id/update', ...validate(), (req, res, next) =>
         const screeningRoomBranchCode = splittedId[1];
         // tslint:disable-next-line:no-magic-numbers
         const screeningRoomSectionBranchCode = splittedId[2];
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -219,7 +219,7 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
     const screeningRoomBranchCode = splittedId[1];
     // tslint:disable-next-line:no-magic-numbers
     const screeningRoomSectionBranchCode = splittedId[2];
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -239,7 +239,7 @@ screeningRoomSectionRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
 }));
 function createFromBody(req, isNew) {
     return __awaiter(this, void 0, void 0, function* () {
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -247,7 +247,7 @@ function createFromBody(req, isNew) {
         const searchSeatingTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.SeatingType } }
         });
         const seatingTypes = searchSeatingTypesResult.data;
         let containsPlace = [];
@@ -278,20 +278,20 @@ function createFromBody(req, isNew) {
                             // tslint:disable-next-line:no-magic-numbers
                             .slice(0, 64)
                     } : undefined);
-                    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.Seat, branchCode: String(p.branchCode)
+                    return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.placeType.Seat, branchCode: String(p.branchCode)
                             // tslint:disable-next-line:no-magic-numbers
                             .slice(0, 12), seatingType: (typeof seatingTypeCodeValue === 'string') ? [seatingTypeCodeValue] : [], additionalProperty: [] }, (typeof name.ja === 'string' || typeof name.en === 'string') ? { name } : undefined);
                 });
             }
         }
         const selecetedTheater = JSON.parse(req.body.containedInPlace.containedInPlace);
-        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
+        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.placeType.ScreeningRoomSection, branchCode: req.body.branchCode, name: req.body.name, containedInPlace: {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: chevre.factory.placeType.ScreeningRoom,
+                typeOf: sdk_1.chevre.factory.placeType.ScreeningRoom,
                 branchCode: req.body.containedInPlace.branchCode,
                 containedInPlace: {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.placeType.MovieTheater,
+                    typeOf: sdk_1.chevre.factory.placeType.MovieTheater,
                     branchCode: selecetedTheater.branchCode
                 }
             }, containsPlace: containsPlace, additionalProperty: (Array.isArray(req.body.additionalProperty))
@@ -346,12 +346,12 @@ function validate() {
 function preUpdate(req, section, originalSeatCount) {
     var _a, _b, _c, _d;
     return __awaiter(this, void 0, void 0, function* () {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }

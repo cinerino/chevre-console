@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApiEndpoint = void 0;
-const chevreapi = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const debug = createDebug('chevre-backend:user');
 /**
@@ -28,7 +28,7 @@ class User {
     constructor(configurations) {
         this.host = configurations.host;
         this.session = configurations.session;
-        this.authClient = new chevreapi.auth.OAuth2({
+        this.authClient = new sdk_1.auth.OAuth2({
             domain: process.env.API_AUTHORIZE_SERVER_DOMAIN,
             clientId: process.env.API_CLIENT_ID,
             clientSecret: process.env.API_CLIENT_SECRET,

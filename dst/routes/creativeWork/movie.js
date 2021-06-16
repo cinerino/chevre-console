@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * コンテンツコントローラー
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -38,7 +38,7 @@ const movieRouter = express_1.Router();
 movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const creativeWorkService = new chevre.service.CreativeWork({
+    const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -107,12 +107,12 @@ movieRouter.get('/getlist',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {
-        const creativeWorkService = new chevre.service.CreativeWork({
+        const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -120,13 +120,13 @@ movieRouter.get('/getlist',
         const searchDistributorTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } }
         });
         const distributorTypes = searchDistributorTypesResult.data;
         const searchContentRatingTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } }
         });
         const contentRatingTypes = searchContentRatingTypesResult.data;
         const limit = Number(req.query.limit);
@@ -134,7 +134,7 @@ movieRouter.get('/getlist',
         const { data } = yield creativeWorkService.searchMovies({
             limit: limit,
             page: page,
-            sort: { identifier: chevre.factory.sortType.Ascending },
+            sort: { identifier: sdk_1.chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             contentRating: {
                 $eq: (typeof ((_a = req.query.contentRating) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.contentRating.$eq.length > 0)
@@ -199,12 +199,12 @@ movieRouter.all('/:id/update', ...validate(),
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _d, _e;
-    const creativeWorkService = new chevre.service.CreativeWork({
+    const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -278,7 +278,7 @@ movieRouter.all('/:id/update', ...validate(),
             const searchContentRatingsResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType } },
                 codeValue: { $eq: movie.contentRating }
             });
             forms.contentRating = searchContentRatingsResult.data[0];
@@ -290,7 +290,7 @@ movieRouter.all('/:id/update', ...validate(),
             const searchDistributorTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
                 codeValue: { $eq: movie.distributor.codeValue }
             });
             forms.distributor = searchDistributorTypesResult.data[0];
@@ -307,7 +307,7 @@ movieRouter.all('/:id/update', ...validate(),
 }));
 movieRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const creativeWorkService = new chevre.service.CreativeWork({
+        const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -327,7 +327,7 @@ movieRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, funct
 function preDelete(req, movie) {
     return __awaiter(this, void 0, void 0, function* () {
         // 施設コンテンツが存在するかどうか
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -335,7 +335,7 @@ function preDelete(req, movie) {
         const searchEventSeriesResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             workPerformed: {
                 identifiers: [movie.identifier]
             }
@@ -347,7 +347,7 @@ function preDelete(req, movie) {
         const searchEventsResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEvent,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
             superEvent: {
                 workPerformedIdentifiers: [movie.identifier]
             }
@@ -361,7 +361,7 @@ function preDelete(req, movie) {
 function createFromBody(req, isNew) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -391,14 +391,14 @@ function createFromBody(req, isNew) {
                 .add(1, 'day')
                 .toDate();
         }
-        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
+        const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.offerType.Offer, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY }, (availabilityEnds !== undefined) ? { availabilityEnds } : undefined);
         let distributor;
         if (typeof req.body.distributor === 'string' && req.body.distributor.length > 0) {
             const selectedDistributor = JSON.parse(req.body.distributor);
             const searchDistributorTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType } },
                 codeValue: { $eq: selectedDistributor.codeValue }
             });
             const distributorType = searchDistributorTypesResult.data.shift();
@@ -411,7 +411,7 @@ function createFromBody(req, isNew) {
             });
         }
         const thumbnailUrl = (typeof req.body.thumbnailUrl === 'string' && req.body.thumbnailUrl.length > 0) ? req.body.thumbnailUrl : undefined;
-        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movie = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.creativeWorkType.Movie, id: req.body.id, identifier: req.body.identifier, name: req.body.name, offers: offers, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

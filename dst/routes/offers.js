@@ -13,7 +13,7 @@ exports.searchApplications = exports.SMART_THEATER_CLIENT_NEW = exports.SMART_TH
 /**
  * 単価オファー管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -42,17 +42,17 @@ offersRouter.all('/add', ...validate(),
         res.redirect(`/projects/${req.project.id}/ticketTypes/add`);
         return;
     }
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const accountTitleService = new chevre.service.AccountTitle({
+    const accountTitleService = new sdk_1.chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -128,7 +128,7 @@ offersRouter.all('/add', ...validate(),
     const searchOfferCategoryTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
     const searchAccountTitlesResult = yield accountTitleService.search({
         project: { ids: [req.project.id] }
@@ -165,17 +165,17 @@ offersRouter.all('/:id/update', ...validate(),
         res.redirect(`/projects/${req.project.id}/ticketTypes/${req.params.id}/update`);
         return;
     }
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const accountTitleService = new chevre.service.AccountTitle({
+    const accountTitleService = new sdk_1.chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -247,7 +247,7 @@ offersRouter.all('/:id/update', ...validate(),
                 const searchOfferCategoriesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
                     codeValue: { $eq: offer.category.codeValue }
                 });
                 forms.category = searchOfferCategoriesResult.data[0];
@@ -265,7 +265,7 @@ offersRouter.all('/:id/update', ...validate(),
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
         const applications = yield searchApplications(req);
         res.render('offers/update', {
@@ -292,7 +292,7 @@ offersRouter.all('/:id/update', ...validate(),
 }));
 offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -326,12 +326,12 @@ offersRouter.get('/:id/catalogs', (req, res) => __awaiter(void 0, void 0, void 0
 }));
 offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -346,7 +346,7 @@ offersRouter.get('/:id/availableApplications', (req, res) => __awaiter(void 0, v
         if (Array.isArray(offer.availableAtOrFrom) && offer.availableAtOrFrom.length > 0) {
             const searchApplicationsResult = yield iamService.searchMembers({
                 member: {
-                    typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication },
+                    typeOf: { $eq: sdk_1.chevre.factory.creativeWorkType.WebApplication },
                     id: { $in: offer.availableAtOrFrom.map((a) => a.id) }
                 }
             });
@@ -381,12 +381,12 @@ offersRouter.get('/getlist',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _o, _p, _q, _r, _s, _t, _u;
     try {
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -394,7 +394,7 @@ offersRouter.get('/getlist',
         const searchOfferCategoryTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
         });
         const offerCategoryTypes = searchOfferCategoryTypesResult.data;
         const limit = Number(req.query.limit);
@@ -403,7 +403,7 @@ offersRouter.get('/getlist',
         const searchConditions = {
             limit: limit,
             page: page,
-            sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
+            sort: { 'priceSpecification.price': sdk_1.chevre.factory.sortType.Ascending },
             availableAtOrFrom: {
                 id: {
                     $eq: (typeof req.query.application === 'string' && req.query.application.length > 0)
@@ -523,7 +523,7 @@ offersRouter.get('/getlist',
                 const referenceQuantityUnitCode = (_b = t.priceSpecification) === null || _b === void 0 ? void 0 : _b.referenceQuantity.unitCode;
                 let priceUnitStr = String(referenceQuantityUnitCode);
                 switch (referenceQuantityUnitCode) {
-                    case chevre.factory.unitCode.C62:
+                    case sdk_1.chevre.factory.unitCode.C62:
                         if (((_c = req.query.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === productType_1.ProductType.EventService) {
                             priceUnitStr = '枚';
                         }
@@ -531,18 +531,18 @@ offersRouter.get('/getlist',
                             priceUnitStr = '点';
                         }
                         break;
-                    case chevre.factory.unitCode.Ann:
+                    case sdk_1.chevre.factory.unitCode.Ann:
                         priceUnitStr = '年';
                         break;
-                    case chevre.factory.unitCode.Day:
+                    case sdk_1.chevre.factory.unitCode.Day:
                         priceUnitStr = '日';
                         break;
-                    case chevre.factory.unitCode.Sec:
+                    case sdk_1.chevre.factory.unitCode.Sec:
                         priceUnitStr = '秒';
                         break;
                     default:
                 }
-                const priceCurrencyStr = (((_d = t.priceSpecification) === null || _d === void 0 ? void 0 : _d.priceCurrency) === chevre.factory.priceCurrency.JPY)
+                const priceCurrencyStr = (((_d = t.priceSpecification) === null || _d === void 0 ? void 0 : _d.priceCurrency) === sdk_1.chevre.factory.priceCurrency.JPY)
                     ? '円'
                     : (_e = t.priceSpecification) === null || _e === void 0 ? void 0 : _e.priceCurrency;
                 const priceStr = `${(_f = t.priceSpecification) === null || _f === void 0 ? void 0 : _f.price} ${priceCurrencyStr} / ${(_g = t.priceSpecification) === null || _g === void 0 ? void 0 : _g.referenceQuantity.value} ${priceUnitStr}`;
@@ -566,7 +566,7 @@ offersRouter.get('/getlist',
 }));
 offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -586,7 +586,7 @@ offersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 const AVAILABLE_ROLE_NAMES = ['customer', 'pos'];
 function searchApplications(req) {
     return __awaiter(this, void 0, void 0, function* () {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -597,7 +597,7 @@ function searchApplications(req) {
         //     project: { id: req.project.id }
         // });
         const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: sdk_1.chevre.factory.creativeWorkType.WebApplication } }
         });
         let applications = searchApplicationsResult.data;
         // 新旧クライアントが両方存在すれば、新クライアントを隠す
@@ -622,7 +622,7 @@ exports.searchApplications = searchApplications;
 function preDelete(req, offer) {
     return __awaiter(this, void 0, void 0, function* () {
         // validation
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -643,7 +643,7 @@ function preDelete(req, offer) {
 function createFromBody(req, isNew) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -654,7 +654,7 @@ function createFromBody(req, isNew) {
             const searchOfferCategoryTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
                 codeValue: { $eq: selectedCategory.codeValue }
             });
             if (searchOfferCategoryTypesResult.data.length === 0) {
@@ -662,7 +662,7 @@ function createFromBody(req, isNew) {
             }
             offerCategory = searchOfferCategoryTypesResult.data[0];
         }
-        const availability = chevre.factory.itemAvailability.InStock;
+        const availability = sdk_1.chevre.factory.itemAvailability.InStock;
         const referenceQuantityValue = Number(req.body.priceSpecification.referenceQuantity.value);
         const referenceQuantityUnitCode = req.body.priceSpecification.referenceQuantity.unitCode;
         const referenceQuantity = {
@@ -674,15 +674,15 @@ function createFromBody(req, isNew) {
         const MAX_REFERENCE_QUANTITY_VALUE_IN_SECONDS = 31536000;
         let referenceQuantityValueInSeconds = referenceQuantityValue;
         switch (referenceQuantityUnitCode) {
-            case chevre.factory.unitCode.Ann:
+            case sdk_1.chevre.factory.unitCode.Ann:
                 // tslint:disable-next-line:no-magic-numbers
                 referenceQuantityValueInSeconds = referenceQuantityValue * 31536000;
                 break;
-            case chevre.factory.unitCode.Day:
+            case sdk_1.chevre.factory.unitCode.Day:
                 // tslint:disable-next-line:no-magic-numbers
                 referenceQuantityValueInSeconds = referenceQuantityValue * 86400;
                 break;
-            case chevre.factory.unitCode.Sec:
+            case sdk_1.chevre.factory.unitCode.Sec:
                 break;
             default:
                 throw new Error(`${referenceQuantity.unitCode} not implemented`);
@@ -707,7 +707,7 @@ function createFromBody(req, isNew) {
                 typeOf: 'QuantitativeValue',
                 minValue: eligibleQuantityMinValue,
                 maxValue: eligibleQuantityMaxValue,
-                unitCode: chevre.factory.unitCode.C62
+                unitCode: sdk_1.chevre.factory.unitCode.C62
             }
             : undefined;
         const eligibleTransactionVolumePrice = (req.body.priceSpecification !== undefined
@@ -720,9 +720,9 @@ function createFromBody(req, isNew) {
         const eligibleTransactionVolume = (eligibleTransactionVolumePrice !== undefined)
             ? {
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: chevre.factory.priceSpecificationType.PriceSpecification,
+                typeOf: sdk_1.chevre.factory.priceSpecificationType.PriceSpecification,
                 price: eligibleTransactionVolumePrice,
-                priceCurrency: chevre.factory.priceCurrency.JPY,
+                priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
                 valueAddedTaxIncluded: true
             }
             : undefined;
@@ -765,10 +765,10 @@ function createFromBody(req, isNew) {
         }
         const priceSpec = {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            typeOf: chevre.factory.priceSpecificationType.UnitPriceSpecification,
+            typeOf: sdk_1.chevre.factory.priceSpecificationType.UnitPriceSpecification,
             name: req.body.name,
             price: Number(req.body.priceSpecification.price),
-            priceCurrency: chevre.factory.priceCurrency.JPY,
+            priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
             valueAddedTaxIncluded: true,
             referenceQuantity: referenceQuantity,
             accounting: accounting,
@@ -822,7 +822,7 @@ function createFromBody(req, isNew) {
         if (typeof req.body.color === 'string' && req.body.color.length > 0) {
             color = req.body.color;
         }
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, availableAtOrFrom: availableAtOrFrom, itemOffered: itemOffered, 
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.offerType.Offer, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), description: req.body.description, alternateName: { ja: req.body.alternateName.ja, en: '' }, availability: availability, availableAtOrFrom: availableAtOrFrom, itemOffered: itemOffered, 
             // eligibleCustomerType: eligibleCustomerType,
             priceSpecification: priceSpec, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')

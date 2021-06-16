@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * プロダクトルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -26,12 +26,12 @@ productsRouter.use('/addOn', addOn_1.default);
 productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const offerCatalogService = new chevre.service.OfferCatalog({
+    const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -80,7 +80,7 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
         project: { id: { $eq: req.project.id } },
         itemOffered: { typeOf: { $eq: productType_1.ProductType.Product } }
     });
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -102,7 +102,7 @@ productsRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -168,12 +168,12 @@ productsRouter.all('/:id', ...validate(),
     try {
         let message = '';
         let errors = {};
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -228,7 +228,7 @@ productsRouter.all('/:id', ...validate(),
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: product.typeOf } }
         });
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -250,7 +250,7 @@ productsRouter.all('/:id', ...validate(),
 function preDelete(req, product) {
     return __awaiter(this, void 0, void 0, function* () {
         // validation
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -310,8 +310,8 @@ function createFromBody(req, isNew) {
             offers = sellerIds.map((sellerId) => {
                 return {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.offerType.Offer,
-                    priceCurrency: chevre.factory.priceCurrency.JPY,
+                    typeOf: sdk_1.chevre.factory.offerType.Offer,
+                    priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
                     availabilityEnds: validThrough,
                     availabilityStarts: validFrom,
                     validFrom: validFrom,

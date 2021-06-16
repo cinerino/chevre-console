@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 注文ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
@@ -29,12 +29,12 @@ ordersRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y;
     try {
-        const orderService = new chevre.service.Order({
+        const orderService = new sdk_1.chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -45,7 +45,7 @@ ordersRouter.get('/search',
         //     project: { id: req.project.id }
         // });
         const searchApplicationsResult = yield iamService.searchMembers({
-            member: { typeOf: { $eq: chevre.factory.creativeWorkType.WebApplication } }
+            member: { typeOf: { $eq: sdk_1.chevre.factory.creativeWorkType.WebApplication } }
         });
         const applications = searchApplicationsResult.data.map((d) => d.member);
         const customerIdentifierIn = [];
@@ -59,7 +59,7 @@ ordersRouter.get('/search',
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
-            sort: { orderDate: chevre.factory.sortType.Descending },
+            sort: { orderDate: sdk_1.chevre.factory.sortType.Descending },
             project: { id: { $eq: req.project.id } },
             confirmationNumbers: (typeof req.query.confirmationNumber === 'string' && req.query.confirmationNumber.length > 0)
                 ? [req.query.confirmationNumber]
@@ -247,7 +247,7 @@ ordersRouter.get('/search',
 }));
 ordersRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -263,7 +263,7 @@ ordersRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0
         const { data } = yield iamService.searchMembers({
             limit: limit,
             member: {
-                typeOf: { $eq: chevre.factory.personType.Person },
+                typeOf: { $eq: sdk_1.chevre.factory.personType.Person },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         });

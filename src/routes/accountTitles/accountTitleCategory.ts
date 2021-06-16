@@ -1,7 +1,7 @@
 /**
  * 科目分類管理ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * オファーカタログ管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -27,17 +27,17 @@ const offerCatalogsRouter = express_1.Router();
 offerCatalogsRouter.all('/add', ...validate(), 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const offerCatalogService = new chevre.service.OfferCatalog({
+    const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -73,7 +73,7 @@ offerCatalogsRouter.all('/add', ...validate(),
     const searchServiceTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     let ticketTypeIds = [];
     if (typeof req.body.ticketTypes === 'string') {
@@ -117,17 +117,17 @@ offerCatalogsRouter.all('/:id/update', ...validate(),
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const offerService = new chevre.service.Offer({
+    const offerService = new sdk_1.chevre.service.Offer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const offerCatalogService = new chevre.service.OfferCatalog({
+    const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -135,7 +135,7 @@ offerCatalogsRouter.all('/:id/update', ...validate(),
     const searchServiceTypesResult = yield categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
     });
     let offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
     let message = '';
@@ -191,12 +191,12 @@ offerCatalogsRouter.all('/:id/update', ...validate(),
 }));
 offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -208,10 +208,10 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             // 削除して問題ないカタログかどうか検証
             const searchEventsResult = yield eventService.search({
                 limit: 1,
-                typeOf: chevre.factory.eventType.ScreeningEvent,
+                typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
                 project: { ids: [req.project.id] },
                 hasOfferCatalog: { id: { $eq: req.params.id } },
-                sort: { endDate: chevre.factory.sortType.Descending },
+                sort: { endDate: sdk_1.chevre.factory.sortType.Descending },
                 endFrom: new Date()
             });
             if (searchEventsResult.data.length > 0) {
@@ -229,12 +229,12 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
 }));
 offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -280,12 +280,12 @@ offerCatalogsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
 offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c, _d, _e, _f, _g, _h, _j, _k;
     try {
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -293,7 +293,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         const searchServiceTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
         });
         const serviceTypes = searchServiceTypesResult.data;
         const limit = Number(req.query.limit);
@@ -301,7 +301,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         const { data } = yield offerCatalogService.search({
             limit: limit,
             page: page,
-            sort: { identifier: chevre.factory.sortType.Ascending },
+            sort: { identifier: sdk_1.chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             identifier: req.query.identifier,
             name: req.query.name,
@@ -344,7 +344,7 @@ offerCatalogsRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
 offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _l;
     try {
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -356,7 +356,7 @@ offerCatalogsRouter.get('/searchOffersByPrice', (req, res) => __awaiter(void 0, 
             limit: limit,
             page: page,
             sort: {
-                'priceSpecification.price': chevre.factory.sortType.Descending
+                'priceSpecification.price': sdk_1.chevre.factory.sortType.Descending
             },
             project: { id: { $eq: req.project.id } },
             itemOffered: { typeOf: { $eq: (_l = req.query.itemOffered) === null || _l === void 0 ? void 0 : _l.typeOf } },
@@ -393,7 +393,7 @@ function createFromBody(req) {
         if (Array.isArray(req.body.itemListElement)) {
             itemListElement = req.body.itemListElement.map((element) => {
                 return {
-                    typeOf: chevre.factory.offerType.Offer,
+                    typeOf: sdk_1.chevre.factory.offerType.Offer,
                     id: element.id
                 };
             });
@@ -404,7 +404,7 @@ function createFromBody(req) {
         }
         let serviceType;
         if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
-            const categoryCodeService = new chevre.service.CategoryCode({
+            const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
@@ -412,7 +412,7 @@ function createFromBody(req) {
             const searchServiceTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
                 codeValue: { $eq: req.body.serviceType }
             });
             serviceType = searchServiceTypesResult.data.shift();

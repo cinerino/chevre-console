@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 経理レポートルーター
  */
-const chevreapi = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
@@ -21,7 +21,7 @@ accountingReportsRouter.get('',
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const accountingReportService = new chevreapi.service.AccountingReport({
+        const accountingReportService = new sdk_1.chevre.service.AccountingReport({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -98,11 +98,11 @@ accountingReportsRouter.get('',
                 let eventStartDates = [];
                 if (Array.isArray(order.acceptedOffers)) {
                     eventStartDates = order.acceptedOffers
-                        .filter((o) => o.itemOffered.typeOf === chevreapi.factory.reservationType.EventReservation)
+                        .filter((o) => o.itemOffered.typeOf === sdk_1.chevre.factory.reservationType.EventReservation)
                         .map((o) => o.itemOffered.reservationFor.startDate);
                     eventStartDates = [...new Set(eventStartDates)];
                 }
-                else if (((_f = (_e = order.acceptedOffers) === null || _e === void 0 ? void 0 : _e.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === chevreapi.factory.reservationType.EventReservation) {
+                else if (((_f = (_e = order.acceptedOffers) === null || _e === void 0 ? void 0 : _e.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === sdk_1.chevre.factory.reservationType.EventReservation) {
                     eventStartDates = [order.acceptedOffers.itemOffered.reservationFor.startDate];
                 }
                 return Object.assign(Object.assign({}, a), { amount,

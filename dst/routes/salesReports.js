@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 旧売上レポートルーター
  */
-const chevreapi = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment-timezone");
 const salesReportsRouter = express_1.Router();
@@ -21,7 +21,7 @@ salesReportsRouter.get('',
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const salesReportService = new chevreapi.service.SalesReport({
+        const salesReportService = new sdk_1.chevre.service.SalesReport({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
