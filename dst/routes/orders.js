@@ -17,6 +17,7 @@ const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment");
 const orderStatusType_1 = require("../factory/orderStatusType");
+const TimelineFactory = require("../factory/timeline");
 const ordersRouter = express_1.Router();
 ordersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('orders/index', {
@@ -279,6 +280,29 @@ ordersRouter.get('/searchAdmins', (req, res) => __awaiter(void 0, void 0, void 0
             .json({
             message: error.message
         });
+    }
+}));
+ordersRouter.get('/:orderNumber/actions', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const orderService = new sdk_1.chevre.service.Order({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const actions = yield orderService.searchActionsByOrderNumber({
+            orderNumber: req.params.orderNumber,
+            sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }
+        });
+        res.json(actions.map((a) => {
+            return Object.assign(Object.assign({}, a), { timeline: TimelineFactory.createFromAction({
+                    project: { id: req.project.id },
+                    action: a
+                }) });
+        }));
+    }
+    catch (error) {
+        res.status((typeof error.code === 'number') ? error.code : http_status_1.INTERNAL_SERVER_ERROR)
+            .json({ message: error.message });
     }
 }));
 exports.default = ordersRouter;
