@@ -15,35 +15,10 @@ const reservationsRouter = Router();
 
 reservationsRouter.get(
     '',
-    async (req, res) => {
-        const categoryCodeService = new chevre.service.CategoryCode({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
-        const placeService = new chevre.service.Place({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
-
-        const searchOfferCategoryTypesResult = await categoryCodeService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-        });
-
-        const searchMovieTheatersResult = await placeService.searchMovieTheaters({
-            limit: 100,
-            project: { ids: [req.project.id] }
-        });
-
+    async (__, res) => {
         res.render('reservations/index', {
             message: '',
-            reservationStatusType: chevre.factory.reservationStatusType,
-            reservationStatusTypes: reservationStatusTypes,
-            ticketTypeCategories: searchOfferCategoryTypesResult.data,
-            movieTheaters: searchMovieTheatersResult.data
+            reservationStatusTypes: reservationStatusTypes
         });
     }
 );

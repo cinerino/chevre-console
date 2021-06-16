@@ -19,32 +19,10 @@ const moment = require("moment");
 const util_1 = require("util");
 const reservationStatusType_1 = require("../factory/reservationStatusType");
 const reservationsRouter = express_1.Router();
-reservationsRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
-    const placeService = new sdk_1.chevre.service.Place({
-        endpoint: process.env.API_ENDPOINT,
-        auth: req.user.authClient,
-        project: { id: req.project.id }
-    });
-    const searchOfferCategoryTypesResult = yield categoryCodeService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
-    });
-    const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
-        limit: 100,
-        project: { ids: [req.project.id] }
-    });
+reservationsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('reservations/index', {
         message: '',
-        reservationStatusType: sdk_1.chevre.factory.reservationStatusType,
-        reservationStatusTypes: reservationStatusType_1.reservationStatusTypes,
-        ticketTypeCategories: searchOfferCategoryTypesResult.data,
-        movieTheaters: searchMovieTheatersResult.data
+        reservationStatusTypes: reservationStatusType_1.reservationStatusTypes
     });
 }));
 reservationsRouter.get('/search', 

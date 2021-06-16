@@ -166,19 +166,16 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                 <input class="form-control" placeholder="オファーID" name="reservedTicket[ticketType][id]"
                                     id="reservedTicket[ticketType][id]" />
                             </div>
+
                             <div class="form-group bmd-form-group col-md-2">
-                                <label for="reservedTicket[ticketedSeat][seatNumber]" class="bmd-label-static">
+                                <label for="reservedTicket[ticketType][category][id]" class="bmd-label-static">
                                     オファーカテゴリー
                                 </label>
-                                <select class="form-control" name="reservedTicket[ticketType][category][id]">
-                                    <option value="">オファーカテゴリー選択</option>
-                                    <% for (let ticketTypeCategory of ticketTypeCategories) { %>
-                                    <option value="<%= ticketTypeCategory.id %>">
-                                        <%= ticketTypeCategory.name.ja %>
-                                    </option>
-                                    <% } %>
+                                <select class="form-control" name="reservedTicket[ticketType][category][id]" id="reservedTicket[ticketType][category][id]"
+                                    style="width: 100%;">
                                 </select>
                             </div>
+
                             <div class="form-group bmd-form-group col-md-3">
                             </div>
                         </div>
