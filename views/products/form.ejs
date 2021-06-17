@@ -22,11 +22,13 @@
                 : [];
             %>
             <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+            <% if (forms.typeOf !== 'Product') { %>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link4offers" role="tablist">
                     販売設定
                 </a>
             </li>
+            <% } %>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#link4" role="tablist">
                     高度な設定
@@ -96,6 +98,34 @@
                         </span>
                         <% } %>
                     </div>
+
+                    <% if (forms.typeOf !== 'Product') { %>
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="serviceOutputCategory" class="bmd-label-static">
+                            <% if (forms.typeOf === 'MembershipService') { %>
+                            メンバーシップ区分
+                            <% } else if (forms.typeOf === 'PaymentCard') { %>
+                            口座区分
+                            <% } %>
+                        </label>
+                        <select class="form-control" name="serviceOutputCategory" id="serviceOutputCategory" style="width: 100%;" <% if (!isNew) { %>
+                            disabled="disabled" <% } %>>
+                            <% if (forms.serviceOutputCategory !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.serviceOutputCategory) %>" selected="selected">
+                                <%= forms.serviceOutputCategory.name.ja %></option>
+                            <% } %>
+                        </select>
+                        <% if (!isNew) { %>
+                        <input type="hidden" class="form-control" name="serviceOutputCategory" value="<%= JSON.stringify(forms.serviceOutputCategory) %>">
+                        <% } %>
+
+                        <% if (errors && errors['serviceOutputCategory']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['serviceOutputCategory'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                    <% } %>
                 </div>
 
                 <div class="form-row">

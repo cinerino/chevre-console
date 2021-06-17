@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 単価オファーの提供アイテムを最適化
 - @cinerino/sdkで再構築
 - 注文検索結果にアクション表示を追加
+- プロダクト編集を最適化
 
 ### Deprecated
 
