@@ -300,6 +300,29 @@ screeningEventRouter.post<any>(
     }
 );
 
+/**
+ * イベント詳細
+ */
+screeningEventRouter.get(
+    '/:eventId',
+    async (req, res, next) => {
+        try {
+            const eventService = new chevre.service.Event({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const event = await eventService.findById({ id: req.params.eventId });
+
+            res.render('events/screeningEvent/details', {
+                event
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+);
+
 // tslint:disable-next-line:use-default-type-parameter
 screeningEventRouter.post<ParamsDictionary>(
     '/:eventId/update',

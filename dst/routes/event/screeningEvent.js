@@ -263,6 +263,25 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
         }
     }
 }));
+/**
+ * イベント詳細
+ */
+screeningEventRouter.get('/:eventId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventService = new sdk_1.chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const event = yield eventService.findById({ id: req.params.eventId });
+        res.render('events/screeningEvent/details', {
+            event
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}));
 // tslint:disable-next-line:use-default-type-parameter
 screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
