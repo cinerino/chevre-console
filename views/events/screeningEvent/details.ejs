@@ -3,10 +3,11 @@
 <%- contentFor('displayId') %>
 SE-02
 <%- contentFor('styles') %>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.css" rel="stylesheet">
+
 <%- contentFor('scripts') %>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="/js/lodash.debounce.min.js"></script>
-<script src="/js/events/screeningEvent.js"></script>
+<script src="/js/events/screeningEvent/details.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
 
 <%- contentFor('body') %>
 
@@ -30,14 +31,7 @@ SE-02
     
                 <div class="tab-content">
                     <div class="active show tab-pane" id="remainingAttendeeCapacity">
-                        <div class="card card-plain bg-gradient-dark">
-                            <div class="card-header border-0">
-                                <h3 class="card-title">
-                                </h3>
-
-                                <div class="card-tools">
-                                </div>
-                            </div>
+                        <div class="card card-plain bg-dark">
                             <div class="card-body">
                                 <!-- <div class="chart" id="remainingAttendeeCapacityChart2" style="height: 400px;">
                                     searching...</div> -->
@@ -51,8 +45,8 @@ SE-02
 
                     <div class="tab-pane" id="orders">
                         <div class="table-responsive">
-                            <table class="table m-0">
-                                <thead>
+                            <table class="table table-no-bordered table-hover dataTable dtr-inline">
+                                <thead class="text-primary">
                                     <tr>
                                         <th>Order Number</th>
                                         <th>Order Date</th>
@@ -70,8 +64,8 @@ SE-02
 
                     <div class="tab-pane" id="aggregateOffer">
                         <div class="table-responsive">
-                            <table class="table m-0">
-                                <thead>
+                            <table class="table table-no-bordered table-hover dataTable dtr-inline">
+                                <thead class="text-primary">
                                     <tr>
                                         <th>ID</th>
                                         <th>Identifier</th>

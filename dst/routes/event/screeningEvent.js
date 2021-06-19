@@ -417,6 +417,62 @@ screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, 
         });
     }
 }));
+screeningEventRouter.get('/:id/aggregateOffer', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const eventService = new sdk_1.chevre.service.Event({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    try {
+        const event = yield eventService.findById({ id: req.params.id });
+        let offers = [];
+        const aggregateOffer = event.aggregateOffer;
+        if (Array.isArray(aggregateOffer === null || aggregateOffer === void 0 ? void 0 : aggregateOffer.offers)) {
+            offers = aggregateOffer.offers;
+        }
+        res.json(offers);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
+        });
+    }
+}));
+/**
+ * イベントの注文検索
+ */
+screeningEventRouter.get('/:id/orders', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const eventService = new chevre.service.Event({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
+        const orderService = new sdk_1.chevre.service.Order({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        // const event = await eventService.findById({ id: req.params.id });
+        // const reservationStartDate = moment(`${event.coaInfo.rsvStartDate} 00:00:00+09:00`, 'YYYYMMDD HH:mm:ssZ').toDate();
+        const searchOrdersResult = yield orderService.search({
+            limit: req.query.limit,
+            page: req.query.page,
+            sort: { orderDate: sdk_1.chevre.factory.sortType.Descending },
+            project: { id: { $eq: req.project.id } },
+            acceptedOffers: {
+                itemOffered: {
+                    reservationFor: { ids: [String(req.params.id)] }
+                }
+            }
+        });
+        res.json(searchOrdersResult.data);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _e, _f, _g, _h, _j, _k;
     try {

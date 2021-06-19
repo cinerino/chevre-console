@@ -487,6 +487,72 @@ screeningEventRouter.get(
 );
 
 screeningEventRouter.get(
+    '/:id/aggregateOffer',
+    async (req, res) => {
+        const eventService = new chevre.service.Event({
+            endpoint: <string>process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+
+        try {
+            const event = await eventService.findById({ id: req.params.id });
+
+            let offers = [];
+            const aggregateOffer = (<any>event).aggregateOffer;
+            if (Array.isArray(aggregateOffer?.offers)) {
+                offers = aggregateOffer.offers;
+            }
+
+            res.json(offers);
+        } catch (error) {
+            res.status(INTERNAL_SERVER_ERROR)
+                .json({
+                    message: error.message
+                });
+        }
+    }
+);
+
+/**
+ * イベントの注文検索
+ */
+screeningEventRouter.get(
+    '/:id/orders',
+    async (req, res, next) => {
+        try {
+            // const eventService = new chevre.service.Event({
+            //     endpoint: <string>process.env.API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
+            const orderService = new chevre.service.Order({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            // const event = await eventService.findById({ id: req.params.id });
+            // const reservationStartDate = moment(`${event.coaInfo.rsvStartDate} 00:00:00+09:00`, 'YYYYMMDD HH:mm:ssZ').toDate();
+            const searchOrdersResult = await orderService.search({
+                limit: req.query.limit,
+                page: req.query.page,
+                sort: { orderDate: chevre.factory.sortType.Descending },
+                project: { id: { $eq: req.project.id } },
+                acceptedOffers: {
+                    itemOffered: {
+                        reservationFor: { ids: [String(req.params.id)] }
+                    }
+                }
+            });
+
+            res.json(searchOrdersResult.data);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+screeningEventRouter.get(
     '/:id/availableSeatOffers',
     async (req, res) => {
         try {
