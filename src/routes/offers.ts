@@ -1,7 +1,7 @@
 /**
  * 単価オファー管理ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -119,6 +119,33 @@ offersRouter.all<any>(
             }));
         }
 
+        // カテゴリーを検索
+        if (req.method === 'POST') {
+            // カテゴリーを保管
+            if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+                forms.category = JSON.parse(req.body.category);
+            } else {
+                forms.category = undefined;
+            }
+
+            // 細目を保管
+            if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+                forms.accounting = JSON.parse(req.body.accounting);
+            } else {
+                forms.accounting = undefined;
+            }
+
+            // 利用可能アプリケーションを保管
+            const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+            if (Array.isArray(availableAtOrFromParams)) {
+                forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                    return { id: applicationId };
+                });
+            } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                forms.availableAtOrFrom = { id: availableAtOrFromParams };
+            }
+        }
+
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -179,9 +206,6 @@ offersRouter.all<ParamsDictionary>(
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const searchAccountTitlesResult = await accountTitleService.search({
-            project: { ids: [req.project.id] }
-        });
         const categoryCodeService = new chevre.service.CategoryCode({
             endpoint: <string>process.env.API_ENDPOINT,
             auth: req.user.authClient,
@@ -218,8 +242,13 @@ offersRouter.all<ParamsDictionary>(
                 }
             }
 
+            const accountsReceivable = (typeof offer.priceSpecification?.accounting?.accountsReceivable === 'number')
+                ? String(offer.priceSpecification.accounting.accountsReceivable)
+                : '';
+
             const forms = {
                 ...offer,
+                accountsReceivable,
                 ...req.body
             };
             if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
@@ -227,6 +256,53 @@ offersRouter.all<ParamsDictionary>(
                 forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                     return {};
                 }));
+            }
+
+            if (req.method === 'POST') {
+                // カテゴリーを保管
+                if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+                    forms.category = JSON.parse(req.body.category);
+                } else {
+                    forms.category = undefined;
+                }
+
+                // 細目を保管
+                if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+                    forms.accounting = JSON.parse(req.body.accounting);
+                } else {
+                    forms.accounting = undefined;
+                }
+
+                // 利用可能アプリケーションを保管
+                const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+                if (Array.isArray(availableAtOrFromParams)) {
+                    forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                        return { id: applicationId };
+                    });
+                } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                    forms.availableAtOrFrom = { id: availableAtOrFromParams };
+                }
+            } else {
+                // カテゴリーを検索
+                if (typeof offer.category?.codeValue === 'string') {
+                    const searchOfferCategoriesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
+                        codeValue: { $eq: offer.category.codeValue }
+                    });
+                    forms.category = searchOfferCategoriesResult.data[0];
+                }
+
+                // 細目を検索
+                if (typeof offer.priceSpecification?.accounting?.operatingRevenue?.codeValue === 'string') {
+                    const searchAccountTitlesResult = await accountTitleService.search({
+                        limit: 1,
+                        project: { ids: [req.project.id] },
+                        codeValue: { $eq: offer.priceSpecification.accounting.operatingRevenue?.codeValue }
+                    });
+                    forms.accounting = searchAccountTitlesResult.data[0];
+                }
             }
 
             const searchOfferCategoryTypesResult = await categoryCodeService.search({
@@ -242,7 +318,6 @@ offersRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 ticketTypeCategories: searchOfferCategoryTypesResult.data,
-                accountTitles: searchAccountTitlesResult.data,
                 productTypes: productTypes,
                 applications: applications.map((d) => d.member)
                     .sort((a, b) => {
@@ -514,9 +589,27 @@ offersRouter.get(
                     const productType = productTypes.find((p) => p.codeValue === t.itemOffered?.typeOf);
                     const itemAvailability = itemAvailabilities.find((i) => i.codeValue === t.availability);
 
-                    const priceUnitStr = (t.priceSpecification?.referenceQuantity.unitCode === chevre.factory.unitCode.C62)
-                        ? '枚'
-                        : t.priceSpecification?.referenceQuantity.unitCode;
+                    const referenceQuantityUnitCode = t.priceSpecification?.referenceQuantity.unitCode;
+                    let priceUnitStr = String(referenceQuantityUnitCode);
+                    switch (referenceQuantityUnitCode) {
+                        case chevre.factory.unitCode.C62:
+                            if (req.query.itemOffered?.typeOf === ProductType.EventService) {
+                                priceUnitStr = '枚';
+                            } else {
+                                priceUnitStr = '点';
+                            }
+                            break;
+                        case chevre.factory.unitCode.Ann:
+                            priceUnitStr = '年';
+                            break;
+                        case chevre.factory.unitCode.Day:
+                            priceUnitStr = '日';
+                            break;
+                        case chevre.factory.unitCode.Sec:
+                            priceUnitStr = '秒';
+                            break;
+                        default:
+                    }
                     const priceCurrencyStr = (t.priceSpecification?.priceCurrency === chevre.factory.priceCurrency.JPY)
                         ? '円'
                         : t.priceSpecification?.priceCurrency;
@@ -647,12 +740,13 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
 
     let offerCategory: chevre.factory.categoryCode.ICategoryCode | undefined;
 
-    if (typeof req.body.category?.codeValue === 'string' && req.body.category?.codeValue.length > 0) {
+    if (typeof req.body.category === 'string' && req.body.category.length > 0) {
+        const selectedCategory = JSON.parse(req.body.category);
         const searchOfferCategoryTypesResult = await categoryCodeService.search({
             limit: 1,
             project: { id: { $eq: req.project.id } },
             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } },
-            codeValue: { $eq: req.body.category?.codeValue }
+            codeValue: { $eq: selectedCategory.codeValue }
         });
         if (searchOfferCategoryTypesResult.data.length === 0) {
             throw new Error('オファーカテゴリーが見つかりません');
@@ -663,11 +757,32 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const availability: chevre.factory.itemAvailability = chevre.factory.itemAvailability.InStock;
 
     const referenceQuantityValue: number = Number(req.body.priceSpecification.referenceQuantity.value);
-    const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode.C62> = {
+    const referenceQuantityUnitCode = <chevre.factory.unitCode>req.body.priceSpecification.referenceQuantity.unitCode;
+    const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode> = {
         typeOf: <'QuantitativeValue'>'QuantitativeValue',
         value: referenceQuantityValue,
-        unitCode: req.body.priceSpecification.referenceQuantity.unitCode
+        unitCode: referenceQuantityUnitCode
     };
+    // 最大1年まで
+    const MAX_REFERENCE_QUANTITY_VALUE_IN_SECONDS = 31536000;
+    let referenceQuantityValueInSeconds = referenceQuantityValue;
+    switch (referenceQuantityUnitCode) {
+        case chevre.factory.unitCode.Ann:
+            // tslint:disable-next-line:no-magic-numbers
+            referenceQuantityValueInSeconds = referenceQuantityValue * 31536000;
+            break;
+        case chevre.factory.unitCode.Day:
+            // tslint:disable-next-line:no-magic-numbers
+            referenceQuantityValueInSeconds = referenceQuantityValue * 86400;
+            break;
+        case chevre.factory.unitCode.Sec:
+            break;
+        default:
+            throw new Error(`${referenceQuantity.unitCode} not implemented`);
+    }
+    if (referenceQuantityValueInSeconds > MAX_REFERENCE_QUANTITY_VALUE_IN_SECONDS) {
+        throw new Error('単価単位期間は最大で1年です');
+    }
 
     const eligibleQuantityMinValue: number | undefined = (req.body.priceSpecification !== undefined
         && req.body.priceSpecification.eligibleQuantity !== undefined
@@ -712,13 +827,14 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const accounting = {
         typeOf: <'Accounting'>'Accounting',
         operatingRevenue: <any>undefined,
-        accountsReceivable: Number(req.body.priceSpecification.price) // とりあえず発生金額に同じ
+        accountsReceivable: Number(req.body.accountsReceivable) * 1
     };
-    if (req.body.accountTitle !== undefined && req.body.accountTitle !== '') {
+    if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
+        const selectedAccountTitle = JSON.parse(req.body.accounting);
         accounting.operatingRevenue = {
             typeOf: 'AccountTitle',
-            codeValue: req.body.accountTitle,
-            identifier: req.body.accountTitle,
+            codeValue: selectedAccountTitle.codeValue,
+            identifier: selectedAccountTitle.codeValue,
             name: ''
         };
     }
@@ -761,23 +877,18 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         eligibleTransactionVolume: eligibleTransactionVolume
     };
 
-    let itemOffered: chevre.factory.service.IService;
+    let itemOffered: chevre.factory.offer.IItemOffered;
     const itemOfferedTypeOf = req.body.itemOffered?.typeOf;
     switch (itemOfferedTypeOf) {
+        case ProductType.PaymentCard:
         case ProductType.Product:
-            itemOffered = {
-                project: { typeOf: req.project.typeOf, id: req.project.id },
-                typeOf: itemOfferedTypeOf
-            };
-            break;
-
         case ProductType.MembershipService:
             itemOffered = {
-                project: { typeOf: req.project.typeOf, id: req.project.id },
+                // project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: itemOfferedTypeOf,
                 serviceOutput: {
-                    project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
+                    // project: { typeOf: req.project.typeOf, id: req.project.id },
+                    // typeOf: chevre.factory.programMembership.ProgramMembershipType.ProgramMembership
                 }
             };
             break;
@@ -811,6 +922,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         availableAtOrFrom.push({ id: availableAtOrFromParams });
     }
 
+    let color: string = 'rgb(51, 51, 51)';
+    if (typeof req.body.color === 'string' && req.body.color.length > 0) {
+        color = req.body.color;
+    }
+
     return {
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.offerType.Offer,
@@ -838,6 +954,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
                     };
                 })
             : undefined,
+        ...(typeof color === 'string')
+            ? {
+                color: color
+            }
+            : undefined,
         ...(offerCategory !== undefined)
             ? {
                 category: {
@@ -860,6 +981,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         ...(!isNew)
             ? {
                 $unset: {
+                    ...(typeof color !== 'string') ? { color: 1 } : undefined,
                     ...(offerCategory === undefined) ? { category: 1 } : undefined,
                     ...(validFrom === undefined) ? { validFrom: 1 } : undefined,
                     ...(validThrough === undefined) ? { validThrough: 1 } : undefined
@@ -878,6 +1000,10 @@ function validate() {
             .withMessage(Message.Common.getMaxLengthHalfByte('コード', 30))
             .matches(/^[0-9a-zA-Z\-_]+$/)
             .withMessage(() => '英数字で入力してください'),
+
+        body('itemOffered.typeOf')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'アイテム')),
 
         body('name.ja')
             .notEmpty()
@@ -905,6 +1031,15 @@ function validate() {
             .isNumeric()
             .isLength({ max: CHAGE_MAX_LENGTH })
             .withMessage(Message.Common.getMaxLengthHalfByte('発生金額', CHAGE_MAX_LENGTH))
+            .custom((value) => Number(value) >= 0)
+            .withMessage(() => '0もしくは正の値を入力してください'),
+
+        body('accountsReceivable')
+            .notEmpty()
+            .withMessage(() => Message.Common.required.replace('$fieldName$', '売上金額'))
+            .isNumeric()
+            .isLength({ max: CHAGE_MAX_LENGTH })
+            .withMessage(() => Message.Common.getMaxLengthHalfByte('売上金額', CHAGE_MAX_LENGTH))
             .custom((value) => Number(value) >= 0)
             .withMessage(() => '0もしくは正の値を入力してください')
     ];

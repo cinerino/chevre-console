@@ -1,7 +1,7 @@
 /**
  * ルームセクションルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import * as csvtojson from 'csvtojson';
 import * as createDebug from 'debug';
 import { Request, Router } from 'express';

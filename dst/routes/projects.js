@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * プロジェクトルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const settings_1 = require("./settings");
@@ -25,11 +25,11 @@ projectsRouter.all('/new', ...settings_1.validate(), (req, res, next) => __await
     try {
         // 特定のユーザーにのみ許可
         if (!PROJECT_CREATOR_IDS.includes(req.user.profile.sub)) {
-            throw new chevre.factory.errors.Forbidden('not project creator');
+            throw new sdk_1.chevre.factory.errors.Forbidden('not project creator');
         }
         let message = '';
         let errors = {};
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }

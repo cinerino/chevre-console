@@ -147,7 +147,7 @@ $(function () {
 
     $('#seller').select2({
         // width: 'resolve', // need to override the changed default,
-        placeholder: '販売者選択',
+        placeholder: '選択する',
         allowClear: true,
         ajax: {
             url: '/projects/' + PROJECT_ID + '/sellers/getlist',
@@ -250,7 +250,98 @@ $(function () {
     $(document).on('click', '.btn-downloadCSV', function () {
         onClickDownload();
     });
+
+    $(document).on('click', '.showActions', function (event) {
+        var orderNumber = $(this).attr('data-ordernumber');
+
+        showActionsByOrderNumber(orderNumber);
+    });
 });
+
+function showActionsByOrderNumber(orderNumber) {
+    var order = $.CommonMasterList.getDatas().find(function (data) {
+        return data.orderNumber === orderNumber
+    });
+    if (order === undefined) {
+        alert(orderNumber + 'が見つかりません');
+
+        return;
+    }
+
+    $.ajax({
+        dataType: 'json',
+        url: '/projects/' + PROJECT_ID + '/orders/' + order.orderNumber + '/actions',
+        cache: false,
+        type: 'GET',
+        data: { limit: 50, page: 1 },
+        beforeSend: function () {
+            $('#loadingModal').modal({ backdrop: 'static' });
+        }
+    }).done(function (data) {
+        showActions(order, data);
+    }).fail(function (jqxhr, textStatus, error) {
+        alert('検索できませんでした');
+    }).always(function (data) {
+        $('#loadingModal').modal('hide');
+    });
+}
+
+function showActions(order, actions) {
+    var modal = $('#modal-order');
+
+    var thead = $('<thead>').addClass('text-primary')
+        .append([
+            $('<tr>').append([
+                $('<th>').text('typeOf'),
+                $('<th>').text('開始'),
+                $('<th>').text('説明')
+            ])
+        ]);
+    var tbody = $('<tbody>')
+        .append(actions.map(function (action) {
+            var timeline = action.timeline;
+
+            var description = '<a href="javascript:void(0)">' + timeline.agent.name
+                + '</a>が';
+
+            if (timeline.recipient !== undefined) {
+                var recipientName = String(timeline.recipient.name);
+                if (recipientName.length > 40) {
+                    recipientName = String(timeline.recipient.name).slice(0, 40) + '...';
+                }
+                description += '<a href="javascript:void(0)">'
+                    + '<span>' + recipientName + '</span>'
+                    + '</a> に';
+            }
+
+            if (timeline.purpose !== undefined) {
+                description += '<a href="javascript:void(0)">'
+                    + '<span>' + timeline.purpose.name + '</span>'
+                    + '</a> のために';
+            }
+
+            description += '<a href="javascript:void(0)">'
+                + '<span>' + timeline.object.name + '</span>'
+                + '</a> を'
+                + '<span>' + timeline.actionName + '</span>'
+                + '<span>' + timeline.actionStatusDescription + '</span>';
+
+            return $('<tr>').append([
+                $('<td>').text(action.typeOf),
+                $('<td>').text(action.startDate),
+                $('<td>').html(description)
+            ]);
+        }))
+    var table = $('<table>').addClass('table table-sm')
+        .append([thead, tbody]);
+
+    var div = $('<div>')
+        .append($('<div>').addClass('table-responsive').append(table));
+
+    modal.find('.modal-title').text('アクション');
+    modal.find('.modal-body').html(div);
+    modal.modal();
+}
 
 function showOrder(orderNumber) {
     var order = $.CommonMasterList.getDatas().find(function (data) {

@@ -1,4 +1,4 @@
-import * as chevreapi from '@chevre/api-nodejs-client';
+import { auth } from '@cinerino/sdk';
 import * as createDebug from 'debug';
 
 const debug = createDebug('chevre-backend:user');
@@ -41,13 +41,13 @@ export default class User {
     /**
      * ChevreAPI認証クライアント(管理者としてのAuthorizationCodeフロー)
      */
-    public authClient: chevreapi.auth.OAuth2;
+    public authClient: auth.OAuth2;
     public profile: IProfile;
     public cognitoGroups: ICognitoGroups;
     constructor(configurations: IConfigurations) {
         this.host = configurations.host;
         this.session = configurations.session;
-        this.authClient = new chevreapi.auth.OAuth2({
+        this.authClient = new auth.OAuth2({
             domain: <string>process.env.API_AUTHORIZE_SERVER_DOMAIN,
             clientId: <string>process.env.API_CLIENT_ID,
             clientSecret: <string>process.env.API_CLIENT_SECRET,

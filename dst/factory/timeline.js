@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createFromAction = void 0;
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromAction(params) {
     var _a, _b, _c;
@@ -12,8 +12,8 @@ function createFromAction(params) {
     };
     if (a.agent !== undefined && a.agent !== null) {
         switch (a.agent.typeOf) {
-            case chevre.factory.personType.Person:
-            case chevre.factory.creativeWorkType.WebApplication:
+            case sdk_1.chevre.factory.personType.Person:
+            case sdk_1.chevre.factory.creativeWorkType.WebApplication:
                 let userPoolId = '';
                 let tokenIssuer = '';
                 if (Array.isArray(a.agent.identifier)) {
@@ -39,8 +39,8 @@ function createFromAction(params) {
                     url: url
                 };
                 break;
-            case chevre.factory.chevre.organizationType.MovieTheater:
-            case chevre.factory.chevre.organizationType.Corporation:
+            case sdk_1.chevre.factory.chevre.organizationType.MovieTheater:
+            case sdk_1.chevre.factory.chevre.organizationType.Corporation:
                 agent = {
                     id: String(a.agent.id),
                     name: (typeof a.agent.name === 'string') ? a.agent.name : String((_a = a.agent.name) === null || _a === void 0 ? void 0 : _a.ja),
@@ -59,8 +59,8 @@ function createFromAction(params) {
     let recipient;
     if (a.recipient !== undefined && a.recipient !== null) {
         switch (a.recipient.typeOf) {
-            case chevre.factory.personType.Person:
-            case chevre.factory.creativeWorkType.WebApplication:
+            case sdk_1.chevre.factory.personType.Person:
+            case sdk_1.chevre.factory.creativeWorkType.WebApplication:
                 let userPoolId = '';
                 let tokenIssuer = '';
                 if (Array.isArray(a.recipient.identifier)) {
@@ -87,8 +87,8 @@ function createFromAction(params) {
                     url: url
                 };
                 break;
-            case chevre.factory.chevre.organizationType.MovieTheater:
-            case chevre.factory.chevre.organizationType.Corporation:
+            case sdk_1.chevre.factory.chevre.organizationType.MovieTheater:
+            case sdk_1.chevre.factory.chevre.organizationType.Corporation:
                 recipient = {
                     id: String(a.recipient.id),
                     name: (typeof a.recipient.name === 'string') ? a.recipient.name : String((_b = a.recipient.name) === null || _b === void 0 ? void 0 : _b.ja),
@@ -107,62 +107,62 @@ function createFromAction(params) {
     }
     let actionName;
     switch (a.typeOf) {
-        case chevre.factory.actionType.AuthorizeAction:
+        case sdk_1.chevre.factory.actionType.AuthorizeAction:
             actionName = '承認';
             break;
-        case chevre.factory.actionType.CancelAction:
+        case sdk_1.chevre.factory.actionType.CancelAction:
             actionName = 'キャンセル';
             break;
-        case chevre.factory.actionType.CheckAction:
+        case sdk_1.chevre.factory.actionType.CheckAction:
             actionName = '確認';
             break;
-        case chevre.factory.actionType.ConfirmAction:
+        case sdk_1.chevre.factory.actionType.ConfirmAction:
             actionName = '確定';
             break;
-        case chevre.factory.actionType.DeleteAction:
+        case sdk_1.chevre.factory.actionType.DeleteAction:
             actionName = '削除';
             break;
-        case chevre.factory.actionType.OrderAction:
+        case sdk_1.chevre.factory.actionType.OrderAction:
             actionName = '注文';
             break;
-        case chevre.factory.actionType.GiveAction:
+        case sdk_1.chevre.factory.actionType.GiveAction:
             actionName = '付与';
             break;
-        case chevre.factory.actionType.InformAction:
+        case sdk_1.chevre.factory.actionType.InformAction:
             actionName = '通知';
             break;
-        case chevre.factory.actionType.MoneyTransfer:
+        case sdk_1.chevre.factory.actionType.MoneyTransfer:
             actionName = '転送';
             break;
-        case chevre.factory.actionType.PayAction:
+        case sdk_1.chevre.factory.actionType.PayAction:
             actionName = '決済';
             break;
-        case chevre.factory.actionType.PrintAction:
+        case sdk_1.chevre.factory.actionType.PrintAction:
             actionName = '印刷';
             break;
-        case chevre.factory.actionType.RegisterAction:
+        case sdk_1.chevre.factory.actionType.RegisterAction:
             actionName = '登録';
             break;
-        case chevre.factory.actionType.ReturnAction:
-            if (a.object.typeOf === chevre.factory.order.OrderType.Order) {
+        case sdk_1.chevre.factory.actionType.ReturnAction:
+            if (a.object.typeOf === sdk_1.chevre.factory.order.OrderType.Order) {
                 actionName = '返品';
             }
             else {
                 actionName = '返却';
             }
             break;
-        case chevre.factory.actionType.RefundAction:
+        case sdk_1.chevre.factory.actionType.RefundAction:
             actionName = '返金';
             break;
-        case chevre.factory.actionType.SendAction:
-            if (a.object.typeOf === chevre.factory.order.OrderType.Order) {
+        case sdk_1.chevre.factory.actionType.SendAction:
+            if (a.object.typeOf === sdk_1.chevre.factory.order.OrderType.Order) {
                 actionName = '配送';
             }
             else {
                 actionName = '送信';
             }
             break;
-        case chevre.factory.actionType.UnRegisterAction:
+        case sdk_1.chevre.factory.actionType.UnRegisterAction:
             actionName = '登録解除';
             break;
         default:
@@ -206,7 +206,7 @@ function createFromAction(params) {
                     // case chevre.factory.action.authorize.award.point.ObjectType.PointAward:
                     //     object = { name: 'ポイント特典' };
                     //     break;
-                    case chevre.factory.order.OrderType.Order:
+                    case sdk_1.chevre.factory.order.OrderType.Order:
                         url = `/projects/${params.project.id}/orders/${a.object.orderNumber}`;
                         // object = { name: '注文' };
                         break;
@@ -238,7 +238,7 @@ function createFromAction(params) {
     catch (error) {
         // no op
     }
-    if (a.typeOf === chevre.factory.actionType.MoneyTransfer) {
+    if (a.typeOf === sdk_1.chevre.factory.actionType.MoneyTransfer) {
         const amount = a.amount;
         if (typeof amount === 'number') {
             object = { name: String(amount) };
@@ -254,16 +254,16 @@ function createFromAction(params) {
     else if (a.purpose !== undefined && a.purpose !== null) {
         purpose = { name: a.purpose.typeOf };
         switch (a.purpose.typeOf) {
-            case chevre.factory.order.OrderType.Order:
+            case sdk_1.chevre.factory.order.OrderType.Order:
                 purpose.url = `/projects/${params.project.id}/orders/${a.purpose.orderNumber}`;
                 // purpose = {
                 //     name: '注文',
                 //     url: `/projects/${params.project.id}/orders/${(<any>a.purpose).orderNumber}`
                 // };
                 break;
-            case chevre.factory.transactionType.MoneyTransfer:
-            case chevre.factory.transactionType.PlaceOrder:
-            case chevre.factory.transactionType.ReturnOrder:
+            case sdk_1.chevre.factory.transactionType.MoneyTransfer:
+            case sdk_1.chevre.factory.transactionType.PlaceOrder:
+            case sdk_1.chevre.factory.transactionType.ReturnOrder:
                 purpose.url = `/projects/${params.project.id}/transactions/${a.purpose.typeOf}/${a.purpose.id}`;
                 // purpose = {
                 //     name: '取引',
@@ -276,8 +276,8 @@ function createFromAction(params) {
     let result;
     if (a.result !== undefined && a.result !== null) {
         switch (a.typeOf) {
-            case chevre.factory.actionType.SendAction:
-                if (a.object.typeOf === chevre.factory.order.OrderType.Order) {
+            case sdk_1.chevre.factory.actionType.SendAction:
+                if (a.object.typeOf === sdk_1.chevre.factory.order.OrderType.Order) {
                     if (Array.isArray(a.result)) {
                         result = a.result.map((o) => {
                             return {
@@ -296,8 +296,8 @@ function createFromAction(params) {
                     }
                 }
                 break;
-            case chevre.factory.actionType.ReturnAction:
-                if (a.object.typeOf === chevre.factory.order.OrderType.Order) {
+            case sdk_1.chevre.factory.actionType.ReturnAction:
+                if (a.object.typeOf === sdk_1.chevre.factory.order.OrderType.Order) {
                     if (Array.isArray(a.result)) {
                         result = a.result.map((o) => {
                             return {
@@ -308,7 +308,7 @@ function createFromAction(params) {
                     }
                 }
                 break;
-            case chevre.factory.actionType.AuthorizeAction:
+            case sdk_1.chevre.factory.actionType.AuthorizeAction:
                 if (a.object.typeOf === 'OwnershipInfo') {
                     if (typeof a.result.code === 'string') {
                         result = [{
@@ -323,19 +323,19 @@ function createFromAction(params) {
     }
     let actionStatusDescription;
     switch (a.actionStatus) {
-        case chevre.factory.actionStatusType.ActiveActionStatus:
+        case sdk_1.chevre.factory.actionStatusType.ActiveActionStatus:
             actionStatusDescription = 'しようとしています...';
             break;
-        case chevre.factory.actionStatusType.CanceledActionStatus:
+        case sdk_1.chevre.factory.actionStatusType.CanceledActionStatus:
             actionStatusDescription = 'しましたが、取り消しました';
             break;
-        case chevre.factory.actionStatusType.CompletedActionStatus:
+        case sdk_1.chevre.factory.actionStatusType.CompletedActionStatus:
             actionStatusDescription = 'しました';
             break;
-        case chevre.factory.actionStatusType.FailedActionStatus:
+        case sdk_1.chevre.factory.actionStatusType.FailedActionStatus:
             actionStatusDescription = 'しようとしましたが、失敗しました';
             break;
-        case chevre.factory.actionStatusType.PotentialActionStatus:
+        case sdk_1.chevre.factory.actionStatusType.PotentialActionStatus:
             actionStatusDescription = 'する可能性があります';
             break;
         default:

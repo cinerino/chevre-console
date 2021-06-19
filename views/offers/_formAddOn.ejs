@@ -1,0 +1,35 @@
+<div class="form-row">
+    <% if (forms.itemOffered.typeOf === 'EventService') { %>
+    <div class="form-group bmd-form-group col-md-12">
+        <label for="availableAddOn" class="bmd-label-static">
+            アドオン
+            <a href="javascript:void(0);" data-toggle="tooltip"
+                title="<p class=&quot;text-left mb-0&quot;>プロダクト管理とオファーカタログ管理にて、アドオンとそのカタログを設定することで、オファーにアドオンを設定することができます。</p>"
+                style="pointer-events: auto;">
+                <span class="material-icons" style="font-size: 1.2em;">
+                    help
+                </span>
+            </a>
+        </label>
+
+        <% for (let addOn of addOns) { %>
+        <%
+        let checked = false;
+        if (Array.isArray(forms.addOn) && forms.addOn.some((a)=>a.itemOffered.id === addOn.id)) {
+            checked = true;
+        }
+        %>
+        <div class="form-check form-check-inline">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" <% if (checked) { %> checked="checked"
+                    <% } %> value="<%= addOn.id %>" name="addOn[itemOffered][id]"><%= addOn.name.ja %>
+                <span class="form-check-sign">
+                    <span class="check"></span>
+                </span>
+            </label>
+        </div>
+        <% } %>
+    </div>
+
+    <% } %>
+</div>

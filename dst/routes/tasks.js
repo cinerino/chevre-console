@@ -12,21 +12,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * タスクルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const tasksRouter = express_1.Router();
 tasksRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('tasks/index', {
         message: '',
-        TaskName: chevre.factory.taskName,
-        TaskStatus: chevre.factory.taskStatus
+        TaskName: sdk_1.chevre.factory.taskName,
+        TaskStatus: sdk_1.chevre.factory.taskStatus
     });
 }));
 tasksRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -34,7 +34,7 @@ tasksRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, funct
         const searchConditions = {
             limit: req.query.limit,
             page: req.query.page,
-            sort: { runsAt: chevre.factory.sortType.Descending },
+            sort: { runsAt: sdk_1.chevre.factory.sortType.Descending },
             project: { id: { $eq: req.project.id } },
             name: (typeof ((_a = req.query.name) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.name.$eq.length > 0)
                 ? req.query.name.$eq

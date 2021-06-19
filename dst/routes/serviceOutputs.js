@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * サービスアウトプットルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const serviceOutputsRouter = express_1.Router();
@@ -26,7 +26,7 @@ serviceOutputsRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h;
     try {
-        const serviceOutputService = new chevre.service.ServiceOutput({
+        const serviceOutputService = new sdk_1.chevre.service.ServiceOutput({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

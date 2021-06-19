@@ -1,12 +1,13 @@
 /**
  * 注文ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment';
 
 import { orderStatusTypes } from '../factory/orderStatusType';
+import * as TimelineFactory from '../factory/timeline';
 
 const ordersRouter = Router();
 
@@ -294,6 +295,37 @@ ordersRouter.get(
                 .json({
                     message: error.message
                 });
+        }
+    }
+);
+
+ordersRouter.get(
+    '/:orderNumber/actions',
+    async (req, res) => {
+        try {
+            const orderService = new chevre.service.Order({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const actions = await orderService.searchActionsByOrderNumber({
+                orderNumber: req.params.orderNumber,
+                sort: { startDate: chevre.factory.sortType.Ascending }
+            });
+
+            res.json(actions.map((a) => {
+                return {
+                    ...a,
+                    timeline: TimelineFactory.createFromAction({
+                        project: { id: req.project.id },
+                        action: a
+                    })
+                };
+            }));
+        } catch (error) {
+            res.status((typeof error.code === 'number') ? error.code : INTERNAL_SERVER_ERROR)
+                .json({ message: error.message });
         }
     }
 );

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * プロジェクトホームルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const moment = require("moment-timezone");
@@ -37,7 +37,7 @@ function searchRoleNames(req) {
         let roleNames = [];
         try {
             // 自分のロールを確認
-            const iamService = new chevre.service.IAM({
+            const iamService = new sdk_1.chevre.service.IAM({
                 endpoint: process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
@@ -64,7 +64,7 @@ function searchRoleNames(req) {
 }
 homeRouter.get('/projectAggregation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -81,7 +81,7 @@ homeRouter.get('/projectAggregation', (req, res) => __awaiter(void 0, void 0, vo
 }));
 homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -106,7 +106,7 @@ homeRouter.get('/dbStats', (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -135,7 +135,7 @@ homeRouter.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -148,7 +148,7 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, fu
                 .toDate(),
             runsThrough: moment()
                 .toDate(),
-            statuses: [chevre.factory.taskStatus.Ready]
+            statuses: [sdk_1.chevre.factory.taskStatus.Ready]
         });
         res.json(result);
     }
@@ -161,7 +161,7 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, fu
 }));
 homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const reservationService = new chevre.service.Reservation({
+        const reservationService = new sdk_1.chevre.service.Reservation({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -170,10 +170,10 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
             limit: 10,
             page: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.reservationType.EventReservation,
+            typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
             reservationStatuses: [
-                chevre.factory.reservationStatusType.ReservationConfirmed,
-                chevre.factory.reservationStatusType.ReservationPending
+                sdk_1.chevre.factory.reservationStatusType.ReservationConfirmed,
+                sdk_1.chevre.factory.reservationStatusType.ReservationPending
             ],
             bookingFrom: moment()
                 .add(-1, 'day')
@@ -190,7 +190,7 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
 }));
 homeRouter.get('/latestOrders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const orderService = new chevre.service.Order({
+        const orderService = new sdk_1.chevre.service.Order({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -198,7 +198,7 @@ homeRouter.get('/latestOrders', (req, res) => __awaiter(void 0, void 0, void 0, 
         const result = yield orderService.search({
             limit: 10,
             page: 1,
-            sort: { orderDate: chevre.factory.sortType.Descending },
+            sort: { orderDate: sdk_1.chevre.factory.sortType.Descending },
             project: { id: { $eq: req.project.id } },
             orderDate: {
                 $gte: moment()
@@ -217,12 +217,12 @@ homeRouter.get('/latestOrders', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const result = yield eventService.search(Object.assign({ typeOf: chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [chevre.factory.eventStatusType.EventScheduled], sort: { startDate: chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, inSessionFrom: moment()
+        const result = yield eventService.search(Object.assign({ typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [sdk_1.chevre.factory.eventStatusType.EventScheduled], sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, inSessionFrom: moment()
                 .add()
                 .toDate(), inSessionThrough: moment()
                 .tz('Asia/Tokyo')
@@ -241,7 +241,7 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
 }));
 homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -252,7 +252,7 @@ homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0
             limit: 10,
             page: 1,
             project: { ids: [req.project.id] },
-            statuses: [chevre.factory.taskStatus.Aborted],
+            statuses: [sdk_1.chevre.factory.taskStatus.Aborted],
             runsFrom: moment(runsThrough)
                 .add(-1, 'day')
                 .toDate(),
@@ -271,7 +271,7 @@ homeRouter.get('/timelines', (req, res) => __awaiter(void 0, void 0, void 0, fun
     var _a;
     try {
         const timelines = [];
-        const actionService = new chevre.service.Action({
+        const actionService = new sdk_1.chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: (_a = req.project) === null || _a === void 0 ? void 0 : _a.id }
@@ -280,7 +280,7 @@ homeRouter.get('/timelines', (req, res) => __awaiter(void 0, void 0, void 0, fun
             limit: Number(req.query.limit),
             page: Number(req.query.page),
             project: { id: { $eq: req.project.id } },
-            sort: { startDate: chevre.factory.sortType.Descending },
+            sort: { startDate: sdk_1.chevre.factory.sortType.Descending },
             startFrom: moment(req.query.startFrom)
                 .toDate(),
             startThrough: moment(req.query.startThrough)

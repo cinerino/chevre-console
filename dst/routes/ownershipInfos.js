@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 所有権ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment");
 const orderStatusType_1 = require("../factory/orderStatusType");
@@ -28,7 +28,7 @@ ownershipInfosRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g;
     try {
-        const ownershipInfoService = new chevre.service.OwnershipInfo({
+        const ownershipInfoService = new sdk_1.chevre.service.OwnershipInfo({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

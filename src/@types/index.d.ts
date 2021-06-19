@@ -1,7 +1,7 @@
 /**
  * アプリケーション特有の型
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 // import * as express from 'express';
 // import { ISubscription } from '../factory/subscription';
 

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 施設ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -35,7 +35,7 @@ movieTheaterRouter.all('/new', ...validate(),
                 debug(req.body);
                 req.body.id = '';
                 let movieTheater = yield createMovieTheaterFromBody(req, true);
-                const placeService = new chevre.service.Place({
+                const placeService = new sdk_1.chevre.service.Place({
                     endpoint: process.env.API_ENDPOINT,
                     auth: req.user.authClient,
                     project: { id: req.project.id }
@@ -60,23 +60,23 @@ movieTheaterRouter.all('/new', ...validate(),
         }
     }
     const defaultOffers = {
-        priceCurrency: chevre.factory.priceCurrency.JPY,
-        project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
-        typeOf: chevre.factory.offerType.Offer,
+        priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
+        project: { id: req.project.id, typeOf: sdk_1.chevre.factory.organizationType.Project },
+        typeOf: sdk_1.chevre.factory.offerType.Offer,
         eligibleQuantity: {
             typeOf: 'QuantitativeValue',
             maxValue: 6,
-            unitCode: chevre.factory.unitCode.C62
+            unitCode: sdk_1.chevre.factory.unitCode.C62
         },
         availabilityStartsGraceTime: {
             typeOf: 'QuantitativeValue',
             value: -2,
-            unitCode: chevre.factory.unitCode.Day
+            unitCode: sdk_1.chevre.factory.unitCode.Day
         },
         availabilityEndsGraceTime: {
             typeOf: 'QuantitativeValue',
             value: 1200,
-            unitCode: chevre.factory.unitCode.Sec
+            unitCode: sdk_1.chevre.factory.unitCode.Sec
         }
     };
     const forms = Object.assign({ additionalProperty: [], hasEntranceGate: [], hasPOS: [], name: {}, offers: defaultOffers }, req.body);
@@ -110,7 +110,7 @@ movieTheaterRouter.all('/new', ...validate(),
     else {
         forms.offers = defaultOffers;
     }
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -131,12 +131,12 @@ movieTheaterRouter.get('', (_, res) => {
 movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -206,7 +206,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
 }));
 movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -225,7 +225,7 @@ movieTheaterRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0
 function preDelete(req, movieTheater) {
     return __awaiter(this, void 0, void 0, function* () {
         // 施設コンテンツが存在するかどうか
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -233,7 +233,7 @@ function preDelete(req, movieTheater) {
         const searchEventsResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             location: { branchCode: { $eq: movieTheater.branchCode } }
         });
         if (searchEventsResult.data.length > 0) {
@@ -248,12 +248,12 @@ movieTheaterRouter.all('/:id/update', ...validate(),
     var _c;
     let message = '';
     let errors = {};
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -330,7 +330,7 @@ movieTheaterRouter.all('/:id/update', ...validate(),
 }));
 movieTheaterRouter.get('/:id/screeningRooms', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -378,7 +378,7 @@ function createMovieTheaterFromBody(req, isNew) {
     var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         const selectedSeller = JSON.parse(req.body.parentOrganization);
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -417,21 +417,21 @@ function createMovieTheaterFromBody(req, isNew) {
         }
         const url = (typeof req.body.url === 'string' && req.body.url.length > 0) ? req.body.url : undefined;
         const offers = {
-            priceCurrency: chevre.factory.priceCurrency.JPY,
-            project: { id: req.project.id, typeOf: chevre.factory.organizationType.Project },
-            typeOf: chevre.factory.offerType.Offer,
-            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.C62 }, (typeof ((_b = (_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.eligibleQuantity) === null || _b === void 0 ? void 0 : _b.maxValue) === 'number')
+            priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY,
+            project: { id: req.project.id, typeOf: sdk_1.chevre.factory.organizationType.Project },
+            typeOf: sdk_1.chevre.factory.offerType.Offer,
+            eligibleQuantity: Object.assign({ typeOf: 'QuantitativeValue', unitCode: sdk_1.chevre.factory.unitCode.C62 }, (typeof ((_b = (_a = req.body.offers) === null || _a === void 0 ? void 0 : _a.eligibleQuantity) === null || _b === void 0 ? void 0 : _b.maxValue) === 'number')
                 ? { maxValue: req.body.offers.eligibleQuantity.maxValue }
                 : undefined),
-            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Day }, (typeof ((_d = (_c = req.body.offers) === null || _c === void 0 ? void 0 : _c.availabilityStartsGraceTime) === null || _d === void 0 ? void 0 : _d.value) === 'number')
+            availabilityStartsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: sdk_1.chevre.factory.unitCode.Day }, (typeof ((_d = (_c = req.body.offers) === null || _c === void 0 ? void 0 : _c.availabilityStartsGraceTime) === null || _d === void 0 ? void 0 : _d.value) === 'number')
                 ? { value: req.body.offers.availabilityStartsGraceTime.value }
                 : undefined),
-            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: chevre.factory.unitCode.Sec }, (typeof ((_f = (_e = req.body.offers) === null || _e === void 0 ? void 0 : _e.availabilityEndsGraceTime) === null || _f === void 0 ? void 0 : _f.value) === 'number')
+            availabilityEndsGraceTime: Object.assign({ typeOf: 'QuantitativeValue', unitCode: sdk_1.chevre.factory.unitCode.Sec }, (typeof ((_f = (_e = req.body.offers) === null || _e === void 0 ? void 0 : _e.availabilityEndsGraceTime) === null || _f === void 0 ? void 0 : _f.value) === 'number')
                 ? { value: req.body.offers.availabilityEndsGraceTime.value }
                 : undefined)
         };
         // tslint:disable-next-line:no-unnecessary-local-variable
-        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: offers, parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        const movieTheater = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, id: req.body.id, typeOf: sdk_1.chevre.factory.placeType.MovieTheater, branchCode: req.body.branchCode, name: req.body.name, kanaName: req.body.kanaName, hasEntranceGate: hasEntranceGate, hasPOS: hasPOS, offers: offers, parentOrganization: parentOrganization, telephone: req.body.telephone, screenCount: 0, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name.length > 0)
                     .map((p) => {
                     return {

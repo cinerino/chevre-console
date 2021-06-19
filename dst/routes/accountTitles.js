@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 勘定科目管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -32,7 +32,7 @@ accountTitlesRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, funct
 accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     try {
-        const accountTitleService = new chevre.service.AccountTitle({
+        const accountTitleService = new sdk_1.chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -80,7 +80,7 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
 accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const accountTitleService = new chevre.service.AccountTitle({
+    const accountTitleService = new sdk_1.chevre.service.AccountTitle({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -143,7 +143,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(),
     try {
         let message = '';
         let errors = {};
-        const accountTitleService = new chevre.service.AccountTitle({
+        const accountTitleService = new sdk_1.chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -154,7 +154,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(),
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
         if (accountTitle === undefined) {
-            throw new chevre.factory.errors.NotFound('AccounTitle');
+            throw new sdk_1.chevre.factory.errors.NotFound('AccounTitle');
         }
         if (req.method === 'POST') {
             // バリデーション
@@ -228,7 +228,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(),
 function preDelete(req, accountTitle) {
     return __awaiter(this, void 0, void 0, function* () {
         // validation
-        const offerService = new chevre.service.Offer({
+        const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -252,7 +252,7 @@ function preDelete(req, accountTitle) {
 }
 function createFromBody(req) {
     return __awaiter(this, void 0, void 0, function* () {
-        const accountTitleService = new chevre.service.AccountTitle({
+        const accountTitleService = new sdk_1.chevre.service.AccountTitle({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

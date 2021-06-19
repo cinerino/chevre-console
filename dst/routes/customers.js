@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 顧客ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const google_libphonenumber_1 = require("google-libphonenumber");
@@ -30,7 +30,7 @@ customersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function*
 customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const customerService = new chevre.service.Customer({
+    const customerService = new sdk_1.chevre.service.Customer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -86,7 +86,7 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
 }));
 customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const customerService = new chevre.service.Customer({
+        const customerService = new sdk_1.chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -123,7 +123,7 @@ customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, 
 }));
 customersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const customerService = new chevre.service.Customer({
+        const customerService = new sdk_1.chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -140,7 +140,7 @@ customersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 customersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const customerService = new chevre.service.Customer({
+        const customerService = new sdk_1.chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -177,7 +177,7 @@ function preDelete(__, ___) {
 customersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const customerService = new chevre.service.Customer({
+    const customerService = new sdk_1.chevre.service.Customer({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -250,7 +250,7 @@ function createFromBody(req, isNew) {
         }
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Organization, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.organizationType.Organization, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

@@ -1,11 +1,11 @@
 /**
  * プロダクトルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
-import { body, validationResult } from 'express-validator';
+import { body, Meta, validationResult } from 'express-validator';
 import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as moment from 'moment-timezone';
 
@@ -89,6 +89,15 @@ productsRouter.all<any>(
             forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
                 return {};
             }));
+        }
+
+        if (req.method === 'POST') {
+            // カテゴリーを保管
+            if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
+                forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+            } else {
+                forms.serviceOutputCategory = undefined;
+            }
         }
 
         const searchOfferCatalogsResult = await offerCatalogService.search({
@@ -203,12 +212,16 @@ productsRouter.all<ParamsDictionary>(
             let message = '';
             let errors: any = {};
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
-
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
@@ -264,8 +277,39 @@ productsRouter.all<ParamsDictionary>(
                         .add(-1, 'day')
                         .tz('Asia/Tokyo')
                         .format('YYYY/MM/DD')
-                    : ''
+                    : '',
+                ...req.body
             };
+
+            if (req.method === 'POST') {
+                // カテゴリーを保管
+                if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
+                    forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+                } else {
+                    forms.serviceOutputCategory = undefined;
+                }
+            } else {
+                // カテゴリーを検索
+                if (typeof product.serviceOutput?.typeOf === 'string') {
+                    if (product.typeOf === chevre.factory.product.ProductType.MembershipService) {
+                        const searchOfferCategoriesResult = await categoryCodeService.search({
+                            limit: 1,
+                            project: { id: { $eq: req.project.id } },
+                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
+                            codeValue: { $eq: product.serviceOutput.typeOf }
+                        });
+                        forms.serviceOutputCategory = searchOfferCategoriesResult.data[0];
+                    } else if (product.typeOf === chevre.factory.product.ProductType.PaymentCard) {
+                        const searchOfferCategoriesResult = await categoryCodeService.search({
+                            limit: 1,
+                            project: { id: { $eq: req.project.id } },
+                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                            codeValue: { $eq: product.serviceOutput.typeOf }
+                        });
+                        forms.serviceOutputCategory = searchOfferCategoriesResult.data[0];
+                    }
+                }
+            }
 
             const searchOfferCatalogsResult = await offerCatalogService.search({
                 limit: 100,
@@ -315,24 +359,16 @@ async function preDelete(req: Request, product: chevre.factory.product.IProduct)
 productsRouter.get(
     '',
     async (req, res) => {
-        const sellerService = new chevre.service.Seller({
-            endpoint: <string>process.env.API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
-        const searchSellersResult = await sellerService.search({ project: { id: { $eq: req.project.id } } });
-
         res.render('products/index', {
             message: '',
             productTypes: (typeof req.query.typeOf === 'string')
                 ? productTypes.filter((p) => p.codeValue === req.query.typeOf)
-                : productTypes,
-            sellers: searchSellersResult.data
+                : productTypes
         });
     }
 );
 
-// tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IProduct {
     let hasOfferCatalog: any;
     if (typeof req.body.hasOfferCatalog?.id === 'string' && req.body.hasOfferCatalog?.id.length > 0) {
@@ -342,13 +378,38 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
         };
     }
 
-    let serviceOutput: chevre.factory.product.IServiceOutput | chevre.factory.product.IServiceOutput | undefined;
+    let serviceOutput: chevre.factory.product.IServiceOutput | undefined;
     if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
         try {
             serviceOutput = JSON.parse(req.body.serviceOutputStr);
         } catch (error) {
             throw new Error(`invalid serviceOutput ${error.message}`);
         }
+    }
+
+    switch (req.body.typeOf) {
+        case chevre.factory.product.ProductType.MembershipService:
+        case chevre.factory.product.ProductType.PaymentCard:
+            let serviceOutputCategory: any;
+            try {
+                serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+            } catch (error) {
+                throw new Error(`invalid serviceOutputCategory ${error.message}`);
+            }
+
+            if (serviceOutput === undefined) {
+                serviceOutput = {
+                    project: { typeOf: req.project.typeOf, id: req.project.id },
+                    typeOf: serviceOutputCategory.codeValue
+                };
+            } else {
+                serviceOutput.typeOf = serviceOutputCategory.codeValue;
+            }
+
+            break;
+
+        default:
+            serviceOutput = undefined;
     }
 
     let offers: chevre.factory.offer.IOffer[] | undefined;
@@ -445,7 +506,22 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('英語名称', 30))
+            .withMessage(Message.Common.getMaxLength('英語名称', 30)),
+
+        body('serviceOutputCategory')
+            .if((_: any, { req }: Meta) => [
+                chevre.factory.product.ProductType.MembershipService
+            ].includes(req.body.typeOf))
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーシップ区分')),
+
+        body('serviceOutputCategory')
+            .if((_: any, { req }: Meta) => [
+                chevre.factory.product.ProductType.PaymentCard
+            ].includes(req.body.typeOf))
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '口座区分'))
+
     ];
 }
 

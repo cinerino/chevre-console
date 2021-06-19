@@ -1,7 +1,7 @@
 /**
  * 単価オファー管理ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 import { Request, Router } from 'express';
 // tslint:disable-next-line:no-implicit-dependencies
 import { ParamsDictionary } from 'express-serve-static-core';
@@ -11,7 +11,7 @@ import * as moment from 'moment-timezone';
 
 import * as Message from '../message';
 
-import { ProductType } from '../factory/productType';
+import { ProductType, productTypes } from '../factory/productType';
 
 import { searchApplications, SMART_THEATER_CLIENT_NEW, SMART_THEATER_CLIENT_OLD } from './offers';
 
@@ -84,6 +84,7 @@ ticketTypeMasterRouter.all<any>(
             name: {},
             alternateName: {},
             description: {},
+            itemOffered: { typeOf: ProductType.EventService },
             priceSpecification: {
                 referenceQuantity: {
                     value: 1
@@ -118,6 +119,32 @@ ticketTypeMasterRouter.all<any>(
                 forms.accounting = JSON.parse(req.body.accounting);
             } else {
                 forms.accounting = undefined;
+            }
+
+            // 利用可能アプリケーションを保管
+            const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+            if (Array.isArray(availableAtOrFromParams)) {
+                forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                    return { id: applicationId };
+                });
+            } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                forms.availableAtOrFrom = { id: availableAtOrFromParams };
+            }
+
+            // アドオンを保管
+            let addOnItemOfferedIds: string[] = req.body.addOn?.itemOffered?.id;
+            if (typeof addOnItemOfferedIds === 'string') {
+                addOnItemOfferedIds = [addOnItemOfferedIds];
+            }
+            if (Array.isArray(addOnItemOfferedIds)) {
+                forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
+                    return {
+                        typeOf: chevre.factory.offerType.Offer,
+                        itemOffered: {
+                            id: addOnItemOfferedId
+                        }
+                    };
+                });
             }
 
             // 適用決済カードを保管
@@ -171,6 +198,7 @@ ticketTypeMasterRouter.all<any>(
             errors: errors,
             forms: forms,
             addOns: searchAddOnsResult.data,
+            productTypes: productTypes,
             applications: applications.map((d) => d.member)
                 .sort((a, b) => {
                     if (String(a.name) < String(b.name)) {
@@ -245,22 +273,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 throw new Error('ticketType.priceSpecification undefined');
             }
 
-            // let isBoxTicket = false;
-            // let isOnlineTicket = false;
-            // switch (ticketType.availability) {
-            //     case chevre.factory.itemAvailability.InStock:
-            //         isBoxTicket = true;
-            //         isOnlineTicket = true;
-            //         break;
-            //     case chevre.factory.itemAvailability.InStoreOnly:
-            //         isBoxTicket = true;
-            //         break;
-            //     case chevre.factory.itemAvailability.OnlineOnly:
-            //         isOnlineTicket = true;
-            //         break;
-            //     default:
-            // }
-
             let seatReservationUnit = 1;
             if (ticketType.priceSpecification.referenceQuantity.value !== undefined) {
                 seatReservationUnit = ticketType.priceSpecification.referenceQuantity.value;
@@ -291,8 +303,6 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                         .format('YYYY/MM/DD')
                     : '',
                 ...req.body,
-                // isBoxTicket: (_.isEmpty(req.body.isBoxTicket)) ? isBoxTicket : req.body.isBoxTicket,
-                // isOnlineTicket: (_.isEmpty(req.body.isOnlineTicket)) ? isOnlineTicket : req.body.isOnlineTicket,
                 seatReservationUnit: (typeof req.body.seatReservationUnit !== 'string' || req.body.seatReservationUnit.length === 0)
                     ? seatReservationUnit
                     : req.body.seatReservationUnit,
@@ -320,6 +330,32 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                     forms.accounting = JSON.parse(req.body.accounting);
                 } else {
                     forms.accounting = undefined;
+                }
+
+                // 利用可能アプリケーションを保管
+                const availableAtOrFromParams = req.body.availableAtOrFrom?.id;
+                if (Array.isArray(availableAtOrFromParams)) {
+                    forms.availableAtOrFrom = availableAtOrFromParams.map((applicationId) => {
+                        return { id: applicationId };
+                    });
+                } else if (typeof availableAtOrFromParams === 'string' && availableAtOrFromParams.length > 0) {
+                    forms.availableAtOrFrom = { id: availableAtOrFromParams };
+                }
+
+                // アドオンを保管
+                let addOnItemOfferedIds: string[] = req.body.addOn?.itemOffered?.id;
+                if (typeof addOnItemOfferedIds === 'string') {
+                    addOnItemOfferedIds = [addOnItemOfferedIds];
+                }
+                if (Array.isArray(addOnItemOfferedIds)) {
+                    forms.addOn = addOnItemOfferedIds.map((addOnItemOfferedId) => {
+                        return {
+                            typeOf: chevre.factory.offerType.Offer,
+                            itemOffered: {
+                                id: addOnItemOfferedId
+                            }
+                        };
+                    });
                 }
 
                 // 適用決済カードを保管
@@ -465,6 +501,7 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 errors: errors,
                 forms: forms,
                 addOns: searchAddOnsResult.data,
+                productTypes: productTypes,
                 applications: applications.map((d) => d.member)
                     .sort((a, b) => {
                         if (String(a.name) < String(b.name)) {

@@ -12,15 +12,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * アクションルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const actionsRouter = express_1.Router();
 actionsRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('actions/index', {
         message: '',
-        ActionType: chevre.factory.actionType,
-        ActionStatusType: chevre.factory.actionStatusType
+        ActionType: sdk_1.chevre.factory.actionType,
+        ActionStatusType: sdk_1.chevre.factory.actionStatusType
     });
 }));
 actionsRouter.get('/search', 
@@ -28,7 +28,7 @@ actionsRouter.get('/search',
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24;
     try {
-        const actionService = new chevre.service.Action({
+        const actionService = new sdk_1.chevre.service.Action({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

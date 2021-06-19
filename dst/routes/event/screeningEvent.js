@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 上映イベント管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -38,12 +38,12 @@ const screeningEventRouter = express_1.Router();
 screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -77,12 +77,12 @@ screeningEventRouter.get('/search',
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c;
-    const eventService = new chevre.service.Event({
+    const eventService = new sdk_1.chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -101,7 +101,7 @@ screeningEventRouter.get('/search',
         const screeningRoomBranchCode = req.query.screen;
         const superEventWorkPerformedIdentifierEq = (_c = (_b = req.query.superEvent) === null || _b === void 0 ? void 0 : _b.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier;
         const onlyEventScheduled = req.query.onlyEventScheduled === '1';
-        const searchConditions = Object.assign({ sort: { startDate: chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, typeOf: chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+        const searchConditions = Object.assign({ sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [sdk_1.chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .add(days, 'day')
                 .toDate(), 
@@ -125,7 +125,7 @@ screeningEventRouter.get('/search',
                             ticketedSeat: {
                                 // 座席指定有のみの検索の場合
                                 typeOfs: req.query.onlyReservedSeatsAvailable === '1'
-                                    ? [chevre.factory.placeType.Seat]
+                                    ? [sdk_1.chevre.factory.placeType.Seat]
                                     : undefined
                             }
                         }
@@ -198,7 +198,7 @@ screeningEventRouter.get('/search',
     }
 }));
 screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
+    const eventService = new sdk_1.chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -206,7 +206,7 @@ screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(
     try {
         const searchResult = yield eventService.search({
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             location: {
                 branchCodes: [req.query.movieTheaterBranchCode]
             },
@@ -228,7 +228,7 @@ screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(
 }));
 screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -263,10 +263,29 @@ screeningEventRouter.post('/regist', ...addValidation(), (req, res) => __awaiter
         }
     }
 }));
+/**
+ * イベント詳細
+ */
+screeningEventRouter.get('/:eventId', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const eventService = new sdk_1.chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const event = yield eventService.findById({ id: req.params.eventId });
+        res.render('events/screeningEvent/details', {
+            event
+        });
+    }
+    catch (err) {
+        next(err);
+    }
+}));
 // tslint:disable-next-line:use-default-type-parameter
 screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -295,7 +314,7 @@ screeningEventRouter.post('/:eventId/update', ...updateValidation(), (req, res) 
 }));
 screeningEventRouter.put('/:eventId/cancel', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -305,7 +324,7 @@ screeningEventRouter.put('/:eventId/cancel', (req, res) => __awaiter(void 0, voi
             .tz('Asia/Tokyo')
             .isSameOrAfter(moment()
             .tz('Asia/Tokyo'), 'day')) {
-            event.eventStatus = chevre.factory.eventStatusType.EventCancelled;
+            event.eventStatus = sdk_1.chevre.factory.eventStatusType.EventCancelled;
             yield eventService.update({ id: event.id, attributes: event });
             res.json({
                 error: undefined
@@ -327,21 +346,21 @@ screeningEventRouter.put('/:eventId/cancel', (req, res) => __awaiter(void 0, voi
 }));
 screeningEventRouter.post('/:eventId/aggregateReservation', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const taskAttributes = {
             project: { typeOf: req.project.typeOf, id: req.project.id },
-            name: chevre.factory.taskName.AggregateScreeningEvent,
-            status: chevre.factory.taskStatus.Ready,
+            name: sdk_1.chevre.factory.taskName.AggregateScreeningEvent,
+            status: sdk_1.chevre.factory.taskStatus.Ready,
             runsAt: new Date(),
             remainingNumberOfTries: 1,
             numberOfTried: 0,
             executionResults: [],
             data: {
-                typeOf: chevre.factory.eventType.ScreeningEvent,
+                typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
                 id: req.params.eventId
             }
         };
@@ -356,12 +375,12 @@ screeningEventRouter.post('/:eventId/aggregateReservation', (req, res) => __awai
 }));
 screeningEventRouter.get('/:id/hasOfferCatalog', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
-    const eventService = new chevre.service.Event({
+    const eventService = new sdk_1.chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const offerCatalogService = new chevre.service.OfferCatalog({
+    const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -369,7 +388,7 @@ screeningEventRouter.get('/:id/hasOfferCatalog', (req, res) => __awaiter(void 0,
     try {
         const event = yield eventService.findById({ id: req.params.id });
         if (typeof ((_d = event.hasOfferCatalog) === null || _d === void 0 ? void 0 : _d.id) !== 'string') {
-            throw new chevre.factory.errors.NotFound('OfferCatalog');
+            throw new sdk_1.chevre.factory.errors.NotFound('OfferCatalog');
         }
         const offerCatalog = yield offerCatalogService.findById({ id: event.hasOfferCatalog.id });
         res.json(offerCatalog);
@@ -382,7 +401,7 @@ screeningEventRouter.get('/:id/hasOfferCatalog', (req, res) => __awaiter(void 0,
     }
 }));
 screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const eventService = new chevre.service.Event({
+    const eventService = new sdk_1.chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -398,10 +417,66 @@ screeningEventRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, 
         });
     }
 }));
+screeningEventRouter.get('/:id/aggregateOffer', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const eventService = new sdk_1.chevre.service.Event({
+        endpoint: process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    try {
+        const event = yield eventService.findById({ id: req.params.id });
+        let offers = [];
+        const aggregateOffer = event.aggregateOffer;
+        if (Array.isArray(aggregateOffer === null || aggregateOffer === void 0 ? void 0 : aggregateOffer.offers)) {
+            offers = aggregateOffer.offers;
+        }
+        res.json(offers);
+    }
+    catch (error) {
+        res.status(http_status_1.INTERNAL_SERVER_ERROR)
+            .json({
+            message: error.message
+        });
+    }
+}));
+/**
+ * イベントの注文検索
+ */
+screeningEventRouter.get('/:id/orders', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        // const eventService = new chevre.service.Event({
+        //     endpoint: <string>process.env.API_ENDPOINT,
+        //     auth: req.user.authClient,
+        //     project: { id: req.project.id }
+        // });
+        const orderService = new sdk_1.chevre.service.Order({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        // const event = await eventService.findById({ id: req.params.id });
+        // const reservationStartDate = moment(`${event.coaInfo.rsvStartDate} 00:00:00+09:00`, 'YYYYMMDD HH:mm:ssZ').toDate();
+        const searchOrdersResult = yield orderService.search({
+            limit: req.query.limit,
+            page: req.query.page,
+            sort: { orderDate: sdk_1.chevre.factory.sortType.Descending },
+            project: { id: { $eq: req.project.id } },
+            acceptedOffers: {
+                itemOffered: {
+                    reservationFor: { ids: [String(req.params.id)] }
+                }
+            }
+        });
+        res.json(searchOrdersResult.data);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
 screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _e, _f, _g, _h, _j, _k;
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -428,12 +503,12 @@ screeningEventRouter.get('/:id/availableSeatOffers', (req, res) => __awaiter(voi
  */
 screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const taskService = new chevre.service.Task({
+        const taskService = new sdk_1.chevre.service.Task({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -447,8 +522,8 @@ screeningEventRouter.post('/importFromCOA', (req, res, next) => __awaiter(void 0
             .toDate();
         const taskAttributes = [{
                 project: { typeOf: req.project.typeOf, id: req.project.id },
-                name: chevre.factory.taskName.ImportEventsFromCOA,
-                status: chevre.factory.taskStatus.Ready,
+                name: sdk_1.chevre.factory.taskName.ImportEventsFromCOA,
+                status: sdk_1.chevre.factory.taskStatus.Ready,
                 runsAt: new Date(),
                 remainingNumberOfTries: 1,
                 numberOfTried: 0,
@@ -478,32 +553,32 @@ function createEventFromBody(req) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const user = req.user;
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -537,7 +612,7 @@ function createEventFromBody(req) {
             const searchServiceTypesResult = yield categoryCodeService.search({
                 limit: 1,
                 project: { id: { $eq: req.project.id } },
-                inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+                inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
                 codeValue: { $eq: offerCatagoryServiceTypeCode }
             });
             serviceType = searchServiceTypesResult.data.shift();
@@ -592,30 +667,30 @@ function createEventFromBody(req) {
             if (!Array.isArray(unacceptedPaymentMethod)) {
                 unacceptedPaymentMethod = [];
             }
-            unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
-            Object.keys(chevre.factory.paymentMethodType)
+            unacceptedPaymentMethod.push(sdk_1.chevre.factory.paymentMethodType.MovieTicket);
+            Object.keys(sdk_1.chevre.factory.paymentMethodType)
                 .forEach((key) => {
                 if (acceptedPaymentMethod === undefined) {
                     acceptedPaymentMethod = [];
                 }
-                const paymentMethodType = chevre.factory.paymentMethodType[key];
-                if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
+                const paymentMethodType = sdk_1.chevre.factory.paymentMethodType[key];
+                if (paymentMethodType !== sdk_1.chevre.factory.paymentMethodType.MovieTicket) {
                     acceptedPaymentMethod.push(paymentMethodType);
                 }
             });
         }
         const serviceOutput = (req.body.reservedSeatsAvailable === '1')
             ? {
-                typeOf: chevre.factory.reservationType.EventReservation,
+                typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                 reservedTicket: {
                     typeOf: 'Ticket',
                     ticketedSeat: {
-                        typeOf: chevre.factory.placeType.Seat
+                        typeOf: sdk_1.chevre.factory.placeType.Seat
                     }
                 }
             }
             : {
-                typeOf: chevre.factory.reservationType.EventReservation,
+                typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                 reservedTicket: {
                     typeOf: 'Ticket'
                 }
@@ -623,9 +698,9 @@ function createEventFromBody(req) {
         const offers = Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
             // id: catalog.id,
             // name: catalog.name,
-            typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
+            typeOf: sdk_1.chevre.factory.offerType.Offer, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
                 typeOf: 'QuantitativeValue',
-                unitCode: chevre.factory.unitCode.C62,
+                unitCode: sdk_1.chevre.factory.unitCode.C62,
                 maxValue: Number(req.body.maxSeatNumber),
                 value: 1
             }, itemOffered: {
@@ -657,7 +732,7 @@ function createEventFromBody(req) {
                 }
             }
         }
-        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEvent, doorTime: doorTime, startDate: startDate, endDate: endDate, workPerformed: screeningEventSeries.workPerformed, location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined), superEvent: screeningEventSeries, name: screeningEventSeries.name, eventStatus: chevre.factory.eventStatusType.EventScheduled, offers: offers, checkInCount: undefined, attendeeCount: undefined, additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, doorTime: doorTime, startDate: startDate, endDate: endDate, workPerformed: screeningEventSeries.workPerformed, location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined), superEvent: screeningEventSeries, name: screeningEventSeries.name, eventStatus: sdk_1.chevre.factory.eventStatusType.EventScheduled, offers: offers, checkInCount: undefined, attendeeCount: undefined, additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -680,32 +755,32 @@ function createEventFromBody(req) {
 function createMultipleEventFromBody(req, user) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const offerCatalogService = new chevre.service.OfferCatalog({
+        const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: user.authClient,
             project: { id: req.project.id }
         });
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const projectService = new chevre.service.Project({
+        const projectService = new sdk_1.chevre.service.Project({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: '' }
@@ -765,7 +840,7 @@ function createMultipleEventFromBody(req, user) {
         const searchServiceTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
         });
         const serviceTypes = searchServiceTypesResult.data;
         const attributes = [];
@@ -844,14 +919,14 @@ function createMultipleEventFromBody(req, user) {
                         if (!Array.isArray(unacceptedPaymentMethod)) {
                             unacceptedPaymentMethod = [];
                         }
-                        unacceptedPaymentMethod.push(chevre.factory.paymentMethodType.MovieTicket);
-                        Object.keys(chevre.factory.paymentMethodType)
+                        unacceptedPaymentMethod.push(sdk_1.chevre.factory.paymentMethodType.MovieTicket);
+                        Object.keys(sdk_1.chevre.factory.paymentMethodType)
                             .forEach((key) => {
                             if (acceptedPaymentMethod === undefined) {
                                 acceptedPaymentMethod = [];
                             }
-                            const paymentMethodType = chevre.factory.paymentMethodType[key];
-                            if (paymentMethodType !== chevre.factory.paymentMethodType.MovieTicket) {
+                            const paymentMethodType = sdk_1.chevre.factory.paymentMethodType[key];
+                            if (paymentMethodType !== sdk_1.chevre.factory.paymentMethodType.MovieTicket) {
                                 acceptedPaymentMethod.push(paymentMethodType);
                             }
                         });
@@ -868,18 +943,18 @@ function createMultipleEventFromBody(req, user) {
                     if (typeof offerCatagoryServiceTypeCode === 'string') {
                         serviceType = serviceTypes.find((t) => t.codeValue === offerCatagoryServiceTypeCode);
                         if (serviceType === undefined) {
-                            throw new chevre.factory.errors.NotFound('サービス区分');
+                            throw new sdk_1.chevre.factory.errors.NotFound('サービス区分');
                         }
                     }
                     const serviceOutput = (req.body.reservedSeatsAvailable === '1')
                         ? {
-                            typeOf: chevre.factory.reservationType.EventReservation,
+                            typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                             reservedTicket: {
                                 typeOf: 'Ticket',
-                                ticketedSeat: { typeOf: chevre.factory.placeType.Seat }
+                                ticketedSeat: { typeOf: sdk_1.chevre.factory.placeType.Seat }
                             }
                         } : {
-                        typeOf: chevre.factory.reservationType.EventReservation,
+                        typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
                         reservedTicket: {
                             typeOf: 'Ticket'
                         }
@@ -887,9 +962,9 @@ function createMultipleEventFromBody(req, user) {
                     const offers = Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, 
                         // id: ticketTypeGroup.id,
                         // name: ticketTypeGroup.name,
-                        typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
+                        typeOf: sdk_1.chevre.factory.offerType.Offer, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY, availabilityEnds: salesEndDate, availabilityStarts: onlineDisplayStartDate, eligibleQuantity: {
                             typeOf: 'QuantitativeValue',
-                            unitCode: chevre.factory.unitCode.C62,
+                            unitCode: sdk_1.chevre.factory.unitCode.C62,
                             maxValue: Number(req.body.maxSeatNumber),
                             value: 1
                         }, itemOffered: {
@@ -900,11 +975,11 @@ function createMultipleEventFromBody(req, user) {
                             id: seller.id,
                             name: seller.name
                         } }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined);
-                    attributes.push(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEvent, doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
+                    attributes.push(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, doorTime: moment(`${formattedDate}T${data.doorTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), startDate: eventStartDate, endDate: moment(`${formattedEndDate}T${data.endTime}+09:00`, 'YYYY/MM/DDTHHmmZ')
                             .toDate(), workPerformed: screeningEventSeries.workPerformed, location: Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: screeningRoom.typeOf, branchCode: screeningRoom.branchCode, name: screeningRoom.name === undefined
                                 ? { en: '', ja: '', kr: '' }
-                                : screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined), superEvent: screeningEventSeries, name: screeningEventSeries.name, eventStatus: chevre.factory.eventStatusType.EventScheduled, offers: offers, checkInCount: undefined, attendeeCount: undefined }, {
+                                : screeningRoom.name, alternateName: screeningRoom.alternateName, address: screeningRoom.address }, (typeof maximumAttendeeCapacity === 'number') ? { maximumAttendeeCapacity } : undefined), superEvent: screeningEventSeries, name: screeningEventSeries.name, eventStatus: sdk_1.chevre.factory.eventStatusType.EventScheduled, offers: offers, checkInCount: undefined, attendeeCount: undefined }, {
                         hasOfferCatalog: {
                             typeOf: 'OfferCatalog',
                             id: ticketTypeGroup.id

@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 施設コンテンツ管理ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const createDebug = require("debug");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
@@ -31,17 +31,17 @@ screeningEventSeriesRouter.all('/add', ...validate(),
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const creativeWorkService = new chevre.service.CreativeWork({
+    const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const eventService = new chevre.service.Event({
+    const eventService = new sdk_1.chevre.service.Event({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const placeService = new chevre.service.Place({
+    const placeService = new sdk_1.chevre.service.Place({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -105,7 +105,7 @@ screeningEventSeriesRouter.all('/add', ...validate(),
             forms.videoFormat = [];
         }
     }
-    const productService = new chevre.service.Product({
+    const productService = new sdk_1.chevre.service.Product({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -114,8 +114,8 @@ screeningEventSeriesRouter.all('/add', ...validate(),
         project: { id: { $eq: req.project.id } },
         typeOf: {
             $in: [
-                chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
             ]
         }
     });
@@ -135,12 +135,12 @@ screeningEventSeriesRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0
 screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d, _e, _f, _g, _h, _j;
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -148,7 +148,7 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
         const searchVideoFormatTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
-            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
+            inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } }
         });
         const videoFormatTypes = searchVideoFormatTypesResult.data;
         const limit = Number(req.query.limit);
@@ -156,10 +156,10 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
         const { data } = yield eventService.search({
             limit: limit,
             page: page,
-            sort: { startDate: chevre.factory.sortType.Ascending },
+            sort: { startDate: sdk_1.chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             name: req.query.name,
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
             location: {
                 branchCode: {
@@ -223,14 +223,14 @@ screeningEventSeriesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 
  */
 screeningEventSeriesRouter.get('/searchMovies', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const creativeWorkService = new chevre.service.CreativeWork({
+        const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const searchMovieResult = yield creativeWorkService.searchMovies({
             limit: 100,
-            sort: { identifier: chevre.factory.sortType.Ascending },
+            sort: { identifier: sdk_1.chevre.factory.sortType.Ascending },
             project: { ids: [req.project.id] },
             offers: {
                 availableFrom: new Date()
@@ -250,12 +250,12 @@ screeningEventSeriesRouter.get('/search',
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -275,7 +275,7 @@ screeningEventSeriesRouter.get('/search',
             limit: limit,
             page: page,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEventSeries,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             inSessionFrom: (fromDate !== undefined)
                 ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                     .toDate()
@@ -294,7 +294,7 @@ screeningEventSeriesRouter.get('/search',
             let mvtkFlg = 1;
             const unacceptedPaymentMethod = (_a = event.offers) === null || _a === void 0 ? void 0 : _a.unacceptedPaymentMethod;
             if (Array.isArray(unacceptedPaymentMethod)
-                && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
+                && unacceptedPaymentMethod.includes(sdk_1.chevre.factory.paymentMethodType.MovieTicket)) {
                 mvtkFlg = 0;
             }
             let translationType = '';
@@ -329,22 +329,22 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _k;
     try {
-        const creativeWorkService = new chevre.service.CreativeWork({
+        const creativeWorkService = new sdk_1.chevre.service.CreativeWork({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const categoryCodeService = new chevre.service.CategoryCode({
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -400,7 +400,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
         let mvtkFlg = 1;
         const unacceptedPaymentMethod = (_k = event.offers) === null || _k === void 0 ? void 0 : _k.unacceptedPaymentMethod;
         if (Array.isArray(unacceptedPaymentMethod)
-            && unacceptedPaymentMethod.includes(chevre.factory.paymentMethodType.MovieTicket)) {
+            && unacceptedPaymentMethod.includes(sdk_1.chevre.factory.paymentMethodType.MovieTicket)) {
             mvtkFlg = 0;
         }
         let translationType = '';
@@ -462,7 +462,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                 const searchVideoFormatsResult = yield categoryCodeService.search({
                     limit: 100,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.VideoFormatType } },
                     codeValue: { $in: event.videoFormat.map((v) => v.typeOf) }
                 });
                 forms.videoFormat = searchVideoFormatsResult.data;
@@ -471,7 +471,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
                 forms.videoFormat = [];
             }
         }
-        const productService = new chevre.service.Product({
+        const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -480,8 +480,8 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
             project: { id: { $eq: req.project.id } },
             typeOf: {
                 $in: [
-                    chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
-                    chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
+                    sdk_1.chevre.factory.service.paymentService.PaymentServiceType.CreditCard,
+                    sdk_1.chevre.factory.service.paymentService.PaymentServiceType.MovieTicket
                 ]
             }
         });
@@ -500,7 +500,7 @@ screeningEventSeriesRouter.all('/:eventId/update', ...validate(),
 }));
 screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -520,7 +520,7 @@ screeningEventSeriesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0
 function preDelete(req, eventSeries) {
     return __awaiter(this, void 0, void 0, function* () {
         // validation
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -528,7 +528,7 @@ function preDelete(req, eventSeries) {
         const searchEventsResult = yield eventService.search({
             limit: 1,
             project: { ids: [req.project.id] },
-            typeOf: chevre.factory.eventType.ScreeningEvent,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
             superEvent: { ids: [eventSeries.id] }
         });
         if (searchEventsResult.data.length > 0) {
@@ -538,12 +538,12 @@ function preDelete(req, eventSeries) {
 }
 screeningEventSeriesRouter.get('/:eventId/screeningEvents', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new chevre.service.Event({
+        const eventService = new sdk_1.chevre.service.Event({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const searchScreeningEventsResult = yield eventService.search(Object.assign(Object.assign(Object.assign({}, req.query), { typeOf: chevre.factory.eventType.ScreeningEvent, superEvent: { ids: [req.params.eventId] } }), {
+        const searchScreeningEventsResult = yield eventService.search(Object.assign(Object.assign(Object.assign({}, req.query), { typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, superEvent: { ids: [req.params.eventId] } }), {
             countDocuments: '1'
         }));
         res.json(searchScreeningEventsResult);
@@ -576,7 +576,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
     if (typeof unacceptedPaymentMethod === 'string') {
         unacceptedPaymentMethod = [unacceptedPaymentMethod];
     }
-    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.offerType.Offer, priceCurrency: chevre.factory.priceCurrency.JPY }, (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined);
+    const offers = Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.offerType.Offer, priceCurrency: sdk_1.chevre.factory.priceCurrency.JPY }, (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined);
     let subtitleLanguage;
     if (req.body.translationType === translationType_1.TranslationTypeCode.Subtitle) {
         subtitleLanguage = { typeOf: 'Language', name: 'Japanese' };
@@ -598,7 +598,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
     }
     const workPerformed = Object.assign({ project: movie.project, typeOf: movie.typeOf, id: movie.id, identifier: movie.identifier, name: movie.name }, (typeof movie.duration === 'string') ? { duration: movie.duration } : undefined);
     const duration = (typeof movie.duration === 'string') ? movie.duration : undefined;
-    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries, name: Object.assign({ ja: req.body.nameJa }, (typeof req.body.nameEn === 'string' && req.body.nameEn.length > 0) ? { en: req.body.nameEn } : undefined), kanaName: req.body.kanaName, location: {
             project: { typeOf: req.project.typeOf, id: req.project.id },
             id: movieTheater.id,
             typeOf: movieTheater.typeOf,
@@ -618,7 +618,7 @@ function createEventFromBody(req, movie, movieTheater, isNew) {
             ? moment(`${req.body.endDate}T00:00:00+09:00`, 'YYYY/MM/DDTHH:mm:ssZ')
                 .add(1, 'day')
                 .toDate()
-            : undefined, eventStatus: chevre.factory.eventStatusType.EventScheduled, additionalProperty: (Array.isArray(req.body.additionalProperty))
+            : undefined, eventStatus: sdk_1.chevre.factory.eventStatusType.EventScheduled, additionalProperty: (Array.isArray(req.body.additionalProperty))
             ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                 .map((p) => {
                 return {

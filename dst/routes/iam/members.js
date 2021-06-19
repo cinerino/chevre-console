@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * IAMメンバールーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -23,7 +23,7 @@ const iamMembersRouter = express_1.Router();
 iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const iamService = new chevre.service.IAM({
+    const iamService = new sdk_1.chevre.service.IAM({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -85,14 +85,14 @@ iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void
 iamMembersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('iam/members/index', {
         message: '',
-        TaskName: chevre.factory.taskName,
-        TaskStatus: chevre.factory.taskStatus
+        TaskName: sdk_1.chevre.factory.taskName,
+        TaskStatus: sdk_1.chevre.factory.taskStatus
     });
 }));
 iamMembersRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -136,12 +136,12 @@ iamMembersRouter.all('/:id/update', ...validate(),
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const iamService = new chevre.service.IAM({
+    const iamService = new sdk_1.chevre.service.IAM({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const userPoolService = new chevre.service.UserPool({
+    const userPoolService = new sdk_1.chevre.service.UserPool({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -193,7 +193,7 @@ iamMembersRouter.all('/:id/update', ...validate(),
         let userPoolClient;
         let profile;
         try {
-            if (member.member.typeOf === chevre.factory.creativeWorkType.WebApplication) {
+            if (member.member.typeOf === sdk_1.chevre.factory.creativeWorkType.WebApplication) {
                 // userPoolClient = await userPoolService.findClientById({
                 //     userPoolId: customerUserPoolId,
                 //     clientId: req.params.id
@@ -203,7 +203,7 @@ iamMembersRouter.all('/:id/update', ...validate(),
                     clientId: req.params.id
                 });
             }
-            else if (member.member.typeOf === chevre.factory.personType.Person) {
+            else if (member.member.typeOf === sdk_1.chevre.factory.personType.Person) {
                 profile = yield iamService.getMemberProfile({ member: { id: req.params.id } });
             }
         }
@@ -225,7 +225,7 @@ iamMembersRouter.all('/:id/update', ...validate(),
 }));
 iamMembersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.productTypes = exports.ProductType = void 0;
-const api_nodejs_client_1 = require("@chevre/api-nodejs-client");
-exports.ProductType = api_nodejs_client_1.factory.product.ProductType;
+const sdk_1 = require("@cinerino/sdk");
+exports.ProductType = sdk_1.factory.product.ProductType;
 const types = [
     { codeValue: exports.ProductType.EventService, name: '予約サービス' },
     { codeValue: exports.ProductType.Product, name: 'アドオン' }

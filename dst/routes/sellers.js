@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * 販売者ルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
@@ -24,7 +24,7 @@ const sellersRouter = express_1.Router();
 sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -69,13 +69,13 @@ sellersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0,
         message: message,
         errors: errors,
         forms: forms,
-        OrganizationType: chevre.factory.organizationType
+        OrganizationType: sdk_1.chevre.factory.organizationType
     });
 }));
 sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -85,7 +85,7 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
         const searchConditions = {
             limit: limit,
             page: page,
-            sort: { branchCode: chevre.factory.sortType.Ascending },
+            sort: { branchCode: sdk_1.chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             branchCode: {
                 $regex: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
@@ -122,7 +122,7 @@ sellersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, fu
 }));
 sellersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -139,7 +139,7 @@ sellersRouter.get('/:id', (req, res) => __awaiter(void 0, void 0, void 0, functi
 }));
 sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const sellerService = new chevre.service.Seller({
+        const sellerService = new sdk_1.chevre.service.Seller({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -158,7 +158,7 @@ sellersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, fun
 function preDelete(req, seller) {
     return __awaiter(this, void 0, void 0, function* () {
         // 施設が存在するかどうか
-        const placeService = new chevre.service.Place({
+        const placeService = new sdk_1.chevre.service.Place({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -177,12 +177,12 @@ function preDelete(req, seller) {
 sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
-    const categoryCodeService = new chevre.service.CategoryCode({
+    const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
-    const sellerService = new chevre.service.Seller({
+    const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
         auth: req.user.authClient,
         project: { id: req.project.id }
@@ -229,7 +229,7 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
                 const searchPaymentMethodTypesResult = yield categoryCodeService.search({
                     limit: 100,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
                     codeValue: { $in: seller.paymentAccepted.map((v) => v.paymentMethodType) }
                 });
                 forms.paymentAccepted = searchPaymentMethodTypesResult.data.map((c) => {
@@ -244,7 +244,7 @@ sellersRouter.all('/:id/update', ...validate(), (req, res, next) => __awaiter(vo
             message: message,
             errors: errors,
             forms: forms,
-            OrganizationType: chevre.factory.organizationType
+            OrganizationType: sdk_1.chevre.factory.organizationType
         });
     }
     catch (error) {
@@ -292,7 +292,7 @@ function createFromBody(req, isNew) {
         const branchCode = req.body.branchCode;
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: chevre.factory.organizationType.Corporation, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.organizationType.Corporation, id: req.body.id, name: Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja, en: req.body.name.en }), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {

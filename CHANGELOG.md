@@ -18,6 +18,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.28.0 - 2021-06-19
+
+### Added
+
+- イベント詳細ページを追加
+
+### Changed
+
+- アイテムごとのオファー編集テンプレートを共通化
+- オファー編集フォーム最適化
+- 単価オファーの提供アイテムを最適化
+- @cinerino/sdkで再構築
+- 注文検索結果にアクション表示を追加
+- プロダクト編集を最適化
+
 ## v2.27.0 - 2021-06-13
 
 ### Added

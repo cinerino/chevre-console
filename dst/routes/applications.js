@@ -12,13 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * アプリケーションルーター
  */
-const chevre = require("@chevre/api-nodejs-client");
+const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const http_status_1 = require("http-status");
 const applicationsRouter = express_1.Router();
 applicationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const iamService = new chevre.service.IAM({
+        const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
@@ -34,7 +34,7 @@ applicationsRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
         const searchConditions = {
             limit: limit,
             member: {
-                typeOf: { $eq: chevre.factory.chevre.creativeWorkType.WebApplication },
+                typeOf: { $eq: sdk_1.chevre.factory.chevre.creativeWorkType.WebApplication },
                 name: { $regex: (typeof nameRegex === 'string' && nameRegex.length > 0) ? nameRegex : undefined }
             }
         };

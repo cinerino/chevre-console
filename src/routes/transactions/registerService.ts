@@ -1,7 +1,7 @@
 /**
  * サービス登録取引ルーター
  */
-import * as chevre from '@chevre/api-nodejs-client';
+import { chevre } from '@cinerino/sdk';
 // import * as createDebug from 'debug';
 import * as express from 'express';
 import * as moment from 'moment';
