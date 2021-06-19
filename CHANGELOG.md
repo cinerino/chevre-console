@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## v2.28.0 - 2021-06-19
+
+### Added
+
 - イベント詳細ページを追加
 
 ### Changed
@@ -18,14 +32,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - @cinerino/sdkで再構築
 - 注文検索結果にアクション表示を追加
 - プロダクト編集を最適化
-
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
 
 ## v2.27.0 - 2021-06-13
 
