@@ -43,6 +43,12 @@ $(function () {
         });
     }
 
+    var serviceOutputCategoryIdentifier = 'noexistingType';
+    if (productType === 'MembershipService') {
+        serviceOutputCategoryIdentifier = 'MembershipType';
+    } else if (productType === 'PaymentCard') {
+        serviceOutputCategoryIdentifier = 'PaymentMethodType';
+    }
     $('#serviceOutputCategory').select2({
         // width: 'resolve', // need to override the changed default,
         placeholder: '選択する',
@@ -55,7 +61,7 @@ $(function () {
                     limit: 100,
                     page: 1,
                     name: { $regex: params.term },
-                    inCodeSet: { identifier: 'MembershipType' }
+                    inCodeSet: { identifier: serviceOutputCategoryIdentifier }
                 }
 
                 // Query parameters will be ?search=[term]&type=public
