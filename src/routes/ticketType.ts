@@ -428,13 +428,13 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 // 適用通貨区分を検索
                 if (Array.isArray(ticketType.eligibleMonetaryAmount)
                     && typeof ticketType.eligibleMonetaryAmount[0]?.currency === 'string') {
-                    const searchEligibleAccountTypesResult = await categoryCodeService.search({
+                    const searchEligibleCurrencyTypesResult = await categoryCodeService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
-                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType } },
                         codeValue: { $eq: ticketType.eligibleMonetaryAmount[0]?.currency }
                     });
-                    forms.eligibleMonetaryAmount = searchEligibleAccountTypesResult.data[0];
+                    forms.eligibleMonetaryAmount = searchEligibleCurrencyTypesResult.data[0];
                     forms.eligibleMonetaryAmountValue = ticketType.eligibleMonetaryAmount[0]?.value;
                 } else {
                     forms.eligibleMonetaryAmount = undefined;
@@ -833,11 +833,11 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     // }
     if (typeof req.body.eligibleMonetaryAmount === 'string' && req.body.eligibleMonetaryAmount.length > 0
         && typeof req.body.eligibleMonetaryAmountValue === 'string' && req.body.eligibleMonetaryAmountValue.length > 0) {
-        const selectedAccountType = JSON.parse(req.body.eligibleMonetaryAmount);
+        const selectedCurrencyType = JSON.parse(req.body.eligibleMonetaryAmount);
 
         eligibleMonetaryAmount = [{
             typeOf: 'MonetaryAmount',
-            currency: selectedAccountType.codeValue,
+            currency: selectedCurrencyType.codeValue,
             value: Number(req.body.eligibleMonetaryAmountValue)
         }];
     }

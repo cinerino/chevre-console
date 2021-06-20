@@ -160,7 +160,7 @@ $(function () {
                     limit: 100,
                     page: 1,
                     name: { $regex: params.term },
-                    inCodeSet: { identifier: 'AccountType' }
+                    inCodeSet: { identifier: 'CurrencyType' }
                 }
 
                 // Query parameters will be ?search=[term]&type=public

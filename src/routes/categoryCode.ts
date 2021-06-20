@@ -382,7 +382,7 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
 
     switch (categoryCode.inCodeSet.identifier) {
         // 通貨区分
-        case chevre.factory.categoryCode.CategorySetIdentifier.AccountType:
+        case chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType:
             break;
         // レイティング区分
         case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:

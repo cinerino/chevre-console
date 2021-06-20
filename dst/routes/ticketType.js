@@ -382,13 +382,13 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             // 適用通貨区分を検索
             if (Array.isArray(ticketType.eligibleMonetaryAmount)
                 && typeof ((_u = ticketType.eligibleMonetaryAmount[0]) === null || _u === void 0 ? void 0 : _u.currency) === 'string') {
-                const searchEligibleAccountTypesResult = yield categoryCodeService.search({
+                const searchEligibleCurrencyTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
-                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType } },
                     codeValue: { $eq: (_v = ticketType.eligibleMonetaryAmount[0]) === null || _v === void 0 ? void 0 : _v.currency }
                 });
-                forms.eligibleMonetaryAmount = searchEligibleAccountTypesResult.data[0];
+                forms.eligibleMonetaryAmount = searchEligibleCurrencyTypesResult.data[0];
                 forms.eligibleMonetaryAmountValue = (_w = ticketType.eligibleMonetaryAmount[0]) === null || _w === void 0 ? void 0 : _w.value;
             }
             else {
@@ -748,10 +748,10 @@ function createFromBody(req, isNew) {
         // }
         if (typeof req.body.eligibleMonetaryAmount === 'string' && req.body.eligibleMonetaryAmount.length > 0
             && typeof req.body.eligibleMonetaryAmountValue === 'string' && req.body.eligibleMonetaryAmountValue.length > 0) {
-            const selectedAccountType = JSON.parse(req.body.eligibleMonetaryAmount);
+            const selectedCurrencyType = JSON.parse(req.body.eligibleMonetaryAmount);
             eligibleMonetaryAmount = [{
                     typeOf: 'MonetaryAmount',
-                    currency: selectedAccountType.codeValue,
+                    currency: selectedCurrencyType.codeValue,
                     value: Number(req.body.eligibleMonetaryAmountValue)
                 }];
         }

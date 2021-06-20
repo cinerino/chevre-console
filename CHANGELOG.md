@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.29.1 - 2021-06-20
+
+### Changed
+
+- AccountTypeの使用を廃止してCurrencyTypeに変更
+
 ## v2.29.0 - 2021-06-20
 
 ### Changed
