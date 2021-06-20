@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- プロダクト編集をペイメントカードに対応
-- 区分にCurrencyTypeを追加
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.29.0 - 2021-06-20
+
+### Changed
+
+- プロダクト編集をペイメントカードに対応
+- 区分にCurrencyTypeを追加
 
 ## v2.28.0 - 2021-06-19
 
