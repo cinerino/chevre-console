@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- AccountTypeの使用を廃止してCurrencyTypeに変更
+
 ### Deprecated
 
 ### Removed

@@ -324,7 +324,7 @@ function preDelete(req, categoryCode) {
         }
         switch (categoryCode.inCodeSet.identifier) {
             // 通貨区分
-            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.AccountType:
+            case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType:
                 break;
             // レイティング区分
             case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
