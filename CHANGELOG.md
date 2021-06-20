@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
+- プロダクト編集をペイメントカードに対応
+- 区分にCurrencyTypeを追加
+
 ### Deprecated
 
 ### Removed

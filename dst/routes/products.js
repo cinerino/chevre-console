@@ -23,7 +23,9 @@ const addOn_1 = require("./products/addOn");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const productsRouter = express_1.Router();
 productsRouter.use('/addOn', addOn_1.default);
-productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+productsRouter.all('/new', ...validate(), 
+// tslint:disable-next-line:max-func-body-length
+(req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const productService = new sdk_1.chevre.service.Product({
@@ -68,7 +70,7 @@ productsRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0
                 value: 1
             },
             accounting: {}
-        }, itemOffered: { name: {} } }, req.body);
+        }, itemOffered: { name: {} }, typeOf: req.query.typeOf }, req.body);
     if (forms.additionalProperty.length < NUM_ADDITIONAL_PROPERTY) {
         // tslint:disable-next-line:prefer-array-literal
         forms.additionalProperty.push(...[...Array(NUM_ADDITIONAL_PROPERTY - forms.additionalProperty.length)].map(() => {
@@ -263,7 +265,7 @@ productsRouter.all('/:id', ...validate(),
                     const searchOfferCategoriesResult = yield categoryCodeService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
-                        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.AccountType } },
+                        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
                         codeValue: { $eq: product.serviceOutput.typeOf }
                     });
                     forms.serviceOutputCategory = searchOfferCategoriesResult.data[0];
@@ -446,7 +448,7 @@ function validate() {
             sdk_1.chevre.factory.product.ProductType.PaymentCard
         ].includes(req.body.typeOf))
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '口座区分'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分'))
     ];
 }
 exports.default = productsRouter;
