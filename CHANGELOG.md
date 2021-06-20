@@ -10,8 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- AccountTypeの使用を廃止してCurrencyTypeに変更
-
 ### Deprecated
 
 ### Removed
@@ -19,6 +17,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.29.1 - 2021-06-20
+
+### Changed
+
+- AccountTypeの使用を廃止してCurrencyTypeに変更
 
 ## v2.29.0 - 2021-06-20
 
