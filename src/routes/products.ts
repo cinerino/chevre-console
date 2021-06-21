@@ -94,11 +94,18 @@ productsRouter.all<any>(
         }
 
         if (req.method === 'POST') {
-            // カテゴリーを保管
+            // サービスアウトプットを保管
             if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
                 forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
             } else {
                 forms.serviceOutputCategory = undefined;
+            }
+
+            // 通貨区分を保管
+            if (typeof req.body.serviceOutputAmount === 'string' && req.body.serviceOutputAmount.length > 0) {
+                forms.serviceOutputAmount = JSON.parse(req.body.serviceOutputAmount);
+            } else {
+                forms.serviceOutputAmount = undefined;
             }
         }
 
@@ -174,9 +181,24 @@ productsRouter.get(
                         }
                     }
                 },
-                ...{
-                    name: {
-                        $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                name: {
+                    $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                },
+                serviceOutput: {
+                    amount: {
+                        currency: {
+                            $eq: (typeof req.query.serviceOutput?.amount?.currency === 'string'
+                                && req.query.serviceOutput.amount.currency.length > 0)
+                                ? req.query.serviceOutput.amount.currency
+                                : undefined
+                        }
+                    },
+                    typeOf: {
+                        $eq: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
+                            ? req.query.paymentMethodType
+                            : (typeof req.query.membershipType === 'string' && req.query.membershipType.length > 0)
+                                ? req.query.membershipType
+                                : undefined
                     }
                 }
             };
@@ -284,31 +306,56 @@ productsRouter.all<ParamsDictionary>(
             };
 
             if (req.method === 'POST') {
-                // カテゴリーを保管
+                // サービスアウトプットを保管
                 if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
                     forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
                 } else {
                     forms.serviceOutputCategory = undefined;
                 }
+
+                // 通貨区分を保管
+                if (typeof req.body.serviceOutputAmount === 'string' && req.body.serviceOutputAmount.length > 0) {
+                    forms.serviceOutputAmount = JSON.parse(req.body.serviceOutputAmount);
+                } else {
+                    forms.serviceOutputAmount = undefined;
+                }
             } else {
-                // カテゴリーを検索
+                // サービスアウトプットを保管
                 if (typeof product.serviceOutput?.typeOf === 'string') {
                     if (product.typeOf === chevre.factory.product.ProductType.MembershipService) {
-                        const searchOfferCategoriesResult = await categoryCodeService.search({
+                        const searchMembershipTypesResult = await categoryCodeService.search({
                             limit: 1,
                             project: { id: { $eq: req.project.id } },
                             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
                             codeValue: { $eq: product.serviceOutput.typeOf }
                         });
-                        forms.serviceOutputCategory = searchOfferCategoriesResult.data[0];
+                        forms.serviceOutputCategory = searchMembershipTypesResult.data[0];
                     } else if (product.typeOf === chevre.factory.product.ProductType.PaymentCard) {
-                        const searchOfferCategoriesResult = await categoryCodeService.search({
+                        const searchPaymentMethodTypesResult = await categoryCodeService.search({
                             limit: 1,
                             project: { id: { $eq: req.project.id } },
                             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
                             codeValue: { $eq: product.serviceOutput.typeOf }
                         });
-                        forms.serviceOutputCategory = searchOfferCategoriesResult.data[0];
+                        forms.serviceOutputCategory = searchPaymentMethodTypesResult.data[0];
+                    }
+                }
+
+                // 通貨区分を保管
+                if (typeof product.serviceOutput?.amount?.currency === 'string') {
+                    if (product.serviceOutput.amount.currency === chevre.factory.priceCurrency.JPY) {
+                        forms.serviceOutputAmount = {
+                            codeValue: product.serviceOutput.amount.currency,
+                            name: { ja: product.serviceOutput.amount.currency }
+                        };
+                    } else {
+                        const searchCurrencyTypesResult = await categoryCodeService.search({
+                            limit: 1,
+                            project: { id: { $eq: req.project.id } },
+                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType } },
+                            codeValue: { $eq: product.serviceOutput.amount.currency }
+                        });
+                        forms.serviceOutputAmount = searchCurrencyTypesResult.data[0];
                     }
                 }
             }
@@ -406,6 +453,17 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
                 };
             } else {
                 serviceOutput.typeOf = serviceOutputCategory.codeValue;
+            }
+
+            if (typeof req.body.serviceOutputAmount === 'string' && req.body.serviceOutputAmount.length > 0) {
+                let serviceOutputAmount: any;
+                try {
+                    serviceOutputAmount = JSON.parse(req.body.serviceOutputAmount);
+                } catch (error) {
+                    throw new Error(`invalid serviceOutputAmount ${error.message}`);
+                }
+
+                serviceOutput.amount = { currency: serviceOutputAmount.codeValue, typeOf: 'MonetaryAmount' };
             }
 
             break;
@@ -522,7 +580,14 @@ function validate() {
                 chevre.factory.product.ProductType.PaymentCard
             ].includes(req.body.typeOf))
             .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分'))
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
+
+        body('serviceOutputAmount')
+            .if((_: any, { req }: Meta) => [
+                chevre.factory.product.ProductType.PaymentCard
+            ].includes(req.body.typeOf))
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '通貨区分'))
 
     ];
 }

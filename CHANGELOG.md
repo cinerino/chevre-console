@@ -18,6 +18,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.30.0 - 2021-06-21
+
+### Changed
+
+- プロダクト検索条件拡張
+- オファー検索条件拡張
+- 区分削除前のバリデーション強化
+- プロダクト編集最適化
+
 ## v2.29.1 - 2021-06-20
 
 ### Changed

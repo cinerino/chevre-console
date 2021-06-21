@@ -126,6 +126,30 @@
                         <% } %>
                     </div>
                     <% } %>
+
+                    <% if (forms.typeOf === 'PaymentCard') { %>
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="serviceOutputAmount" class="bmd-label-static">
+                            通貨区分
+                        </label>
+                        <select class="form-control" name="serviceOutputAmount" id="serviceOutputAmount" style="width: 100%;" <% if (!isNew) { %>
+                            disabled="disabled" <% } %>>
+                            <% if (forms.serviceOutputAmount !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.serviceOutputAmount) %>" selected="selected">
+                                <%= forms.serviceOutputAmount.name.ja %></option>
+                            <% } %>
+                        </select>
+                        <% if (!isNew) { %>
+                        <input type="hidden" class="form-control" name="serviceOutputAmount" value="<%= JSON.stringify(forms.serviceOutputAmount) %>">
+                        <% } %>
+
+                        <% if (errors && errors['serviceOutputAmount']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['serviceOutputAmount'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                    <% } %>
                 </div>
 
                 <div class="form-row">

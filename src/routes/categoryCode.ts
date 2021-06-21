@@ -364,6 +364,11 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
         auth: req.user.authClient,
         project: { id: req.project.id }
     });
+    const productService = new chevre.service.Product({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
 
     // 関連する価格仕様
     const searchPriceSpecificationsResult = await priceSpecificationService.search({
@@ -381,8 +386,45 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
     }
 
     switch (categoryCode.inCodeSet.identifier) {
+        // メンバーシップ区分
+        case chevre.factory.categoryCode.CategorySetIdentifier.MembershipType:
+            const searchProductsResult = await productService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                serviceOutput: { typeOf: { $eq: categoryCode.codeValue } }
+            });
+            if (searchProductsResult.data.length > 0) {
+                throw new Error('関連するプロダクトが存在します');
+            }
+
+            const searchOffersResult4membershipType = await offerService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                eligibleMembershipType: { codeValue: { $eq: categoryCode.codeValue } }
+            });
+            if (searchOffersResult4membershipType.data.length > 0) {
+                throw new Error('関連するオファーが存在します');
+            }
+            break;
         // 通貨区分
         case chevre.factory.categoryCode.CategorySetIdentifier.CurrencyType:
+            const searchProductsResult4currencyType = await productService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                serviceOutput: { amount: { currency: { $eq: categoryCode.codeValue } } }
+            });
+            if (searchProductsResult4currencyType.data.length > 0) {
+                throw new Error('関連するプロダクトが存在します');
+            }
+
+            const searchOffersResult4currencyType = await offerService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                eligibleMonetaryAmount: { currency: { $eq: categoryCode.codeValue } }
+            });
+            if (searchOffersResult4currencyType.data.length > 0) {
+                throw new Error('関連するオファーが存在します');
+            }
             break;
         // レイティング区分
         case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
@@ -435,6 +477,14 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             break;
         // 決済方法区分
         case chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
+            const searchProductsResult4paymentMethodType = await productService.search({
+                limit: 1,
+                project: { id: { $eq: req.project.id } },
+                serviceOutput: { typeOf: { $eq: categoryCode.codeValue } }
+            });
+            if (searchProductsResult4paymentMethodType.data.length > 0) {
+                throw new Error('関連するプロダクトが存在します');
+            }
             break;
         // 座席区分
         case chevre.factory.categoryCode.CategorySetIdentifier.SeatingType:

@@ -379,7 +379,7 @@ offersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* ()
 offersRouter.get('/getlist', 
 // tslint:disable-next-line:max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _o, _p, _q, _r, _s, _t, _u;
+    var _o, _p, _q, _r, _s, _t, _u, _v;
     try {
         const offerService = new sdk_1.chevre.service.Offer({
             endpoint: process.env.API_ENDPOINT,
@@ -419,6 +419,14 @@ offersRouter.get('/getlist',
                         : undefined
                 }
             },
+            eligibleMonetaryAmount: {
+                currency: {
+                    $eq: (typeof ((_o = req.query.eligibleMonetaryAmount) === null || _o === void 0 ? void 0 : _o.currency) === 'string'
+                        && req.query.eligibleMonetaryAmount.currency.length > 0)
+                        ? req.query.eligibleMonetaryAmount.currency
+                        : undefined
+                }
+            },
             eligibleSeatingType: {
                 codeValue: {
                     $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)
@@ -428,8 +436,8 @@ offersRouter.get('/getlist',
             },
             itemOffered: {
                 typeOf: {
-                    $eq: (typeof ((_o = req.query.itemOffered) === null || _o === void 0 ? void 0 : _o.typeOf) === 'string' && ((_p = req.query.itemOffered) === null || _p === void 0 ? void 0 : _p.typeOf.length) > 0)
-                        ? (_q = req.query.itemOffered) === null || _q === void 0 ? void 0 : _q.typeOf : undefined
+                    $eq: (typeof ((_p = req.query.itemOffered) === null || _p === void 0 ? void 0 : _p.typeOf) === 'string' && ((_q = req.query.itemOffered) === null || _q === void 0 ? void 0 : _q.typeOf.length) > 0)
+                        ? (_r = req.query.itemOffered) === null || _r === void 0 ? void 0 : _r.typeOf : undefined
                 }
             },
             identifier: {
@@ -444,7 +452,7 @@ offersRouter.get('/getlist',
                 accounting: {
                     operatingRevenue: {
                         codeValue: {
-                            $eq: (typeof ((_r = req.query.accountTitle) === null || _r === void 0 ? void 0 : _r.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
+                            $eq: (typeof ((_s = req.query.accountTitle) === null || _s === void 0 ? void 0 : _s.codeValue) === 'string' && req.query.accountTitle.codeValue.length > 0)
                                 ? String(req.query.accountTitle.codeValue)
                                 : undefined
                         }
@@ -461,7 +469,7 @@ offersRouter.get('/getlist',
                         typeOf: {
                             $eq: (typeof req.query.appliesToMovieTicket === 'string'
                                 && req.query.appliesToMovieTicket.length > 0)
-                                ? (_s = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _s === void 0 ? void 0 : _s.typeOf
+                                ? (_t = JSON.parse(req.query.appliesToMovieTicket).paymentMethod) === null || _t === void 0 ? void 0 : _t.typeOf
                                 : undefined
                         }
                     }
@@ -499,7 +507,7 @@ offersRouter.get('/getlist',
             addOn: {
                 itemOffered: {
                     id: {
-                        $eq: (typeof ((_u = (_t = req.query.addOn) === null || _t === void 0 ? void 0 : _t.itemOffered) === null || _u === void 0 ? void 0 : _u.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
+                        $eq: (typeof ((_v = (_u = req.query.addOn) === null || _u === void 0 ? void 0 : _u.itemOffered) === null || _v === void 0 ? void 0 : _v.id) === 'string' && req.query.addOn.itemOffered.id.length > 0)
                             ? req.query.addOn.itemOffered.id
                             : undefined
                     }
