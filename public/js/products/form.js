@@ -85,4 +85,46 @@ $(function () {
         }
     });
 
+    $('#serviceOutputAmount').select2({
+        // width: 'resolve', // need to override the changed default,
+        placeholder: '選択する',
+        allowClear: true,
+        ajax: {
+            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
+            dataType: 'json',
+            data: function (params) {
+                var query = {
+                    limit: 100,
+                    page: 1,
+                    name: { $regex: params.term },
+                    inCodeSet: { identifier: 'CurrencyType' }
+                }
+
+                // Query parameters will be ?search=[term]&type=public
+                return query;
+            },
+            delay: 250, // wait 250 milliseconds before triggering the request
+            // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+            processResults: function (data, params) {
+                // movieOptions = data.data;
+
+                var defaultResults = [];
+                if (typeof params.term !== 'string' || params.term.length === 0) {
+                    defaultResults.push({ id: JSON.stringify({ codeValue: 'JPY', name: { ja: 'JPY' } }), text: 'JPY' });
+                }
+                data.results.forEach(function (categoryCode) {
+                    defaultResults.push({
+                        id: JSON.stringify({ codeValue: categoryCode.codeValue, name: categoryCode.name }),
+                        text: categoryCode.name.ja
+                    });
+                });
+
+
+                // Transforms the top-level key of the response object from 'items' to 'results'
+                return {
+                    results: defaultResults
+                };
+            }
+        }
+    });
 });
