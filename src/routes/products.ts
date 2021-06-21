@@ -174,9 +174,24 @@ productsRouter.get(
                         }
                     }
                 },
-                ...{
-                    name: {
-                        $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                name: {
+                    $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+                },
+                serviceOutput: {
+                    amount: {
+                        currency: {
+                            $eq: (typeof req.query.serviceOutput?.amount?.currency === 'string'
+                                && req.query.serviceOutput.amount.currency.length > 0)
+                                ? req.query.serviceOutput.amount.currency
+                                : undefined
+                        }
+                    },
+                    typeOf: {
+                        $eq: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
+                            ? req.query.paymentMethodType
+                            : (typeof req.query.membershipType === 'string' && req.query.membershipType.length > 0)
+                                ? req.query.membershipType
+                                : undefined
                     }
                 }
             };

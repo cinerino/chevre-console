@@ -484,6 +484,14 @@ offersRouter.get(
                             : undefined
                     }
                 },
+                eligibleMonetaryAmount: {
+                    currency: {
+                        $eq: (typeof req.query.eligibleMonetaryAmount?.currency === 'string'
+                            && req.query.eligibleMonetaryAmount.currency.length > 0)
+                            ? req.query.eligibleMonetaryAmount.currency
+                            : undefined
+                    }
+                },
                 eligibleSeatingType: {
                     codeValue: {
                         $eq: (typeof req.query.eligibleSeatingType === 'string' && req.query.eligibleSeatingType.length > 0)

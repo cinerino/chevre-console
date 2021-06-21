@@ -134,9 +134,18 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                         <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
                         <div class="form-group bmd-form-group col-md-2">
                             <label for="eligibleMembershipType" class="bmd-label-static">
-                                適用メンバーシップ区分
+                                適用メンバーシップ
                             </label>
                             <select class="form-control" name="eligibleMembershipType" id="eligibleMembershipType"
+                                style="width: 100%;">
+                            </select>
+                        </div>
+
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="eligibleMonetaryAmount[currency]" class="bmd-label-static">
+                                適用通貨区分
+                            </label>
+                            <select class="form-control" name="eligibleMonetaryAmount[currency]" id="eligibleMonetaryAmount[currency]"
                                 style="width: 100%;">
                             </select>
                         </div>

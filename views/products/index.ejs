@@ -52,8 +52,34 @@ PR-00
                                     </label>
                                     <input type="text" class="form-control" name="name" id="name" placeholder="" maxlength=30>
                                 </div>
-        
-                                <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+                            </div>
+
+                            <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="membershipType" class="bmd-label-static">
+                                        メンバーシップ区分
+                                    </label>
+                                    <select class="form-control" name="membershipType" id="membershipType" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="paymentMethodType" class="bmd-label-static">
+                                        決済方法区分
+                                    </label>
+                                    <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;">
+                                    </select>
+                                </div>
+
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="serviceOutput[amount][currency]" class="bmd-label-static">
+                                        アウトプット通貨区分
+                                    </label>
+                                    <select class="form-control" name="serviceOutput[amount][currency]" id="serviceOutput[amount][currency]" style="width: 100%;">
+                                    </select>
+                                </div>
+
                                 <div class="form-group bmd-form-group col-md-2">
                                     <label for="offers[$elemMatch][seller][id]" class="bmd-label-static">
                                         販売者
@@ -82,8 +108,8 @@ PR-00
                                         </div>
                                     </div>
                                 </div>
-                                <% } %>
                             </div>
+                            <% } %>
                         </form>
                     </div>
                 </div>
@@ -101,6 +127,8 @@ PR-00
 
                                     <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
                                     <th>Offers</th>
+                                    <th>アウトプットタイプ</th>
+                                    <th>通貨区分</th>
                                     <th>ServiceOutput</th>
                                     <% } %>
                                 </tr>
@@ -124,6 +152,12 @@ PR-00
                                         <a href="javascript:void(0)" class="showOffers" data-id="$id$">
                                             表示
                                         </a>
+                                    </td>
+                                    <td name="serviceOutput.typeOf">
+                                        $serviceOutput.typeOf$
+                                    </td>
+                                    <td name="serviceOutput.amount.currency">
+                                        $serviceOutput.amount.currency$
                                     </td>
                                     <td name="id__serviceOutput">
                                         <a href="javascript:void(0)" class="showServiceOutput" data-id="$id$">

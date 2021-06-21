@@ -111,7 +111,7 @@ productsRouter.all('/new', ...validate(),
 productsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     try {
         const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -130,9 +130,13 @@ productsRouter.get('/search',
             : undefined;
         const limit = Number(req.query.limit);
         const page = Number(req.query.page);
-        const searchConditions = Object.assign({ limit: limit, page: page, 
+        const searchConditions = {
+            limit: limit,
+            page: page,
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
-            project: { id: { $eq: req.project.id } }, typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq }, offers: {
+            project: { id: { $eq: req.project.id } },
+            typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq },
+            offers: {
                 $elemMatch: {
                     validFrom: {
                         $lte: (offersValidFromLte instanceof Date) ? offersValidFromLte : undefined
@@ -147,11 +151,28 @@ productsRouter.get('/search',
                             : undefined
                     }
                 }
-            } }, {
+            },
             name: {
                 $regex: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
+            },
+            serviceOutput: {
+                amount: {
+                    currency: {
+                        $eq: (typeof ((_k = (_j = req.query.serviceOutput) === null || _j === void 0 ? void 0 : _j.amount) === null || _k === void 0 ? void 0 : _k.currency) === 'string'
+                            && req.query.serviceOutput.amount.currency.length > 0)
+                            ? req.query.serviceOutput.amount.currency
+                            : undefined
+                    }
+                },
+                typeOf: {
+                    $eq: (typeof req.query.paymentMethodType === 'string' && req.query.paymentMethodType.length > 0)
+                        ? req.query.paymentMethodType
+                        : (typeof req.query.membershipType === 'string' && req.query.membershipType.length > 0)
+                            ? req.query.membershipType
+                            : undefined
+                }
             }
-        });
+        };
         const { data } = yield productService.search(searchConditions);
         res.json({
             success: true,
@@ -176,7 +197,7 @@ productsRouter.get('/search',
 productsRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _j;
+    var _l;
     try {
         let message = '';
         let errors = {};
@@ -251,7 +272,7 @@ productsRouter.all('/:id', ...validate(),
         }
         else {
             // カテゴリーを検索
-            if (typeof ((_j = product.serviceOutput) === null || _j === void 0 ? void 0 : _j.typeOf) === 'string') {
+            if (typeof ((_l = product.serviceOutput) === null || _l === void 0 ? void 0 : _l.typeOf) === 'string') {
                 if (product.typeOf === sdk_1.chevre.factory.product.ProductType.MembershipService) {
                     const searchOfferCategoriesResult = yield categoryCodeService.search({
                         limit: 1,
