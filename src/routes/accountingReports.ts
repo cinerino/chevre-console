@@ -6,14 +6,6 @@ import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
-export interface IAccountingReoprt {
-    mainEntity: IAction;
-    isPartOf: {
-        mainEntity: chevre.factory.order.IOrder;
-    };
-}
-
 const accountingReportsRouter = Router();
 
 accountingReportsRouter.get(
@@ -25,7 +17,6 @@ accountingReportsRouter.get(
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
-                // project: req.project
             });
 
             const searchConditions: any = {
@@ -34,7 +25,7 @@ accountingReportsRouter.get(
             };
 
             if (req.query.format === 'datatable') {
-                const conditions: any = {
+                const conditions: chevre.factory.report.accountingReport.ISearchConditions = {
                     limit: Number(searchConditions.limit),
                     page: Number(searchConditions.page),
                     project: { id: { $eq: req.project.id } },
@@ -82,7 +73,7 @@ accountingReportsRouter.get(
                 };
                 const searchResult = await accountingReportService.search(conditions);
 
-                searchResult.data = (<IAccountingReoprt[]>searchResult.data).map((a) => {
+                searchResult.data = searchResult.data.map((a) => {
                     const order = a.isPartOf.mainEntity;
 
                     let clientId = '';
@@ -103,17 +94,18 @@ accountingReportsRouter.get(
                         itemType = [(<any>order.acceptedOffers).itemOffered.typeOf];
                         itemTypeStr = (<any>order.acceptedOffers).itemOffered.typeOf;
                     }
-                    if (a.mainEntity.typeOf === 'PayAction' && a.mainEntity.purpose.typeOf === 'ReturnAction') {
+                    if (a.mainEntity.typeOf === chevre.factory.actionType.PayAction
+                        && a.mainEntity.purpose.typeOf === chevre.factory.actionType.ReturnAction) {
                         itemType = ['ReturnFee'];
                         itemTypeStr = 'ReturnFee';
                     }
 
-                    let amount;
-                    if (typeof (<any>a).object?.paymentMethod?.totalPaymentDue?.value === 'number') {
-                        amount = (<any>a).object.paymentMethod.totalPaymentDue.value;
-                    }
+                    // let amount;
+                    // if (typeof (<any>a).object?.paymentMethod?.totalPaymentDue?.value === 'number') {
+                    //     amount = (<any>a).object.paymentMethod.totalPaymentDue.value;
+                    // }
 
-                    let eventStartDates: any[] = [];
+                    let eventStartDates: Date[] = [];
                     if (Array.isArray(order.acceptedOffers)) {
                         eventStartDates = order.acceptedOffers
                             .filter((o) => o.itemOffered.typeOf === chevre.factory.reservationType.EventReservation)
@@ -126,7 +118,7 @@ accountingReportsRouter.get(
 
                     return {
                         ...a,
-                        amount,
+                        // amount,
                         itemType,
                         itemTypeStr,
                         eventStartDates,

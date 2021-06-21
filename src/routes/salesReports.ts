@@ -5,14 +5,6 @@ import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
-export interface IAccountingReoprt {
-    mainEntity: IAction;
-    isPartOf: {
-        mainEntity: chevre.factory.order.IOrder;
-    };
-}
-
 const salesReportsRouter = Router();
 
 salesReportsRouter.get(

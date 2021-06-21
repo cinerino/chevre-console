@@ -6,14 +6,6 @@ import { Router } from 'express';
 import { INTERNAL_SERVER_ERROR } from 'http-status';
 import * as moment from 'moment-timezone';
 
-export type IAction = chevre.factory.chevre.action.trade.pay.IAction | chevre.factory.chevre.action.trade.refund.IAction;
-export interface IAccountingReoprt {
-    mainEntity: IAction;
-    isPartOf: {
-        mainEntity: chevre.factory.order.IOrder;
-    };
-}
-
 const accountActionsRouter = Router();
 
 accountActionsRouter.get(
