@@ -25,7 +25,6 @@ accountingReportsRouter.get('',
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
-            // project: req.project
         });
         const searchConditions = {
             limit: req.query.limit,
@@ -67,7 +66,7 @@ accountingReportsRouter.get('',
                     } }) }, (req.query.unwindAcceptedOffers === '1') ? { $unwindAcceptedOffers: '1' } : undefined);
             const searchResult = yield accountingReportService.search(conditions);
             searchResult.data = searchResult.data.map((a) => {
-                var _a, _b, _c, _d, _e, _f;
+                var _a, _b, _c;
                 const order = a.isPartOf.mainEntity;
                 let clientId = '';
                 if (Array.isArray(order.customer.identifier)) {
@@ -87,14 +86,15 @@ accountingReportsRouter.get('',
                     itemType = [order.acceptedOffers.itemOffered.typeOf];
                     itemTypeStr = order.acceptedOffers.itemOffered.typeOf;
                 }
-                if (a.mainEntity.typeOf === 'PayAction' && a.mainEntity.purpose.typeOf === 'ReturnAction') {
+                if (a.mainEntity.typeOf === sdk_1.chevre.factory.actionType.PayAction
+                    && a.mainEntity.purpose.typeOf === sdk_1.chevre.factory.actionType.ReturnAction) {
                     itemType = ['ReturnFee'];
                     itemTypeStr = 'ReturnFee';
                 }
-                let amount;
-                if (typeof ((_d = (_c = (_b = a.object) === null || _b === void 0 ? void 0 : _b.paymentMethod) === null || _c === void 0 ? void 0 : _c.totalPaymentDue) === null || _d === void 0 ? void 0 : _d.value) === 'number') {
-                    amount = a.object.paymentMethod.totalPaymentDue.value;
-                }
+                // let amount;
+                // if (typeof (<any>a).object?.paymentMethod?.totalPaymentDue?.value === 'number') {
+                //     amount = (<any>a).object.paymentMethod.totalPaymentDue.value;
+                // }
                 let eventStartDates = [];
                 if (Array.isArray(order.acceptedOffers)) {
                     eventStartDates = order.acceptedOffers
@@ -102,10 +102,11 @@ accountingReportsRouter.get('',
                         .map((o) => o.itemOffered.reservationFor.startDate);
                     eventStartDates = [...new Set(eventStartDates)];
                 }
-                else if (((_f = (_e = order.acceptedOffers) === null || _e === void 0 ? void 0 : _e.itemOffered) === null || _f === void 0 ? void 0 : _f.typeOf) === sdk_1.chevre.factory.reservationType.EventReservation) {
+                else if (((_c = (_b = order.acceptedOffers) === null || _b === void 0 ? void 0 : _b.itemOffered) === null || _c === void 0 ? void 0 : _c.typeOf) === sdk_1.chevre.factory.reservationType.EventReservation) {
                     eventStartDates = [order.acceptedOffers.itemOffered.reservationFor.startDate];
                 }
-                return Object.assign(Object.assign({}, a), { amount,
+                return Object.assign(Object.assign({}, a), { 
+                    // amount,
                     itemType,
                     itemTypeStr,
                     eventStartDates, eventStartDatesStr: eventStartDates.map((d) => {
