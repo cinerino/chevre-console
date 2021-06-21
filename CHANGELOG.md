@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 - プロダクト検索条件拡張
 - オファー検索条件拡張
+- 区分削除前のバリデーション強化
 
 ### Deprecated
 
