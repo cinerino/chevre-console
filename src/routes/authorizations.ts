@@ -6,6 +6,7 @@ import { Router } from 'express';
 import * as moment from 'moment';
 
 import { orderStatusTypes } from '../factory/orderStatusType';
+import * as TimelineFactory from '../factory/timeline';
 
 const authorizationsRouter = Router();
 
@@ -81,6 +82,76 @@ authorizationsRouter.get(
                 count: 0,
                 results: []
             });
+        }
+    }
+);
+
+authorizationsRouter.all(
+    '/:id',
+    async (req, res, next) => {
+        try {
+            const message = undefined;
+
+            const actionService = new chevre.service.Action({
+                endpoint: <string>process.env.CHEVRE_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            const authorizationService = new chevre.service.Authorization({
+                endpoint: <string>process.env.CHEVRE_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            const searchAuthorizationsResult = await authorizationService.search({
+                limit: 1,
+                id: { $in: [req.params.id] },
+                project: { id: { $eq: req.project.id } }
+            });
+            const authorization = searchAuthorizationsResult.data.shift();
+            if (authorization === undefined) {
+                throw new chevre.factory.errors.NotFound('Authorization');
+            }
+
+            // アクション
+            const actionsOnAuthorizations: chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>[] = [];
+            const timelines: TimelineFactory.ITimeline[] = [];
+
+            try {
+                // コード発行
+                const searchAuthorizeActionsResult = await actionService.search({
+                    limit: 100,
+                    sort: { startDate: chevre.factory.sortType.Ascending },
+                    project: { id: { $eq: req.project.id } },
+                    typeOf: chevre.factory.actionType.AuthorizeAction,
+                    result: {
+                        typeOf: { $in: ['Authorization'] },
+                        // id: { $in: [(<any>authorization).id] }
+                        ...{
+                            code: { $in: [authorization.code] }
+                        }
+                    }
+                });
+                actionsOnAuthorizations.push(...searchAuthorizeActionsResult.data);
+
+                timelines.push(...actionsOnAuthorizations.map((a) => {
+                    return TimelineFactory.createFromAction({
+                        project: req.project,
+                        action: a
+                    });
+                }));
+            } catch (error) {
+                // no op
+            }
+
+            res.render('authorizations/show', {
+                moment: moment,
+                message: message,
+                authorization: authorization,
+                timelines: timelines
+            });
+        } catch (error) {
+            next(error);
         }
     }
 );

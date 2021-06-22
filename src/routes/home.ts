@@ -32,6 +32,97 @@ homeRouter.get(
     }
 );
 
+homeRouter.get(
+    '/analysis',
+    async (req, res, next) => {
+        try {
+            const iamService = new chevre.service.IAM({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            // const userPoolService = new cinerinoapi.service.UserPool({
+            //     endpoint: req.project.settings.API_ENDPOINT,
+            //     auth: req.user.authClient,
+            //     project: { id: req.project.id }
+            // });
+            const sellerService = new chevre.service.Seller({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+            // const projectService = new cinerinoapi.service.Project({
+            //     endpoint: req.project.settings.API_ENDPOINT,
+            //     auth: req.user.authClient
+            // });
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
+
+            // const project = await projectService.findById({ id: req.project.id });
+
+            // let userPool: cinerinoapi.factory.cognito.UserPoolType | undefined;
+            // let adminUserPool: cinerinoapi.factory.cognito.UserPoolType | undefined;
+            let applications: any[] = [];
+            let sellers: chevre.factory.seller.ISeller[] = [];
+            let paymentMethodTypes: chevre.factory.chevre.categoryCode.ICategoryCode[] = [];
+
+            // try {
+            //     if (project.settings !== undefined && project.settings.cognito !== undefined) {
+            //         userPool = await userPoolService.findById({
+            //             userPoolId: project.settings.cognito.customerUserPool.id
+            //         });
+
+            //         adminUserPool = await userPoolService.findById({
+            //             userPoolId: (<any>project).settings.cognito.adminUserPool.id
+            //         });
+            //     }
+            // } catch (error) {
+            //     // no op
+            // }
+
+            try {
+                // IAMメンバー検索(アプリケーション)
+                const searchMembersResult = await iamService.searchMembers({
+                    member: { typeOf: { $eq: chevre.factory.chevre.creativeWorkType.WebApplication } }
+                });
+                applications = searchMembersResult.data.map((m) => m.member);
+            } catch (error) {
+                // no op
+            }
+
+            try {
+                const searchSellersResult = await sellerService.search({});
+                sellers = searchSellersResult.data;
+            } catch (error) {
+                // no op
+            }
+
+            try {
+                const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                    inCodeSet: { identifier: { $eq: chevre.factory.chevre.categoryCode.CategorySetIdentifier.PaymentMethodType } }
+                });
+                paymentMethodTypes = searchPaymentMethodTypesResult.data;
+            } catch (error) {
+                // no op
+            }
+
+            res.render('analysis', {
+                message: 'Welcome to Chevre Console!',
+                applications: applications,
+                paymentMethodTypes,
+                sellers,
+                moment: moment,
+                timelines: []
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
 async function searchRoleNames(req: Request): Promise<string[]> {
     let roleNames: string[] = [];
 

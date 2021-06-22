@@ -48,9 +48,18 @@ ordersRouter.get(
             });
             const applications = searchApplicationsResult.data.map((d) => d.member);
 
-            const customerIdentifierIn: chevre.factory.propertyValue.IPropertyValue<string>[] = [];
+            const customerIdentifierAll: chevre.factory.propertyValue.IPropertyValue<string>[] = [];
             if (typeof req.query.application === 'string' && req.query.application.length > 0) {
-                customerIdentifierIn.push({ name: 'clientId', value: req.query.application });
+                customerIdentifierAll.push({ name: 'clientId', value: req.query.application });
+            }
+            if (typeof req.query.customer?.identifier === 'string' && req.query.customer.identifier.length > 0) {
+                const splitted = (<string>req.query.customer.identifier).split(':');
+                if (splitted.length > 1) {
+                    customerIdentifierAll.push({
+                        name: splitted[0],
+                        value: splitted[1]
+                    });
+                }
             }
 
             // let underNameIdEq: string | undefined;
@@ -58,11 +67,37 @@ ordersRouter.get(
             //     underNameIdEq = req.query.underName?.id;
             // }
 
+            let customerAdditionalPropertyIn: chevre.factory.person.IIdentifier | undefined;
+            if (typeof req.query.customer?.additionalProperty?.$in === 'string' && req.query.customer.additionalProperty.$in.length > 0) {
+                const splitted = (<string>req.query.customer.additionalProperty.$in).split(':');
+                if (splitted.length > 1) {
+                    customerAdditionalPropertyIn = [
+                        {
+                            name: splitted[0],
+                            value: splitted[1]
+                        }
+                    ];
+                }
+            }
+
+            let identifiers: chevre.factory.order.IIdentifier | undefined;
+            if (typeof req.query.identifier?.$in === 'string' && req.query.identifier.$in.length > 0) {
+                const splitted = (<string>req.query.identifier.$in).split(':');
+                if (splitted.length > 1) {
+                    identifiers = [
+                        {
+                            name: splitted[0],
+                            value: splitted[1]
+                        }
+                    ];
+                }
+            }
             const searchConditions: chevre.factory.order.ISearchConditions = {
                 limit: req.query.limit,
                 page: req.query.page,
                 sort: { orderDate: chevre.factory.sortType.Descending },
                 project: { id: { $eq: req.project.id } },
+                identifier: { $in: (Array.isArray(identifiers) && identifiers.length > 0) ? identifiers : undefined },
                 confirmationNumbers: (typeof req.query.confirmationNumber === 'string' && req.query.confirmationNumber.length > 0)
                     ? [req.query.confirmationNumber]
                     : undefined,
@@ -109,8 +144,11 @@ ordersRouter.get(
                     telephone: (typeof req.query.customer?.telephone === 'string' && req.query.customer.telephone.length > 0)
                         ? { $regex: req.query.customer.telephone }
                         : undefined,
+                    additionalProperty: {
+                        $in: customerAdditionalPropertyIn
+                    },
                     identifier: {
-                        $in: (customerIdentifierIn.length > 0) ? customerIdentifierIn : undefined
+                        $all: (customerIdentifierAll.length > 0) ? customerIdentifierAll : undefined
                     }
                 },
                 seller: {
