@@ -85,6 +85,7 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
     });
 }));
 customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     try {
         const customerService = new sdk_1.chevre.service.Customer({
             endpoint: process.env.API_ENDPOINT,
@@ -97,6 +98,9 @@ customersRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void 0, 
             limit: limit,
             page: page,
             project: { id: { $eq: req.project.id } },
+            branchCode: (typeof ((_a = req.query.branchCode) === null || _a === void 0 ? void 0 : _a.$regex) === 'string' && req.query.branchCode.$regex.length > 0)
+                ? { $regex: req.query.branchCode.$regex }
+                : undefined,
             name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? { $regex: req.query.name } : undefined
         };
         let data;

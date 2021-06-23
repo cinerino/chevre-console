@@ -33,8 +33,6 @@
                         <tr>
                             <th>コード</th>
                             <th>名称</th>
-                            <th>Tel</th>
-                            <th>URL</th>
                             <th>対応決済方法</th>
                             <th>追加特性</th>
                             <th></th>
@@ -44,13 +42,7 @@
                     <tbody>
                         <tr id="templateRow" _id="$id$">
                             <td name="branchCode|slice">$branchCode$</td>
-                            <td name="name.ja|slice">$name.ja$</td>
-                            <td name="telephone|slice">$telephone$</td>
-                            <td name="url__url|slice">
-                                <a target="_blank" href="$url$">
-                                    $url$
-                                    <i class=" material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                </a></td>
+                            <td name="name.ja|slice:20">$name.ja$</td>
                             <td name="id__paymentAcceptedCount">
                                 <a href="javascript:void(0)" class="showPaymentAccepted" data-id="$id$">
                                     $paymentAcceptedCount$

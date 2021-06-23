@@ -115,6 +115,9 @@ customersRouter.get(
                 limit: limit,
                 page: page,
                 project: { id: { $eq: req.project.id } },
+                branchCode: (typeof req.query.branchCode?.$regex === 'string' && req.query.branchCode.$regex.length > 0)
+                    ? { $regex: req.query.branchCode.$regex }
+                    : undefined,
                 name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? { $regex: req.query.name } : undefined
             };
 
