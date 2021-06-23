@@ -52,7 +52,7 @@ customersRouter.all<ParamsDictionary>(
 
                     const { data } = await customerService.search({
                         limit: 1,
-                        identifier: { $regex: `^${customer.identifier}$` }
+                        branchCode: { $regex: `^${customer.branchCode}$` }
                     });
                     if (data.length > 0) {
                         throw new Error('既に存在するコードです');
@@ -301,7 +301,7 @@ async function createFromBody(
         project: { typeOf: req.project.typeOf, id: req.project.id },
         typeOf: chevre.factory.organizationType.Organization,
         id: req.body.id,
-        identifier: req.body.identifier,
+        branchCode: req.body.branchCode,
         name: {
             ...nameFromJson,
             ja: req.body.name.ja,
@@ -344,7 +344,7 @@ async function createFromBody(
 
 function validate() {
     return [
-        body('identifier')
+        body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)

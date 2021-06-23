@@ -47,7 +47,7 @@ customersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 
                 let customer = yield createFromBody(req, true);
                 const { data } = yield customerService.search({
                     limit: 1,
-                    identifier: { $regex: `^${customer.identifier}$` }
+                    branchCode: { $regex: `^${customer.branchCode}$` }
                 });
                 if (data.length > 0) {
                     throw new Error('既に存在するコードです');
@@ -250,7 +250,7 @@ function createFromBody(req, isNew) {
         }
         const telephone = req.body.telephone;
         const url = req.body.url;
-        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.organizationType.Organization, id: req.body.id, identifier: req.body.identifier, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
+        return Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: sdk_1.chevre.factory.organizationType.Organization, id: req.body.id, branchCode: req.body.branchCode, name: Object.assign(Object.assign(Object.assign({}, nameFromJson), { ja: req.body.name.ja }), (typeof ((_a = req.body.name) === null || _a === void 0 ? void 0 : _a.en) === 'string') ? { en: req.body.name.en } : undefined), additionalProperty: (Array.isArray(req.body.additionalProperty))
                 ? req.body.additionalProperty.filter((p) => typeof p.name === 'string' && p.name !== '')
                     .map((p) => {
                     return {
@@ -274,7 +274,7 @@ function createFromBody(req, isNew) {
 }
 function validate() {
     return [
-        express_validator_1.body('identifier')
+        express_validator_1.body('branchCode')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'コード'))
             .matches(/^[0-9a-zA-Z]+$/)
