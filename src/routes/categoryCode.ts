@@ -11,6 +11,7 @@ import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as Message from '../message';
 
 import { categoryCodeSets } from '../factory/categoryCodeSet';
+import { RESERVED_CODE_VALUES } from '../factory/reservedCodeValues';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -622,7 +623,11 @@ function validate() {
             .matches(/^[0-9a-zA-Z\+]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20))
+            // 予約語除外
+            .not()
+            .isIn(RESERVED_CODE_VALUES)
+            .withMessage('予約語のため使用できません'),
 
         body('name.ja')
             .notEmpty()
