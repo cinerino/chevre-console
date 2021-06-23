@@ -85,16 +85,15 @@ authorizationsRouter.get('/search',
         });
     }
 }));
-authorizationsRouter.all('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+authorizationsRouter.get('/:id/actions', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const message = undefined;
         const actionService = new sdk_1.chevre.service.Action({
-            endpoint: process.env.CHEVRE_ENDPOINT,
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const authorizationService = new sdk_1.chevre.service.Authorization({
-            endpoint: process.env.CHEVRE_ENDPOINT,
+            endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
@@ -109,7 +108,6 @@ authorizationsRouter.all('/:id', (req, res, next) => __awaiter(void 0, void 0, v
         }
         // アクション
         const actionsOnAuthorizations = [];
-        const timelines = [];
         try {
             // コード発行
             const searchAuthorizeActionsResult = yield actionService.search({
@@ -122,22 +120,16 @@ authorizationsRouter.all('/:id', (req, res, next) => __awaiter(void 0, void 0, v
                 })
             });
             actionsOnAuthorizations.push(...searchAuthorizeActionsResult.data);
-            timelines.push(...actionsOnAuthorizations.map((a) => {
-                return TimelineFactory.createFromAction({
-                    project: req.project,
-                    action: a
-                });
-            }));
         }
         catch (error) {
             // no op
         }
-        res.render('authorizations/show', {
-            moment: moment,
-            message: message,
-            authorization: authorization,
-            timelines: timelines
-        });
+        res.json(actionsOnAuthorizations.map((a) => {
+            return Object.assign(Object.assign({}, a), { timeline: TimelineFactory.createFromAction({
+                    project: { id: req.project.id },
+                    action: a
+                }) });
+        }));
     }
     catch (error) {
         next(error);

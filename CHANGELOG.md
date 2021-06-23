@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 注文検索条件拡張
 - 区分コードから予約語を除外
 - 顧客コードをidentifier->branchCodeと変更
+- 承認検索にアクションを表示
 
 ### Deprecated
 

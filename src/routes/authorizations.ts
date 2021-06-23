@@ -86,19 +86,17 @@ authorizationsRouter.get(
     }
 );
 
-authorizationsRouter.all(
-    '/:id',
+authorizationsRouter.get(
+    '/:id/actions',
     async (req, res, next) => {
         try {
-            const message = undefined;
-
             const actionService = new chevre.service.Action({
-                endpoint: <string>process.env.CHEVRE_ENDPOINT,
+                endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
             const authorizationService = new chevre.service.Authorization({
-                endpoint: <string>process.env.CHEVRE_ENDPOINT,
+                endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
                 project: { id: req.project.id }
             });
@@ -115,7 +113,6 @@ authorizationsRouter.all(
 
             // アクション
             const actionsOnAuthorizations: chevre.factory.action.IAction<chevre.factory.action.IAttributes<any, any, any>>[] = [];
-            const timelines: TimelineFactory.ITimeline[] = [];
 
             try {
                 // コード発行
@@ -133,23 +130,19 @@ authorizationsRouter.all(
                     }
                 });
                 actionsOnAuthorizations.push(...searchAuthorizeActionsResult.data);
-
-                timelines.push(...actionsOnAuthorizations.map((a) => {
-                    return TimelineFactory.createFromAction({
-                        project: req.project,
-                        action: a
-                    });
-                }));
             } catch (error) {
                 // no op
             }
 
-            res.render('authorizations/show', {
-                moment: moment,
-                message: message,
-                authorization: authorization,
-                timelines: timelines
-            });
+            res.json(actionsOnAuthorizations.map((a) => {
+                return {
+                    ...a,
+                    timeline: TimelineFactory.createFromAction({
+                        project: { id: req.project.id },
+                        action: a
+                    })
+                };
+            }));
         } catch (error) {
             next(error);
         }
