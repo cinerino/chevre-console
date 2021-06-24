@@ -197,7 +197,7 @@ async function preDelete(req: Request, seller: chevre.factory.seller.ISeller) {
 
     const searchMovieTheatersResult = await placeService.searchMovieTheaters({
         limit: 1,
-        project: { ids: [req.project.id] },
+        project: { id: { $eq: req.project.id } },
         parentOrganization: { id: { $eq: seller.id } }
     });
     if (searchMovieTheatersResult.data.length > 0) {

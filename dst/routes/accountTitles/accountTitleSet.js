@@ -34,7 +34,7 @@ accountTitleSetRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
             const { data } = yield accountTitleService.searchAccountTitleSets({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
                     ? req.query.codeValue
                     : undefined,
@@ -125,7 +125,7 @@ accountTitleSetRouter.all('/:codeValue', ...validate(),
         project: { id: req.project.id }
     });
     const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
-        project: { ids: [req.project.id] },
+        project: { id: { $eq: req.project.id } },
         codeValue: { $eq: req.params.codeValue }
     });
     let accountTitleSet = searchAccountTitleSetsResult.data.shift();
@@ -217,7 +217,7 @@ function preDelete(req, accountTitleSet) {
             const searchAccountTitlesResult = yield accountTitleService.search({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 inCodeSet: {
                     codeValue: { $eq: accountTitleSet.codeValue },
                     inCodeSet: {
@@ -272,7 +272,7 @@ function createFromBody(req, isNew) {
             const selectedAccountTitleCategory = JSON.parse(req.body.inCodeSet);
             const searchAccountTitleCategoriesResult = yield accountTitleService.searchAccountTitleCategories({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedAccountTitleCategory.codeValue }
             });
             accountTitleCategory = searchAccountTitleCategoriesResult.data.shift();

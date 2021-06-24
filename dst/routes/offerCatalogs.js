@@ -209,7 +209,7 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             const searchEventsResult = yield eventService.search({
                 limit: 1,
                 typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 hasOfferCatalog: { id: { $eq: req.params.id } },
                 sort: { endDate: sdk_1.chevre.factory.sortType.Descending },
                 endFrom: new Date()

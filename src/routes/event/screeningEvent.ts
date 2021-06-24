@@ -60,7 +60,7 @@ screeningEventRouter.get(
 
             const searchMovieTheatersResult = await placeService.searchMovieTheaters({
                 limit: 1,
-                project: { ids: [req.project.id] }
+                project: { id: { $eq: req.project.id } }
             });
             if (searchMovieTheatersResult.data.length === 0) {
                 throw new Error('施設が見つかりません');
@@ -110,7 +110,7 @@ screeningEventRouter.get(
 
             const searchConditions: chevre.factory.event.ISearchConditions<chevre.factory.eventType.ScreeningEvent> = {
                 sort: { startDate: chevre.factory.sortType.Ascending },
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.eventType.ScreeningEvent,
                 eventStatuses: (onlyEventScheduled) ? [chevre.factory.eventStatusType.EventScheduled] : undefined,
                 inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
@@ -237,7 +237,7 @@ screeningEventRouter.get(
         });
         try {
             const searchResult = await eventService.search({
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 location: {
                     branchCodes: [req.query.movieTheaterBranchCode]

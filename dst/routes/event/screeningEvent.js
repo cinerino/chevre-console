@@ -57,7 +57,7 @@ screeningEventRouter.get('', (req, res, next) => __awaiter(void 0, void 0, void 
         const subscription = subscriptions.find((s) => s.identifier === subscriptionIdentifier);
         const searchMovieTheatersResult = yield placeService.searchMovieTheaters({
             limit: 1,
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } }
         });
         if (searchMovieTheatersResult.data.length === 0) {
             throw new Error('施設が見つかりません');
@@ -101,7 +101,7 @@ screeningEventRouter.get('/search',
         const screeningRoomBranchCode = req.query.screen;
         const superEventWorkPerformedIdentifierEq = (_c = (_b = req.query.superEvent) === null || _b === void 0 ? void 0 : _b.workPerformed) === null || _c === void 0 ? void 0 : _c.identifier;
         const onlyEventScheduled = req.query.onlyEventScheduled === '1';
-        const searchConditions = Object.assign({ sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [sdk_1.chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
+        const searchConditions = Object.assign({ sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { id: { $eq: req.project.id } }, typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, eventStatuses: (onlyEventScheduled) ? [sdk_1.chevre.factory.eventStatusType.EventScheduled] : undefined, inSessionFrom: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .toDate(), inSessionThrough: moment(`${date}T00:00:00+09:00`, 'YYYYMMDDTHH:mm:ssZ')
                 .add(days, 'day')
                 .toDate(), 
@@ -205,7 +205,7 @@ screeningEventRouter.get('/searchScreeningEventSeries', (req, res) => __awaiter(
     });
     try {
         const searchResult = yield eventService.search({
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             location: {
                 branchCodes: [req.query.movieTheaterBranchCode]

@@ -252,7 +252,7 @@ offerCatalogsRouter.delete(
                 const searchEventsResult = await eventService.search({
                     limit: 1,
                     typeOf: chevre.factory.eventType.ScreeningEvent,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     hasOfferCatalog: { id: { $eq: req.params.id } },
                     sort: { endDate: chevre.factory.sortType.Descending },
                     endFrom: new Date()

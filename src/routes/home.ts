@@ -249,7 +249,7 @@ homeRouter.get(
             });
             const result = await taskService.search({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 runsFrom: moment()
                     .add(-1, 'day')
                     .toDate(),
@@ -280,7 +280,7 @@ homeRouter.get(
             const result = await reservationService.search({
                 limit: 10,
                 page: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.reservationType.EventReservation,
                 reservationStatuses: [
                     chevre.factory.reservationStatusType.ReservationConfirmed,
@@ -347,7 +347,7 @@ homeRouter.get(
                 page: 1,
                 eventStatuses: [chevre.factory.eventStatusType.EventScheduled],
                 sort: { startDate: chevre.factory.sortType.Ascending },
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 inSessionFrom: moment()
                     .add()
                     .toDate(),
@@ -385,7 +385,7 @@ homeRouter.get(
             const result = await taskService.search({
                 limit: 10,
                 page: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 statuses: [chevre.factory.taskStatus.Aborted],
                 runsFrom: moment(runsThrough)
                     .add(-1, 'day')

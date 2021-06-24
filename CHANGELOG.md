@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 区分コードから予約語を除外
 - 顧客コードをidentifier->branchCodeと変更
 - 承認検索にアクションを表示
+- 全リソースのプロジェクトID検索条件を統一
 
 ### Deprecated
 

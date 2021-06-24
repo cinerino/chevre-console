@@ -153,7 +153,7 @@ offersRouter.all<any>(
         });
 
         const searchAccountTitlesResult = await accountTitleService.search({
-            project: { ids: [req.project.id] }
+            project: { id: { $eq: req.project.id } }
         });
 
         const applications = await searchApplications(req);
@@ -298,7 +298,7 @@ offersRouter.all<ParamsDictionary>(
                 if (typeof offer.priceSpecification?.accounting?.operatingRevenue?.codeValue === 'string') {
                     const searchAccountTitlesResult = await accountTitleService.search({
                         limit: 1,
-                        project: { ids: [req.project.id] },
+                        project: { id: { $eq: req.project.id } },
                         codeValue: { $eq: offer.priceSpecification.accounting.operatingRevenue?.codeValue }
                     });
                     forms.accounting = searchAccountTitlesResult.data[0];

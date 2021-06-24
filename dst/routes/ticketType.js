@@ -364,7 +364,7 @@ ticketTypeMasterRouter.all('/:id/update', ...validateFormAdd(),
             if (typeof ((_o = (_m = (_l = ticketType.priceSpecification) === null || _l === void 0 ? void 0 : _l.accounting) === null || _m === void 0 ? void 0 : _m.operatingRevenue) === null || _o === void 0 ? void 0 : _o.codeValue) === 'string') {
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     codeValue: { $eq: (_p = ticketType.priceSpecification.accounting.operatingRevenue) === null || _p === void 0 ? void 0 : _p.codeValue }
                 });
                 forms.accounting = searchAccountTitlesResult.data[0];
@@ -508,27 +508,6 @@ ticketTypeMasterRouter.post('/importFromCOA', (req, res, next) => __awaiter(void
         next(error);
     }
 }));
-// async function searchAllAccountTitles(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle[]> {
-//     const accountTitleService = new chevre.service.AccountTitle({
-//         endpoint: <string>process.env.API_ENDPOINT,
-//         auth: req.user.authClient
-//     });
-//     const limit = 100;
-//     let page = 0;
-//     let numData: number = limit;
-//     const accountTitles: chevre.factory.accountTitle.IAccountTitle[] = [];
-//     while (numData === limit) {
-//         page += 1;
-//         const searchAccountTitlesResult = await accountTitleService.search({
-//             limit: limit,
-//             page: page,
-//             project: { ids: [req.project.id] }
-//         });
-//         numData = searchAccountTitlesResult.data.length;
-//         accountTitles.push(...searchAccountTitlesResult.data);
-//     }
-//     return accountTitles;
-// }
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
     var _a, _b, _c, _d;

@@ -53,7 +53,7 @@ movieRouter.all('/add', ...validate(), (req, res) => __awaiter(void 0, void 0, v
                 let movie = yield createFromBody(req, true);
                 const { data } = yield creativeWorkService.searchMovies({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     identifier: { $eq: movie.identifier }
                 });
                 if (data.length > 0) {
@@ -135,7 +135,7 @@ movieRouter.get('/getlist',
             limit: limit,
             page: page,
             sort: { identifier: sdk_1.chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             contentRating: {
                 $eq: (typeof ((_a = req.query.contentRating) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.contentRating.$eq.length > 0)
                     ? req.query.contentRating.$eq
@@ -334,7 +334,7 @@ function preDelete(req, movie) {
         });
         const searchEventSeriesResult = yield eventService.search({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             workPerformed: {
                 identifiers: [movie.identifier]
@@ -346,7 +346,7 @@ function preDelete(req, movie) {
         // イベントが存在するかどうか
         const searchEventsResult = yield eventService.search({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
             superEvent: {
                 workPerformedIdentifiers: [movie.identifier]

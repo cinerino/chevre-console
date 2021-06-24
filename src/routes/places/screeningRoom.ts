@@ -306,7 +306,7 @@ async function preDelete(req: Request, screeningRoom: chevre.factory.place.scree
 
     const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
         limit: 1,
-        project: { ids: [req.project.id] },
+        project: { id: { $eq: req.project.id } },
         typeOf: chevre.factory.eventType.ScreeningEvent,
         eventStatuses: [
             chevre.factory.eventStatusType.EventPostponed,

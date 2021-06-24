@@ -42,7 +42,7 @@ movieTheaterRouter.all('/new', ...validate(),
                 });
                 const { data } = yield placeService.searchMovieTheaters({
                     limit: 100,
-                    project: { ids: [req.project.id] }
+                    project: { id: { $eq: req.project.id } }
                 });
                 const existingMovieTheater = data.find((d) => d.branchCode === movieTheater.branchCode);
                 if (existingMovieTheater !== undefined) {
@@ -150,7 +150,7 @@ movieTheaterRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0
         const { data } = yield placeService.searchMovieTheaters({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             branchCode: {
                 $regex: (typeof branchCodeRegex === 'string' && branchCodeRegex.length > 0)
                     ? branchCodeRegex
@@ -232,7 +232,7 @@ function preDelete(req, movieTheater) {
         });
         const searchEventsResult = yield eventService.search({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
             location: { branchCode: { $eq: movieTheater.branchCode } }
         });

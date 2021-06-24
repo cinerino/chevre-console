@@ -31,7 +31,7 @@ accountTitleSetRouter.get(
                 const { data } = await accountTitleService.searchAccountTitleSets({
                     limit: limit,
                     page: page,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
                         ? req.query.codeValue
                         : undefined,
@@ -140,7 +140,7 @@ accountTitleSetRouter.all<ParamsDictionary>(
         });
 
         const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: { $eq: req.params.codeValue }
         });
         let accountTitleSet = searchAccountTitleSetsResult.data.shift();
@@ -242,7 +242,7 @@ async function preDelete(req: Request, accountTitleSet: chevre.factory.accountTi
         const searchAccountTitlesResult = await accountTitleService.search({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             inCodeSet: {
                 codeValue: { $eq: accountTitleSet.codeValue },
                 inCodeSet: {
@@ -301,7 +301,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
         const selectedAccountTitleCategory = JSON.parse(req.body.inCodeSet);
         const searchAccountTitleCategoriesResult = await accountTitleService.searchAccountTitleCategories({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: { $eq: selectedAccountTitleCategory.codeValue }
         });
         accountTitleCategory = searchAccountTitleCategoriesResult.data.shift();

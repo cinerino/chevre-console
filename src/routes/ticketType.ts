@@ -408,7 +408,7 @@ ticketTypeMasterRouter.all<ParamsDictionary>(
                 if (typeof ticketType.priceSpecification?.accounting?.operatingRevenue?.codeValue === 'string') {
                     const searchAccountTitlesResult = await accountTitleService.search({
                         limit: 1,
-                        project: { ids: [req.project.id] },
+                        project: { id: { $eq: req.project.id } },
                         codeValue: { $eq: ticketType.priceSpecification.accounting.operatingRevenue?.codeValue }
                     });
                     forms.accounting = searchAccountTitlesResult.data[0];
@@ -567,30 +567,6 @@ ticketTypeMasterRouter.post(
         }
     }
 );
-
-// async function searchAllAccountTitles(req: Request): Promise<chevre.factory.accountTitle.IAccountTitle[]> {
-//     const accountTitleService = new chevre.service.AccountTitle({
-//         endpoint: <string>process.env.API_ENDPOINT,
-//         auth: req.user.authClient
-//     });
-
-//     const limit = 100;
-//     let page = 0;
-//     let numData: number = limit;
-//     const accountTitles: chevre.factory.accountTitle.IAccountTitle[] = [];
-//     while (numData === limit) {
-//         page += 1;
-//         const searchAccountTitlesResult = await accountTitleService.search({
-//             limit: limit,
-//             page: page,
-//             project: { ids: [req.project.id] }
-//         });
-//         numData = searchAccountTitlesResult.data.length;
-//         accountTitles.push(...searchAccountTitlesResult.data);
-//     }
-
-//     return accountTitles;
-// }
 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 async function createFromBody(req: Request, isNew: boolean): Promise<chevre.factory.offer.IUnitPriceOffer> {

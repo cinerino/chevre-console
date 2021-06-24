@@ -371,7 +371,7 @@ function preDelete(req, categoryCode) {
             case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
                 const searchMoviesResult4contentRating = yield creativeWorkService.searchMovies({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     contentRating: { $eq: categoryCode.codeValue }
                 });
                 if (searchMoviesResult4contentRating.data.length > 0) {
@@ -382,7 +382,7 @@ function preDelete(req, categoryCode) {
             case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
                 const searchMoviesResult4distributorType = yield creativeWorkService.searchMovies({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     distributor: { codeValue: { $eq: categoryCode.codeValue } }
                 });
                 if (searchMoviesResult4distributorType.data.length > 0) {
@@ -464,7 +464,7 @@ function preDelete(req, categoryCode) {
                 // 関連する施設コンテンツ
                 const searchEventsResult4soundFormatType = yield eventService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     soundFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });
@@ -477,7 +477,7 @@ function preDelete(req, categoryCode) {
                 // 関連する施設コンテンツ
                 const searchEventsResult4videoFormatType = yield eventService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     videoFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });

@@ -225,7 +225,7 @@ homeRouter.get('/queueCount', (req, res) => __awaiter(void 0, void 0, void 0, fu
         });
         const result = yield taskService.search({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             runsFrom: moment()
                 .add(-1, 'day')
                 .toDate(),
@@ -252,7 +252,7 @@ homeRouter.get('/latestReservations', (req, res) => __awaiter(void 0, void 0, vo
         const result = yield reservationService.search({
             limit: 10,
             page: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.reservationType.EventReservation,
             reservationStatuses: [
                 sdk_1.chevre.factory.reservationStatusType.ReservationConfirmed,
@@ -305,7 +305,7 @@ homeRouter.get('/eventsWithAggregations', (req, res) => __awaiter(void 0, void 0
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
-        const result = yield eventService.search(Object.assign({ typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [sdk_1.chevre.factory.eventStatusType.EventScheduled], sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { ids: [req.project.id] }, inSessionFrom: moment()
+        const result = yield eventService.search(Object.assign({ typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent, limit: 10, page: 1, eventStatuses: [sdk_1.chevre.factory.eventStatusType.EventScheduled], sort: { startDate: sdk_1.chevre.factory.sortType.Ascending }, project: { id: { $eq: req.project.id } }, inSessionFrom: moment()
                 .add()
                 .toDate(), inSessionThrough: moment()
                 .tz('Asia/Tokyo')
@@ -334,7 +334,7 @@ homeRouter.get('/errorReporting', (req, res) => __awaiter(void 0, void 0, void 0
         const result = yield taskService.search({
             limit: 10,
             page: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             statuses: [sdk_1.chevre.factory.taskStatus.Aborted],
             runsFrom: moment(runsThrough)
                 .add(-1, 'day')
