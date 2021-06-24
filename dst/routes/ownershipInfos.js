@@ -16,6 +16,7 @@ const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment");
 const orderStatusType_1 = require("../factory/orderStatusType");
+const TimelineFactory = require("../factory/timeline");
 const ownershipInfosRouter = express_1.Router();
 ownershipInfosRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('ownershipInfos/index', {
@@ -90,6 +91,73 @@ ownershipInfosRouter.get('/search',
             count: 0,
             results: []
         });
+    }
+}));
+ownershipInfosRouter.get('/:id/actions', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const actionService = new sdk_1.chevre.service.Action({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const ownershipInfoService = new sdk_1.chevre.service.OwnershipInfo({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const searchOwnershipInfosResult = yield ownershipInfoService.search({
+            limit: 1,
+            project: { id: { $eq: req.project.id } },
+            ids: [req.params.id]
+        });
+        const ownershipInfo = searchOwnershipInfosResult.data.shift();
+        if (ownershipInfo === undefined) {
+            throw new sdk_1.chevre.factory.errors.NotFound('OwnershipInfo');
+        }
+        // アクション
+        const actionsOnOwnershipInfos = [];
+        const ownedFrom = moment(ownershipInfo.ownedFrom)
+            .toDate();
+        try {
+            // resultが所有権
+            const searchSendActionsResult = yield actionService.search({
+                limit: 100,
+                sort: { startDate: sdk_1.chevre.factory.sortType.Ascending },
+                startFrom: ownedFrom,
+                // typeOf: cinerinoapi.factory.actionType.CheckAction,
+                // typeOf: cinerinoapi.factory.actionType.ReturnAction,
+                // typeOf: cinerinoapi.factory.actionType.SendAction,
+                result: {
+                    typeOf: { $in: [ownershipInfo.typeOf] },
+                    id: { $in: [ownershipInfo.id] }
+                }
+            });
+            actionsOnOwnershipInfos.push(...searchSendActionsResult.data);
+            // objectが所有権
+            const searchAuthorizeActionsResult = yield actionService.search({
+                limit: 100,
+                sort: { startDate: sdk_1.chevre.factory.sortType.Ascending },
+                startFrom: ownedFrom,
+                // typeOf: cinerinoapi.factory.actionType.AuthorizeAction,
+                object: {
+                    typeOf: { $in: [ownershipInfo.typeOf] },
+                    id: { $in: [ownershipInfo.id] }
+                }
+            });
+            actionsOnOwnershipInfos.push(...searchAuthorizeActionsResult.data);
+        }
+        catch (error) {
+            // no op
+        }
+        res.json(actionsOnOwnershipInfos.map((a) => {
+            return Object.assign(Object.assign({}, a), { timeline: TimelineFactory.createFromAction({
+                    project: { id: req.project.id },
+                    action: a
+                }) });
+        }));
+    }
+    catch (error) {
+        next(error);
     }
 }));
 exports.default = ownershipInfosRouter;

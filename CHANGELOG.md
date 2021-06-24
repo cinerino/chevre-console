@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 顧客コードをidentifier->branchCodeと変更
 - 承認検索にアクションを表示
 - 全リソースのプロジェクトID検索条件を統一
+- 所有権検索にアクションを表示
 
 ### Deprecated
 
