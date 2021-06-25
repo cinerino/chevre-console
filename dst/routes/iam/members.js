@@ -20,7 +20,22 @@ const Message = require("../../message");
 const ADMIN_USER_POOL_ID = process.env.ADMIN_USER_POOL_ID;
 const iamMembersRouter = express_1.Router();
 // tslint:disable-next-line:use-default-type-parameter
-iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+iamMembersRouter.all('/new', (req, __, next) => {
+    try {
+        // user選択をmember.idに保管
+        if (typeof req.body.user === 'string' && req.body.user.length > 0) {
+            const selectedUser = JSON.parse(req.body.user);
+            if (req.body.member === undefined || req.body.member === null) {
+                req.body.member = {};
+            }
+            req.body.member.id = selectedUser.id;
+        }
+        next();
+    }
+    catch (error) {
+        next(error);
+    }
+}, ...validate(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let message = '';
     let errors = {};
     const iamService = new sdk_1.chevre.service.IAM({
@@ -66,12 +81,12 @@ iamMembersRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, void
         // }
     }
     if (req.method === 'POST') {
-        // 対応決済方法を補完
-        if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
-            forms.paymentAccepted = req.body.paymentAccepted.map((v) => JSON.parse(v));
+        // プロジェクトメンバーを保管
+        if (typeof req.body.user === 'string' && req.body.user.length > 0) {
+            forms.user = JSON.parse(req.body.user);
         }
         else {
-            forms.paymentAccepted = [];
+            forms.user = undefined;
         }
     }
     const searchRolesResult = yield iamService.searchRoles({ limit: 100 });
@@ -243,7 +258,7 @@ iamMembersRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
 }));
 function createFromBody(req, __) {
-    var _a, _b;
+    var _a, _b, _c;
     const hasRole = (Array.isArray(req.body.roleName))
         ? req.body.roleName
             .filter((r) => typeof r === 'string' && r.length > 0)
@@ -253,11 +268,17 @@ function createFromBody(req, __) {
             };
         })
         : [];
+    const memberId = (_a = req.body.member) === null || _a === void 0 ? void 0 : _a.id;
+    // if (isNew) {
+    //     if (req.body.member.typeOf === chevre.factory.personType.Person) {
+    //         const selectedUser = JSON.parse(req.body.user);
+    //         memberId = selectedUser.id;
+    //     }
+    // }
     return {
         member: Object.assign({ applicationCategory: (req.body.member !== undefined && req.body.member !== null)
                 ? req.body.member.applicationCategory : '', typeOf: (req.body.member !== undefined && req.body.member !== null)
-                ? req.body.member.typeOf : '', id: (req.body.member !== undefined && req.body.member !== null)
-                ? req.body.member.id : '', hasRole: hasRole }, (typeof ((_a = req.body.member) === null || _a === void 0 ? void 0 : _a.name) === 'string') ? { name: (_b = req.body.member) === null || _b === void 0 ? void 0 : _b.name } : undefined)
+                ? req.body.member.typeOf : '', id: memberId, hasRole: hasRole }, (typeof ((_b = req.body.member) === null || _b === void 0 ? void 0 : _b.name) === 'string') ? { name: (_c = req.body.member) === null || _c === void 0 ? void 0 : _c.name } : undefined)
     };
 }
 function validate() {
@@ -266,8 +287,13 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバータイプ')),
         express_validator_1.body('member.id')
+            // .if((_: any, { req }: Meta) => req.body.member?.typeOf === chevre.factory.creativeWorkType.WebApplication)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーID'))
+        // body('user')
+        //     .if((_: any, { req }: Meta) => req.body.member?.typeOf === chevre.factory.personType.Person)
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーID'))
         // body(['name.ja', 'name.en'])
         //     .notEmpty()
         //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

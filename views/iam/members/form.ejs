@@ -48,9 +48,7 @@
                             <% }) %>
                         </select>    
                     </div>
-                </div>
 
-                <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
                         <label class="bmd-label-static">メンバータイプ</label>
                         <select class="form-control" name="member[typeOf]" style="width: 100%;">
@@ -74,9 +72,28 @@
                         </span>
                         <% } %>
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
-                        <label for="member[id]" class="bmd-label-static">メンバーID</label>
+                        <label for="user" class="bmd-label-static">
+                            プロジェクトメンバーID
+                        </label>
+                        <select class="form-control" name="user" id="user" style="width: 100%;">
+                            <% if (forms.user !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.user) %>" selected="selected">
+                                <%= forms.user.givenName %> <%= forms.user.familyName %></option>
+                            <% } %>
+                        </select>
+                        <% if (errors && errors['user']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['user'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="member[id]" class="bmd-label-static">クライアントID</label>
                         <input type="text" class="form-control" id="member[id]" name="member[id]" placeholder="メンバーID"
                             value="<%= (forms !== undefined && forms.member !== undefined && forms.member !== null) ? forms.member.id : '' %>">
                         <% if (errors && errors['member.id']) { %>

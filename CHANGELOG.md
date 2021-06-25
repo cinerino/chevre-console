@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - プロダクト検索条件拡張
+- IAMメンバー追加時にユーザーを検索できるように調整
 
 ### Deprecated
 

@@ -17,6 +17,22 @@ const iamMembersRouter = Router();
 // tslint:disable-next-line:use-default-type-parameter
 iamMembersRouter.all<ParamsDictionary>(
     '/new',
+    (req, __, next) => {
+        try {
+            // user選択をmember.idに保管
+            if (typeof req.body.user === 'string' && req.body.user.length > 0) {
+                const selectedUser = JSON.parse(req.body.user);
+                if (req.body.member === undefined || req.body.member === null) {
+                    req.body.member = {};
+                }
+                req.body.member.id = selectedUser.id;
+            }
+
+            next();
+        } catch (error) {
+            next(error);
+        }
+    },
     ...validate(),
     async (req, res) => {
         let message = '';
@@ -72,11 +88,11 @@ iamMembersRouter.all<ParamsDictionary>(
         }
 
         if (req.method === 'POST') {
-            // 対応決済方法を補完
-            if (Array.isArray(req.body.paymentAccepted) && req.body.paymentAccepted.length > 0) {
-                forms.paymentAccepted = (<string[]>req.body.paymentAccepted).map((v) => JSON.parse(v));
+            // プロジェクトメンバーを保管
+            if (typeof req.body.user === 'string' && req.body.user.length > 0) {
+                forms.user = JSON.parse(req.body.user);
             } else {
-                forms.paymentAccepted = [];
+                forms.user = undefined;
             }
         }
 
@@ -296,14 +312,21 @@ function createFromBody(
             })
         : [];
 
+    const memberId = req.body.member?.id;
+    // if (isNew) {
+    //     if (req.body.member.typeOf === chevre.factory.personType.Person) {
+    //         const selectedUser = JSON.parse(req.body.user);
+    //         memberId = selectedUser.id;
+    //     }
+    // }
+
     return {
         member: {
             applicationCategory: (req.body.member !== undefined && req.body.member !== null)
                 ? req.body.member.applicationCategory : '',
             typeOf: (req.body.member !== undefined && req.body.member !== null)
                 ? req.body.member.typeOf : '',
-            id: (req.body.member !== undefined && req.body.member !== null)
-                ? req.body.member.id : '',
+            id: memberId,
             hasRole: hasRole,
             ...(typeof req.body.member?.name === 'string') ? { name: req.body.member?.name } : undefined
         }
@@ -317,9 +340,14 @@ function validate() {
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバータイプ')),
 
         body('member.id')
+            // .if((_: any, { req }: Meta) => req.body.member?.typeOf === chevre.factory.creativeWorkType.WebApplication)
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーID'))
 
+        // body('user')
+        //     .if((_: any, { req }: Meta) => req.body.member?.typeOf === chevre.factory.personType.Person)
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーID'))
         // body(['name.ja', 'name.en'])
         //     .notEmpty()
         //     .withMessage(Message.Common.required.replace('$fieldName$', '名称'))
