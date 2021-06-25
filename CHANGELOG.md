@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 承認検索にアクションを表示
 - 全リソースのプロジェクトID検索条件を統一
 - 所有権検索にアクションを表示
+- オファーカタログ削除前バリデーション調整
 
 ### Deprecated
 
