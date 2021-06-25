@@ -165,6 +165,13 @@ productsRouter.get(
                 // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
                 project: { id: { $eq: req.project.id } },
                 typeOf: { $eq: req.query.typeOf?.$eq },
+                hasOfferCatalog: {
+                    id: {
+                        $eq: (typeof req.query.hasOfferCatalog?.id === 'string' && req.query.hasOfferCatalog.id.length > 0)
+                            ? req.query.hasOfferCatalog.id
+                            : undefined
+                    }
+                },
                 offers: {
                     $elemMatch: {
                         validFrom: {

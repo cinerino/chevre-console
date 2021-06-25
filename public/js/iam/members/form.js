@@ -24,20 +24,18 @@ $(function () {
     // 削除ボタン
     $('.btn-delete').on('click', deleteById);
 
-    var paymentAcceptedSelection = $('#paymentAccepted\\[\\]');
-    paymentAcceptedSelection.select2({
+    $('#user').select2({
         // width: 'resolve', // need to override the changed default,
         placeholder: '選択する',
         allowClear: true,
         ajax: {
-            url: '/projects/' + PROJECT_ID + '/categoryCodes/search',
+            url: '/projects/' + PROJECT_ID + '/iam/users/search',
             dataType: 'json',
             data: function (params) {
                 var query = {
                     limit: 100,
                     page: 1,
-                    name: { $regex: params.term },
-                    inCodeSet: { identifier: 'PaymentMethodType' }
+                    email: params.term
                 }
 
                 // Query parameters will be ?search=[term]&type=public
@@ -50,10 +48,10 @@ $(function () {
 
                 // Transforms the top-level key of the response object from 'items' to 'results'
                 return {
-                    results: data.results.map(function (categoryCode) {
+                    results: data.results.map(function (user) {
                         return {
-                            id: JSON.stringify({ codeValue: categoryCode.codeValue, name: categoryCode.name }),
-                            text: categoryCode.name.ja
+                            id: JSON.stringify(user),
+                            text: user.givenName + ' ' + user.familyName
                         }
                     })
                 };
