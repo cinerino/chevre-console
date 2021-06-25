@@ -134,7 +134,11 @@ function search(pageNumber) {
             }
         }
     }).fail(function (jqxhr, textStatus, error) {
-        alert(error);
+        if (jqxhr.status === 403) {
+            alert('権限がありません');
+        } else {
+            alert(error);
+        }
     }).always(function (data) {
         $('#loadingModal').modal('hide');
     });
