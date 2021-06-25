@@ -118,7 +118,7 @@ productsRouter.all('/new', ...validate(),
 productsRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     try {
         const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
@@ -143,6 +143,13 @@ productsRouter.get('/search',
             // sort: { 'priceSpecification.price': chevre.factory.sortType.Ascending },
             project: { id: { $eq: req.project.id } },
             typeOf: { $eq: (_e = req.query.typeOf) === null || _e === void 0 ? void 0 : _e.$eq },
+            hasOfferCatalog: {
+                id: {
+                    $eq: (typeof ((_f = req.query.hasOfferCatalog) === null || _f === void 0 ? void 0 : _f.id) === 'string' && req.query.hasOfferCatalog.id.length > 0)
+                        ? req.query.hasOfferCatalog.id
+                        : undefined
+                }
+            },
             offers: {
                 $elemMatch: {
                     validFrom: {
@@ -152,7 +159,7 @@ productsRouter.get('/search',
                         $gte: (offersValidThroughGte instanceof Date) ? offersValidThroughGte : undefined
                     },
                     'seller.id': {
-                        $in: (typeof ((_h = (_g = (_f = req.query.offers) === null || _f === void 0 ? void 0 : _f.$elemMatch) === null || _g === void 0 ? void 0 : _g.seller) === null || _h === void 0 ? void 0 : _h.id) === 'string'
+                        $in: (typeof ((_j = (_h = (_g = req.query.offers) === null || _g === void 0 ? void 0 : _g.$elemMatch) === null || _h === void 0 ? void 0 : _h.seller) === null || _j === void 0 ? void 0 : _j.id) === 'string'
                             && req.query.offers.$elemMatch.seller.id.length > 0)
                             ? [req.query.offers.$elemMatch.seller.id]
                             : undefined
@@ -165,7 +172,7 @@ productsRouter.get('/search',
             serviceOutput: {
                 amount: {
                     currency: {
-                        $eq: (typeof ((_k = (_j = req.query.serviceOutput) === null || _j === void 0 ? void 0 : _j.amount) === null || _k === void 0 ? void 0 : _k.currency) === 'string'
+                        $eq: (typeof ((_l = (_k = req.query.serviceOutput) === null || _k === void 0 ? void 0 : _k.amount) === null || _l === void 0 ? void 0 : _l.currency) === 'string'
                             && req.query.serviceOutput.amount.currency.length > 0)
                             ? req.query.serviceOutput.amount.currency
                             : undefined
@@ -204,7 +211,7 @@ productsRouter.get('/search',
 productsRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _l, _m, _o;
+    var _m, _o, _p;
     try {
         let message = '';
         let errors = {};
@@ -286,7 +293,7 @@ productsRouter.all('/:id', ...validate(),
         }
         else {
             // サービスアウトプットを保管
-            if (typeof ((_l = product.serviceOutput) === null || _l === void 0 ? void 0 : _l.typeOf) === 'string') {
+            if (typeof ((_m = product.serviceOutput) === null || _m === void 0 ? void 0 : _m.typeOf) === 'string') {
                 if (product.typeOf === sdk_1.chevre.factory.product.ProductType.MembershipService) {
                     const searchMembershipTypesResult = yield categoryCodeService.search({
                         limit: 1,
@@ -307,7 +314,7 @@ productsRouter.all('/:id', ...validate(),
                 }
             }
             // 通貨区分を保管
-            if (typeof ((_o = (_m = product.serviceOutput) === null || _m === void 0 ? void 0 : _m.amount) === null || _o === void 0 ? void 0 : _o.currency) === 'string') {
+            if (typeof ((_p = (_o = product.serviceOutput) === null || _o === void 0 ? void 0 : _o.amount) === null || _p === void 0 ? void 0 : _p.currency) === 'string') {
                 if (product.serviceOutput.amount.currency === sdk_1.chevre.factory.priceCurrency.JPY) {
                     forms.serviceOutputAmount = {
                         codeValue: product.serviceOutput.amount.currency,
