@@ -247,7 +247,7 @@ function preDelete(req, screeningRoom) {
         });
         const searchEventsResult = yield eventService.search({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
             eventStatuses: [
                 sdk_1.chevre.factory.eventStatusType.EventPostponed,

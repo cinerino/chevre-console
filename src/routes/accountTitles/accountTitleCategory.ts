@@ -35,7 +35,7 @@ accountTitleCategoryRouter.get(
                 const { data } = await accountTitleService.searchAccountTitleCategories({
                     limit: limit,
                     page: page,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined,
                     name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
                 });
@@ -126,7 +126,7 @@ accountTitleCategoryRouter.all<ParamsDictionary>(
             });
 
             const searchAccountTitlesResult = await accountTitleService.searchAccountTitleCategories({
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: req.params.codeValue }
             });
             let accountTitleCategory = searchAccountTitlesResult.data.shift();
@@ -218,7 +218,7 @@ async function preDelete(req: Request, accountTitleCategory: chevre.factory.acco
         const searchAccountTitlesResult = await accountTitleService.search({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             inCodeSet: {
                 inCodeSet: {
                     codeValue: { $eq: accountTitleCategory.codeValue }

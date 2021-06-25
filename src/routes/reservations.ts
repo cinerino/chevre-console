@@ -68,7 +68,7 @@ reservationsRouter.get(
             const searchConditions: chevre.factory.reservation.ISearchConditions<chevre.factory.reservationType.EventReservation> = {
                 limit: req.query.limit,
                 page: req.query.page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.reservationType.EventReservation,
                 additionalTicketText: (typeof req.query.additionalTicketText === 'string' && req.query.additionalTicketText.length > 0)
                     ? req.query.additionalTicketText

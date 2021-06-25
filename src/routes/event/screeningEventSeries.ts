@@ -55,7 +55,7 @@ screeningEventSeriesRouter.all<any>(
             if (validatorResult.isEmpty()) {
                 try {
                     const searchMovieResult = await creativeWorkService.searchMovies({
-                        project: { ids: [req.project.id] },
+                        project: { id: { $eq: req.project.id } },
                         identifier: { $eq: req.body.workPerformed?.identifier }
                     });
                     const movie = searchMovieResult.data.shift();
@@ -177,7 +177,7 @@ screeningEventSeriesRouter.get(
                 limit: limit,
                 page: page,
                 sort: { startDate: chevre.factory.sortType.Ascending },
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 name: req.query.name,
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 endFrom: (req.query.containsEnded === '1') ? undefined : new Date(),
@@ -259,7 +259,7 @@ screeningEventSeriesRouter.get(
             const searchMovieResult = await creativeWorkService.searchMovies({
                 limit: 100,
                 sort: { identifier: chevre.factory.sortType.Ascending },
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 offers: {
                     availableFrom: new Date()
                 },
@@ -307,7 +307,7 @@ screeningEventSeriesRouter.get(
             const { data } = await eventService.search<chevre.factory.eventType.ScreeningEventSeries>({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 inSessionFrom: (fromDate !== undefined)
                     ? moment(`${fromDate}T23:59:59+09:00`, 'YYYYMMDDTHH:mm:ssZ')
@@ -405,7 +405,7 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
             });
 
             let searchMovieResult = await creativeWorkService.searchMovies({
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 identifier: { $eq: event.workPerformed.identifier }
             });
             let movie = searchMovieResult.data.shift();
@@ -420,7 +420,7 @@ screeningEventSeriesRouter.all<ParamsDictionary>(
                 if (validatorResult.isEmpty()) {
                     try {
                         searchMovieResult = await creativeWorkService.searchMovies({
-                            project: { ids: [req.project.id] },
+                            project: { id: { $eq: req.project.id } },
                             identifier: { $eq: req.body.workPerformed.identifier }
                         });
                         movie = searchMovieResult.data.shift();
@@ -599,7 +599,7 @@ async function preDelete(req: Request, eventSeries: chevre.factory.event.screeni
     });
     const searchEventsResult = await eventService.search<chevre.factory.eventType.ScreeningEvent>({
         limit: 1,
-        project: { ids: [req.project.id] },
+        project: { id: { $eq: req.project.id } },
         typeOf: chevre.factory.eventType.ScreeningEvent,
         superEvent: { ids: [eventSeries.id] }
     });

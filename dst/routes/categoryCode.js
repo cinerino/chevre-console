@@ -18,6 +18,7 @@ const express_validator_1 = require("express-validator");
 const http_status_1 = require("http-status");
 const Message = require("../message");
 const categoryCodeSet_1 = require("../factory/categoryCodeSet");
+const reservedCodeValues_1 = require("../factory/reservedCodeValues");
 const NUM_ADDITIONAL_PROPERTY = 10;
 const categoryCodesRouter = express_1.Router();
 categoryCodesRouter.get('/([\$])image([\$])', (__, res) => {
@@ -370,7 +371,7 @@ function preDelete(req, categoryCode) {
             case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
                 const searchMoviesResult4contentRating = yield creativeWorkService.searchMovies({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     contentRating: { $eq: categoryCode.codeValue }
                 });
                 if (searchMoviesResult4contentRating.data.length > 0) {
@@ -381,7 +382,7 @@ function preDelete(req, categoryCode) {
             case sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
                 const searchMoviesResult4distributorType = yield creativeWorkService.searchMovies({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     distributor: { codeValue: { $eq: categoryCode.codeValue } }
                 });
                 if (searchMoviesResult4distributorType.data.length > 0) {
@@ -463,7 +464,7 @@ function preDelete(req, categoryCode) {
                 // 関連する施設コンテンツ
                 const searchEventsResult4soundFormatType = yield eventService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     soundFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });
@@ -476,7 +477,7 @@ function preDelete(req, categoryCode) {
                 // 関連する施設コンテンツ
                 const searchEventsResult4videoFormatType = yield eventService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     typeOf: sdk_1.chevre.factory.eventType.ScreeningEventSeries,
                     videoFormat: { typeOf: { $eq: categoryCode.codeValue } }
                 });
@@ -537,7 +538,11 @@ function validate() {
             .matches(/^[0-9a-zA-Z\+]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20))
+            // 予約語除外
+            .not()
+            .isIn(reservedCodeValues_1.RESERVED_CODE_VALUES)
+            .withMessage('予約語のため使用できません'),
         express_validator_1.body('name.ja')
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '名称'))

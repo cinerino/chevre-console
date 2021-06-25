@@ -11,6 +11,7 @@ import { BAD_REQUEST, NO_CONTENT } from 'http-status';
 import * as Message from '../message';
 
 import { categoryCodeSets } from '../factory/categoryCodeSet';
+import { RESERVED_CODE_VALUES } from '../factory/reservedCodeValues';
 
 const NUM_ADDITIONAL_PROPERTY = 10;
 
@@ -430,7 +431,7 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
         case chevre.factory.categoryCode.CategorySetIdentifier.ContentRatingType:
             const searchMoviesResult4contentRating = await creativeWorkService.searchMovies({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 contentRating: { $eq: categoryCode.codeValue }
             });
             if (searchMoviesResult4contentRating.data.length > 0) {
@@ -441,7 +442,7 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
         case chevre.factory.categoryCode.CategorySetIdentifier.DistributorType:
             const searchMoviesResult4distributorType = await creativeWorkService.searchMovies({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 distributor: { codeValue: { $eq: categoryCode.codeValue } }
             });
             if (searchMoviesResult4distributorType.data.length > 0) {
@@ -525,7 +526,7 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             // 関連する施設コンテンツ
             const searchEventsResult4soundFormatType = await eventService.search({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 soundFormat: { typeOf: { $eq: categoryCode.codeValue } }
             });
@@ -538,7 +539,7 @@ async function preDelete(req: Request, categoryCode: chevre.factory.categoryCode
             // 関連する施設コンテンツ
             const searchEventsResult4videoFormatType = await eventService.search({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 typeOf: chevre.factory.eventType.ScreeningEventSeries,
                 videoFormat: { typeOf: { $eq: categoryCode.codeValue } }
             });
@@ -622,7 +623,11 @@ function validate() {
             .matches(/^[0-9a-zA-Z\+]+$/)
             .isLength({ max: 20 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('コード', 20)),
+            .withMessage(Message.Common.getMaxLength('コード', 20))
+            // 予約語除外
+            .not()
+            .isIn(RESERVED_CODE_VALUES)
+            .withMessage('予約語のため使用できません'),
 
         body('name.ja')
             .notEmpty()

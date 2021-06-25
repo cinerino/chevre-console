@@ -36,7 +36,7 @@ accountTitleCategoryRouter.get('', (req, res) => __awaiter(void 0, void 0, void 
             const { data } = yield accountTitleService.searchAccountTitleCategories({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: (req.query.codeValue !== undefined && req.query.codeValue !== '') ? `${req.query.codeValue}` : undefined,
                 name: (typeof req.query.name === 'string' && req.query.name.length > 0) ? req.query.name : undefined
             });
@@ -112,7 +112,7 @@ accountTitleCategoryRouter.all('/:codeValue', ...validate(), (req, res, next) =>
             project: { id: req.project.id }
         });
         const searchAccountTitlesResult = yield accountTitleService.searchAccountTitleCategories({
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: { $eq: req.params.codeValue }
         });
         let accountTitleCategory = searchAccountTitlesResult.data.shift();
@@ -194,7 +194,7 @@ function preDelete(req, accountTitleCategory) {
             const searchAccountTitlesResult = yield accountTitleService.search({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 inCodeSet: {
                     inCodeSet: {
                         codeValue: { $eq: accountTitleCategory.codeValue }

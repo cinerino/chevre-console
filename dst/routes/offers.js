@@ -131,7 +131,7 @@ offersRouter.all('/add', ...validate(),
         inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.OfferCategoryType } }
     });
     const searchAccountTitlesResult = yield accountTitleService.search({
-        project: { ids: [req.project.id] }
+        project: { id: { $eq: req.project.id } }
     });
     const applications = yield searchApplications(req);
     res.render('offers/add', {
@@ -256,7 +256,7 @@ offersRouter.all('/:id/update', ...validate(),
             if (typeof ((_l = (_k = (_j = offer.priceSpecification) === null || _j === void 0 ? void 0 : _j.accounting) === null || _k === void 0 ? void 0 : _k.operatingRevenue) === null || _l === void 0 ? void 0 : _l.codeValue) === 'string') {
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     codeValue: { $eq: (_m = offer.priceSpecification.accounting.operatingRevenue) === null || _m === void 0 ? void 0 : _m.codeValue }
                 });
                 forms.accounting = searchAccountTitlesResult.data[0];

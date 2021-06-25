@@ -1,0 +1,398 @@
+<%- contentFor('title') %>
+Project Analysis
+<%- contentFor('displayId') %>
+HO-01
+<%- contentFor('styles') %>
+
+<%- contentFor('scripts') %>
+<script src="/js/analysis.js"></script>
+
+<%- contentFor('body') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Small boxes (Stat box) -->
+        <div class="col-md-4">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">プロジェクト情報</h3>
+
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <dl class="mb-0">
+                        <dt>プロジェクト ID</dt>
+                        <dd><%= req.project.id %></dd>
+                    </dl>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa fa-heartbeat align-middle"></i>&nbsp;&nbsp;API Health
+                    </h3>
+
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <span class="health"></span>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <span class="small-box-footer version"></span>
+                </div>
+                <!-- /.card-footer -->
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fa fa-database align-middle"></i>&nbsp;&nbsp;Database Used
+                        Space
+                    </h3>
+
+                    <div class="card-tools">
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <span class="usedSpace"></span> GB
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <span class="small-box-footer dbText"></span>
+                </div>
+                <!-- /.card-footer -->
+            </div>
+        </div>
+        <!-- ./col -->
+
+        <!-- Small boxes (Stat box) -->
+        <div class="col-md-4">
+
+            <input type="hidden" name="waiterEndpoint" value="<%= process.env.WAITER_ENDPOINT %>">
+            <input type="hidden" name="telemetryEndpoint" value="<%= process.env.TELEMETRY_API_ENDPOINT %>">
+            <input type="hidden" name="projectId" value="<%= req.project.id %>">
+
+            <!-- Left col -->
+            <section class="connectedSortable">
+                <!-- solid sales graph -->
+                <div class="card" id="visitors">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fa fa-shopping-cart mr-1"></i>
+                            取引訪問者数
+                        </h3>
+
+                        <div class="card-tools">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-tool dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-wrench"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <a target="_blank" href="/projects/<%= req.project.id %>/waiter/rules"
+                                        class="dropdown-item">入場制限設定を見る</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- <div class="chart" id="visitorsChart" style="height: 250px;"></div> -->
+                        <canvas class="chart" id="visitorsChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer bg-transparent">
+                    </div>
+                    <!-- /.card-footer -->
+                </div>
+                <!-- /.card -->
+
+                <!-- solid sales graph -->
+                <div class="card" id="numPlaceOrder">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fa fa-th mr-1"></i>
+                            注文取引数
+                        </h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm daterange" data-toggle="tooltip"
+                                title="Date range">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- <div class="chart" id="numPlaceOrderChart" style="height: 250px;"></div> -->
+                        <canvas class="chart" id="numPlaceOrderChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer bg-transparent">
+                    </div>
+                    <!-- /.card-footer -->
+                    <div class="overlay">
+                        <i class="fa fa-refresh fa-spin"></i>
+                    </div>
+                </div>
+                <!-- /.card -->
+
+                <div class="card" id="numTransactions2salesAmount">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fa fa-th mr-1"></i>
+                            来客数と売上高
+                        </h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm daterange" data-toggle="tooltip"
+                                title="Date range">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div><!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="tab-content p-0">
+                            <canvas id="numTransactions2salesAmountChart"
+                                style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                    </div><!-- /.card-body -->
+                </div>
+            </section>
+            <!-- /.Left col -->
+
+        </div>
+        <!-- ./col -->
+        <div class="col-md-4">
+
+            <!-- right col (We are only adding the ID to make the widgets sortable)-->
+            <section class="connectedSortable">
+
+                <!-- solid sales graph -->
+                <div class="card" id="salesAmount">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fa fa-th mr-1"></i>
+                            売上高
+                        </h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm daterange" data-toggle="tooltip"
+                                title="Date range">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- <div class="chart" id="salesAmountChart" style="height: 250px;"></div> -->
+                        <canvas class="chart" id="salesAmountChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer bg-transparent">
+                        <div class="row mb-2">
+                            <ul class="nav nav-pills ml-auto mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#salesAmountByPaymentMethod"
+                                        data-toggle="tab">決済方法</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active show" href="#salesAmountByClient"
+                                        data-toggle="tab">アプリケーション</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#salesAmountBySeller" data-toggle="tab">販売者</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content p-0">
+                            <!-- Morris chart - Sales -->
+                            <div class="chart tab-pane" id="salesAmountByPaymentMethod">
+                                <div class="row">
+                                    <% Object.values(paymentMethodTypes).forEach(function(paymentMethodType) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byPaymentMethod"
+                                            data-paymentMethod="<%= paymentMethodType.codeValue %>"
+                                            data-readonly="true" value="0" data-width="60" data-height="60"
+                                            data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= paymentMethodType.name.ja %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byPaymentMethod"
+                                            data-paymentMethod="undefined" data-readonly="true" value="0"
+                                            data-width="60" data-height="60" data-fgColor="#6c757d">
+                                        <div class="">
+                                            Unknown
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                </div>
+                            </div>
+                            <div class="chart tab-pane active show" id="salesAmountByClient">
+                                <div class="row">
+                                    <% applications.forEach(function(application) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byClient"
+                                            data-clientId="<%= application.id %>" data-readonly="true" value="0"
+                                            data-width="60" data-height="60" data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= application.name %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                </div>
+                            </div>
+                            <div class="chart tab-pane" id="salesAmountBySeller">
+                                <div class="row">
+                                    <% sellers.forEach(function(seller) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob bySeller" data-sellerId="<%= seller.id %>"
+                                            data-readonly="true" value="0" data-width="60" data-height="60"
+                                            data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= seller.name.ja %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-footer -->
+                    <div class="overlay">
+                        <i class="fa fa-refresh fa-spin"></i>
+                    </div>
+                </div>
+                <!-- /.card -->
+
+                <!-- solid sales graph -->
+                <div class="card" id="numOrderItems">
+                    <div class="card-header border-0">
+                        <h3 class="card-title">
+                            <i class="fa fa-th mr-1"></i>
+                            注文アイテム数
+                        </h3>
+
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-sm daterange" data-toggle="tooltip"
+                                title="Date range">
+                                <i class="fa fa-calendar"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- <div class="chart" id="numOrderItemsChart" style="height: 250px;"></div> -->
+                        <canvas class="chart" id="numOrderItemsChart"
+                            style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer bg-transparent">
+                        <div class="row mb-2">
+                            <ul class="nav nav-pills ml-auto mr-auto">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#numOrderItemsByPaymentMethod"
+                                        data-toggle="tab">決済方法</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link active show" href="#numOrderItemsByClient"
+                                        data-toggle="tab">アプリケーション</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#numOrderItemsBySeller" data-toggle="tab">販売者</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-content p-0">
+                            <!-- Morris chart - Sales -->
+                            <div class="chart tab-pane" id="numOrderItemsByPaymentMethod">
+                                <div class="row">
+                                    <% Object.values(paymentMethodTypes).forEach(function(paymentMethodType) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byPaymentMethod"
+                                            data-paymentMethod="<%= paymentMethodType.codeValue %>"
+                                            data-readonly="true" value="0" data-width="60" data-height="60"
+                                            data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= paymentMethodType.name.ja %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byPaymentMethod"
+                                            data-paymentMethod="undefined" data-readonly="true" value="0"
+                                            data-width="60" data-height="60" data-fgColor="#6c757d">
+                                        <div class="">
+                                            Unknown
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                </div>
+                                <!-- /.row -->
+                            </div>
+                            <div class="chart tab-pane active show" id="numOrderItemsByClient">
+                                <div class="row">
+                                    <% applications.forEach(function(application) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob byClient"
+                                            data-clientId="<%= application.id %>" data-readonly="true" value="0"
+                                            data-width="60" data-height="60" data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= application.name %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                </div>
+                                <!-- /.row -->
+                            </div>
+                            <div class="chart tab-pane" id="numOrderItemsBySeller">
+                                <div class="row">
+                                    <% sellers.forEach(function(seller) { %>
+                                    <div class="col-4 text-center">
+                                        <input type="text" class="knob bySeller" data-sellerId="<%= seller.id %>"
+                                            data-readonly="true" value="0" data-width="60" data-height="60"
+                                            data-fgColor="#6c757d">
+                                        <div class="">
+                                            <%= seller.name.ja %>
+                                        </div>
+                                    </div>
+                                    <!-- ./col -->
+                                    <% }) %>
+                                </div>
+                                <!-- /.row -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-footer -->
+                    <div class="overlay">
+                        <i class="fa fa-refresh fa-spin"></i>
+                    </div>
+                </div>
+                <!-- /.card -->
+
+            </section>
+            <!-- right col -->
+        </div>
+        <!-- ./col -->
+    </div>
+
+    <!-- Main row -->
+    <div class="row">
+    </div>
+    <!-- /.row (main row) -->
+
+</div><!-- /.container-fluid -->
+
+<%- include('./common/master/_loading') %>

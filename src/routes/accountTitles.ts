@@ -49,7 +49,7 @@ accountTitlesRouter.get(
             const { data } = await accountTitleService.search({
                 limit: limit,
                 page: page,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
                     ? req.query.codeValue
                     : undefined,
@@ -110,7 +110,7 @@ accountTitlesRouter.all<any>(
                     // 細目コード重複確認
                     const searchAccountTitlesResult = await accountTitleService.search({
                         limit: 1,
-                        project: { ids: [req.project.id] },
+                        project: { id: { $eq: req.project.id } },
                         codeValue: { $eq: accountTitle.codeValue }
                     });
                     if (searchAccountTitlesResult.data.length > 0) {
@@ -173,7 +173,7 @@ accountTitlesRouter.all<ParamsDictionary>(
             });
 
             const searchAccountTitlesResult = await accountTitleService.search({
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: req.params.codeValue }
             });
             let accountTitle = searchAccountTitlesResult.data.shift();
@@ -297,7 +297,7 @@ async function createFromBody(req: Request): Promise<chevre.factory.accountTitle
         const selectedAccountTitleSet = JSON.parse(req.body.inCodeSet);
         const searchAccountTitleSetsResult = await accountTitleService.searchAccountTitleSets({
             limit: 1,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: { $eq: selectedAccountTitleSet.codeValue }
         });
         accountTitleSet = searchAccountTitleSetsResult.data.shift();

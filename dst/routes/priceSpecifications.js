@@ -65,7 +65,7 @@ priceSpecificationsRouter.get('/search',
             limit: limit,
             page: page,
             sort: { price: sdk_1.chevre.factory.sortType.Ascending },
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             typeOf: (typeof req.query.typeOf === 'string' && req.query.typeOf.length > 0)
                 ? req.query.typeOf
                 : undefined,

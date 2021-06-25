@@ -231,11 +231,6 @@ offerCatalogsRouter.delete(
     '/:id',
     async (req, res) => {
         try {
-            const eventService = new chevre.service.Event({
-                endpoint: <string>process.env.API_ENDPOINT,
-                auth: req.user.authClient,
-                project: { id: req.project.id }
-            });
             const offerCatalogService = new chevre.service.OfferCatalog({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
@@ -244,23 +239,8 @@ offerCatalogsRouter.delete(
 
             const offerCatalog = await offerCatalogService.findById({ id: req.params.id });
 
-            // tslint:disable-next-line:no-suspicious-comment
-            // TODO 削除して問題ないカタログかどうか検証
-
-            if (offerCatalog.itemOffered.typeOf === ProductType.EventService) {
-                // 削除して問題ないカタログかどうか検証
-                const searchEventsResult = await eventService.search({
-                    limit: 1,
-                    typeOf: chevre.factory.eventType.ScreeningEvent,
-                    project: { ids: [req.project.id] },
-                    hasOfferCatalog: { id: { $eq: req.params.id } },
-                    sort: { endDate: chevre.factory.sortType.Descending },
-                    endFrom: new Date()
-                });
-                if (searchEventsResult.data.length > 0) {
-                    throw new Error('終了していないスケジュールが存在します');
-                }
-            }
+            // 削除して問題ないカタログかどうか検証
+            await preDelete(req, offerCatalog);
 
             await offerCatalogService.deleteById({ id: req.params.id });
             res.status(NO_CONTENT)
@@ -271,6 +251,54 @@ offerCatalogsRouter.delete(
         }
     }
 );
+
+async function preDelete(req: Request, offerCatalog: chevre.factory.offerCatalog.IOfferCatalog) {
+    const eventService = new chevre.service.Event({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+    const productService = new chevre.service.Product({
+        endpoint: <string>process.env.API_ENDPOINT,
+        auth: req.user.authClient,
+        project: { id: req.project.id }
+    });
+
+    // プロダクト確認
+    const searchProductsResult = await productService.search({
+        limit: 1,
+        hasOfferCatalog: { id: { $eq: offerCatalog.id } }
+    });
+    if (searchProductsResult.data.length > 0) {
+        throw new Error('関連するプロダクトが存在します');
+    }
+
+    // イベント確認
+    const searchEventsResult = await eventService.search({
+        limit: 1,
+        typeOf: chevre.factory.eventType.ScreeningEvent,
+        project: { id: { $eq: req.project.id } },
+        hasOfferCatalog: { id: { $eq: offerCatalog.id } },
+        sort: { endDate: chevre.factory.sortType.Descending },
+        endFrom: new Date()
+    });
+    if (searchEventsResult.data.length > 0) {
+        throw new Error('終了していないスケジュールが存在します');
+    }
+
+    switch (offerCatalog.itemOffered.typeOf) {
+        case ProductType.MembershipService:
+        case ProductType.PaymentCard:
+        case ProductType.Product:
+            break;
+
+        case ProductType.EventService:
+
+            break;
+
+        default:
+    }
+}
 
 offerCatalogsRouter.get(
     '/:id/offers',

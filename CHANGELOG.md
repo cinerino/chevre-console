@@ -18,6 +18,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.31.0 - 2021-06-25
+
+### Added
+
+- 入場制限規則検索を追加
+
+### Changed
+
+- 注文検索条件拡張
+- 区分コードから予約語を除外
+- 顧客コードをidentifier->branchCodeと変更
+- 承認検索にアクションを表示
+- 全リソースのプロジェクトID検索条件を統一
+- 所有権検索にアクションを表示
+- オファーカタログ削除前バリデーション調整
+
 ## v2.30.1 - 2021-06-21
 
 ### Changed

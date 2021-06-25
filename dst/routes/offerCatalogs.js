@@ -191,33 +191,14 @@ offerCatalogsRouter.all('/:id/update', ...validate(),
 }));
 offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const eventService = new sdk_1.chevre.service.Event({
-            endpoint: process.env.API_ENDPOINT,
-            auth: req.user.authClient,
-            project: { id: req.project.id }
-        });
         const offerCatalogService = new sdk_1.chevre.service.OfferCatalog({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
             project: { id: req.project.id }
         });
         const offerCatalog = yield offerCatalogService.findById({ id: req.params.id });
-        // tslint:disable-next-line:no-suspicious-comment
-        // TODO 削除して問題ないカタログかどうか検証
-        if (offerCatalog.itemOffered.typeOf === productType_1.ProductType.EventService) {
-            // 削除して問題ないカタログかどうか検証
-            const searchEventsResult = yield eventService.search({
-                limit: 1,
-                typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
-                project: { ids: [req.project.id] },
-                hasOfferCatalog: { id: { $eq: req.params.id } },
-                sort: { endDate: sdk_1.chevre.factory.sortType.Descending },
-                endFrom: new Date()
-            });
-            if (searchEventsResult.data.length > 0) {
-                throw new Error('終了していないスケジュールが存在します');
-            }
-        }
+        // 削除して問題ないカタログかどうか検証
+        yield preDelete(req, offerCatalog);
         yield offerCatalogService.deleteById({ id: req.params.id });
         res.status(http_status_1.NO_CONTENT)
             .end();
@@ -227,6 +208,49 @@ offerCatalogsRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 
             .json({ error: { message: error.message } });
     }
 }));
+function preDelete(req, offerCatalog) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const eventService = new sdk_1.chevre.service.Event({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        const productService = new sdk_1.chevre.service.Product({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
+        // プロダクト確認
+        const searchProductsResult = yield productService.search({
+            limit: 1,
+            hasOfferCatalog: { id: { $eq: offerCatalog.id } }
+        });
+        if (searchProductsResult.data.length > 0) {
+            throw new Error('関連するプロダクトが存在します');
+        }
+        // イベント確認
+        const searchEventsResult = yield eventService.search({
+            limit: 1,
+            typeOf: sdk_1.chevre.factory.eventType.ScreeningEvent,
+            project: { id: { $eq: req.project.id } },
+            hasOfferCatalog: { id: { $eq: offerCatalog.id } },
+            sort: { endDate: sdk_1.chevre.factory.sortType.Descending },
+            endFrom: new Date()
+        });
+        if (searchEventsResult.data.length > 0) {
+            throw new Error('終了していないスケジュールが存在します');
+        }
+        switch (offerCatalog.itemOffered.typeOf) {
+            case productType_1.ProductType.MembershipService:
+            case productType_1.ProductType.PaymentCard:
+            case productType_1.ProductType.Product:
+                break;
+            case productType_1.ProductType.EventService:
+                break;
+            default:
+        }
+    });
+}
 offerCatalogsRouter.get('/:id/offers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const offerService = new sdk_1.chevre.service.Offer({

@@ -43,7 +43,7 @@ accountTitlesRouter.get('/getlist', (req, res) => __awaiter(void 0, void 0, void
         const { data } = yield accountTitleService.search({
             limit: limit,
             page: page,
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: (typeof req.query.codeValue === 'string' && req.query.codeValue.length > 0)
                 ? req.query.codeValue
                 : undefined,
@@ -97,7 +97,7 @@ accountTitlesRouter.all('/new', ...validate(), (req, res) => __awaiter(void 0, v
                 // 細目コード重複確認
                 const searchAccountTitlesResult = yield accountTitleService.search({
                     limit: 1,
-                    project: { ids: [req.project.id] },
+                    project: { id: { $eq: req.project.id } },
                     codeValue: { $eq: accountTitle.codeValue }
                 });
                 if (searchAccountTitlesResult.data.length > 0) {
@@ -149,7 +149,7 @@ accountTitlesRouter.all('/:codeValue', ...validate(),
             project: { id: req.project.id }
         });
         const searchAccountTitlesResult = yield accountTitleService.search({
-            project: { ids: [req.project.id] },
+            project: { id: { $eq: req.project.id } },
             codeValue: { $eq: req.params.codeValue }
         });
         let accountTitle = searchAccountTitlesResult.data.shift();
@@ -263,7 +263,7 @@ function createFromBody(req) {
             const selectedAccountTitleSet = JSON.parse(req.body.inCodeSet);
             const searchAccountTitleSetsResult = yield accountTitleService.searchAccountTitleSets({
                 limit: 1,
-                project: { ids: [req.project.id] },
+                project: { id: { $eq: req.project.id } },
                 codeValue: { $eq: selectedAccountTitleSet.codeValue }
             });
             accountTitleSet = searchAccountTitleSetsResult.data.shift();
