@@ -10,9 +10,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- プロダクト検索条件拡張
-- IAMメンバー追加時にユーザーを検索できるように調整
-
 ### Deprecated
 
 ### Removed
@@ -20,6 +17,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Fixed
 
 ### Security
+
+## v2.32.0 - 2021-06-25
+
+### Changed
+
+- プロダクト検索条件拡張
+- IAMメンバー追加時にユーザーを検索できるように調整
 
 ## v2.31.0 - 2021-06-25
 
