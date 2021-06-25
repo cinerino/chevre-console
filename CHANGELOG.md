@@ -18,6 +18,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.32.1 - 2021-06-25
+
+### Changed
+
+- リソース検索時の403エラーハンドリング調整
+
 ## v2.32.0 - 2021-06-25
 
 ### Changed
