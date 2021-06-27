@@ -736,16 +736,17 @@ function createFromBody(req, isNew) {
             : undefined;
         const accounting = {
             typeOf: 'Accounting',
-            operatingRevenue: undefined,
+            // operatingRevenue: <any>undefined,
             accountsReceivable: Number(req.body.accountsReceivable) * 1
         };
         if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
             const selectedAccountTitle = JSON.parse(req.body.accounting);
             accounting.operatingRevenue = {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: 'AccountTitle',
-                codeValue: selectedAccountTitle.codeValue,
-                identifier: selectedAccountTitle.codeValue,
-                name: ''
+                codeValue: selectedAccountTitle.codeValue
+                // identifier: selectedAccountTitle.codeValue,
+                // name: ''
             };
         }
         let nameFromJson = {};
