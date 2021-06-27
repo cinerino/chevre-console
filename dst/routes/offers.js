@@ -692,6 +692,10 @@ function createFromBody(req, isNew) {
                 break;
             case sdk_1.chevre.factory.unitCode.Sec:
                 break;
+            case sdk_1.chevre.factory.unitCode.C62:
+                // C62の場合、単価単位期間制限は実質無効
+                referenceQuantityValueInSeconds = 0;
+                break;
             default:
                 throw new Error(`${referenceQuantity.unitCode} not implemented`);
         }

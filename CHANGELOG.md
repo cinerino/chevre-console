@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - オファーの勘定項目を最適化
+- アドオンオファー編集を最適化
 
 ### Deprecated
 

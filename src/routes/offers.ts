@@ -767,7 +767,7 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
     const referenceQuantityValue: number = Number(req.body.priceSpecification.referenceQuantity.value);
     const referenceQuantityUnitCode = <chevre.factory.unitCode>req.body.priceSpecification.referenceQuantity.unitCode;
     const referenceQuantity: chevre.factory.quantitativeValue.IQuantitativeValue<chevre.factory.unitCode> = {
-        typeOf: <'QuantitativeValue'>'QuantitativeValue',
+        typeOf: 'QuantitativeValue',
         value: referenceQuantityValue,
         unitCode: referenceQuantityUnitCode
     };
@@ -784,6 +784,10 @@ async function createFromBody(req: Request, isNew: boolean): Promise<chevre.fact
             referenceQuantityValueInSeconds = referenceQuantityValue * 86400;
             break;
         case chevre.factory.unitCode.Sec:
+            break;
+        case chevre.factory.unitCode.C62:
+            // C62の場合、単価単位期間制限は実質無効
+            referenceQuantityValueInSeconds = 0;
             break;
         default:
             throw new Error(`${referenceQuantity.unitCode} not implemented`);
