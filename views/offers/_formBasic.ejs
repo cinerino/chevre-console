@@ -178,12 +178,15 @@
                 value="<%= (forms.priceSpecification !== undefined && forms.priceSpecification !== null && forms.priceSpecification.referenceQuantity !== undefined) ? String(forms.priceSpecification.referenceQuantity.value) : '' %>">
 
             <%
-            const unitCodes = [
+            let unitCodes = [
                 // {codeValue: 'C62', name: '個'},
                 {codeValue: 'ANN', name: '年'},
                 {codeValue: 'DAY', name: '日'},
                 {codeValue: 'SEC', name: '秒'},
             ];
+            if (forms.itemOffered.typeOf === 'Product') {
+                unitCodes = [{codeValue: 'C62', name: '個'}];
+            }
             %>
             <select class="form-control" name="priceSpecification[referenceQuantity][unitCode]">
                 <% unitCodes.forEach((unitCode) => { %>

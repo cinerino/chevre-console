@@ -18,6 +18,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Security
 
+## v2.33.0 - 2021-07-01
+
+### Changed
+
+- オファーの勘定項目を最適化
+- アドオンオファー編集を最適化
+
 ## v2.32.1 - 2021-06-25
 
 ### Changed

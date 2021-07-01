@@ -692,6 +692,10 @@ function createFromBody(req, isNew) {
                 break;
             case sdk_1.chevre.factory.unitCode.Sec:
                 break;
+            case sdk_1.chevre.factory.unitCode.C62:
+                // C62の場合、単価単位期間制限は実質無効
+                referenceQuantityValueInSeconds = 0;
+                break;
             default:
                 throw new Error(`${referenceQuantity.unitCode} not implemented`);
         }
@@ -736,16 +740,17 @@ function createFromBody(req, isNew) {
             : undefined;
         const accounting = {
             typeOf: 'Accounting',
-            operatingRevenue: undefined,
+            // operatingRevenue: <any>undefined,
             accountsReceivable: Number(req.body.accountsReceivable) * 1
         };
         if (typeof req.body.accounting === 'string' && req.body.accounting.length > 0) {
             const selectedAccountTitle = JSON.parse(req.body.accounting);
             accounting.operatingRevenue = {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
                 typeOf: 'AccountTitle',
-                codeValue: selectedAccountTitle.codeValue,
-                identifier: selectedAccountTitle.codeValue,
-                name: ''
+                codeValue: selectedAccountTitle.codeValue
+                // identifier: selectedAccountTitle.codeValue,
+                // name: ''
             };
         }
         let nameFromJson = {};
