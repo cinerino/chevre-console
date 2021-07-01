@@ -47,6 +47,27 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                             <input class="form-control" placeholder="追加テキスト" name="additionalTicketText"
                                 id="additionalTicketText" />
                         </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group bmd-form-group col-md-4">
+                            <label for="bookingFrom" class="bmd-label-static">
+                                予約日(From - To)
+                            </label>
+
+                            <div class="input-group">
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="bookingFrom" id="bookingFrom" value="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">から</span>
+                                </div>
+                                <input class="form-control datepicker" placeholder="" maxlength=10
+                                    name="bookingThrough" id="bookingThrough" valufe="" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text">まで</span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group bmd-form-group col-md-4">
                             <label for="reservationFor[startFrom]" class="bmd-label-static">
                                 イベント開始日
@@ -64,6 +85,20 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                 <div class="input-group-append">
                                     <span class="input-group-text">まで</span>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="form-group bmd-form-group col-md-1">
+                            <label for="checkedIn" class="bmd-label-static">
+                            </label>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="checkbox" name="checkedIn" value="1"
+                                        id="checkedIn">
+                                    発券済
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -118,24 +153,6 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                 </label>
                                 <input type="text" class="form-control" name="reservationNumber" id="reservationNumber"
                                     placeholder="予約番号" />
-                            </div>
-                            <div class="form-group bmd-form-group col-md-4">
-                                <label for="bookingFrom" class="bmd-label-static">
-                                    予約日(From - To)
-                                </label>
-
-                                <div class="input-group">
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="bookingFrom" id="bookingFrom" value="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">から</span>
-                                    </div>
-                                    <input class="form-control datepicker" placeholder="" maxlength=10
-                                        name="bookingThrough" id="bookingThrough" valufe="" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">まで</span>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="form-group bmd-form-group col-md-4">
@@ -207,20 +224,6 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                                 </label>
                                 <input class="form-control" placeholder="Telephone" name="underName[telephone]"
                                     id="underName[telephone]" />
-                            </div>
-                            <div class="form-group bmd-form-group col-md-1">
-                                <label for="checkedIn" class="bmd-label-static">
-                                </label>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" type="checkbox" name="checkedIn" value="1"
-                                            id="checkedIn">
-                                        発券済
-                                        <span class="form-check-sign">
-                                            <span class="check"></span>
-                                        </span>
-                                    </label>
-                                </div>
                             </div>
                             <div class="form-group bmd-form-group col-md-1">
                                 <label for="attended" class="bmd-label-static">
