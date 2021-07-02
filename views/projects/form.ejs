@@ -84,19 +84,6 @@
 
                 <div class="form-row">
                     <div class="form-group bmd-form-group col-md-6">
-                        <label for="settings[cognito][customerUserPool][id]" class="bmd-label-static">
-                            Cognito カスタマーユーザープールID<span class="text-danger">＊</span>
-                        </label>
-                        <input<% if (!isNew) { %> readonly<% } %> type="text" class="form-control" name="settings[cognito][customerUserPool][id]" id="settings[cognito][customerUserPool][id]" placeholder=""
-                            maxlength=64 value="<%=forms.settings.cognito.customerUserPool.id %>">
-                        <% if (errors && errors['settings.cognito.customerUserPool.id']) { %>
-                        <span class="bmd-help text-danger d-block">
-                            <%- errors['settings.cognito.customerUserPool.id'].msg %>
-                        </span>
-                        <% } %>
-                    </div>
-
-                    <div class="form-group bmd-form-group col-md-6">
                         <label for="settings[sendgridApiKey]" class="bmd-label-static">
                             Sendgrid API Key
                         </label>
@@ -105,6 +92,19 @@
                         <% if (errors && errors['settings.sendgridApiKey']) { %>
                         <span class="bmd-help text-danger d-block">
                             <%- errors['settings.sendgridApiKey'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+
+                    <div class="form-group bmd-form-group col-md-6">
+                        <label for="settings[cognito][customerUserPool][id]" class="bmd-label-static">
+                            Cognito カスタマーユーザープールID<span class="text-danger">＊</span>
+                        </label>
+                        <input readonly type="text" class="form-control" name="settings[cognito][customerUserPool][id]" id="settings[cognito][customerUserPool][id]" placeholder=""
+                            maxlength=64 value="<%=forms.settings.cognito.customerUserPool.id %>">
+                        <% if (errors && errors['settings.cognito.customerUserPool.id']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['settings.cognito.customerUserPool.id'].msg %>
                         </span>
                         <% } %>
                     </div>
