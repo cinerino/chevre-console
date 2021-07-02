@@ -989,12 +989,23 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const mvtkExcludeFlgs: string[] = req.body.mvtkExcludeFlgData;
     const timeData: { doorTime: string; startTime: string; endTime: string; endDayRelative: string }[] = req.body.timeData;
 
-    const searchTicketTypeGroupsResult = await offerCatalogService.search({
-        limit: 100,
-        project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: ProductType.EventService } }
-    });
-    const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+    // const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+    // 100件以上に対応
+    const limit = 100;
+    let page = 0;
+    let numData: number = limit;
+    const ticketTypeGroups: chevre.factory.offerCatalog.IOfferCatalog[] = [];
+    while (numData === limit) {
+        page += 1;
+        const searchTicketTypeGroupsResult = await offerCatalogService.search({
+            limit: limit,
+            page: page,
+            project: { id: { $eq: req.project.id } },
+            itemOffered: { typeOf: { $eq: ProductType.EventService } }
+        });
+        numData = searchTicketTypeGroupsResult.data.length;
+        ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
+    }
 
     const searchServiceTypesResult = await categoryCodeService.search({
         limit: 100,
@@ -1104,7 +1115,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
                 const ticketTypeGroup = ticketTypeGroups.find((t) => t.id === ticketTypeIds[i]);
                 if (ticketTypeGroup === undefined) {
-                    throw new Error('Ticket Type Group');
+                    throw new Error('オファーカタログが見つかりません');
                 }
                 if (typeof ticketTypeGroup.id !== 'string') {
                     throw new Error('Offer Catalog ID undefined');

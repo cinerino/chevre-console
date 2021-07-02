@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Fixed
 
+- オファーカタログが100件以上存在する場合にスケジュールを登録できないバグ対応
+
 ### Security
 
 ## v2.33.0 - 2021-07-01

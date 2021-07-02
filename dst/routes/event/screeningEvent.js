@@ -831,12 +831,23 @@ function createMultipleEventFromBody(req, user) {
         const ticketTypeIds = req.body.ticketData;
         const mvtkExcludeFlgs = req.body.mvtkExcludeFlgData;
         const timeData = req.body.timeData;
-        const searchTicketTypeGroupsResult = yield offerCatalogService.search({
-            limit: 100,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
-        });
-        const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+        // const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+        // 100件以上に対応
+        const limit = 100;
+        let page = 0;
+        let numData = limit;
+        const ticketTypeGroups = [];
+        while (numData === limit) {
+            page += 1;
+            const searchTicketTypeGroupsResult = yield offerCatalogService.search({
+                limit: limit,
+                page: page,
+                project: { id: { $eq: req.project.id } },
+                itemOffered: { typeOf: { $eq: productType_1.ProductType.EventService } }
+            });
+            numData = searchTicketTypeGroupsResult.data.length;
+            ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
+        }
         const searchServiceTypesResult = yield categoryCodeService.search({
             limit: 100,
             project: { id: { $eq: req.project.id } },
@@ -933,7 +944,7 @@ function createMultipleEventFromBody(req, user) {
                     }
                     const ticketTypeGroup = ticketTypeGroups.find((t) => t.id === ticketTypeIds[i]);
                     if (ticketTypeGroup === undefined) {
-                        throw new Error('Ticket Type Group');
+                        throw new Error('オファーカタログが見つかりません');
                     }
                     if (typeof ticketTypeGroup.id !== 'string') {
                         throw new Error('Offer Catalog ID undefined');
