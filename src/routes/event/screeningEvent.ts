@@ -991,26 +991,39 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
     // const ticketTypeGroups = searchTicketTypeGroupsResult.data;
     // 100件以上に対応
-    const limit = 100;
-    let page = 0;
-    let numData: number = limit;
     const ticketTypeGroups: chevre.factory.offerCatalog.IOfferCatalog[] = [];
-    while (numData === limit) {
-        page += 1;
-        const searchTicketTypeGroupsResult = await offerCatalogService.search({
-            limit: limit,
-            page: page,
-            project: { id: { $eq: req.project.id } },
-            itemOffered: { typeOf: { $eq: ProductType.EventService } }
-        });
-        numData = searchTicketTypeGroupsResult.data.length;
-        ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
-    }
+    // const limit = 100;
+    // let page = 0;
+    // let numData: number = limit;
+    // while (numData === limit) {
+    //     page += 1;
+    //     const searchTicketTypeGroupsResult = await offerCatalogService.search({
+    //         limit: limit,
+    //         page: page,
+    //         project: { id: { $eq: req.project.id } },
+    //         itemOffered: { typeOf: { $eq: ProductType.EventService } }
+    //     });
+    //     numData = searchTicketTypeGroupsResult.data.length;
+    //     ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
+    // }
+    // UIの制限上、ticketTypeIdsは100件未満なので↓で問題なし
+    const searchTicketTypeGroupsResult = await offerCatalogService.search({
+        limit: 100,
+        page: 1,
+        project: { id: { $eq: req.project.id } },
+        itemOffered: { typeOf: { $eq: ProductType.EventService } },
+        id: { $in: ticketTypeIds }
+    });
+    ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
 
+    // カタログ検索結果に含まれるサービス区分のみ検索する(code.$in)
+    const serviceTypeCodeValues: string[] = ticketTypeGroups.filter((o) => typeof o.itemOffered.serviceType?.codeValue === 'string')
+        .map((o) => <string>o.itemOffered.serviceType?.codeValue);
     const searchServiceTypesResult = await categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+        codeValue: { $in: serviceTypeCodeValues }
     });
     const serviceTypes = searchServiceTypesResult.data;
 
