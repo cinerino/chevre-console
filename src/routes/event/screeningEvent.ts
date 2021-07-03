@@ -824,8 +824,20 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             value: 1
         },
         itemOffered: {
-            serviceType: serviceType,
-            serviceOutput: serviceOutput
+            // serviceType: serviceType,
+            serviceOutput: serviceOutput,
+            ...(typeof serviceType?.typeOf === 'string')
+                ? {
+                    serviceType: {
+                        codeValue: serviceType.codeValue,
+                        id: serviceType.id,
+                        inCodeSet: serviceType.inCodeSet,
+                        name: serviceType.name,
+                        project: serviceType.project,
+                        typeOf: serviceType.typeOf
+                    }
+                }
+                : undefined
         },
         validFrom: salesStartDate,
         validThrough: salesEndDate,
@@ -1176,8 +1188,20 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         value: 1
                     },
                     itemOffered: {
-                        serviceType: serviceType,
-                        serviceOutput: serviceOutput
+                        // serviceType: serviceType,
+                        serviceOutput: serviceOutput,
+                        ...(typeof serviceType?.typeOf === 'string')
+                            ? {
+                                serviceType: {
+                                    codeValue: serviceType.codeValue,
+                                    id: serviceType.id,
+                                    inCodeSet: serviceType.inCodeSet,
+                                    name: serviceType.name,
+                                    project: serviceType.project,
+                                    typeOf: serviceType.typeOf
+                                }
+                            }
+                            : undefined
                     },
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,

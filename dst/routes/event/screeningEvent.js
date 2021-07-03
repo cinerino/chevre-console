@@ -717,10 +717,20 @@ function createEventFromBody(req) {
                 unitCode: sdk_1.chevre.factory.unitCode.C62,
                 maxValue: Number(req.body.maxSeatNumber),
                 value: 1
-            }, itemOffered: {
-                serviceType: serviceType,
-                serviceOutput: serviceOutput
-            }, validFrom: salesStartDate, validThrough: salesEndDate }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined), {
+            }, itemOffered: Object.assign({ 
+                // serviceType: serviceType,
+                serviceOutput: serviceOutput }, (typeof (serviceType === null || serviceType === void 0 ? void 0 : serviceType.typeOf) === 'string')
+                ? {
+                    serviceType: {
+                        codeValue: serviceType.codeValue,
+                        id: serviceType.id,
+                        inCodeSet: serviceType.inCodeSet,
+                        name: serviceType.name,
+                        project: serviceType.project,
+                        typeOf: serviceType.typeOf
+                    }
+                }
+                : undefined), validFrom: salesStartDate, validThrough: salesEndDate }, (Array.isArray(acceptedPaymentMethod)) ? { acceptedPaymentMethod: acceptedPaymentMethod } : undefined), (Array.isArray(unacceptedPaymentMethod)) ? { unacceptedPaymentMethod: unacceptedPaymentMethod } : undefined), {
             seller: {
                 typeOf: seller.typeOf,
                 id: seller.id,
@@ -1005,10 +1015,20 @@ function createMultipleEventFromBody(req, user) {
                             unitCode: sdk_1.chevre.factory.unitCode.C62,
                             maxValue: Number(req.body.maxSeatNumber),
                             value: 1
-                        }, itemOffered: {
-                            serviceType: serviceType,
-                            serviceOutput: serviceOutput
-                        }, validFrom: salesStartDate, validThrough: salesEndDate, seller: {
+                        }, itemOffered: Object.assign({ 
+                            // serviceType: serviceType,
+                            serviceOutput: serviceOutput }, (typeof (serviceType === null || serviceType === void 0 ? void 0 : serviceType.typeOf) === 'string')
+                            ? {
+                                serviceType: {
+                                    codeValue: serviceType.codeValue,
+                                    id: serviceType.id,
+                                    inCodeSet: serviceType.inCodeSet,
+                                    name: serviceType.name,
+                                    project: serviceType.project,
+                                    typeOf: serviceType.typeOf
+                                }
+                            }
+                            : undefined), validFrom: salesStartDate, validThrough: salesEndDate, seller: {
                             typeOf: seller.typeOf,
                             id: seller.id,
                             name: seller.name
