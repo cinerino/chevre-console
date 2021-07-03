@@ -1,3 +1,9 @@
+<%
+const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string')
+    ? process.env.PROJECT_CREATOR_IDS.split(',')
+    : [];
+%>
+
 <%- contentFor('title') %>
 スケジュール検索
 <%- contentFor('displayId') %>
@@ -127,6 +133,18 @@ Aa-4
                                     </div>
                                 </div>
                             </div>
+
+                            <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+                            <div class="form-row">
+                                <div class="form-group bmd-form-group col-md-2">
+                                    <label for="hasOfferCatalog[id]" class="bmd-label-static">
+                                        カタログ
+                                    </label>
+                                    <select class="form-control" name="hasOfferCatalog[id]" id="hasOfferCatalog[id]" style="width: 100%;">
+                                    </select>
+                                </div>
+                            </div>
+                            <% } %>
                         </form>
                     </div>
                 </div>

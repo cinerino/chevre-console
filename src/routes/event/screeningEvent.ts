@@ -146,13 +146,18 @@ screeningEventRouter.get(
                         }
                     }
                 },
-                ...{
-                    location: {
-                        branchCode: {
-                            $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
-                                ? screeningRoomBranchCode
-                                : undefined
-                        }
+                location: {
+                    branchCode: {
+                        $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                            ? screeningRoomBranchCode
+                            : undefined
+                    }
+                },
+                hasOfferCatalog: {
+                    id: {
+                        $eq: (typeof req.query.hasOfferCatalog?.id === 'string' && req.query.hasOfferCatalog.id.length > 0)
+                            ? req.query.hasOfferCatalog.id
+                            : undefined
                     }
                 }
             };
