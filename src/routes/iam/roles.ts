@@ -28,11 +28,11 @@ iamRolesRouter.get(
                 project: { id: req.project.id }
             });
 
-            const searchConditions: any = {
+            const searchConditions = {
                 limit: req.query.limit,
                 page: req.query.page,
                 roleName: (typeof req.query.roleName?.$eq === 'string' && req.query.roleName.$eq.length > 0)
-                    ? req.query.roleName.$eq
+                    ? { $eq: req.query.roleName.$eq }
                     : undefined
             };
             const { data } = await iamService.searchRoles(searchConditions);

@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベント作成処理を最適化
 - イベント検索条件拡張
 - イベントのoffers.itemOffered.serviceTypeを最適化
+- プロジェクトメンバー検索条件拡張
 
 ### Deprecated
 

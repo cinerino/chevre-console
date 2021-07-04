@@ -35,7 +35,7 @@ iamRolesRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, fu
             limit: req.query.limit,
             page: req.query.page,
             roleName: (typeof ((_a = req.query.roleName) === null || _a === void 0 ? void 0 : _a.$eq) === 'string' && req.query.roleName.$eq.length > 0)
-                ? req.query.roleName.$eq
+                ? { $eq: req.query.roleName.$eq }
                 : undefined
         };
         const { data } = yield iamService.searchRoles(searchConditions);
