@@ -15,19 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const moment = require("moment");
-const orderStatusType_1 = require("../factory/orderStatusType");
+const productType_1 = require("../factory/productType");
 const TimelineFactory = require("../factory/timeline");
 const ownershipInfosRouter = express_1.Router();
 ownershipInfosRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.render('ownershipInfos/index', {
         message: '',
-        orderStatusTypes: orderStatusType_1.orderStatusTypes
+        productTypes: productType_1.productTypes
     });
 }));
 ownershipInfosRouter.get('/search', 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     try {
         const ownershipInfoService = new sdk_1.chevre.service.OwnershipInfo({
             endpoint: process.env.API_ENDPOINT,
@@ -69,6 +69,10 @@ ownershipInfosRouter.get('/search',
                     id: (typeof ((_g = (_f = req.query.typeOfGood) === null || _f === void 0 ? void 0 : _f.issuedThrough) === null || _g === void 0 ? void 0 : _g.id) === 'string'
                         && req.query.typeOfGood.issuedThrough.id.length > 0)
                         ? { $eq: req.query.typeOfGood.issuedThrough.id }
+                        : undefined,
+                    typeOf: (typeof ((_j = (_h = req.query.typeOfGood) === null || _h === void 0 ? void 0 : _h.issuedThrough) === null || _j === void 0 ? void 0 : _j.typeOf) === 'string'
+                        && req.query.typeOfGood.issuedThrough.typeOf.length > 0)
+                        ? { $eq: req.query.typeOfGood.issuedThrough.typeOf }
                         : undefined
                 }
             }

@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - イベント検索条件拡張
 - イベントのoffers.itemOffered.serviceTypeを最適化
 - プロジェクトメンバー検索条件拡張
+- 所有権検索条件拡張
 
 ### Deprecated
 
