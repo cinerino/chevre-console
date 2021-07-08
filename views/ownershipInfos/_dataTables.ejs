@@ -69,6 +69,18 @@
                             <input class="form-control" placeholder="発行サービスID" name="typeOfGood[issuedThrough][id]"
                                 id="typeOfGood[issuedThrough][id]" />
                         </div>
+                        <div class="form-group bmd-form-group col-md-2">
+                            <label for="typeOfGood[issuedThrough][typeOf]" class="bmd-label-static">
+                                プロダクトタイプ
+                            </label>
+                            <select class="form-control" name="typeOfGood[issuedThrough][typeOf]">
+                                <option value="">---</option>
+                                <% productTypes.forEach((productType) => { %>
+                                <option value="<%= productType.codeValue %>"><%= productType.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
                     </div>
 
                     <div class="advanced collapse">

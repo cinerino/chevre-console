@@ -105,7 +105,7 @@ iamMembersRouter.get('', (__, res) => __awaiter(void 0, void 0, void 0, function
     });
 }));
 iamMembersRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b;
+    var _a, _b, _c, _d;
     try {
         const iamService = new sdk_1.chevre.service.IAM({
             endpoint: process.env.API_ENDPOINT,
@@ -116,8 +116,16 @@ iamMembersRouter.get('/search', (req, res) => __awaiter(void 0, void 0, void 0, 
             limit: req.query.limit,
             page: req.query.page,
             member: {
+                hasRole: {
+                    roleName: {
+                        $eq: (typeof ((_b = (_a = req.query.member) === null || _a === void 0 ? void 0 : _a.hasRole) === null || _b === void 0 ? void 0 : _b.roleName) === 'string'
+                            && req.query.member.hasRole.roleName.length > 0)
+                            ? req.query.member.hasRole.roleName
+                            : undefined
+                    }
+                },
                 typeOf: {
-                    $eq: (typeof ((_b = (_a = req.query.member) === null || _a === void 0 ? void 0 : _a.typeOf) === null || _b === void 0 ? void 0 : _b.$eq) === 'string' && req.query.member.typeOf.$eq.length > 0)
+                    $eq: (typeof ((_d = (_c = req.query.member) === null || _c === void 0 ? void 0 : _c.typeOf) === null || _d === void 0 ? void 0 : _d.$eq) === 'string' && req.query.member.typeOf.$eq.length > 0)
                         ? req.query.member.typeOf.$eq
                         : undefined
                 }

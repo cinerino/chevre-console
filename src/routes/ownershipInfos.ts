@@ -5,7 +5,7 @@ import { chevre } from '@cinerino/sdk';
 import { Router } from 'express';
 import * as moment from 'moment';
 
-import { orderStatusTypes } from '../factory/orderStatusType';
+import { productTypes } from '../factory/productType';
 import * as TimelineFactory from '../factory/timeline';
 
 const ownershipInfosRouter = Router();
@@ -15,7 +15,7 @@ ownershipInfosRouter.get(
     async (__, res) => {
         res.render('ownershipInfos/index', {
             message: '',
-            orderStatusTypes
+            productTypes: productTypes
         });
     }
 );
@@ -66,6 +66,10 @@ ownershipInfosRouter.get(
                         id: (typeof req.query.typeOfGood?.issuedThrough?.id === 'string'
                             && req.query.typeOfGood.issuedThrough.id.length > 0)
                             ? { $eq: req.query.typeOfGood.issuedThrough.id }
+                            : undefined,
+                        typeOf: (typeof req.query.typeOfGood?.issuedThrough?.typeOf === 'string'
+                            && req.query.typeOfGood.issuedThrough.typeOf.length > 0)
+                            ? { $eq: req.query.typeOfGood.issuedThrough.typeOf }
                             : undefined
                     }
                 }

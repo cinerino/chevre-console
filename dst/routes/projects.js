@@ -16,6 +16,7 @@ const sdk_1 = require("@cinerino/sdk");
 const express_1 = require("express");
 const express_validator_1 = require("express-validator");
 const settings_1 = require("./settings");
+const ADMIN_USER_POOL_ID = process.env.ADMIN_USER_POOL_ID;
 const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string')
     ? process.env.PROJECT_CREATOR_IDS.split(',')
     : [];
@@ -53,7 +54,7 @@ projectsRouter.all('/new', ...settings_1.validate(), (req, res, next) => __await
                 }
             }
         }
-        const forms = Object.assign({ orderWebhooks: [], settings: { cognito: { customerUserPool: { id: '' } } } }, req.body);
+        const forms = Object.assign({ orderWebhooks: [], settings: { cognito: { customerUserPool: { id: ADMIN_USER_POOL_ID } } } }, req.body);
         if (req.method === 'POST') {
             // no op
         }

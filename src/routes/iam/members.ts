@@ -128,10 +128,18 @@ iamMembersRouter.get(
                 project: { id: req.project.id }
             });
 
-            const searchConditions: any = {
+            const searchConditions: chevre.factory.iam.ISearchConditions = {
                 limit: req.query.limit,
                 page: req.query.page,
                 member: {
+                    hasRole: {
+                        roleName: {
+                            $eq: (typeof req.query.member?.hasRole?.roleName === 'string'
+                                && req.query.member.hasRole.roleName.length > 0)
+                                ? req.query.member.hasRole.roleName
+                                : undefined
+                        }
+                    },
                     typeOf: {
                         $eq: (typeof req.query.member?.typeOf?.$eq === 'string' && req.query.member.typeOf.$eq.length > 0)
                             ? req.query.member.typeOf.$eq

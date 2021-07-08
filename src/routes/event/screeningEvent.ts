@@ -146,13 +146,18 @@ screeningEventRouter.get(
                         }
                     }
                 },
-                ...{
-                    location: {
-                        branchCode: {
-                            $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
-                                ? screeningRoomBranchCode
-                                : undefined
-                        }
+                location: {
+                    branchCode: {
+                        $eq: (typeof screeningRoomBranchCode === 'string' && screeningRoomBranchCode.length > 0)
+                            ? screeningRoomBranchCode
+                            : undefined
+                    }
+                },
+                hasOfferCatalog: {
+                    id: {
+                        $eq: (typeof req.query.hasOfferCatalog?.id === 'string' && req.query.hasOfferCatalog.id.length > 0)
+                            ? req.query.hasOfferCatalog.id
+                            : undefined
                     }
                 }
             };
@@ -819,8 +824,20 @@ async function createEventFromBody(req: Request): Promise<chevre.factory.event.s
             value: 1
         },
         itemOffered: {
-            serviceType: serviceType,
-            serviceOutput: serviceOutput
+            // serviceType: serviceType,
+            serviceOutput: serviceOutput,
+            ...(typeof serviceType?.typeOf === 'string')
+                ? {
+                    serviceType: {
+                        codeValue: serviceType.codeValue,
+                        id: serviceType.id,
+                        inCodeSet: serviceType.inCodeSet,
+                        name: serviceType.name,
+                        project: serviceType.project,
+                        typeOf: serviceType.typeOf
+                    }
+                }
+                : undefined
         },
         validFrom: salesStartDate,
         validThrough: salesEndDate,
@@ -989,17 +1006,41 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
     const mvtkExcludeFlgs: string[] = req.body.mvtkExcludeFlgData;
     const timeData: { doorTime: string; startTime: string; endTime: string; endDayRelative: string }[] = req.body.timeData;
 
+    // const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+    // 100件以上に対応
+    const ticketTypeGroups: chevre.factory.offerCatalog.IOfferCatalog[] = [];
+    // const limit = 100;
+    // let page = 0;
+    // let numData: number = limit;
+    // while (numData === limit) {
+    //     page += 1;
+    //     const searchTicketTypeGroupsResult = await offerCatalogService.search({
+    //         limit: limit,
+    //         page: page,
+    //         project: { id: { $eq: req.project.id } },
+    //         itemOffered: { typeOf: { $eq: ProductType.EventService } }
+    //     });
+    //     numData = searchTicketTypeGroupsResult.data.length;
+    //     ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
+    // }
+    // UIの制限上、ticketTypeIdsは100件未満なので↓で問題なし
     const searchTicketTypeGroupsResult = await offerCatalogService.search({
         limit: 100,
+        page: 1,
         project: { id: { $eq: req.project.id } },
-        itemOffered: { typeOf: { $eq: ProductType.EventService } }
+        itemOffered: { typeOf: { $eq: ProductType.EventService } },
+        id: { $in: ticketTypeIds }
     });
-    const ticketTypeGroups = searchTicketTypeGroupsResult.data;
+    ticketTypeGroups.push(...searchTicketTypeGroupsResult.data);
 
+    // カタログ検索結果に含まれるサービス区分のみ検索する(code.$in)
+    const serviceTypeCodeValues: string[] = ticketTypeGroups.filter((o) => typeof o.itemOffered.serviceType?.codeValue === 'string')
+        .map((o) => <string>o.itemOffered.serviceType?.codeValue);
     const searchServiceTypesResult = await categoryCodeService.search({
         limit: 100,
         project: { id: { $eq: req.project.id } },
-        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } }
+        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.ServiceType } },
+        codeValue: { $in: serviceTypeCodeValues }
     });
     const serviceTypes = searchServiceTypesResult.data;
 
@@ -1104,7 +1145,7 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
 
                 const ticketTypeGroup = ticketTypeGroups.find((t) => t.id === ticketTypeIds[i]);
                 if (ticketTypeGroup === undefined) {
-                    throw new Error('Ticket Type Group');
+                    throw new Error('オファーカタログが見つかりません');
                 }
                 if (typeof ticketTypeGroup.id !== 'string') {
                     throw new Error('Offer Catalog ID undefined');
@@ -1147,8 +1188,20 @@ async function createMultipleEventFromBody(req: Request, user: User): Promise<ch
                         value: 1
                     },
                     itemOffered: {
-                        serviceType: serviceType,
-                        serviceOutput: serviceOutput
+                        // serviceType: serviceType,
+                        serviceOutput: serviceOutput,
+                        ...(typeof serviceType?.typeOf === 'string')
+                            ? {
+                                serviceType: {
+                                    codeValue: serviceType.codeValue,
+                                    id: serviceType.id,
+                                    inCodeSet: serviceType.inCodeSet,
+                                    name: serviceType.name,
+                                    project: serviceType.project,
+                                    typeOf: serviceType.typeOf
+                                }
+                            }
+                            : undefined
                     },
                     validFrom: salesStartDate,
                     validThrough: salesEndDate,

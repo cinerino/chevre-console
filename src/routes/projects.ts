@@ -9,6 +9,8 @@ import { validationResult } from 'express-validator';
 
 import { createFromBody, NUM_ORDER_WEBHOOKS, validate } from './settings';
 
+const ADMIN_USER_POOL_ID = <string>process.env.ADMIN_USER_POOL_ID;
+
 const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string')
     ? process.env.PROJECT_CREATOR_IDS.split(',')
     : [];
@@ -58,7 +60,7 @@ projectsRouter.all<ParamsDictionary>(
 
             const forms = {
                 orderWebhooks: [],
-                settings: { cognito: { customerUserPool: { id: '' } } },
+                settings: { cognito: { customerUserPool: { id: ADMIN_USER_POOL_ID } } },
                 ...req.body
             };
 
