@@ -10,21 +10,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ### Changed
 
-- イベント作成処理を最適化
-- イベント検索条件拡張
-- イベントのoffers.itemOffered.serviceTypeを最適化
-- プロジェクトメンバー検索条件拡張
-- 所有権検索条件拡張
-
 ### Deprecated
 
 ### Removed
 
 ### Fixed
 
-- オファーカタログが100件以上存在する場合にスケジュールを登録できないバグ対応
-
 ### Security
+
+## v2.34.0 - 2021-07-08
+
+### Changed
+
+- イベント作成処理を最適化
+- イベント検索条件拡張
+- イベントのoffers.itemOffered.serviceTypeを最適化
+- プロジェクトメンバー検索条件拡張
+- 所有権検索条件拡張
+
+### Fixed
+
+- オファーカタログが100件以上存在する場合にスケジュールを登録できないバグ対応
 
 ## v2.33.0 - 2021-07-01
 
