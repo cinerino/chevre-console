@@ -108,6 +108,15 @@ const PROJECT_CREATOR_IDS = (typeof process.env.PROJECT_CREATOR_IDS === 'string'
                             <span class="sidebar-normal">アドオン</span>
                         </a>
                     </li>
+
+                    <% if (PROJECT_CREATOR_IDS.includes(user.profile.sub)) { %>
+                    <li class="nav-item <%= (displayId === 'PR-00') ? 'active': ''; %>">
+                        <a class="nav-link" href="/projects/<%= req.project.id %>/products?typeOf=MembershipService">
+                            <span class="sidebar-mini"><i class="icon fas fa-glasses"></i></span>
+                            <span class="sidebar-normal">メンバーシップ</span>
+                        </a>
+                    </li>
+                    <% } %>
                 </ul>
             </div>
         </li>
