@@ -104,6 +104,13 @@ paymentServicesRouter.all<any>(
                     }
                 });
             }
+
+            // 決済方法区分を保管
+            if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+                forms.paymentMethodType = JSON.parse(req.body.paymentMethodType);
+            } else {
+                forms.paymentMethodType = undefined;
+            }
         }
 
         const sellerService = new chevre.service.Seller({
@@ -183,6 +190,11 @@ paymentServicesRouter.all<ParamsDictionary>(
             let message = '';
             let errors: any = {};
 
+            const categoryCodeService = new chevre.service.CategoryCode({
+                endpoint: <string>process.env.API_ENDPOINT,
+                auth: req.user.authClient,
+                project: { id: req.project.id }
+            });
             const productService = new chevre.service.Product({
                 endpoint: <string>process.env.API_ENDPOINT,
                 auth: req.user.authClient,
@@ -242,6 +254,24 @@ paymentServicesRouter.all<ParamsDictionary>(
                         }
                     });
                 }
+
+                // 決済方法区分を保管
+                if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+                    forms.paymentMethodType = JSON.parse(req.body.paymentMethodType);
+                } else {
+                    forms.paymentMethodType = undefined;
+                }
+            } else {
+                // 決済方法区分を保管
+                if (typeof product.serviceOutput?.typeOf === 'string') {
+                    const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                        codeValue: { $eq: product.serviceOutput.typeOf }
+                    });
+                    forms.paymentMethodType = searchPaymentMethodTypesResult.data[0];
+                }
             }
 
             const sellerService = new chevre.service.Seller({
@@ -299,6 +329,17 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
             serviceOutput = JSON.parse(req.body.serviceOutputStr);
         } catch (error) {
             throw new Error(`invalid serviceOutput ${error.message}`);
+        }
+    }
+    if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+        try {
+            const paymentMethodTypeCategoryCode = <chevre.factory.categoryCode.ICategoryCode>JSON.parse(req.body.paymentMethodType);
+            serviceOutput = {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
+                typeOf: paymentMethodTypeCategoryCode.codeValue
+            };
+        } catch (error) {
+            throw new Error(`invalid paymentMethodType ${error.message}`);
         }
     }
 
@@ -378,7 +419,11 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+
+        body('paymentMethodType')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分'))
     ];
 }
 

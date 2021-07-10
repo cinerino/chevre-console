@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 ### Changed
 
 - プロダクト編集にサービスタイプを追加
+- 決済サービス管理を最適化
 
 ### Deprecated
 

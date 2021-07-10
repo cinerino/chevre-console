@@ -104,6 +104,30 @@
 
             <div class="tab-pane" id="link4">
                 <div class="form-row">
+                    <div class="form-group bmd-form-group col-md-3">
+                        <label for="paymentMethodType" class="bmd-label-static">
+                            決済方法区分
+                        </label>
+                        <select class="form-control" name="paymentMethodType" id="paymentMethodType" style="width: 100%;" <% if (!isNew) { %>
+                            disabled="disabled" <% } %>>
+                            <% if (forms.paymentMethodType !== undefined) { %>
+                            <option value="<%= JSON.stringify(forms.paymentMethodType) %>" selected="selected">
+                                <%= forms.paymentMethodType.name.ja %></option>
+                            <% } %>
+                        </select>
+                        <% if (!isNew) { %>
+                        <input type="hidden" class="form-control" name="paymentMethodType" value="<%= JSON.stringify(forms.paymentMethodType) %>">
+                        <% } %>
+
+                        <% if (errors && errors['paymentMethodType']) { %>
+                        <span class="bmd-help text-danger d-block">
+                            <%- errors['paymentMethodType'].msg %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group bmd-form-group col-md-12">
                         <label for="" class="bmd-label-static">
                             AvailableChannel
@@ -131,7 +155,7 @@
                         </a>
 
                         <div class="collapse" id="editServiceOutputJson">
-                            <textarea class="form-control" name="serviceOutputStr"
+                            <textarea disabled class="form-control" name="serviceOutputStr"
                                 rows=20><%= JSON.stringify(forms.serviceOutput, null, '\t') %></textarea>
                         </div>
                     </div>

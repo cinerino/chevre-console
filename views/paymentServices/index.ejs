@@ -55,35 +55,32 @@ PR-00
                                 <tr>
                                     <th>プロダクトID</th>
                                     <th>名称</th>
-                                    <th>AvailableChannel</th>
                                     <th>ServiceOutput</th>
                                     <th>プロバイダー</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr id="templateRow">
-                                    <td name="id__productID">
-                                        <a target="_blank" href="/projects/<%= req.project.id %>/paymentServices/$id$">
-                                            $productID$
-                                            <i class="material-icons" style="font-size: 1.2em;">open_in_new</i>
-                                        </a>
+                                    <td name="productID">
+                                        $productID$
                                     </td>
                                     <td name="name.ja">
                                         $name.ja$
                                     </td>
-                                    <td name="id__availableChannel">
-                                        <a href="javascript:void(0)" class="showAvailableChannel" data-id="$id$">
-                                            表示
-                                        </a>
-                                    </td>
-                                    <td name="id__serviceOutput">
+                                    <td name="id__serviceOutput.typeOf">
                                         <a href="javascript:void(0)" class="showServiceOutput" data-id="$id$">
-                                            表示
+                                            $serviceOutput.typeOf$
                                         </a>
                                     </td>
                                     <td name="id__provider">
                                         <a href="javascript:void(0)" class="showProvider" data-id="$id$">
                                             表示
+                                        </a>
+                                    </td>
+                                    <td name="id">
+                                        <a target="_blank" href="/projects/<%= req.project.id %>/paymentServices/$id$">
+                                            <i class="material-icons" style="font-size: 1.2em;">edit</i>
                                         </a>
                                     </td>
                                 </tr>

@@ -88,6 +88,13 @@ paymentServicesRouter.all('/new', ...validate(),
                 }
             });
         }
+        // 決済方法区分を保管
+        if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+            forms.paymentMethodType = JSON.parse(req.body.paymentMethodType);
+        }
+        else {
+            forms.paymentMethodType = undefined;
+        }
     }
     const sellerService = new sdk_1.chevre.service.Seller({
         endpoint: process.env.API_ENDPOINT,
@@ -152,9 +159,15 @@ paymentServicesRouter.get('/search',
 paymentServicesRouter.all('/:id', ...validate(), 
 // tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
     try {
         let message = '';
         let errors = {};
+        const categoryCodeService = new sdk_1.chevre.service.CategoryCode({
+            endpoint: process.env.API_ENDPOINT,
+            auth: req.user.authClient,
+            project: { id: req.project.id }
+        });
         const productService = new sdk_1.chevre.service.Product({
             endpoint: process.env.API_ENDPOINT,
             auth: req.user.authClient,
@@ -202,6 +215,25 @@ paymentServicesRouter.all('/:id', ...validate(),
                         forms.provider[key] = {};
                     }
                 });
+            }
+            // 決済方法区分を保管
+            if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+                forms.paymentMethodType = JSON.parse(req.body.paymentMethodType);
+            }
+            else {
+                forms.paymentMethodType = undefined;
+            }
+        }
+        else {
+            // 決済方法区分を保管
+            if (typeof ((_b = product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf) === 'string') {
+                const searchPaymentMethodTypesResult = yield categoryCodeService.search({
+                    limit: 1,
+                    project: { id: { $eq: req.project.id } },
+                    inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                    codeValue: { $eq: product.serviceOutput.typeOf }
+                });
+                forms.paymentMethodType = searchPaymentMethodTypesResult.data[0];
             }
         }
         const sellerService = new sdk_1.chevre.service.Seller({
@@ -253,6 +285,18 @@ function createFromBody(req, isNew) {
         }
         catch (error) {
             throw new Error(`invalid serviceOutput ${error.message}`);
+        }
+    }
+    if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
+        try {
+            const paymentMethodTypeCategoryCode = JSON.parse(req.body.paymentMethodType);
+            serviceOutput = {
+                project: { typeOf: req.project.typeOf, id: req.project.id },
+                typeOf: paymentMethodTypeCategoryCode.codeValue
+            };
+        }
+        catch (error) {
+            throw new Error(`invalid paymentMethodType ${error.message}`);
         }
     }
     let provider = [];
@@ -307,7 +351,10 @@ function validate() {
             // tslint:disable-next-line:no-magic-numbers
             .isLength({ max: 30 })
             // tslint:disable-next-line:no-magic-numbers
-            .withMessage(Message.Common.getMaxLength('名称', 30))
+            .withMessage(Message.Common.getMaxLength('名称', 30)),
+        express_validator_1.body('paymentMethodType')
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分'))
     ];
 }
 exports.default = paymentServicesRouter;
