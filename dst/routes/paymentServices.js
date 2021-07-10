@@ -267,26 +267,33 @@ paymentServicesRouter.get('', (req, res) => __awaiter(void 0, void 0, void 0, fu
         sellers: searchSellersResult.data
     });
 }));
-// tslint:disable-next-line:cyclomatic-complexity
+// tslint:disable-next-line:cyclomatic-complexity max-func-body-length
 function createFromBody(req, isNew) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     let availableChannel;
-    if (typeof req.body.availableChannelStr === 'string' && req.body.availableChannelStr.length > 0) {
-        try {
-            availableChannel = JSON.parse(req.body.availableChannelStr);
-        }
-        catch (error) {
-            throw new Error(`invalid offers ${error.message}`);
-        }
-    }
+    // if (typeof req.body.availableChannelStr === 'string' && req.body.availableChannelStr.length > 0) {
+    //     try {
+    //         availableChannel = JSON.parse(req.body.availableChannelStr);
+    //     } catch (error) {
+    //         throw new Error(`invalid offers ${error.message}`);
+    //     }
+    // }
+    const serviceUrl = (_a = req.body.availableChannel) === null || _a === void 0 ? void 0 : _a.serviceUrl;
+    const siteId = (_c = (_b = req.body.availableChannel) === null || _b === void 0 ? void 0 : _b.credentials) === null || _c === void 0 ? void 0 : _c.siteId;
+    const sitePass = (_e = (_d = req.body.availableChannel) === null || _d === void 0 ? void 0 : _d.credentials) === null || _e === void 0 ? void 0 : _e.sitePass;
+    const authorizeServerDomain = (_g = (_f = req.body.availableChannel) === null || _f === void 0 ? void 0 : _f.credentials) === null || _g === void 0 ? void 0 : _g.authorizeServerDomain;
+    const clientId = (_j = (_h = req.body.availableChannel) === null || _h === void 0 ? void 0 : _h.credentials) === null || _j === void 0 ? void 0 : _j.clientId;
+    const clientSecret = (_l = (_k = req.body.availableChannel) === null || _k === void 0 ? void 0 : _k.credentials) === null || _l === void 0 ? void 0 : _l.clientSecret;
+    const availableChannelCredentials = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof siteId === 'string' && siteId.length > 0) ? { siteId } : undefined), (typeof sitePass === 'string' && sitePass.length > 0) ? { sitePass } : undefined), (typeof authorizeServerDomain === 'string' && authorizeServerDomain.length > 0) ? { authorizeServerDomain } : undefined), (typeof clientId === 'string' && clientId.length > 0) ? { clientId } : undefined), (typeof clientSecret === 'string' && clientSecret.length > 0) ? { clientSecret } : undefined);
+    availableChannel = Object.assign({ typeOf: 'ServiceChannel', credentials: availableChannelCredentials }, (typeof serviceUrl === 'string' && serviceUrl.length > 0) ? { serviceUrl } : undefined);
     let serviceOutput;
-    if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
-        try {
-            serviceOutput = JSON.parse(req.body.serviceOutputStr);
-        }
-        catch (error) {
-            throw new Error(`invalid serviceOutput ${error.message}`);
-        }
-    }
+    // if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
+    //     try {
+    //         serviceOutput = JSON.parse(req.body.serviceOutputStr);
+    //     } catch (error) {
+    //         throw new Error(`invalid serviceOutput ${error.message}`);
+    //     }
+    // }
     if (typeof req.body.paymentMethodType === 'string' && req.body.paymentMethodType.length > 0) {
         try {
             const paymentMethodTypeCategoryCode = JSON.parse(req.body.paymentMethodType);
