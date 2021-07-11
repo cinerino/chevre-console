@@ -372,6 +372,14 @@ productsRouter.all<ParamsDictionary>(
                             codeValue: { $eq: product.serviceType.codeValue }
                         });
                         forms.serviceType = searchMembershipTypesResult.data[0];
+                    } else if (product.typeOf === chevre.factory.product.ProductType.PaymentCard) {
+                        const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                            limit: 1,
+                            project: { id: { $eq: req.project.id } },
+                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                            codeValue: { $eq: product.serviceType.codeValue }
+                        });
+                        forms.serviceType = searchPaymentMethodTypesResult.data[0];
                     }
                 }
 
@@ -636,6 +644,13 @@ function validate() {
             ].includes(req.body.typeOf))
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーシップ区分')),
+
+        body('serviceType')
+            .if((_: any, { req }: Meta) => [
+                chevre.factory.product.ProductType.PaymentCard
+            ].includes(req.body.typeOf))
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
 
         body('serviceOutputCategory')
             .if((_: any, { req }: Meta) => [

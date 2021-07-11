@@ -338,6 +338,15 @@ productsRouter.all('/:id', ...validate(),
                     });
                     forms.serviceType = searchMembershipTypesResult.data[0];
                 }
+                else if (product.typeOf === sdk_1.chevre.factory.product.ProductType.PaymentCard) {
+                    const searchPaymentMethodTypesResult = yield categoryCodeService.search({
+                        limit: 1,
+                        project: { id: { $eq: req.project.id } },
+                        inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                        codeValue: { $eq: product.serviceType.codeValue }
+                    });
+                    forms.serviceType = searchPaymentMethodTypesResult.data[0];
+                }
             }
             // 通貨区分を保管
             if (typeof ((_q = (_p = product.serviceOutput) === null || _p === void 0 ? void 0 : _p.amount) === null || _q === void 0 ? void 0 : _q.currency) === 'string') {
@@ -564,6 +573,12 @@ function validate() {
         ].includes(req.body.typeOf))
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', 'メンバーシップ区分')),
+        express_validator_1.body('serviceType')
+            .if((_, { req }) => [
+            sdk_1.chevre.factory.product.ProductType.PaymentCard
+        ].includes(req.body.typeOf))
+            .notEmpty()
+            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
         express_validator_1.body('serviceOutputCategory')
             .if((_, { req }) => [
             sdk_1.chevre.factory.product.ProductType.PaymentCard
