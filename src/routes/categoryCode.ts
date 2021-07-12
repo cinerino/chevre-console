@@ -143,10 +143,22 @@ categoryCodesRouter.all<any>(
 
                     // コード重複確認
                     switch (categoryCode.inCodeSet.identifier) {
-                        // 決済方法区分、サービス区分、メンバーシップ区分についてはグローバルユニークを考慮
-                        case chevre.factory.categoryCode.CategorySetIdentifier.MembershipType:
-                        case chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
-                        case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
+                        // 決済カード区分については、同セット内でユニーク
+                        case chevre.factory.categoryCode.CategorySetIdentifier.MovieTicketType:
+                            const { data } = await categoryCodeService.search({
+                                limit: 1,
+                                project: { id: { $eq: req.project.id } },
+                                codeValue: { $eq: categoryCode.codeValue },
+                                inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
+                            });
+                            if (data.length > 0) {
+                                throw new Error('既に存在するコードです');
+                            }
+
+                            break;
+
+                        // その他はグローバルユニークを考慮
+                        default:
                             const searchCategoryCodesGloballyResult = await categoryCodeService.search({
                                 limit: 1,
                                 project: { id: { $eq: req.project.id } },
@@ -164,20 +176,6 @@ categoryCodesRouter.all<any>(
                             if (searchCategoryCodesGloballyResult.data.length > 0) {
                                 throw new Error('既に存在するコードです');
                             }
-
-                            break;
-
-                        default:
-                            const { data } = await categoryCodeService.search({
-                                limit: 1,
-                                project: { id: { $eq: req.project.id } },
-                                codeValue: { $eq: categoryCode.codeValue },
-                                inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
-                            });
-                            if (data.length > 0) {
-                                throw new Error('既に存在するコードです');
-                            }
-
                     }
 
                     categoryCode = await categoryCodeService.create(categoryCode);
