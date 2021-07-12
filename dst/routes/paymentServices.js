@@ -306,6 +306,15 @@ function createFromBody(req, isNew) {
             throw new Error(`invalid paymentMethodType ${error.message}`);
         }
     }
+    let serviceType;
+    if (serviceOutput !== undefined) {
+        serviceType = {
+            codeValue: serviceOutput.typeOf,
+            inCodeSet: { typeOf: 'CategoryCodeSet', identifier: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType },
+            project: { typeOf: req.project.typeOf, id: req.project.id },
+            typeOf: 'CategoryCode'
+        };
+    }
     let provider = [];
     if (Array.isArray(req.body.provider)) {
         provider = req.body.provider.filter((p) => typeof p.seller === 'string' && p.seller.length > 0)
@@ -331,11 +340,11 @@ function createFromBody(req, isNew) {
             };
         });
     }
-    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID }, {
+    return Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ project: { typeOf: req.project.typeOf, id: req.project.id }, typeOf: req.body.typeOf, id: req.params.id, productID: req.body.productID }, {
         name: req.body.name
-    }), { provider }), (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (!isNew)
+    }), { provider }), (availableChannel !== undefined) ? { availableChannel } : undefined), (serviceOutput !== undefined) ? { serviceOutput } : undefined), (serviceType !== undefined) ? { serviceType } : undefined), (!isNew)
         ? {
-            $unset: Object.assign(Object.assign({}, (availableChannel === undefined) ? { availableChannel: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined)
+            $unset: Object.assign(Object.assign(Object.assign({}, (availableChannel === undefined) ? { availableChannel: 1 } : undefined), (serviceOutput === undefined) ? { serviceOutput: 1 } : undefined), (serviceType === undefined) ? { serviceType: 1 } : undefined)
         }
         : undefined);
 }

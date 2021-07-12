@@ -343,7 +343,7 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         ...(typeof serviceUrl === 'string' && serviceUrl.length > 0) ? { serviceUrl } : undefined
     };
 
-    let serviceOutput: chevre.factory.product.IServiceOutput | chevre.factory.product.IServiceOutput | undefined;
+    let serviceOutput: chevre.factory.product.IServiceOutput | undefined;
     // if (typeof req.body.serviceOutputStr === 'string' && req.body.serviceOutputStr.length > 0) {
     //     try {
     //         serviceOutput = JSON.parse(req.body.serviceOutputStr);
@@ -361,6 +361,16 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         } catch (error) {
             throw new Error(`invalid paymentMethodType ${error.message}`);
         }
+    }
+
+    let serviceType: chevre.factory.categoryCode.ICategoryCode | undefined;
+    if (serviceOutput !== undefined) {
+        serviceType = {
+            codeValue: serviceOutput.typeOf,
+            inCodeSet: { typeOf: 'CategoryCodeSet', identifier: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType },
+            project: { typeOf: req.project.typeOf, id: req.project.id },
+            typeOf: 'CategoryCode'
+        };
     }
 
     let provider: chevre.factory.service.paymentService.IProvider[] = [];
@@ -407,11 +417,13 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         provider,
         ...(availableChannel !== undefined) ? { availableChannel } : undefined,
         ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
+        ...(serviceType !== undefined) ? { serviceType } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
                     ...(availableChannel === undefined) ? { availableChannel: 1 } : undefined,
-                    ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined
+                    ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined,
+                    ...(serviceType === undefined) ? { serviceType: 1 } : undefined
                 }
             }
             : undefined
