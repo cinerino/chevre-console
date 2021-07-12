@@ -122,6 +122,7 @@ categoryCodesRouter.get(
 categoryCodesRouter.all<any>(
     '/new',
     ...validate(),
+    // tslint:disable-next-line:max-func-body-length
     async (req, res) => {
         let message = '';
         let errors: any = {};
@@ -141,20 +142,48 @@ categoryCodesRouter.all<any>(
                     let categoryCode = createCategoryCodeFromBody(req, true);
 
                     // コード重複確認
-                    const { data } = await categoryCodeService.search({
-                        limit: 1,
-                        project: { id: { $eq: req.project.id } },
-                        codeValue: { $eq: categoryCode.codeValue },
-                        inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
-                    });
-                    if (data.length > 0) {
-                        throw new Error('既に存在するコードです');
+                    switch (categoryCode.inCodeSet.identifier) {
+                        // 決済方法区分、サービス区分、メンバーシップ区分についてはグローバルユニークを考慮
+                        case chevre.factory.categoryCode.CategorySetIdentifier.MembershipType:
+                        case chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType:
+                        case chevre.factory.categoryCode.CategorySetIdentifier.ServiceType:
+                            const searchCategoryCodesGloballyResult = await categoryCodeService.search({
+                                limit: 1,
+                                project: { id: { $eq: req.project.id } },
+                                codeValue: { $eq: categoryCode.codeValue }
+                                // inCodeSet: {
+                                //     identifier: {
+                                //         $in: [
+                                //             chevre.factory.categoryCode.CategorySetIdentifier.MembershipType,
+                                //             chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType,
+                                //             chevre.factory.categoryCode.CategorySetIdentifier.ServiceType
+                                //         ]
+                                //     }
+                                // }
+                            });
+                            if (searchCategoryCodesGloballyResult.data.length > 0) {
+                                throw new Error('既に存在するコードです');
+                            }
+
+                            break;
+
+                        default:
+                            const { data } = await categoryCodeService.search({
+                                limit: 1,
+                                project: { id: { $eq: req.project.id } },
+                                codeValue: { $eq: categoryCode.codeValue },
+                                inCodeSet: { identifier: { $eq: categoryCode.inCodeSet.identifier } }
+                            });
+                            if (data.length > 0) {
+                                throw new Error('既に存在するコードです');
+                            }
+
                     }
 
                     categoryCode = await categoryCodeService.create(categoryCode);
 
                     req.flash('message', '登録しました');
-                    res.redirect(`/projects/${req.project.id}/categoryCodes/${(<any>categoryCode).id}/update`);
+                    res.redirect(`/projects/${req.project.id}/categoryCodes/${categoryCode.id}/update`);
 
                     return;
                 } catch (error) {
@@ -242,7 +271,7 @@ categoryCodesRouter.all<ParamsDictionary>(
             if (validatorResult.isEmpty()) {
                 // コンテンツDB登録
                 try {
-                    categoryCode = { ...createCategoryCodeFromBody(req, false), ...{ id: (<any>categoryCode).id } };
+                    categoryCode = { ...createCategoryCodeFromBody(req, false), ...{ id: categoryCode.id } };
                     await categoryCodeService.update(categoryCode);
                     req.flash('message', '更新しました');
                     res.redirect(req.originalUrl);
