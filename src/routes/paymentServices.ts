@@ -263,12 +263,12 @@ paymentServicesRouter.all<ParamsDictionary>(
                 }
             } else {
                 // 決済方法区分を保管
-                if (typeof product.serviceOutput?.typeOf === 'string') {
+                if (typeof product.serviceType?.codeValue === 'string') {
                     const searchPaymentMethodTypesResult = await categoryCodeService.search({
                         limit: 1,
                         project: { id: { $eq: req.project.id } },
                         inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
-                        codeValue: { $eq: product.serviceOutput.typeOf }
+                        codeValue: { $eq: product.serviceType.codeValue }
                     });
                     forms.paymentMethodType = searchPaymentMethodTypesResult.data[0];
                 }
@@ -388,6 +388,9 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
                         : undefined,
                     ...(typeof p.credentials?.tokenizationCode === 'string' && p.credentials.tokenizationCode.length > 0)
                         ? { tokenizationCode: <string>p.credentials.tokenizationCode }
+                        : undefined,
+                    ...(typeof p.credentials?.paymentUrl === 'string' && p.credentials.paymentUrl.length > 0)
+                        ? { paymentUrl: <string>p.credentials.paymentUrl }
                         : undefined,
                     ...(typeof p.credentials?.kgygishCd === 'string' && p.credentials.kgygishCd.length > 0)
                         ? { kgygishCd: <string>p.credentials.kgygishCd }

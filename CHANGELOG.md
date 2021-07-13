@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 決済サービス管理を最適化
 - 区分のユニークネスを調整
 - 決済サービスにserviceTypeを追加
+- 販売者の決済サービス資格情報にpaymentUrlを追加
 
 ### Deprecated
 

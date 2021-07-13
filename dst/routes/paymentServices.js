@@ -226,12 +226,12 @@ paymentServicesRouter.all('/:id', ...validate(),
         }
         else {
             // 決済方法区分を保管
-            if (typeof ((_b = product.serviceOutput) === null || _b === void 0 ? void 0 : _b.typeOf) === 'string') {
+            if (typeof ((_b = product.serviceType) === null || _b === void 0 ? void 0 : _b.codeValue) === 'string') {
                 const searchPaymentMethodTypesResult = yield categoryCodeService.search({
                     limit: 1,
                     project: { id: { $eq: req.project.id } },
                     inCodeSet: { identifier: { $eq: sdk_1.chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
-                    codeValue: { $eq: product.serviceOutput.typeOf }
+                    codeValue: { $eq: product.serviceType.codeValue }
                 });
                 forms.paymentMethodType = searchPaymentMethodTypesResult.data[0];
             }
@@ -319,17 +319,19 @@ function createFromBody(req, isNew) {
     if (Array.isArray(req.body.provider)) {
         provider = req.body.provider.filter((p) => typeof p.seller === 'string' && p.seller.length > 0)
             .map((p) => {
-            var _a, _b, _c, _d, _e;
+            var _a, _b, _c, _d, _e, _f;
             const selectedSeller = JSON.parse(p.seller);
-            const credentials = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof ((_a = p.credentials) === null || _a === void 0 ? void 0 : _a.shopId) === 'string' && p.credentials.shopId.length > 0)
+            const credentials = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (typeof ((_a = p.credentials) === null || _a === void 0 ? void 0 : _a.shopId) === 'string' && p.credentials.shopId.length > 0)
                 ? { shopId: p.credentials.shopId }
                 : undefined), (typeof ((_b = p.credentials) === null || _b === void 0 ? void 0 : _b.shopPass) === 'string' && p.credentials.shopPass.length > 0)
                 ? { shopPass: p.credentials.shopPass }
                 : undefined), (typeof ((_c = p.credentials) === null || _c === void 0 ? void 0 : _c.tokenizationCode) === 'string' && p.credentials.tokenizationCode.length > 0)
                 ? { tokenizationCode: p.credentials.tokenizationCode }
-                : undefined), (typeof ((_d = p.credentials) === null || _d === void 0 ? void 0 : _d.kgygishCd) === 'string' && p.credentials.kgygishCd.length > 0)
+                : undefined), (typeof ((_d = p.credentials) === null || _d === void 0 ? void 0 : _d.paymentUrl) === 'string' && p.credentials.paymentUrl.length > 0)
+                ? { paymentUrl: p.credentials.paymentUrl }
+                : undefined), (typeof ((_e = p.credentials) === null || _e === void 0 ? void 0 : _e.kgygishCd) === 'string' && p.credentials.kgygishCd.length > 0)
                 ? { kgygishCd: p.credentials.kgygishCd }
-                : undefined), (typeof ((_e = p.credentials) === null || _e === void 0 ? void 0 : _e.stCd) === 'string' && p.credentials.stCd.length > 0)
+                : undefined), (typeof ((_f = p.credentials) === null || _f === void 0 ? void 0 : _f.stCd) === 'string' && p.credentials.stCd.length > 0)
                 ? { stCd: p.credentials.stCd }
                 : undefined);
             return {
