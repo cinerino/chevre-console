@@ -95,11 +95,11 @@ productsRouter.all<any>(
 
         if (req.method === 'POST') {
             // サービスアウトプットを保管
-            if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
-                forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
-            } else {
-                forms.serviceOutputCategory = undefined;
-            }
+            // if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
+            //     forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+            // } else {
+            //     forms.serviceOutputCategory = undefined;
+            // }
 
             // サービスタイプを保管
             if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
@@ -321,11 +321,11 @@ productsRouter.all<ParamsDictionary>(
 
             if (req.method === 'POST') {
                 // サービスアウトプットを保管
-                if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
-                    forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
-                } else {
-                    forms.serviceOutputCategory = undefined;
-                }
+                // if (typeof req.body.serviceOutputCategory === 'string' && req.body.serviceOutputCategory.length > 0) {
+                //     forms.serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+                // } else {
+                //     forms.serviceOutputCategory = undefined;
+                // }
 
                 // サービスタイプを保管
                 if (typeof req.body.serviceType === 'string' && req.body.serviceType.length > 0) {
@@ -342,25 +342,25 @@ productsRouter.all<ParamsDictionary>(
                 }
             } else {
                 // サービスアウトプットを保管
-                if (typeof product.serviceOutput?.typeOf === 'string') {
-                    if (product.typeOf === chevre.factory.product.ProductType.MembershipService) {
-                        const searchMembershipTypesResult = await categoryCodeService.search({
-                            limit: 1,
-                            project: { id: { $eq: req.project.id } },
-                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
-                            codeValue: { $eq: product.serviceOutput.typeOf }
-                        });
-                        forms.serviceOutputCategory = searchMembershipTypesResult.data[0];
-                    } else if (product.typeOf === chevre.factory.product.ProductType.PaymentCard) {
-                        const searchPaymentMethodTypesResult = await categoryCodeService.search({
-                            limit: 1,
-                            project: { id: { $eq: req.project.id } },
-                            inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
-                            codeValue: { $eq: product.serviceOutput.typeOf }
-                        });
-                        forms.serviceOutputCategory = searchPaymentMethodTypesResult.data[0];
-                    }
-                }
+                // if (typeof product.serviceOutput?.typeOf === 'string') {
+                //     if (product.typeOf === chevre.factory.product.ProductType.MembershipService) {
+                //         const searchMembershipTypesResult = await categoryCodeService.search({
+                //             limit: 1,
+                //             project: { id: { $eq: req.project.id } },
+                //             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.MembershipType } },
+                //             codeValue: { $eq: product.serviceOutput.typeOf }
+                //         });
+                //         forms.serviceOutputCategory = searchMembershipTypesResult.data[0];
+                //     } else if (product.typeOf === chevre.factory.product.ProductType.PaymentCard) {
+                //         const searchPaymentMethodTypesResult = await categoryCodeService.search({
+                //             limit: 1,
+                //             project: { id: { $eq: req.project.id } },
+                //             inCodeSet: { identifier: { $eq: chevre.factory.categoryCode.CategorySetIdentifier.PaymentMethodType } },
+                //             codeValue: { $eq: product.serviceOutput.typeOf }
+                //         });
+                //         forms.serviceOutputCategory = searchPaymentMethodTypesResult.data[0];
+                //     }
+                // }
 
                 // サービスタイプを保管
                 if (typeof product.serviceType?.codeValue === 'string') {
@@ -492,20 +492,22 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.product.IP
             break;
 
         case chevre.factory.product.ProductType.PaymentCard:
-            let serviceOutputCategory: any;
-            try {
-                serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
-            } catch (error) {
-                throw new Error(`invalid serviceOutputCategory ${error.message}`);
-            }
+            // let serviceOutputCategory: any;
+            // try {
+            //     serviceOutputCategory = JSON.parse(req.body.serviceOutputCategory);
+            // } catch (error) {
+            //     throw new Error(`invalid serviceOutputCategory ${error.message}`);
+            // }
 
             if (serviceOutput === undefined) {
                 serviceOutput = {
                     project: { typeOf: req.project.typeOf, id: req.project.id },
-                    typeOf: serviceOutputCategory.codeValue
+                    // typeOf: serviceOutputCategory.codeValue
+                    typeOf: 'Permit' // ペイメントカードの場合固定
                 };
             } else {
-                serviceOutput.typeOf = serviceOutputCategory.codeValue;
+                serviceOutput.typeOf = 'Permit'; // ペイメントカードの場合固定
+                // serviceOutput.typeOf = serviceOutputCategory.codeValue;
             }
 
             if (typeof req.body.serviceOutputAmount === 'string' && req.body.serviceOutputAmount.length > 0) {
@@ -652,12 +654,12 @@ function validate() {
             .notEmpty()
             .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
 
-        body('serviceOutputCategory')
-            .if((_: any, { req }: Meta) => [
-                chevre.factory.product.ProductType.PaymentCard
-            ].includes(req.body.typeOf))
-            .notEmpty()
-            .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
+        // body('serviceOutputCategory')
+        //     .if((_: any, { req }: Meta) => [
+        //         chevre.factory.product.ProductType.PaymentCard
+        //     ].includes(req.body.typeOf))
+        //     .notEmpty()
+        //     .withMessage(Message.Common.required.replace('$fieldName$', '決済方法区分')),
 
         body('serviceOutputAmount')
             .if((_: any, { req }: Meta) => [

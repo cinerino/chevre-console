@@ -419,13 +419,15 @@ function createFromBody(req: Request, isNew: boolean): chevre.factory.service.pa
         },
         provider,
         ...(availableChannel !== undefined) ? { availableChannel } : undefined,
-        ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
+        // ...(serviceOutput !== undefined) ? { serviceOutput } : undefined,
         ...(serviceType !== undefined) ? { serviceType } : undefined,
         ...(!isNew)
             ? {
                 $unset: {
                     ...(availableChannel === undefined) ? { availableChannel: 1 } : undefined,
-                    ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined,
+                    // 仕様変更でserviceOutputは不要になったので
+                    ...{ serviceOutput: 1 },
+                    // ...(serviceOutput === undefined) ? { serviceOutput: 1 } : undefined,
                     ...(serviceType === undefined) ? { serviceType: 1 } : undefined
                 }
             }

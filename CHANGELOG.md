@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 区分のユニークネスを調整
 - 決済サービスにserviceTypeを追加
 - 販売者の決済サービス資格情報にpaymentUrlを追加
+- ペイメントカードプロダクトのserviceOutput.typeOfをPermitに固定
+- 決済サービスのserviceOutputを削除
 
 ### Deprecated
 
