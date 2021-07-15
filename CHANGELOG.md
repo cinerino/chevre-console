@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
 - 販売者の決済サービス資格情報にpaymentUrlを追加
 - ペイメントカードプロダクトのserviceOutput.typeOfをPermitに固定
 - 決済サービスのserviceOutputを削除
+- MAXIMUM_REQUEST_BODY_SIZEを調整
 
 ### Deprecated
 
